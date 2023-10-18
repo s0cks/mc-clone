@@ -102,28 +102,14 @@ namespace mcc {
     PreRenderHandle preRender(loop->loop(), &OnPreRender);
     PostRenderHandle postRender(loop->loop(), &OnPostRender);
     
-    Shader shader = GetColorizedShader();
-    VertexList vertices = {
-      glm::vec3(0.5f,  0.5f, 0.0f),  // top right
-      glm::vec3(0.5f, -0.5f, 0.0f),  // bottom right
-      glm::vec3(-0.5f, -0.5f, 0.0f),  // bottom left
-      glm::vec3(-0.5f,  0.5f, 0.0f)   // top left 
-    };
-    IndexList indices = {
-      0, 1, 3, // first
-      1, 2, 3, // second 
-    };
-    Mesh mesh(vertices, indices);
-    DLOG(INFO) << "mesh vertices: " << mesh.vertices();
-    DLOG(INFO) << "mesh indices: " << mesh.indices();
+    Square square(glm::vec2(25.0f, 25.0f), 50.0f);
     const auto font = new font::Font("arial/arial");
     const RenderCallback onRenderSquare = [&]() {
       font::FontRenderer renderer(font);
-      renderer.SetColor(glm::vec3(1.0f, 0.0f, 0.0f));
+      renderer.SetColor(glm::vec3(1.0f, 1.0f, 1.0f));
       renderer.RenderText("Hello World", glm::vec2(25.0, 25.0));
 
-      shader.ApplyShader();
-      mesh.Render();
+      square.Render();
     };
     RenderHandle renderSquare(loop->loop(), onRenderSquare);
 

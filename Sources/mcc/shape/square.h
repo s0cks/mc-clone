@@ -12,10 +12,10 @@ namespace mcc {
     static inline VertexList
     GenerateVertices(const glm::vec2 pos, const float size) {
       return {
-        { glm::vec3(size, size, 0.0f) }, // top right
-        { glm::vec3(size, -size, 0.0f) }, // bottom right
-        { glm::vec3(-size, -size, 0.0f) }, // bottom left
-        { glm::vec3(-size, size, 0.0f) }, // top left
+        { glm::vec3(pos[0] + size, pos[1] + size, 0.0f) }, // top right
+        { glm::vec3(pos[0] + size, pos[1] - size, 0.0f) }, // bottom right
+        { glm::vec3(pos[0] - size, pos[1] - size, 0.0f) }, // bottom left
+        { glm::vec3(pos[0] - size, pos[1] + size, 0.0f) }, // top left
       };
     }
 
