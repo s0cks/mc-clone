@@ -1,0 +1,14 @@
+#ifndef MCC_H
+#define MCC_H
+
+#include <string>
+
+namespace mcc {
+#define POSEIDON_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define POSEIDON_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define POSEIDON_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+    std::string GetVersion();
+}
+
+#endif //MCC_H

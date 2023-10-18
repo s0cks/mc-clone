@@ -1,0 +1,32 @@
+{
+  "configurations": [
+    {
+      "name": "minecraft-tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "name": "minecraft",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Sources/minecraft-client",
+      "args": [
+        "--resources=${workspaceFolder}/resources"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        
+      ],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }
+  ]
+}

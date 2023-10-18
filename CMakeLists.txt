@@ -1,0 +1,29 @@
+cmake_minimum_required(VERSION 3.1)
+project(minecraft)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
+
+find_package(Threads REQUIRED)
+find_package(Glog REQUIRED)
+find_package(gflags REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+find_package(GLEW REQUIRED)
+find_package(libuv REQUIRED)
+find_package(GLM REQUIRED)
+find_package(Freetype REQUIRED)
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    message(STATUS "Compiling with debug mode.")
+    add_compile_definitions(MCC_DEBUG)
+else()
+    message(STATUS "Compiling without debug mode.")
+endif()
+
+set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_VERSION_MINOR 0)
+set(PROJECT_VERSION_PATCH 0)
+
+add_subdirectory(Tests)
+add_subdirectory(Sources)
