@@ -1153,6 +1153,8 @@ Sources/CMakeFiles/minecraft.dir/mcc/engine.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/os_thread.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/os_thread_osx.h \

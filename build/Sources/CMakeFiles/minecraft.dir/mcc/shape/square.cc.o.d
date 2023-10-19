@@ -1016,6 +1016,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/camera/camera.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks/OpenGL.framework/Headers/gl3.h \
   /opt/homebrew/include/glm/ext.hpp \

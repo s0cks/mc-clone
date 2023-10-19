@@ -71,11 +71,6 @@
 },
 {
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
-  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/shape/square.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.cc",
-  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.cc"
-},
-{
-  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
   "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/font/font.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/font.cc",
   "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/font/font.cc"
 },
@@ -93,6 +88,16 @@
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
   "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/font_renderer.cc",
   "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/font/font_renderer.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/scene.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/scene.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/scene.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.cc"
 },
 {
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",

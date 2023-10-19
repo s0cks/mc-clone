@@ -1179,8 +1179,12 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
   ../Sources/mcc/shape/shape.h \
   ../Sources/mcc/mesh/mesh.h \
   ../Sources/mcc/mesh/index.h \
-  ../Sources/mcc/mesh/vertex.h
+  ../Sources/mcc/mesh/vertex.h \
+  ../Sources/mcc/scene.h \
+  ../Sources/mcc/mesh/model.h
 
+
+../Sources/mcc/mesh/model.h:
 
 ../Sources/mcc/mesh/mesh.h:
 
@@ -2069,6 +2073,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/ostream:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_move.h:
+
+../Sources/mcc/scene.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/mach/vm_purgable.h:
 

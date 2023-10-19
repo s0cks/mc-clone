@@ -3,14 +3,19 @@
 
 #include "mcc/mesh/mesh.h"
 #include "mcc/shader/shader.h"
+#include "mcc/scene.h"
+#include "mcc/mesh/model.h"
 
 namespace mcc {
-  class Shape {
+  class Shape : public Model {
   protected:
     Shape() = default;
+    Shape(const Shader& shader,
+          Mesh* mesh):
+          Model(shader, mesh) {
+    }
   public:
-    virtual ~Shape() = default;
-    virtual void Render() = 0;
+    ~Shape() override = default;
   };
 }
 

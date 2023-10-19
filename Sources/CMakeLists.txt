@@ -26,12 +26,14 @@ add_library(${PROJECT_NAME}
   mcc/thread_local.h
   mcc/engine.h mcc/engine.cc
   mcc/shape/shape.h
-  mcc/shape/square.h mcc/shape/square.cc
+  mcc/shape/square.h
   mcc/font/font.h mcc/font/font.cc
   mcc/font/glyph.h mcc/font/glyph.cc
   mcc/font/font_mesh.h mcc/font/font_mesh.cc
   mcc/font/truetype.h
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
+  mcc/scene.h mcc/scene.cc
+  mcc/mesh/model.h mcc/mesh/model.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc)
 target_link_libraries(${PROJECT_NAME}

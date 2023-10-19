@@ -456,6 +456,30 @@ mcc/mesh/mesh.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mesh/mesh.cc.s
 .PHONY : mcc/mesh/mesh.cc.s
 
+mcc/mesh/model.o: mcc/mesh/model.cc.o
+.PHONY : mcc/mesh/model.o
+
+# target to build an object file
+mcc/mesh/model.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o
+.PHONY : mcc/mesh/model.cc.o
+
+mcc/mesh/model.i: mcc/mesh/model.cc.i
+.PHONY : mcc/mesh/model.i
+
+# target to preprocess a source file
+mcc/mesh/model.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.i
+.PHONY : mcc/mesh/model.cc.i
+
+mcc/mesh/model.s: mcc/mesh/model.cc.s
+.PHONY : mcc/mesh/model.s
+
+# target to generate assembly for a file
+mcc/mesh/model.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.s
+.PHONY : mcc/mesh/model.cc.s
+
 mcc/os_thread.o: mcc/os_thread.cc.o
 .PHONY : mcc/os_thread.o
 
@@ -552,6 +576,30 @@ mcc/renderer/renderer.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.s
 .PHONY : mcc/renderer/renderer.cc.s
 
+mcc/scene.o: mcc/scene.cc.o
+.PHONY : mcc/scene.o
+
+# target to build an object file
+mcc/scene.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o
+.PHONY : mcc/scene.cc.o
+
+mcc/scene.i: mcc/scene.cc.i
+.PHONY : mcc/scene.i
+
+# target to preprocess a source file
+mcc/scene.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.i
+.PHONY : mcc/scene.cc.i
+
+mcc/scene.s: mcc/scene.cc.s
+.PHONY : mcc/scene.s
+
+# target to generate assembly for a file
+mcc/scene.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.s
+.PHONY : mcc/scene.cc.s
+
 mcc/shader/shader.o: mcc/shader/shader.cc.o
 .PHONY : mcc/shader/shader.o
 
@@ -575,30 +623,6 @@ mcc/shader/shader.s: mcc/shader/shader.cc.s
 mcc/shader/shader.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/shader/shader.cc.s
 .PHONY : mcc/shader/shader.cc.s
-
-mcc/shape/square.o: mcc/shape/square.cc.o
-.PHONY : mcc/shape/square.o
-
-# target to build an object file
-mcc/shape/square.cc.o:
-	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o
-.PHONY : mcc/shape/square.cc.o
-
-mcc/shape/square.i: mcc/shape/square.cc.i
-.PHONY : mcc/shape/square.i
-
-# target to preprocess a source file
-mcc/shape/square.cc.i:
-	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.i
-.PHONY : mcc/shape/square.cc.i
-
-mcc/shape/square.s: mcc/shape/square.cc.s
-.PHONY : mcc/shape/square.s
-
-# target to generate assembly for a file
-mcc/shape/square.cc.s:
-	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.s
-.PHONY : mcc/shape/square.cc.s
 
 mcc/timestamp.o: mcc/timestamp.cc.o
 .PHONY : mcc/timestamp.o
@@ -697,6 +721,9 @@ help:
 	@echo "... mcc/mesh/mesh.o"
 	@echo "... mcc/mesh/mesh.i"
 	@echo "... mcc/mesh/mesh.s"
+	@echo "... mcc/mesh/model.o"
+	@echo "... mcc/mesh/model.i"
+	@echo "... mcc/mesh/model.s"
 	@echo "... mcc/os_thread.o"
 	@echo "... mcc/os_thread.i"
 	@echo "... mcc/os_thread.s"
@@ -709,12 +736,12 @@ help:
 	@echo "... mcc/renderer/renderer.o"
 	@echo "... mcc/renderer/renderer.i"
 	@echo "... mcc/renderer/renderer.s"
+	@echo "... mcc/scene.o"
+	@echo "... mcc/scene.i"
+	@echo "... mcc/scene.s"
 	@echo "... mcc/shader/shader.o"
 	@echo "... mcc/shader/shader.i"
 	@echo "... mcc/shader/shader.s"
-	@echo "... mcc/shape/square.o"
-	@echo "... mcc/shape/square.i"
-	@echo "... mcc/shape/square.s"
 	@echo "... mcc/timestamp.o"
 	@echo "... mcc/timestamp.i"
 	@echo "... mcc/timestamp.s"

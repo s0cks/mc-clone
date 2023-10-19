@@ -1153,6 +1153,8 @@ Sources/CMakeFiles/minecraft.dir/mcc/window.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/camera/camera.h \
   /opt/homebrew/include/glm/ext.hpp \
   /opt/homebrew/include/glm/./ext/matrix_clip_space.hpp \

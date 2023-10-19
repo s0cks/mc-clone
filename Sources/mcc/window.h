@@ -10,9 +10,10 @@
 #include "mcc/keyboard.h"
 #include "mcc/render_loop.h"
 #include "mcc/shape/square.h"
+#include "mcc/scene.h"
 
 namespace mcc {
-  class Window {
+  class Window : public scene::WindowNode {
   public:
     static constexpr const glm::vec4 kDefaultBackgroundColor = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
   protected:
@@ -22,6 +23,7 @@ namespace mcc {
     glm::vec4 bg_color_;
 
     Window(const glm::dvec2 init_size):
+      scene::WindowNode(),
       handle_(nullptr),
       size_(init_size),
       init_size_(init_size),
@@ -31,6 +33,7 @@ namespace mcc {
     void Render();
 
     static void OnPreRender();
+    static void OnRender();
     static void OnPostRender();
     static void OnEscapePressed();
     static void SetWindow(Window* window);

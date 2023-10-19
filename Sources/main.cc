@@ -8,6 +8,7 @@
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/render_loop.h"
+#include "mcc/scene.h"
 
 int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);

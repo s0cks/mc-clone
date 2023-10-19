@@ -1174,4 +1174,6 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/shape.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/mesh.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/index.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h

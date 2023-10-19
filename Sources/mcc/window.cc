@@ -88,6 +88,11 @@ namespace mcc {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
 
+  void Window::OnRender() {
+    const auto window = Window::GetWindow();
+    scene::NodeRenderer::Render(window);
+  }
+
   void Window::OnPostRender() {
     const auto window = Window::GetWindow();
     glfwSwapBuffers(window->handle_);
@@ -100,18 +105,13 @@ namespace mcc {
     const auto loop = RenderLoop::GetRenderLoop();
     const auto escapeListener = new KeyPressedListener(KeyCode::kKeyEscape, &OnEscapePressed);
     PreRenderHandle preRender(loop->loop(), &OnPreRender);
+    RenderHandle render(loop->loop(), &OnRender);
     PostRenderHandle postRender(loop->loop(), &OnPostRender);
     
-    Square square(glm::vec2(25.0f, 25.0f), 50.0f);
     const auto font = new font::Font("arial/arial");
-    const RenderCallback onRenderSquare = [&]() {
-      font::FontRenderer renderer(font);
-      renderer.SetColor(glm::vec3(1.0f, 1.0f, 1.0f));
-      renderer.RenderText("Hello World", glm::vec2(25.0, 25.0));
 
-      square.Render();
-    };
-    RenderHandle renderSquare(loop->loop(), onRenderSquare);
+    Square square(glm::vec2(25.0f, 25.0f), 50.0f);
+    AppendChild(&square);
 
     while(!glfwWindowShouldClose(handle_)) {
       loop->Run(RenderLoop::kNoWait);

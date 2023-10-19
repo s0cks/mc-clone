@@ -251,24 +251,10 @@ Sources/CMakeFiles/minecraft.dir/mcc/engine.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/minecraft.dir/mcc/engine.cc.s"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tazz/Projects/mc-1w/Sources/mcc/engine.cc -o CMakeFiles/minecraft.dir/mcc/engine.cc.s
 
-Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
-Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o: ../Sources/mcc/shape/square.cc
-Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o"
-	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o -MF CMakeFiles/minecraft.dir/mcc/shape/square.cc.o.d -o CMakeFiles/minecraft.dir/mcc/shape/square.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.cc
-
-Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/minecraft.dir/mcc/shape/square.cc.i"
-	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.cc > CMakeFiles/minecraft.dir/mcc/shape/square.cc.i
-
-Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/minecraft.dir/mcc/shape/square.cc.s"
-	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.cc -o CMakeFiles/minecraft.dir/mcc/shape/square.cc.s
-
 Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o: ../Sources/mcc/font/font.cc
 Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o -MF CMakeFiles/minecraft.dir/mcc/font/font.cc.o.d -o CMakeFiles/minecraft.dir/mcc/font/font.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/font.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.i: cmake_force
@@ -282,7 +268,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.s: cmake_force
 Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o: ../Sources/mcc/font/glyph.cc
 Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o -MF CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o.d -o CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/glyph.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.i: cmake_force
@@ -296,7 +282,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.s: cmake_force
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o: ../Sources/mcc/font/font_mesh.cc
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o -MF CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o.d -o CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/font_mesh.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.i: cmake_force
@@ -310,7 +296,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.s: cmake_force
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o: ../Sources/mcc/font/font_renderer.cc
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o -MF CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o.d -o CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/font/font_renderer.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.i: cmake_force
@@ -321,10 +307,38 @@ Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.s"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tazz/Projects/mc-1w/Sources/mcc/font/font_renderer.cc -o CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.s
 
+Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
+Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o: ../Sources/mcc/scene.cc
+Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o -MF CMakeFiles/minecraft.dir/mcc/scene.cc.o.d -o CMakeFiles/minecraft.dir/mcc/scene.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/scene.cc
+
+Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/minecraft.dir/mcc/scene.cc.i"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tazz/Projects/mc-1w/Sources/mcc/scene.cc > CMakeFiles/minecraft.dir/mcc/scene.cc.i
+
+Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/minecraft.dir/mcc/scene.cc.s"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tazz/Projects/mc-1w/Sources/mcc/scene.cc -o CMakeFiles/minecraft.dir/mcc/scene.cc.s
+
+Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
+Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o: ../Sources/mcc/mesh/model.cc
+Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o -MF CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o.d -o CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.cc
+
+Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/minecraft.dir/mcc/mesh/model.cc.i"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.cc > CMakeFiles/minecraft.dir/mcc/mesh/model.cc.i
+
+Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/minecraft.dir/mcc/mesh/model.cc.s"
+	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.cc -o CMakeFiles/minecraft.dir/mcc/mesh/model.cc.s
+
 Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o: ../Sources/mcc/renderer/renderer.cc
 Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o -MF CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o.d -o CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/renderer/renderer.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.i: cmake_force
@@ -338,7 +352,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.s: cmake_force
 Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o: Sources/CMakeFiles/minecraft.dir/flags.make
 Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o: ../Sources/mcc/camera/camera.cc
 Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o: Sources/CMakeFiles/minecraft.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && /usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o -MF CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o.d -o CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/camera/camera.cc
 
 Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.i: cmake_force
@@ -364,11 +378,12 @@ minecraft_OBJECTS = \
 "CMakeFiles/minecraft.dir/mcc/os_thread.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/os_thread_osx.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/engine.cc.o" \
-"CMakeFiles/minecraft.dir/mcc/shape/square.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/font/font.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o" \
+"CMakeFiles/minecraft.dir/mcc/scene.cc.o" \
+"CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o" \
 "CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o"
 
@@ -388,16 +403,17 @@ Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/buffer.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/os_thread.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/os_thread_osx.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/engine.cc.o
-Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/shape/square.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/font/font.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/font/glyph.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/font/font_mesh.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/font/font_renderer.cc.o
+Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o
+Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/build.make
 Sources/libminecraft.a: Sources/CMakeFiles/minecraft.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX static library libminecraft.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX static library libminecraft.a"
 	cd /Users/tazz/Projects/mc-1w/build/Sources && $(CMAKE_COMMAND) -P CMakeFiles/minecraft.dir/cmake_clean_target.cmake
 	cd /Users/tazz/Projects/mc-1w/build/Sources && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/minecraft.dir/link.txt --verbose=$(VERBOSE)
 

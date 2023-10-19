@@ -2,13 +2,11 @@
 #define MCC_SQUARE_H
 
 #include "mcc/shape/shape.h"
+#include "mcc/scene.h"
 
 namespace mcc {
   class Square : public Shape {
   protected:
-    Shader shader_;
-    Mesh* mesh_;
-
     static inline VertexList
     GenerateVertices(const glm::vec2 pos, const float size) {
       return {
@@ -29,23 +27,10 @@ namespace mcc {
   public:
     Square(const glm::vec2 pos,
            const float size = 0.5f):
-      Shape(),
-      shader_(GetColorizedShader()),
-      mesh_(new Mesh(GenerateVertices(pos, size), GenerateIndices()))  {
+      Shape(GetColorizedShader(), new Mesh(GenerateVertices(pos, size), GenerateIndices())) {
     }
-    ~Square() override {
-      delete mesh_;
-    }
-
-    Mesh* GetMesh() const {
-      return mesh_;
-    }
-
-    Shader GetShader() const {
-      return shader_;
-    }
-
-    void Render() override;
+    ~Square() override = default;
+    DEFINE_NON_COPYABLE_TYPE(Square);
   };
 }
 
