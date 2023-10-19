@@ -75,6 +75,14 @@ namespace mcc {
     }
   public:
     void Render();
+
+    friend std::ostream& operator<<(std::ostream& stream, const Mesh& rhs) {
+      stream << "Mesh(";
+      stream << "vertices=" << rhs.vertices_ << ", ";
+      stream << "indices=" << rhs.indices_;
+      stream << ")";
+      return stream;
+    }
   };
 }
 

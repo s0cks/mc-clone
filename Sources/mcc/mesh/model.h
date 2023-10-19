@@ -7,29 +7,16 @@
 namespace mcc {
   class Model : public scene::ModelNode {
   protected:
-    Shader shader_;
-    Mesh* mesh_;
-
-    Model():
-      shader_(),
-      mesh_(nullptr) {
-    }
+    Model() = default;
     Model(const Shader& shader,
-          Mesh* mesh):
-          shader_(shader),
-          mesh_(mesh) {
+          Mesh* mesh): 
+          scene::ModelNode() {
+          SetShaderNode(new scene::ShaderNode(shader));
+          SetMeshNode(new scene::MeshNode(mesh));
     }
   public:
     ~Model() override = default;
     DEFINE_NON_COPYABLE_TYPE(Model);
-
-    Shader GetShader() const override {
-      return shader_;
-    }
-
-    Mesh* GetMesh() const override {
-      return mesh_;
-    }
   };
 }
 

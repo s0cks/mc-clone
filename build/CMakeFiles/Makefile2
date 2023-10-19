@@ -116,12 +116,12 @@ Tests/clean: Tests/CMakeFiles/minecraft-tests.dir/clean
 Tests/CMakeFiles/minecraft-tests.dir/all: Sources/CMakeFiles/minecraft.dir/all
 	$(MAKE) $(MAKESILENT) -f Tests/CMakeFiles/minecraft-tests.dir/build.make Tests/CMakeFiles/minecraft-tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f Tests/CMakeFiles/minecraft-tests.dir/build.make Tests/CMakeFiles/minecraft-tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=25,26 "Built target minecraft-tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=28,29 "Built target minecraft-tests"
 .PHONY : Tests/CMakeFiles/minecraft-tests.dir/all
 
 # Build rule for subdir invocation for target.
 Tests/CMakeFiles/minecraft-tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 24
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Tests/CMakeFiles/minecraft-tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 0
 .PHONY : Tests/CMakeFiles/minecraft-tests.dir/rule
@@ -142,12 +142,12 @@ Tests/CMakeFiles/minecraft-tests.dir/clean:
 Sources/CMakeFiles/minecraft.dir/all:
 	$(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/depend
 	$(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22 "Built target minecraft"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25 "Built target minecraft"
 .PHONY : Sources/CMakeFiles/minecraft.dir/all
 
 # Build rule for subdir invocation for target.
 Sources/CMakeFiles/minecraft.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 25
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Sources/CMakeFiles/minecraft.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 0
 .PHONY : Sources/CMakeFiles/minecraft.dir/rule
@@ -168,12 +168,12 @@ Sources/CMakeFiles/minecraft.dir/clean:
 Sources/CMakeFiles/minecraft-client.dir/all: Sources/CMakeFiles/minecraft.dir/all
 	$(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft-client.dir/build.make Sources/CMakeFiles/minecraft-client.dir/depend
 	$(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft-client.dir/build.make Sources/CMakeFiles/minecraft-client.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=23,24 "Built target minecraft-client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/tazz/Projects/mc-1w/build/CMakeFiles --progress-num=26,27 "Built target minecraft-client"
 .PHONY : Sources/CMakeFiles/minecraft-client.dir/all
 
 # Build rule for subdir invocation for target.
 Sources/CMakeFiles/minecraft-client.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 24
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 27
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Sources/CMakeFiles/minecraft-client.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tazz/Projects/mc-1w/build/CMakeFiles 0
 .PHONY : Sources/CMakeFiles/minecraft-client.dir/rule

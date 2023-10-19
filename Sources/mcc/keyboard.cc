@@ -17,6 +17,6 @@ namespace mcc {
   }
 
   KeyStateListener::KeyStateListener(const KeyCode key, const KeyState state, KeyStateCallback callback):
-    handle_(RenderLoop::GetRenderLoop()->loop(), CreateCallback(key, state, std::move(callback))) {
+    handle_(RenderLoop::GetRenderLoop()->GetLoop(), CreateCallback(key, state, std::move(callback))) {
   }
 }

@@ -13,6 +13,21 @@ namespace mcc::uv {
 #define CHECK_UV_RESULT(Severity, Result, Message) \
   LOG_IF(Severity, (Result) != UV_OK) << (Message) << ": " << uv_strerror((Result));
 
+  class Loop {
+  protected:
+    uv_loop_t* loop_;
+
+    Loop(uv_loop_t* loop):
+      loop_(loop) {
+    }
+  public:
+    virtual ~Loop() = default;
+
+    uv_loop_t* GetLoop() const {
+      return loop_;
+    }
+  };
+
   class Handle {
   protected:
     Handle() = default;

@@ -24,6 +24,8 @@ add_library(${PROJECT_NAME}
   mcc/os_thread_linux.h
   mcc/os_thread_osx.h mcc/os_thread_osx.cc
   mcc/thread_local.h
+  mcc/relaxed_atomic.h
+  mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
   mcc/engine.h mcc/engine.cc
   mcc/shape/shape.h
   mcc/shape/square.h
@@ -34,7 +36,9 @@ add_library(${PROJECT_NAME}
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
   mcc/scene.h mcc/scene.cc
   mcc/mesh/model.h mcc/mesh/model.cc
+  mcc/rotation.h mcc/rotation.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
+  mcc/overlay/overlay.h mcc/overlay/overlay.cc
   mcc/camera/camera.h mcc/camera/camera.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads

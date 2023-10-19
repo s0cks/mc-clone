@@ -12,6 +12,22 @@ namespace mcc {
     up_ = glm::normalize(glm::cross(right_, front_));
   }
 
+  static ThreadLocal<PerspectiveCamera> perspective_;
+
+  PerspectiveCamera* PerspectiveCamera::Initialize(const glm::vec2 size) {
+    const auto camera = new PerspectiveCamera(size, glm::vec3(0.0f), glm::vec3(0.0f));
+    Set(camera);
+    return camera;
+  }
+
+  PerspectiveCamera* PerspectiveCamera::Get() {
+    return perspective_.Get();
+  }
+
+  void PerspectiveCamera::Set(PerspectiveCamera* camera) {
+    perspective_.Set(camera);
+  }
+
   static ThreadLocal<OrthoCamera> ortho_;
 
   OrthoCamera* OrthoCamera::Initialize(const glm::vec2 size) {

@@ -12,15 +12,26 @@
 namespace mcc {
   class Camera {
   protected:
-    glm::mat4 view_;
-    glm::mat4 proj_;
+    glm::vec2 size_;
 
-    Camera() = default;
+    Camera(const glm::vec2 size):
+      size_(size) {
+    }
   public:
     Camera(const Camera& rhs) = default;
     virtual ~Camera() = default;
     virtual bool IsPerspective() const { return false; }
     virtual bool IsOrtho() const { return false; }
+
+    void SetSize(const glm::vec2 value) {
+      size_ = value;
+    }
+
+    glm::mat4 GetViewMatrix() const {
+      glm::mat4 view = glm::mat4(1.0f);
+      view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+      return view;
+    }
 
     Camera& operator=(const Camera& rhs) = default;
   };
@@ -41,49 +52,54 @@ namespace mcc {
     glm::vec3 up_;
     glm::vec3 right_;
     glm::vec3 world_up_;
+    float fov_;
     float yaw_;
     float pitch_;
     float speed_;
     float zoom_;
 
     void Update();
+
+    static void Set(PerspectiveCamera* camera);
   public:
-    PerspectiveCamera(const glm::vec3 pos, const glm::vec3 up):
-      Camera(),
+    PerspectiveCamera(const glm::vec2 size,
+                      const glm::vec3 pos, 
+                      const glm::vec3 up):
+      Camera(size),
       pos_(pos),
       front_(glm::vec3(0.0f, 0.0f, -1.0f)),
       up_(up),
       right_(),
+      fov_(45.0f),
       world_up_(up),
       pitch_(kDefaultPitch),
       yaw_(kDefaultYaw),
       speed_(kDefaultSpeed),
       zoom_(kDefaultZoom) {
-      Update();
-    }
-    PerspectiveCamera(const float posX, const float posY, const float posZ,
-                      const float upX, const float upY, const float upZ):
-      PerspectiveCamera({ posX, posY, posZ }, { upX, upY, upZ }) {
-    }
-    PerspectiveCamera():
-      PerspectiveCamera({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }) {
     }
     ~PerspectiveCamera() override = default;
 
-    glm::mat4 GetViewMatrix() const {
-      return glm::lookAt(pos_, pos_ + kFrontVec, kUpVec);
+    glm::mat4 GetProjectionMatrix() const {
+      return glm::perspective(glm::radians(fov_), size_[0] / size_[1], 0.1f, 100.0f);
     }
 
     bool IsPerspective() const override {
       return true;
+    }
+  public:
+    static PerspectiveCamera* Initialize(const glm::vec2 size);
+    static PerspectiveCamera* Get();
+
+    static inline glm::mat4
+    GetCurrentProjectionMatrix() {
+      return Get()->GetProjectionMatrix();
     }
   };
 
   class OrthoCamera : public Camera {
   public:
     glm::vec2 min_;
-    glm::vec2 max_;
-
+    
     static inline glm::mat4
     ComputeProjectionMatrix(glm::vec2 min, glm::vec2 max) {
       return glm::ortho(min[0], max[0], min[1], max[1]);
@@ -92,14 +108,11 @@ namespace mcc {
     static void Set(OrthoCamera* camera);
   public:
     OrthoCamera(const glm::vec2 min, const glm::vec2 max):
-      Camera(),
-      min_(min),
-      max_(max) {
+      Camera(max),
+      min_(min) {
     }
     explicit OrthoCamera(const glm::vec2 size):
-      Camera(),
-      min_(glm::vec2(0.0, 0.0)),
-      max_(size) {
+      OrthoCamera(glm::vec2(0.0f, 0.0f), size) {
     }
     ~OrthoCamera() override = default;
 
@@ -112,19 +125,15 @@ namespace mcc {
     }
 
     void SetMax(const glm::vec2 value) {
-      max_ = value;
+      size_ = value;
     }
 
     glm::vec2 GetMax() const {
-      return max_;
+      return size_;
     }
 
     glm::mat4 GetProjectionMatrix() const {
-      return ComputeProjectionMatrix(min_, max_);
-    }
-
-    inline void UpdateSize(const glm::vec2 value) {
-      SetMax(value);
+      return ComputeProjectionMatrix(min_, size_);
     }
 
     bool IsOrtho() const override {

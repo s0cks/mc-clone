@@ -35,7 +35,7 @@ namespace mcc {
     return Timestamp(milliseconds(ms));
   }
 
-  static std::string FormatTimestamp(const Timestamp ts, const std::string& format);
+  std::string FormatTimestamp(const Timestamp ts, const std::string& format);
 
   static inline std::string
   FormatTimestampReadable(const Timestamp ts) {

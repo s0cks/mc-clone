@@ -2,10 +2,13 @@
 #define MCC_SCENE_H
 
 #include <vector>
+#include <algorithm>
 #include <glog/logging.h>
 
 #include "mcc/common.h"
 #include "mcc/shader/shader.h"
+#include "mcc/rotation.h"
+#include "mcc/fixed_rate_loop.h"
 
 namespace mcc {
   class Mesh;
@@ -17,13 +20,15 @@ namespace mcc::scene {
 #define DEFINE_SCENE_NODE(Name)                           \
   DEFINE_NON_COPYABLE_TYPE(Name##Node);                   \
   public:                                                 \
-    Name##Node* As##Name##Node() { return this; }         \
+    Name##Node* As##Name##Node() override { return this; }         \
     const char* GetName() const override { return #Name; } \
     bool Visit(NodeVisitor* vis) override;
 
 #define FOR_EACH_SCENE_NODE(V) \
   V(Window)                    \
-  V(Model)
+  V(Model)                     \
+  V(Shader)                    \
+  V(Mesh)
 
 #define FORWARD_DECLARE(Name) class Name##Node;
   FOR_EACH_SCENE_NODE(FORWARD_DECLARE);
@@ -44,7 +49,9 @@ namespace mcc::scene {
 
 #define DEFINE_NODE_TYPECHECK(Name) \
     virtual Name##Node* As##Name##Node() { return nullptr; } \
-    bool Is##Name##Node() const { return As##Name##Node() != nullptr; }
+    bool Is##Name##Node() { return As##Name##Node() != nullptr; }
+    FOR_EACH_SCENE_NODE(DEFINE_NODE_TYPECHECK)
+#undef DEFINE_NODE_TYPECHECK
 
     Node* GetParent() const {
       return parent_;
@@ -114,11 +121,53 @@ namespace mcc::scene {
 
     bool VisitWindow(WindowNode* node) override;
     bool VisitModel(ModelNode* node) override;
+    bool VisitShader(ShaderNode* node) override;
+    bool VisitMesh(MeshNode* node) override;
   public:
     static inline void
     Render(Node* node) {
       NodeRenderer renderer;
       LOG_IF(ERROR, !node->Visit(&renderer)) << "failed to render " << node->GetName();
+    }
+  };
+
+  class NodeUpdater : public NodeVisitor {
+  protected:
+    FixedRateLoop* loop_;
+
+    explicit NodeUpdater(FixedRateLoop* loop):
+      NodeVisitor(),
+      loop_(loop) {
+    }
+
+    bool DoUpdates(Node* node) {
+      const auto rate = (NANOSECONDS_PER_SECOND / TICKS_PER_SECOND);
+      auto tick_time = (uint64_t)loop_->dms_ + (uint64_t)loop_->remainder_;
+      DLOG(INFO) << "tick_time: " << tick_time << "/" << rate;
+      while(tick_time >= rate) {
+        if(!node->Visit(this))
+          return false;
+        loop_->ticks_ += 1;
+        tick_time -= rate; 
+      }
+      loop_->remainder_ = std::max(tick_time, static_cast<uint64_t>(0));
+      return true;
+    }
+  public:
+    ~NodeUpdater() override = default;
+    bool VisitWindow(WindowNode* node) override;
+    bool VisitModel(ModelNode* node) override;
+    bool VisitShader(ShaderNode* node) override;
+    bool VisitMesh(MeshNode* node) override;
+
+    FixedRateLoop* GetLoop() const {
+      return loop_;
+    }
+  public:
+    static inline void
+    Update(FixedRateLoop* loop, Node* node) {
+      NodeUpdater updater(loop);
+      LOG_IF(ERROR, !updater.DoUpdates(node)) << "failed to update " << node->GetName();
     }
   };
 
@@ -130,14 +179,105 @@ namespace mcc::scene {
     DEFINE_SCENE_NODE(Window);
   };
 
-  class ModelNode : public Node {
+  class ShaderNode : public Node {
   protected:
-    ModelNode() = default;
+    Shader shader_;
+  public:
+    ShaderNode(const Shader& shader):
+      Node(),
+      shader_(shader) {
+    }
+    ~ShaderNode() override = default;
+    DEFINE_SCENE_NODE(Shader);
+
+    virtual Shader GetShader() const {
+      return shader_;
+    }
+
+    ModelNode* GetModelNode() const {
+      return GetParent()->AsModelNode();
+    }
+  };
+
+  class MeshNode : public Node {
+  protected:
+    Mesh* mesh_;
+  public:
+    MeshNode(Mesh* mesh):
+      Node(),
+      mesh_(mesh) {
+    }
+    ~MeshNode() override = default;
+    DEFINE_SCENE_NODE(Mesh);
+
+    virtual Mesh* GetMesh() const {
+      return mesh_;
+    }
+
+    ModelNode* GetModelNode() const {
+      return GetParent()->AsModelNode();
+    }
+  };
+
+  class NodeUpdater;
+  class ModelNode : public Node {
+    friend class NodeUpdater;
+  public:
+    static constexpr const glm::mat4 kIdentityMatrix = glm::mat4(1.0f);
+  protected:
+    glm::mat4 matrix_;
+    ShaderNode* shader_;
+    MeshNode* mesh_;
+    Rotation rotation_;
+
+    ModelNode():
+      Node(),
+      matrix_(kIdentityMatrix),
+      shader_(nullptr),
+      mesh_(nullptr),
+      rotation_(1.0f, glm::vec3(1.0f, 0.0f, 0.0f)) {
+    }
+
+    void SetShaderNode(ShaderNode* node) {
+      shader_ = node;
+    }
+
+    void SetMeshNode(MeshNode* node) {
+      mesh_ = node;
+    }
+
+    void Update(NodeUpdater* updater);
   public:
     ~ModelNode() override = default;
-    virtual Shader GetShader() const = 0;
-    virtual Mesh* GetMesh() const = 0;
     DEFINE_SCENE_NODE(Model);
+
+    virtual glm::mat4 GetModelMatrix() const {
+      return rotation_.Apply(matrix_);
+    }
+
+    ShaderNode* GetShaderNode() const {
+      return shader_;
+    }
+
+    Shader GetShader() const {
+      return GetShaderNode()->GetShader();
+    }
+
+    MeshNode* GetMeshNode() const {
+      return mesh_;
+    }
+
+    Mesh* GetMesh() const {
+      return GetMeshNode()->GetMesh();
+    }
+
+    bool VisitChildren(NodeVisitor* vis) const override {
+      if(!GetShaderNode()->Visit(vis))
+        return false;
+      if(!GetMeshNode()->Visit(vis))
+        return false;
+      return true;
+    }
   };
 }
 

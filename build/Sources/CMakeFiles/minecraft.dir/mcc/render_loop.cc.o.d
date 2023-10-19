@@ -887,4 +887,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/render_loop.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/mach/error.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/TargetConditionals.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/common.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/uv_utils.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/fixed_rate_loop.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/uv_utils.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h

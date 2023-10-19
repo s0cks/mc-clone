@@ -1304,6 +1304,10 @@ Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/keyboard.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/uv_utils.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/render_loop.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/fixed_rate_loop.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/shape.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/mesh.h \
@@ -1312,4 +1316,5 @@ Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/rotation.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h

@@ -1,5 +1,7 @@
 #include <glog/logging.h>
 #include <uv.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include <OpenGL/gl3.h>
 
@@ -48,7 +50,9 @@ namespace mcc {
   OnWindowResized(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     const auto orthoCamera = OrthoCamera::Get();
-    orthoCamera->UpdateSize(glm::vec2(width, height));
+    orthoCamera->SetSize(glm::vec2(width, height));
+    const auto perspectiveCamera = PerspectiveCamera::Get();
+    perspectiveCamera->SetSize(glm::vec2(width, height));
   }
 
   GLFWwindow* Window::CreateGlfwWindow(const int width, const int height) {
@@ -81,19 +85,38 @@ namespace mcc {
   }
 
   void Window::OnPreRender() {
-    DLOG(INFO) << "pre-render (1).";
+    DLOG(INFO) << "pre-render";
     const auto window = Window::GetWindow();
     const auto bg_color = window->GetBackgroundColor();
     glClearColor(bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
 
+  static font::Font* font_;
+
   void Window::OnRender() {
+    const auto loop = RenderLoop::GetRenderLoop();
     const auto window = Window::GetWindow();
+
+    const auto topLeft = glm::vec2(0, window->GetSize()[1]);
+
+    font::FontRenderer font(font_);
+    
+    static constexpr const uint64_t kCounterLength = 3 + 2 + 4;
+    
+    char fps[kCounterLength];
+    snprintf(fps, kCounterLength, "FPS: %" PRIu64, loop->fps());
+    font.RenderText(fps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - 37.0f));
+    char tps[kCounterLength];
+    snprintf(tps, kCounterLength, "TPS: %" PRIu64, loop->tps());
+    font.RenderText(tps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (37.0f * 2)));
+
     scene::NodeRenderer::Render(window);
+    loop->frames_ += 1;
   }
 
   void Window::OnPostRender() {
+    DLOG(INFO) << "post-render";
     const auto window = Window::GetWindow();
     glfwSwapBuffers(window->handle_);
     glfwPollEvents();
@@ -101,16 +124,18 @@ namespace mcc {
   
   void Window::Open() {
     handle_ = CreateGlfwWindow(size_[0], size_[1]);
-    const auto orthoCamera = OrthoCamera::Initialize({ static_cast<float>(size_[0]), static_cast<float>(size_[1]) });
+    const auto windowSize = glm::vec2(static_cast<float>(size_[0]), static_cast<float>(size_[1]));
+    const auto orthoCamera = OrthoCamera::Initialize(windowSize);
+    const auto perspectiveCamera = PerspectiveCamera::Initialize(windowSize);
     const auto loop = RenderLoop::GetRenderLoop();
     const auto escapeListener = new KeyPressedListener(KeyCode::kKeyEscape, &OnEscapePressed);
-    PreRenderHandle preRender(loop->loop(), &OnPreRender);
-    RenderHandle render(loop->loop(), &OnRender);
-    PostRenderHandle postRender(loop->loop(), &OnPostRender);
+    PreRenderHandle preRender(loop, &OnPreRender);
+    RenderHandle render(loop, &OnRender);
+    PostRenderHandle postRender(loop, &OnPostRender);
     
-    const auto font = new font::Font("arial/arial");
+    font_ = new font::Font("arial/arial");
 
-    Square square(glm::vec2(25.0f, 25.0f), 50.0f);
+    Square square(glm::vec2(0, 0.0f), 0.5f);
     AppendChild(&square);
 
     while(!glfwWindowShouldClose(handle_)) {

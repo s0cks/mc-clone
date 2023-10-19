@@ -1175,12 +1175,17 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
   ../Sources/mcc/keyboard.h \
   ../Sources/mcc/uv_utils.h \
   ../Sources/mcc/render_loop.h \
+  ../Sources/mcc/fixed_rate_loop.h \
+  ../Sources/mcc/platform.h \
+  ../Sources/mcc/timestamp.h \
+  ../Sources/mcc/relaxed_atomic.h \
   ../Sources/mcc/shape/square.h \
   ../Sources/mcc/shape/shape.h \
   ../Sources/mcc/mesh/mesh.h \
   ../Sources/mcc/mesh/index.h \
   ../Sources/mcc/mesh/vertex.h \
   ../Sources/mcc/scene.h \
+  ../Sources/mcc/rotation.h \
   ../Sources/mcc/mesh/model.h
 
 
@@ -1189,6 +1194,10 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
 ../Sources/mcc/mesh/mesh.h:
 
 ../Sources/mcc/shape/square.h:
+
+../Sources/mcc/relaxed_atomic.h:
+
+../Sources/mcc/timestamp.h:
 
 ../Sources/mcc/render_loop.h:
 
@@ -1455,6 +1464,8 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
 /opt/homebrew/include/freetype2/freetype/config/integer-types.h:
 
 /opt/homebrew/include/freetype2/freetype/freetype.h:
+
+../Sources/mcc/rotation.h:
 
 /opt/homebrew/include/freetype2/freetype/config/ftheader.h:
 
@@ -3112,6 +3123,8 @@ mcc/mcc.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_replace.h:
 
+../Sources/mcc/fixed_rate_loop.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/arm/arch.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__chrono/literals.h:
@@ -3211,6 +3224,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/_types/_rune_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/_types/_uid_t.h:
+
+../Sources/mcc/platform.h:
 
 /opt/homebrew/include/glm/detail/type_quat.hpp:
 

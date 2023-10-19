@@ -264,6 +264,30 @@ mcc/engine.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/engine.cc.s
 .PHONY : mcc/engine.cc.s
 
+mcc/fixed_rate_loop.o: mcc/fixed_rate_loop.cc.o
+.PHONY : mcc/fixed_rate_loop.o
+
+# target to build an object file
+mcc/fixed_rate_loop.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/fixed_rate_loop.cc.o
+.PHONY : mcc/fixed_rate_loop.cc.o
+
+mcc/fixed_rate_loop.i: mcc/fixed_rate_loop.cc.i
+.PHONY : mcc/fixed_rate_loop.i
+
+# target to preprocess a source file
+mcc/fixed_rate_loop.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/fixed_rate_loop.cc.i
+.PHONY : mcc/fixed_rate_loop.cc.i
+
+mcc/fixed_rate_loop.s: mcc/fixed_rate_loop.cc.s
+.PHONY : mcc/fixed_rate_loop.s
+
+# target to generate assembly for a file
+mcc/fixed_rate_loop.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/fixed_rate_loop.cc.s
+.PHONY : mcc/fixed_rate_loop.cc.s
+
 mcc/flags.o: mcc/flags.cc.o
 .PHONY : mcc/flags.o
 
@@ -528,6 +552,30 @@ mcc/os_thread_osx.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/os_thread_osx.cc.s
 .PHONY : mcc/os_thread_osx.cc.s
 
+mcc/overlay/overlay.o: mcc/overlay/overlay.cc.o
+.PHONY : mcc/overlay/overlay.o
+
+# target to build an object file
+mcc/overlay/overlay.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/overlay/overlay.cc.o
+.PHONY : mcc/overlay/overlay.cc.o
+
+mcc/overlay/overlay.i: mcc/overlay/overlay.cc.i
+.PHONY : mcc/overlay/overlay.i
+
+# target to preprocess a source file
+mcc/overlay/overlay.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/overlay/overlay.cc.i
+.PHONY : mcc/overlay/overlay.cc.i
+
+mcc/overlay/overlay.s: mcc/overlay/overlay.cc.s
+.PHONY : mcc/overlay/overlay.s
+
+# target to generate assembly for a file
+mcc/overlay/overlay.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/overlay/overlay.cc.s
+.PHONY : mcc/overlay/overlay.cc.s
+
 mcc/render_loop.o: mcc/render_loop.cc.o
 .PHONY : mcc/render_loop.o
 
@@ -575,6 +623,30 @@ mcc/renderer/renderer.s: mcc/renderer/renderer.cc.s
 mcc/renderer/renderer.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/renderer/renderer.cc.s
 .PHONY : mcc/renderer/renderer.cc.s
+
+mcc/rotation.o: mcc/rotation.cc.o
+.PHONY : mcc/rotation.o
+
+# target to build an object file
+mcc/rotation.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/rotation.cc.o
+.PHONY : mcc/rotation.cc.o
+
+mcc/rotation.i: mcc/rotation.cc.i
+.PHONY : mcc/rotation.i
+
+# target to preprocess a source file
+mcc/rotation.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/rotation.cc.i
+.PHONY : mcc/rotation.cc.i
+
+mcc/rotation.s: mcc/rotation.cc.s
+.PHONY : mcc/rotation.s
+
+# target to generate assembly for a file
+mcc/rotation.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/rotation.cc.s
+.PHONY : mcc/rotation.cc.s
 
 mcc/scene.o: mcc/scene.cc.o
 .PHONY : mcc/scene.o
@@ -697,6 +769,9 @@ help:
 	@echo "... mcc/engine.o"
 	@echo "... mcc/engine.i"
 	@echo "... mcc/engine.s"
+	@echo "... mcc/fixed_rate_loop.o"
+	@echo "... mcc/fixed_rate_loop.i"
+	@echo "... mcc/fixed_rate_loop.s"
 	@echo "... mcc/flags.o"
 	@echo "... mcc/flags.i"
 	@echo "... mcc/flags.s"
@@ -730,12 +805,18 @@ help:
 	@echo "... mcc/os_thread_osx.o"
 	@echo "... mcc/os_thread_osx.i"
 	@echo "... mcc/os_thread_osx.s"
+	@echo "... mcc/overlay/overlay.o"
+	@echo "... mcc/overlay/overlay.i"
+	@echo "... mcc/overlay/overlay.s"
 	@echo "... mcc/render_loop.o"
 	@echo "... mcc/render_loop.i"
 	@echo "... mcc/render_loop.s"
 	@echo "... mcc/renderer/renderer.o"
 	@echo "... mcc/renderer/renderer.i"
 	@echo "... mcc/renderer/renderer.s"
+	@echo "... mcc/rotation.o"
+	@echo "... mcc/rotation.i"
+	@echo "... mcc/rotation.s"
 	@echo "... mcc/scene.o"
 	@echo "... mcc/scene.i"
 	@echo "... mcc/scene.s"
