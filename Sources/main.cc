@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <glog/logging.h>
 
+#include <time.h>
+#include <cstdlib>
 #include <uv.h>
 
 #define GL_SILENCE_DEPRECATION 1
@@ -15,6 +17,7 @@
 #include "mcc/renderer/renderer.h"
 
 int main(int argc, char** argv) {
+  srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);

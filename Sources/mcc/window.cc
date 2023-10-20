@@ -149,7 +149,7 @@ namespace mcc {
       .color = glm::vec3(0.0f, 0.0f, 1.0f),
     });
 
-    Mouse::Register(kMouseButton1, kMousePressed, [&]() {
+    const auto pressedSubscription = Mouse::Register(kMouseButton1, kMousePressed, [&]() {
       Coordinator::RemoveComponent<Renderable>(e2);
       Coordinator::AddComponent(e2, Renderable {
         .shader = square.GetShader(),
@@ -157,14 +157,14 @@ namespace mcc {
         .color = glm::vec3(1.0f, 0.0f, 0.0f)
       });
     });
-    Mouse::Register(kMouseButton1, kMouseReleased, [&]() {
+    const auto releasedSubscription = Mouse::Register(kMouseButton1, kMouseReleased, [&]() {
       Coordinator::RemoveComponent<Renderable>(e2);
       Coordinator::AddComponent(e2, Renderable {
         .shader = square.GetShader(),
         .mesh = square.GetMesh(),
         .color = glm::vec3(0.0f, 0.0f, 1.0f)
       });
-  });
+    });
 
     while(!glfwWindowShouldClose(handle_)) {
       loop->Run(uv::Loop::kRunNoWait);
