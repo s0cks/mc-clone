@@ -1,9 +1,0 @@
-/Users/tazz/Projects/mc-1w/build/CMakeFiles/edit_cache.dir
-/Users/tazz/Projects/mc-1w/build/CMakeFiles/rebuild_cache.dir
-/Users/tazz/Projects/mc-1w/build/Tests/CMakeFiles/minecraft-tests.dir
-/Users/tazz/Projects/mc-1w/build/Tests/CMakeFiles/edit_cache.dir
-/Users/tazz/Projects/mc-1w/build/Tests/CMakeFiles/rebuild_cache.dir
-/Users/tazz/Projects/mc-1w/build/Sources/CMakeFiles/minecraft.dir
-/Users/tazz/Projects/mc-1w/build/Sources/CMakeFiles/minecraft-client.dir
-/Users/tazz/Projects/mc-1w/build/Sources/CMakeFiles/edit_cache.dir
-/Users/tazz/Projects/mc-1w/build/Sources/CMakeFiles/rebuild_cache.dir
