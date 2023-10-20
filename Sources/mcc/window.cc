@@ -117,10 +117,7 @@ namespace mcc {
     std::stringstream ss;
     ss << "Mouse POS: " << Mouse::GetPosition() << "; Delta: " << Mouse::GetDelta();
     font.RenderText(ss.str(), glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (kFontSize * 3)));
-
-    const auto coord = Coordinator::Get();
-    window->renderer_->Update(loop->GetDeltaMilliseconds());
-
+    
     loop->frames_ += 1;
   }
 
@@ -144,17 +141,33 @@ namespace mcc {
     
     font_ = new font::Font("arial/arial", kFontSize);
 
-    const auto coord = Coordinator::Get();
     Square square(glm::vec2(0.0f, 0.0f));
-    const auto e2 = coord->CreateEntity();
-    coord->AddComponent(e2, Renderable {
+    const auto e2 = Coordinator::CreateEntity();
+    Coordinator::AddComponent(e2, Renderable {
       .shader = square.GetShader(),
       .mesh = square.GetMesh(),
       .color = glm::vec3(0.0f, 0.0f, 1.0f),
     });
 
+    Mouse::Register(kMouseButton1, kMousePressed, [&]() {
+      Coordinator::RemoveComponent<Renderable>(e2);
+      Coordinator::AddComponent(e2, Renderable {
+        .shader = square.GetShader(),
+        .mesh = square.GetMesh(),
+        .color = glm::vec3(1.0f, 0.0f, 0.0f)
+      });
+    });
+    Mouse::Register(kMouseButton1, kMouseReleased, [&]() {
+      Coordinator::RemoveComponent<Renderable>(e2);
+      Coordinator::AddComponent(e2, Renderable {
+        .shader = square.GetShader(),
+        .mesh = square.GetMesh(),
+        .color = glm::vec3(0.0f, 0.0f, 1.0f)
+      });
+  });
+
     while(!glfwWindowShouldClose(handle_)) {
-      loop->Run(RenderLoop::kNoWait);
+      loop->Run(uv::Loop::kRunNoWait);
     }
 
     glfwTerminate();

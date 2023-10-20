@@ -10,6 +10,7 @@
 #include "mcc/render_loop.h"
 #include "mcc/scene.h"
 
+#include "mcc/engine/engine.h"
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
 
@@ -19,19 +20,19 @@ int main(int argc, char** argv) {
   ::google::ParseCommandLineFlags(&argc, &argv, true);
 
   using namespace mcc;
-
-  const auto coord = Coordinator::Initialize();
-  coord->RegisterComponent<Renderable>();
-
-  const auto renderer = coord->RegisterSystem<Renderer>();
-  {
-    Signature sig;
-    sig.set(coord->GetComponentId<Renderable>());
-    coord->SetSystemSignature<Renderer>(sig);
-  }
-
+  Entities::Initialize();
   const auto loop = uv_loop_new();
   RenderLoop::Initialize(loop);
+  Coordinator::RegisterComponent<Renderable>();
+
+  const auto engine = new Engine(loop);
+  const auto renderer = Systems::Register<Renderer>();
+  engine->Register(renderer);
+  {
+    Signature sig;
+    sig.set(Coordinator::GetComponentId<Renderable>());
+    Systems::SetSignature<Renderer>(sig);
+  }
   font::Initialize();
 
   auto window = Window::Initialize(renderer, { 512, 512 });

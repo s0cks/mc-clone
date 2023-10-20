@@ -1148,4 +1148,5 @@ Sources/CMakeFiles/minecraft.dir/mcc/overlay/overlay.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/TargetConditionals.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/tick.h

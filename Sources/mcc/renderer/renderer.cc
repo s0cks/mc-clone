@@ -3,11 +3,10 @@
 #include "mcc/camera/camera.h"
 
 namespace mcc {
-  void Renderer::Update(const float dt) {
+  void Renderer::OnTick(Tick& tick) {
     const auto camera = PerspectiveCamera::Get();
-    const auto coord = Coordinator::Get();
     for(const auto e : entities_) {
-      const auto& renderable = coord->GetComponent<Renderable>(e);
+      const auto& renderable = Coordinator::GetComponent<Renderable>(e);
       glm::mat4 model = glm::mat4(1.0f);
       glm::mat4 view = camera->GetViewMatrix();
       glm::mat4 projection = camera->GetProjectionMatrix();

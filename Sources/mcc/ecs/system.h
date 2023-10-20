@@ -3,10 +3,11 @@
 
 #include <set>
 #include "mcc/ecs/entity.h"
+#include "mcc/engine/tick.h"
 
 namespace mcc {
-  class SystemManager;
   class System {
+    friend class Systems;
     friend class SystemManager;
   protected:
     std::set<Entity> entities_;
@@ -15,57 +16,40 @@ namespace mcc {
     virtual ~System() = default;
   };
 
-  class TickSystem : public System {
+  class TickSystem : public System, public TickListener  {
   public:
     TickSystem() = default;
     ~TickSystem() override = default;
-    virtual void Update(const uint64_t dts) = 0;
   };
 
-  class Coordinator;
-  class SystemManager {
-    friend class Coordinator;
-  protected:
-    std::unordered_map<const char*, Signature> signatures_;
-    std::unordered_map<const char*, System*> systems_;
-
-    SystemManager() = default;
-  public:
-    virtual ~SystemManager() = default;
+  class Systems {
+    DEFINE_NON_INSTANTIABLE_TYPE(Systems);
+  private:
+    static void SetSignature(const char* type, const Signature& sig);
+    static void Register(const char* type, System* sys);
 
     template<typename T>
-    T* RegisterSystem() {
-      const char* typeName = typeid(T).name();
+    static inline const char*
+    TypeId() {
+      return typeid(T).name();
+    }
+  public:
+    template<typename T>
+    static inline T*
+    Register() {
       const auto system = new T();
-      systems_.insert({ typeName, system });
+      Register(TypeId<T>(), system);
       return system;
     }
 
     template<typename T>
-    void SetSignature(Signature sig) {
-      const char* typeName = typeid(T).name();
-      signatures_.insert({ typeName, sig });
+    static inline void
+    SetSignature(Signature sig) {
+      return SetSignature(TypeId<T>(), sig);
     }
 
-    void OnDestroyed(const Entity e) {
-      for(const auto& pair : systems_) {
-        const auto& system = pair.second;
-        system->entities_.erase(e);
-      }
-    }
-
-    void OnSignatureChanged(const Entity e, Signature sig) {
-      for(const auto& pair : systems_) {
-        const auto& type = pair.first;
-        const auto& system = pair.second;
-        const auto& sysSig = signatures_[type];
-        if((sig & sysSig) == sysSig) {
-          system->entities_.insert(e);
-        } else {
-          system->entities_.erase(e);
-        }
-      }
-    }
+    static void OnDestroyed(const Entity e);
+    static void OnSignatureChanged(const Entity e, Signature sig);
   };
 }
 

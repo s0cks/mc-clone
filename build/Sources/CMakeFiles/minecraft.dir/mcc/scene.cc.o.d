@@ -1148,6 +1148,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/scene.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/tick.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/mesh.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/index.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/vertex.h \

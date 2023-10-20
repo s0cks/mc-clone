@@ -1,10 +1,12 @@
 #ifndef MCC_FIXED_RATE_LOOP_H
 #define MCC_FIXED_RATE_LOOP_H
 
+#include <vector>
 #include "mcc/uv_utils.h"
 #include "mcc/platform.h"
 #include "mcc/timestamp.h"
 #include "mcc/relaxed_atomic.h"
+#include "mcc/engine/tick.h"
 
 namespace mcc {
 #define NANOSECONDS_PER_SECOND (1000000000)
@@ -17,16 +19,8 @@ namespace mcc {
   }
 
   class FixedRateLoop;
-  class TickListener {
-    friend class FixedRateLoop;
-  protected:
-    TickListener() = default;
-    virtual void OnTick() = 0;
-  public:
-    virtual ~TickListener() = default;
-  };
 
-  class FixedRateLoop : public uv::Loop, public TickListener {
+  class FixedRateLoop : public uv::Loop {
     friend class scene::NodeUpdater;
     friend class Window; //TODO: revoke
   protected:
@@ -54,7 +48,7 @@ namespace mcc {
       handle_(loop, [this]() { OnTick(); }) {
     }
 
-    void OnTick() override;
+    void OnTick();
   public:
     virtual ~FixedRateLoop() = default;
 

@@ -1179,6 +1179,7 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
   ../Sources/mcc/platform.h \
   ../Sources/mcc/timestamp.h \
   ../Sources/mcc/relaxed_atomic.h \
+  ../Sources/mcc/engine/tick.h \
   ../Sources/mcc/shape/square.h \
   ../Sources/mcc/shape/shape.h \
   ../Sources/mcc/mesh/mesh.h \
@@ -1194,12 +1195,16 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque \
   ../Sources/mcc/renderer/renderable.h \
+  ../Sources/mcc/engine/engine.h \
   ../Sources/mcc/ecs/coordinator.h \
   ../Sources/mcc/ecs/component.h \
   ../Sources/mcc/ecs/event.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list \
+  ../Sources/mcc/murmur.h
 
+
+../Sources/mcc/murmur.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any:
 
@@ -1214,6 +1219,8 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
 ../Sources/mcc/mesh/mesh.h:
 
 ../Sources/mcc/shape/square.h:
+
+../Sources/mcc/engine/tick.h:
 
 ../Sources/mcc/relaxed_atomic.h:
 
@@ -1920,6 +1927,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_merge.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_next_permutation.h:
+
+../Sources/mcc/engine/engine.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_lower_bound.h:
 

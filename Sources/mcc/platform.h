@@ -21,8 +21,37 @@
 #define OS_IS_WINDOWS 1
 #endif
 
-namespace mcc {
+namespace mcc { //TODO: cleanup this file
+ static constexpr int kInt8SizeLog2 = 0;
+ static constexpr int kInt8Size = 1 << kInt8SizeLog2;
+ static constexpr int kInt16SizeLog2 = 1;
+ static constexpr int kInt16Size = 1 << kInt16SizeLog2;
+ static constexpr int kInt32SizeLog2 = 2;
+ static constexpr int kInt32Size = 1 << kInt32SizeLog2;
+ static constexpr int kInt64SizeLog2 = 3;
+ static constexpr int kInt64Size = 1 << kInt64SizeLog2;
 
+ static constexpr int kBitsPerByteLog2 = 3;
+ static constexpr int kBitsPerByte = 1 << kBitsPerByteLog2;
+ static constexpr int kBitsPerInt8 = kInt8Size * kBitsPerByte;
+ static constexpr int kBitsPerInt16 = kInt16Size * kBitsPerByte;
+ static constexpr int kBitsPerInt32 = kInt32Size * kBitsPerByte;
+ static constexpr int kBitsPerInt64 = kInt64Size * kBitsPerByte;
+
+ typedef intptr_t word;
+ typedef uintptr_t uword;
+
+#ifdef ARCHITECTURE_IS_X32
+ static constexpr int kWordSizeLog2 = kInt32SizeLog2;
+#else
+ static constexpr int kWordSizeLog2 = kInt64SizeLog2;
+#endif
+ static constexpr int64_t kWordSize = 1 << kWordSizeLog2;
+
+ static constexpr int kBitsPerWordLog2 = kWordSizeLog2 + kBitsPerByteLog2;
+ static constexpr int kBitsPerWord = 1 << kBitsPerWordLog2;
+
+ static constexpr uword kUWordOne = 1U;
 }
 
 #endif //MCC_PLATFORM_H

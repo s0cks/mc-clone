@@ -1,6 +1,8 @@
 #include "mcc/fixed_rate_loop.h"
 #include "mcc/window.h"
 
+#include "mcc/engine/tick.h"
+
 namespace mcc {
   void FixedRateLoop::OnTick() {
     const auto now = uv_hrtime();
@@ -13,8 +15,5 @@ namespace mcc {
       ticks_ = 0;
       last_second_ = now;
     }
-    
-    const auto window = Window::GetWindow();
-    scene::NodeUpdater::Update(this, window);
   }
 }

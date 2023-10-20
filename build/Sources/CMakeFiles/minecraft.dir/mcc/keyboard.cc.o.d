@@ -1149,6 +1149,7 @@ Sources/CMakeFiles/minecraft.dir/mcc/keyboard.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/tick.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/shape.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/mesh.h \

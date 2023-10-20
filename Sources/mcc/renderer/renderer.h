@@ -6,11 +6,11 @@
 #include "mcc/renderer/renderable.h"
 
 namespace mcc {
-  class Renderer : public System {
+  class Renderer : public TickSystem {
   public:
     Renderer() = default;
     ~Renderer() override = default;
-    void Update(const float dt);
+    void OnTick(Tick& tick) override;
   };
 }
 

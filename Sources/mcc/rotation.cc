@@ -4,7 +4,7 @@
 
 namespace mcc {
   void Rotation::Update(FixedRateLoop* updater) {
-    if(Mouse::IsPressed(0))
+    if(Mouse::IsPressed(kMouseButton1))
       return;
     angle_ += velocity_;
   }

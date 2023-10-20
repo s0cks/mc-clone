@@ -68,6 +68,53 @@ namespace mcc {
     return new ComponentListTemplate<T>();
   }
 
+  class Components {
+    DEFINE_NON_INSTANTIABLE_TYPE(Components);
+  private:
+    template<typename T>
+    static inline const char*
+    TypeId() {
+      return typeid(T).name();
+    }
+
+    static void Register(const char* name, ComponentList* list);
+    static ComponentList* GetComponentList(const char* name);
+    static ComponentId GetComponentId(const char* name);
+  public:
+    template<typename T>
+    static inline void Register() {
+      return Register(TypeId<T>(), ComponentList::New<T>());
+    }
+
+    static void OnDestroyed(const Entity e);
+
+    template<typename T>
+    static inline T& GetComponent(const Entity e) {
+      return GetComponentListForType<T>()->GetData(e);
+    }
+
+    template<typename T>
+    static inline void RemoveComponent(const Entity e) {
+      return GetComponentListForType<T>()->RemoveData(e);
+    }
+
+    template<typename T>
+    static inline void AddComponent(const Entity e, T component) {
+      return GetComponentListForType<T>()->InsertData(e, component);
+    }
+
+    template<typename T>
+    static inline ComponentId GetComponentIdForType() {
+      return GetComponentId(TypeId<T>());
+    }
+
+    template<typename T>
+    static inline ComponentListTemplate<T>* 
+    GetComponentListForType() {
+      return reinterpret_cast<ComponentListTemplate<T>*>(GetComponentList(TypeId<T>()));
+    }
+  };
+
   class Coordinator;
   class ComponentManager {
     friend class Coordinator;
@@ -77,50 +124,8 @@ namespace mcc {
     ComponentId next_id_;
 
     ComponentManager() = default;
-
-    template<typename T>
-    inline ComponentListTemplate<T>* GetComponentList() {
-      const char* typeName = typeid(T).name();
-      return reinterpret_cast<ComponentListTemplate<T>*>(components_[typeName]);
-    }
   public:
     virtual ~ComponentManager() = default;
-
-    void OnDestroyed(const Entity e) {
-      for(const auto pair : components_) {
-        const auto component = pair.second;
-        component->OnDestroyed(e);
-      }
-    }
-
-    template<typename T>
-    T& GetComponent(const Entity e) {
-      return GetComponentList<T>()->GetData(e);
-    }
-
-    template<typename T>
-    void RemoveComponent(const Entity e) {
-      return GetComponentList<T>()->RemoveData(e);
-    }
-
-    template<typename T>
-    void AddComponent(const Entity e, T component) {
-      return GetComponentList<T>()->InsertData(e, component);
-    }
-
-    template<typename T>
-    ComponentId GetComponentId() {
-      const char* typeName = typeid(T).name();
-      return types_[typeName];
-    }
-
-    template<typename T>
-    void RegisterComponent() {
-      const char* typeName = typeid(T).name();
-      types_.insert({ typeName, next_id_ });
-      components_.insert({ typeName, ComponentList::New<T>() });
-      next_id_++;
-    }
   };
 }
 

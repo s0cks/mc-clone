@@ -1145,8 +1145,14 @@ Sources/CMakeFiles/minecraft.dir/mcc/rotation.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/tick.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/common.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/mouse.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mouse.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/bitfield.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/event.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/murmur.h

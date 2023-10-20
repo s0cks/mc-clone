@@ -7,9 +7,16 @@
 #include <algorithm>
 #include <functional>
 #include <unordered_map>
+#include "mcc/common.h"
+#include "mcc/murmur.h"
 
 namespace mcc {
   typedef uint64_t EventId;
+
+  static inline EventId
+  GetEventId(const char* value) {
+    return Murmur(value, strlen(value));
+  }
 
   class Event {
   protected:
@@ -39,31 +46,17 @@ namespace mcc {
 
   typedef std::function<void(Event&)> EventListener;
 
-  class EventManager {
-    friend class Coordinator;
-  protected:
-    std::unordered_map<EventId, std::list<EventListener>> listeners_;
-
-    EventManager():
-      listeners_() {
-    }
+  class Events {
+    DEFINE_NON_INSTANTIABLE_TYPE(Events);
+  private:
   public:
-    virtual ~EventManager() = default;
-
-    void Register(const EventId event, EventListener listener) {
-      listeners_[event].push_back(listener);
-    }
-
-    void Send(const EventId event) {
+    static void Register(const EventId event, EventListener listener);
+    static void Send(Event& event);
+    
+    static inline void
+    Send(const EventId event) {
       Event e(event);
       return Send(e);
-    }
-
-    void Send(Event& event) {
-      const auto listeners = listeners_[event.GetId()];
-      std::for_each(listeners.begin(), listeners.end(), [&event](const EventListener& listener) {
-        listener(event);
-      });
     }
   };
 }

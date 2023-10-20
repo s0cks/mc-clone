@@ -1174,6 +1174,7 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/platform.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/timestamp.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/relaxed_atomic.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/tick.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/square.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shape/shape.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/mesh.h \
@@ -1189,8 +1190,10 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque \
   /Users/tazz/Projects/mc-1w/Sources/mcc/renderer/renderable.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/engine/engine.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/coordinator.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/component.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/event.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/murmur.h
