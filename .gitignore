@@ -1,0 +1,13 @@
+# Ignore Everything
+/*
+/*/
+
+# Except These
+!/build/
+!/cmake/
+!/resources/
+!/Sources/
+!/Tests/
+!/.gitignore
+!/.gitattributes
+!/*.md
