@@ -1158,4 +1158,12 @@ Sources/CMakeFiles/minecraft.dir/mcc/fixed_rate_loop.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/rotation.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mesh/model.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/renderer/renderer.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/system.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/set \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__tree \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/entity.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/renderer/renderable.h

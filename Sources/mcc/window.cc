@@ -16,13 +16,16 @@
 #include "mcc/font/font_renderer.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/shape/square.h"
+#include "mcc/mouse.h"
+
+#include "mcc/ecs/coordinator.h"
 
 namespace mcc {
   static ThreadLocal<Window> window_;
 
-  Window* Window::Initialize(const glm::dvec2 init_size) {
+  Window* Window::Initialize(Renderer* renderer,  glm::dvec2 init_size) {
     //TODO: check for open window
-    const auto instance = new Window(init_size);
+    const auto instance = new Window(renderer, init_size);
     SetWindow(instance);
     return instance;
   }
@@ -85,13 +88,13 @@ namespace mcc {
   }
 
   void Window::OnPreRender() {
-    DLOG(INFO) << "pre-render";
     const auto window = Window::GetWindow();
     const auto bg_color = window->GetBackgroundColor();
     glClearColor(bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
 
+  static constexpr const font::FontSize kFontSize = 24;
   static font::Font* font_;
 
   void Window::OnRender() {
@@ -106,17 +109,22 @@ namespace mcc {
     
     char fps[kCounterLength];
     snprintf(fps, kCounterLength, "FPS: %" PRIu64, loop->fps());
-    font.RenderText(fps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - 37.0f));
+    font.RenderText(fps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - kFontSize));
     char tps[kCounterLength];
     snprintf(tps, kCounterLength, "TPS: %" PRIu64, loop->tps());
-    font.RenderText(tps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (37.0f * 2)));
+    font.RenderText(tps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (kFontSize * 2)));
 
-    scene::NodeRenderer::Render(window);
+    std::stringstream ss;
+    ss << "Mouse POS: " << Mouse::GetPosition() << "; Delta: " << Mouse::GetDelta();
+    font.RenderText(ss.str(), glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (kFontSize * 3)));
+
+    const auto coord = Coordinator::Get();
+    window->renderer_->Update(loop->GetDeltaMilliseconds());
+
     loop->frames_ += 1;
   }
 
   void Window::OnPostRender() {
-    DLOG(INFO) << "post-render";
     const auto window = Window::GetWindow();
     glfwSwapBuffers(window->handle_);
     glfwPollEvents();
@@ -124,6 +132,7 @@ namespace mcc {
   
   void Window::Open() {
     handle_ = CreateGlfwWindow(size_[0], size_[1]);
+    Mouse::Initialize(handle_);
     const auto windowSize = glm::vec2(static_cast<float>(size_[0]), static_cast<float>(size_[1]));
     const auto orthoCamera = OrthoCamera::Initialize(windowSize);
     const auto perspectiveCamera = PerspectiveCamera::Initialize(windowSize);
@@ -133,10 +142,16 @@ namespace mcc {
     RenderHandle render(loop, &OnRender);
     PostRenderHandle postRender(loop, &OnPostRender);
     
-    font_ = new font::Font("arial/arial");
+    font_ = new font::Font("arial/arial", kFontSize);
 
-    Square square(glm::vec2(0, 0.0f), 0.5f);
-    AppendChild(&square);
+    const auto coord = Coordinator::Get();
+    Square square(glm::vec2(0.0f, 0.0f));
+    const auto e2 = coord->CreateEntity();
+    coord->AddComponent(e2, Renderable {
+      .shader = square.GetShader(),
+      .mesh = square.GetMesh(),
+      .color = glm::vec3(0.0f, 0.0f, 1.0f),
+    });
 
     while(!glfwWindowShouldClose(handle_)) {
       loop->Run(RenderLoop::kNoWait);

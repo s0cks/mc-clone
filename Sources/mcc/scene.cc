@@ -13,26 +13,26 @@ namespace mcc::scene {
   }
 
   bool NodeRenderer::VisitShader(ShaderNode* node) {
-    DLOG(INFO) << "rendering " << node->GetName() << "....";
+    VLOG(3) << "rendering " << node->GetName() << "....";
     const auto shader = node->GetShader();
     shader.ApplyShader();
     return true;
   }
 
   bool NodeRenderer::VisitMesh(MeshNode* node) {
-    DLOG(INFO) << "rendering " << node->GetName() << "....";
+    VLOG(3) << "rendering " << node->GetName() << "....";
     const auto mesh = node->GetMesh();
     mesh->Render();
     return true;
   }
 
   bool NodeRenderer::VisitWindow(WindowNode* node) {
-    DLOG(INFO) << "rendering " << node->GetName() << "....";
-    return node->VisitChildren(this);
+    VLOG(3) << "rendering " << node->GetName() << "....";
+    return true;
   }
 
   bool NodeRenderer::VisitModel(ModelNode* node) {
-    DLOG(INFO) << "rendering " << node->GetName() << "....";
+    VLOG(3) << "rendering " << node->GetName() << "....";
     if(!node->GetShaderNode()->Visit(this)) {
       DLOG(INFO) << "couldn't render " << node->GetShaderNode()->GetName();
       return false;
@@ -55,12 +55,12 @@ namespace mcc::scene {
   }
 
   bool NodeUpdater::VisitWindow(WindowNode* node) {
-    DLOG(INFO) << "updating " << node->GetName();
+    VLOG(3) << "updating " << node->GetName();
     return node->VisitChildren(this);
   }
 
   bool NodeUpdater::VisitModel(ModelNode* node) {
-    DLOG(INFO) << "updating " << node->GetName();
+    VLOG(3) << "updating " << node->GetName();
     node->Update(this);
     return true;
   }

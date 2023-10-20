@@ -17,6 +17,11 @@ namespace mcc {
   operator<<(std::ostream& stream, const glm::vec3 rhs) {
     return stream << "(" << rhs[0] << ", " << rhs[1] << ", " << rhs[2] << ")";
   }
+
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const glm::vec2 rhs) {
+    return stream << "(" << rhs[0] << ", " << rhs[1] << ")";
+  }
 }
 
 #endif //MCC_GFX_H

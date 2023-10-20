@@ -34,7 +34,6 @@ namespace mcc {
     void Update(FixedRateLoop* updater) override;
 
     glm::mat4 Apply(const glm::mat4 matrix) const override {
-      DLOG(INFO) << "angle: " << angle_;
       return glm::rotate(matrix, glm::radians(-angle_), axis_);
     }
   };

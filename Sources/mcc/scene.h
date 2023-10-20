@@ -143,7 +143,7 @@ namespace mcc::scene {
     bool DoUpdates(Node* node) {
       const auto rate = (NANOSECONDS_PER_SECOND / TICKS_PER_SECOND);
       auto tick_time = (uint64_t)loop_->dms_ + (uint64_t)loop_->remainder_;
-      DLOG(INFO) << "tick_time: " << tick_time << "/" << rate;
+      VLOG(3) << "tick_time: " << tick_time << "/" << rate;
       while(tick_time >= rate) {
         if(!node->Visit(this))
           return false;

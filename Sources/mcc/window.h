@@ -11,6 +11,7 @@
 #include "mcc/render_loop.h"
 #include "mcc/shape/square.h"
 #include "mcc/scene.h"
+#include "mcc/renderer/renderer.h"
 
 namespace mcc {
   class Window : public scene::WindowNode {
@@ -21,9 +22,11 @@ namespace mcc {
     glm::dvec2 init_size_;
     glm::dvec2 size_;
     glm::vec4 bg_color_;
+    Renderer* renderer_;
 
-    Window(const glm::dvec2 init_size):
+    Window(Renderer* renderer, const glm::dvec2 init_size):
       scene::WindowNode(),
+      renderer_(renderer),
       handle_(nullptr),
       size_(init_size),
       init_size_(init_size),
@@ -60,7 +63,7 @@ namespace mcc {
 
     void Open();
   public:
-    static Window* Initialize(const glm::dvec2 init_size);
+    static Window* Initialize(Renderer* renderer, const glm::dvec2 init_size);
     static Window* GetWindow();
   };
 }

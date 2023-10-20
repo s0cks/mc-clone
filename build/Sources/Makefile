@@ -240,6 +240,126 @@ mcc/clock.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/clock.cc.s
 .PHONY : mcc/clock.cc.s
 
+mcc/ecs/component.o: mcc/ecs/component.cc.o
+.PHONY : mcc/ecs/component.o
+
+# target to build an object file
+mcc/ecs/component.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/component.cc.o
+.PHONY : mcc/ecs/component.cc.o
+
+mcc/ecs/component.i: mcc/ecs/component.cc.i
+.PHONY : mcc/ecs/component.i
+
+# target to preprocess a source file
+mcc/ecs/component.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/component.cc.i
+.PHONY : mcc/ecs/component.cc.i
+
+mcc/ecs/component.s: mcc/ecs/component.cc.s
+.PHONY : mcc/ecs/component.s
+
+# target to generate assembly for a file
+mcc/ecs/component.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/component.cc.s
+.PHONY : mcc/ecs/component.cc.s
+
+mcc/ecs/coordinator.o: mcc/ecs/coordinator.cc.o
+.PHONY : mcc/ecs/coordinator.o
+
+# target to build an object file
+mcc/ecs/coordinator.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/coordinator.cc.o
+.PHONY : mcc/ecs/coordinator.cc.o
+
+mcc/ecs/coordinator.i: mcc/ecs/coordinator.cc.i
+.PHONY : mcc/ecs/coordinator.i
+
+# target to preprocess a source file
+mcc/ecs/coordinator.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/coordinator.cc.i
+.PHONY : mcc/ecs/coordinator.cc.i
+
+mcc/ecs/coordinator.s: mcc/ecs/coordinator.cc.s
+.PHONY : mcc/ecs/coordinator.s
+
+# target to generate assembly for a file
+mcc/ecs/coordinator.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/coordinator.cc.s
+.PHONY : mcc/ecs/coordinator.cc.s
+
+mcc/ecs/entity.o: mcc/ecs/entity.cc.o
+.PHONY : mcc/ecs/entity.o
+
+# target to build an object file
+mcc/ecs/entity.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/entity.cc.o
+.PHONY : mcc/ecs/entity.cc.o
+
+mcc/ecs/entity.i: mcc/ecs/entity.cc.i
+.PHONY : mcc/ecs/entity.i
+
+# target to preprocess a source file
+mcc/ecs/entity.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/entity.cc.i
+.PHONY : mcc/ecs/entity.cc.i
+
+mcc/ecs/entity.s: mcc/ecs/entity.cc.s
+.PHONY : mcc/ecs/entity.s
+
+# target to generate assembly for a file
+mcc/ecs/entity.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/entity.cc.s
+.PHONY : mcc/ecs/entity.cc.s
+
+mcc/ecs/event.o: mcc/ecs/event.cc.o
+.PHONY : mcc/ecs/event.o
+
+# target to build an object file
+mcc/ecs/event.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/event.cc.o
+.PHONY : mcc/ecs/event.cc.o
+
+mcc/ecs/event.i: mcc/ecs/event.cc.i
+.PHONY : mcc/ecs/event.i
+
+# target to preprocess a source file
+mcc/ecs/event.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/event.cc.i
+.PHONY : mcc/ecs/event.cc.i
+
+mcc/ecs/event.s: mcc/ecs/event.cc.s
+.PHONY : mcc/ecs/event.s
+
+# target to generate assembly for a file
+mcc/ecs/event.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/event.cc.s
+.PHONY : mcc/ecs/event.cc.s
+
+mcc/ecs/system.o: mcc/ecs/system.cc.o
+.PHONY : mcc/ecs/system.o
+
+# target to build an object file
+mcc/ecs/system.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/system.cc.o
+.PHONY : mcc/ecs/system.cc.o
+
+mcc/ecs/system.i: mcc/ecs/system.cc.i
+.PHONY : mcc/ecs/system.i
+
+# target to preprocess a source file
+mcc/ecs/system.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/system.cc.i
+.PHONY : mcc/ecs/system.cc.i
+
+mcc/ecs/system.s: mcc/ecs/system.cc.s
+.PHONY : mcc/ecs/system.s
+
+# target to generate assembly for a file
+mcc/ecs/system.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/ecs/system.cc.s
+.PHONY : mcc/ecs/system.cc.s
+
 mcc/engine.o: mcc/engine.cc.o
 .PHONY : mcc/engine.o
 
@@ -504,6 +624,30 @@ mcc/mesh/model.cc.s:
 	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mesh/model.cc.s
 .PHONY : mcc/mesh/model.cc.s
 
+mcc/mouse.o: mcc/mouse.cc.o
+.PHONY : mcc/mouse.o
+
+# target to build an object file
+mcc/mouse.cc.o:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mouse.cc.o
+.PHONY : mcc/mouse.cc.o
+
+mcc/mouse.i: mcc/mouse.cc.i
+.PHONY : mcc/mouse.i
+
+# target to preprocess a source file
+mcc/mouse.cc.i:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mouse.cc.i
+.PHONY : mcc/mouse.cc.i
+
+mcc/mouse.s: mcc/mouse.cc.s
+.PHONY : mcc/mouse.s
+
+# target to generate assembly for a file
+mcc/mouse.cc.s:
+	cd /Users/tazz/Projects/mc-1w/build && $(MAKE) $(MAKESILENT) -f Sources/CMakeFiles/minecraft.dir/build.make Sources/CMakeFiles/minecraft.dir/mcc/mouse.cc.s
+.PHONY : mcc/mouse.cc.s
+
 mcc/os_thread.o: mcc/os_thread.cc.o
 .PHONY : mcc/os_thread.o
 
@@ -766,6 +910,21 @@ help:
 	@echo "... mcc/clock.o"
 	@echo "... mcc/clock.i"
 	@echo "... mcc/clock.s"
+	@echo "... mcc/ecs/component.o"
+	@echo "... mcc/ecs/component.i"
+	@echo "... mcc/ecs/component.s"
+	@echo "... mcc/ecs/coordinator.o"
+	@echo "... mcc/ecs/coordinator.i"
+	@echo "... mcc/ecs/coordinator.s"
+	@echo "... mcc/ecs/entity.o"
+	@echo "... mcc/ecs/entity.i"
+	@echo "... mcc/ecs/entity.s"
+	@echo "... mcc/ecs/event.o"
+	@echo "... mcc/ecs/event.i"
+	@echo "... mcc/ecs/event.s"
+	@echo "... mcc/ecs/system.o"
+	@echo "... mcc/ecs/system.i"
+	@echo "... mcc/ecs/system.s"
 	@echo "... mcc/engine.o"
 	@echo "... mcc/engine.i"
 	@echo "... mcc/engine.s"
@@ -799,6 +958,9 @@ help:
 	@echo "... mcc/mesh/model.o"
 	@echo "... mcc/mesh/model.i"
 	@echo "... mcc/mesh/model.s"
+	@echo "... mcc/mouse.o"
+	@echo "... mcc/mouse.i"
+	@echo "... mcc/mouse.s"
 	@echo "... mcc/os_thread.o"
 	@echo "... mcc/os_thread.i"
 	@echo "... mcc/os_thread.s"

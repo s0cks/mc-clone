@@ -1186,8 +1186,28 @@ Sources/CMakeFiles/minecraft-client.dir/main.cc.o: ../Sources/main.cc \
   ../Sources/mcc/mesh/vertex.h \
   ../Sources/mcc/scene.h \
   ../Sources/mcc/rotation.h \
-  ../Sources/mcc/mesh/model.h
+  ../Sources/mcc/mesh/model.h \
+  ../Sources/mcc/renderer/renderer.h \
+  ../Sources/mcc/ecs/system.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/set \
+  ../Sources/mcc/ecs/entity.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque \
+  ../Sources/mcc/renderer/renderable.h \
+  ../Sources/mcc/ecs/coordinator.h \
+  ../Sources/mcc/ecs/component.h \
+  ../Sources/mcc/ecs/event.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list
 
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/any:
+
+../Sources/mcc/ecs/event.h:
+
+../Sources/mcc/ecs/coordinator.h:
+
+../Sources/mcc/ecs/entity.h:
 
 ../Sources/mcc/mesh/model.h:
 
@@ -1619,6 +1639,8 @@ mcc/mcc.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/socket.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/queue:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__type_traits/is_copy_assignable.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/dirent.h:
@@ -1820,6 +1842,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_replace_copy_if.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/ranges_search_n.h:
+
+../Sources/mcc/renderer/renderer.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/xlocale/_inttypes.h:
 
@@ -2065,6 +2089,8 @@ mcc/mcc.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/count_if.h:
 
+../Sources/mcc/ecs/component.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/mach/arm/exception.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/min_element.h:
@@ -2271,6 +2297,8 @@ mcc/mcc.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__utility/transaction.h:
 
+../Sources/mcc/renderer/renderable.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__utility/to_underlying.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__functional/bind.h:
@@ -2308,6 +2336,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/new:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__iterator/permutable.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/deque:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__memory/allocator.h:
 
@@ -2413,6 +2443,8 @@ mcc/mcc.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__functional/identity.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/set:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__format/enable_insertable.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__algorithm/is_sorted.h:
@@ -2438,6 +2470,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__concepts/destructible.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/termios.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/list:
 
 /opt/homebrew/include/glm/fwd.hpp:
 
@@ -3378,6 +3412,8 @@ mcc/mcc.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/c++/v1/__concepts/common_with.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/AvailabilityVersions.h:
+
+../Sources/mcc/ecs/system.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/sys/_types/_posix_vdisable.h:
 

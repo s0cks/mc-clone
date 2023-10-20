@@ -1148,4 +1148,5 @@ Sources/CMakeFiles/minecraft.dir/mcc/rotation.cc.o: \
   /Users/tazz/Projects/mc-1w/Sources/mcc/scene.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/common.h \
   /Users/tazz/Projects/mc-1w/Sources/mcc/shader/shader.h \
-  /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h
+  /Users/tazz/Projects/mc-1w/Sources/mcc/buffer.h \
+  /Users/tazz/Projects/mc-1w/Sources/mcc/mouse.h

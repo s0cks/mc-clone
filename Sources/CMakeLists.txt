@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}
   mcc/thread_local.h
   mcc/relaxed_atomic.h
   mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
+  mcc/mouse.h mcc/mouse.cc
   mcc/engine.h mcc/engine.cc
   mcc/shape/shape.h
   mcc/shape/square.h
@@ -37,9 +38,16 @@ add_library(${PROJECT_NAME}
   mcc/scene.h mcc/scene.cc
   mcc/mesh/model.h mcc/mesh/model.cc
   mcc/rotation.h mcc/rotation.cc
+  mcc/renderer/renderable.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/overlay/overlay.h mcc/overlay/overlay.cc
-  mcc/camera/camera.h mcc/camera/camera.cc)
+  mcc/camera/camera.h mcc/camera/camera.cc
+  mcc/ecs/ecs.h
+  mcc/ecs/coordinator.h mcc/ecs/coordinator.cc
+  mcc/ecs/entity.h mcc/ecs/entity.cc
+  mcc/ecs/component.h mcc/ecs/component.cc
+  mcc/ecs/system.h mcc/ecs/system.cc
+  mcc/ecs/event.h mcc/ecs/event.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog

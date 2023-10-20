@@ -75,14 +75,14 @@
 				{
 					"directoryIndex" : 2,
 					"id" : "minecraft::@05cac7de858c7d73eb4f",
-					"jsonFile" : "target-minecraft-Debug-27de2f57efb364ea2c50.json",
+					"jsonFile" : "target-minecraft-Debug-355d3e6833295fa6c69d.json",
 					"name" : "minecraft",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "minecraft-client::@05cac7de858c7d73eb4f",
-					"jsonFile" : "target-minecraft-client-Debug-2646d2ddcc8433044826.json",
+					"jsonFile" : "target-minecraft-client-Debug-de38c2c7bd11f1b75cbd.json",
 					"name" : "minecraft-client",
 					"projectIndex" : 0
 				},

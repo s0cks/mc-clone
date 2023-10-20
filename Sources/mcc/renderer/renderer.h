@@ -2,29 +2,15 @@
 #define MCC_RENDERER_H
 
 #include "mcc/common.h"
+#include "mcc/ecs/system.h"
+#include "mcc/renderer/renderable.h"
 
 namespace mcc {
-  class Camera;
-  class OrthoCamera;
-  class PerspectiveCamera;
-
-  class Window;
-
-  class Renderer {
+  class Renderer : public System {
   public:
-    enum RenderPass {
-      k2D,
-      k3D,
-    };
-  private:
-    static void Prepare2d(Window* window, OrthoCamera* camera);
-    static void Prepare3d(Camera* camera);
-  public:
-    Renderer() = delete;
-    ~Renderer() = delete;
-    DEFINE_NON_COPYABLE_TYPE(Renderer);
-
-    void Prepare(Window* window, Camera* camera);
+    Renderer() = default;
+    ~Renderer() override = default;
+    void Update(const float dt);
   };
 }
 

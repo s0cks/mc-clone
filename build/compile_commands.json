@@ -71,6 +71,11 @@
 },
 {
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/mouse.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/mouse.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/mouse.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
   "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/engine.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/engine.cc",
   "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/engine.cc"
 },
@@ -123,6 +128,31 @@
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
   "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/camera/camera.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/camera/camera.cc",
   "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/camera/camera.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/ecs/coordinator.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/coordinator.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/ecs/coordinator.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/ecs/entity.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/entity.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/ecs/entity.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/ecs/component.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/component.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/ecs/component.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/ecs/system.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/system.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/ecs/system.cc"
+},
+{
+  "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
+  "command": "/usr/bin/clang++ -DGFLAGS_IS_A_DLL=0 -DGLOG_CUSTOM_PREFIX_SUPPORT -DMCC_DEBUG -I/Users/tazz/Projects/mc-1w/build -I/Users/tazz/Projects/mc-1w/Sources -isystem /opt/homebrew/include -iframework /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -isystem /opt/homebrew/include/freetype2 -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks  -Wno-deprecated -std=gnu++17 -o CMakeFiles/minecraft.dir/mcc/ecs/event.cc.o -c /Users/tazz/Projects/mc-1w/Sources/mcc/ecs/event.cc",
+  "file": "/Users/tazz/Projects/mc-1w/Sources/mcc/ecs/event.cc"
 },
 {
   "directory": "/Users/tazz/Projects/mc-1w/build/Sources",
