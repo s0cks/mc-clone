@@ -8,6 +8,7 @@ namespace mcc {
     for(const auto e : entities_) {
       const auto& renderable = Components::GetComponent<Renderable>(e);
       glm::mat4 model = glm::mat4(1.0f);
+      model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
       glm::mat4 view = camera->GetViewMatrix();
       glm::mat4 projection = camera->GetProjectionMatrix();
       const auto& shader = renderable.shader;
