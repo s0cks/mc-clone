@@ -3,12 +3,13 @@
 
 #include "mcc/mesh/mesh.h"
 #include "mcc/shader/shader.h"
+#include "mcc/texture/texture.h"
 
 namespace mcc {
   struct Renderable {
     Shader shader;
-    Mesh* mesh;
-    glm::vec3 color;
+    mesh::Mesh* mesh;
+    texture::Texture texture;
   };
 }
 

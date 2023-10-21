@@ -11,7 +11,7 @@ namespace mcc {
   protected:
     Shape() = default;
     Shape(const Shader& shader,
-          Mesh* mesh):
+          mesh::Mesh* mesh):
           Model(shader, mesh) {
     }
   public:

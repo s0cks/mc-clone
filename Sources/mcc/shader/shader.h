@@ -54,6 +54,10 @@ namespace mcc {
       glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
     }
 
+    virtual void SetInt(const std::string& name, const GLint value) const {
+      glUniform1i(GetUniformLocation(name), value);
+    }
+
     virtual void ApplyShader() const {
       glUseProgram(id_);
     }

@@ -27,7 +27,7 @@ namespace mcc {
   public:
     Square(const glm::vec2 pos,
            const float size = 0.5f):
-      Shape(GetColorizedShader(), new Mesh(GenerateVertices(pos, size), GenerateIndices())) {
+      Shape(GetColorizedShader(), mesh::IndexedMesh::New(GenerateVertices(pos, size), GenerateIndices())) {
     }
     ~Square() override = default;
     DEFINE_NON_COPYABLE_TYPE(Square);

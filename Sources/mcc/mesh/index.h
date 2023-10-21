@@ -9,6 +9,11 @@ namespace mcc {
 
   typedef std::vector<Index> IndexList;
 
+  inline GLsizeiptr
+  CalculateIndexBufferSize(IndexList& list) {
+    return list.size() * sizeof(Index);
+  }
+
   static inline std::ostream&
   operator<<(std::ostream& stream, const IndexList& rhs) {
     stream << "[";

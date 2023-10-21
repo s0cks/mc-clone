@@ -13,6 +13,7 @@ find_package(GLEW REQUIRED)
 find_package(libuv REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Freetype REQUIRED)
+find_package(PNG REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     message(STATUS "Compiling with debug mode.")

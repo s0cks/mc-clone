@@ -16,6 +16,7 @@
 #include "mcc/font/font_renderer.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/shape/square.h"
+#include "mcc/shape/cube.h"
 #include "mcc/mouse/mouse.h"
 
 #include "mcc/ecs/coordinator.h"
@@ -79,8 +80,9 @@ namespace mcc {
     glfwMakeContextCurrent(handle);
     glfwSetFramebufferSizeCallback(handle, &OnWindowResized);
 
-    glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -140,30 +142,14 @@ namespace mcc {
     PostRenderHandle postRender(loop, &OnPostRender);
     
     font_ = new font::Font("arial/arial", kFontSize);
-
-    Square square(glm::vec2(0.0f, 0.0f));
-    const auto e2 = Coordinator::CreateEntity();
+    const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
+    const auto shader = GetColorizedShader();
+    const auto e2 = Entities::CreateEntity();
+    const auto mesh = Cube::CreateMesh();
     Coordinator::AddComponent(e2, Renderable {
-      .shader = square.GetShader(),
-      .mesh = square.GetMesh(),
-      .color = glm::vec3(0.0f, 0.0f, 1.0f),
-    });
-
-    const auto pressedSubscription = Mouse::Register(kMouseButton1, kMousePressed, [&]() {
-      Coordinator::RemoveComponent<Renderable>(e2);
-      Coordinator::AddComponent(e2, Renderable {
-        .shader = square.GetShader(),
-        .mesh = square.GetMesh(),
-        .color = glm::vec3(1.0f, 0.0f, 0.0f)
-      });
-    });
-    const auto releasedSubscription = Mouse::Register(kMouseButton1, kMouseReleased, [&]() {
-      Coordinator::RemoveComponent<Renderable>(e2);
-      Coordinator::AddComponent(e2, Renderable {
-        .shader = square.GetShader(),
-        .mesh = square.GetMesh(),
-        .color = glm::vec3(0.0f, 0.0f, 1.0f)
-      });
+      .shader = shader,
+      .mesh = mesh,
+      .texture = texture,
     });
 
     while(!glfwWindowShouldClose(handle_)) {

@@ -9,7 +9,7 @@ namespace mcc {
   protected:
     Model() = default;
     Model(const Shader& shader,
-          Mesh* mesh): 
+          mesh::Mesh* mesh): 
           scene::ModelNode() {
           SetShaderNode(new scene::ShaderNode(shader));
           SetMeshNode(new scene::MeshNode(mesh));

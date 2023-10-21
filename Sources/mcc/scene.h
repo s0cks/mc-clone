@@ -10,7 +10,7 @@
 #include "mcc/rotation.h"
 #include "mcc/fixed_rate_loop.h"
 
-namespace mcc {
+namespace mcc::mesh {
   class Mesh;
 }
 
@@ -201,16 +201,16 @@ namespace mcc::scene {
 
   class MeshNode : public Node {
   protected:
-    Mesh* mesh_;
+    mesh::Mesh* mesh_;
   public:
-    MeshNode(Mesh* mesh):
+    MeshNode(mesh::Mesh* mesh):
       Node(),
       mesh_(mesh) {
     }
     ~MeshNode() override = default;
     DEFINE_SCENE_NODE(Mesh);
 
-    virtual Mesh* GetMesh() const {
+    virtual mesh::Mesh* GetMesh() const {
       return mesh_;
     }
 
@@ -267,7 +267,7 @@ namespace mcc::scene {
       return mesh_;
     }
 
-    Mesh* GetMesh() const {
+    mesh::Mesh* GetMesh() const {
       return GetMeshNode()->GetMesh();
     }
 

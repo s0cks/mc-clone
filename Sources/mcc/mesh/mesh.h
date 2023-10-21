@@ -8,82 +8,73 @@
 #include "mcc/mesh/vertex.h"
 
 namespace mcc {
-  class Mesh {
-  protected:
-    VertexList vertices_;
-    IndexList indices_;
-    GLuint vao_;
-    GLuint vbo_;
-    GLuint ebo_;
+  namespace mesh {
+    class Mesh {
+      DEFINE_NON_COPYABLE_TYPE(Mesh);
+    protected:
+      GLuint vao_;
+      GLuint vbo_;
+      VertexList vertices_;
 
-    void InitializeMesh();
+      Mesh(const VertexList& vertices):
+        vao_(0),
+        vbo_(0),
+        vertices_(vertices) {
+      }
 
-    inline GLsizeiptr
-    GetVertexBufferSize() {
-      return vertices_.size() * sizeof(Vertex);
-    }
+      static void Initialize(Mesh* mesh);
+    public:
+      virtual ~Mesh() = default;
 
-    inline void
-    BindVertexBuffer() {
-      glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-    }
+      GLuint vao() const {
+        return vao_;
+      }
 
-    inline void
-    LoadVertexBufferData() {
-      BindVertexBuffer();
-      glBufferData(GL_ARRAY_BUFFER, GetVertexBufferSize(), vertices_.data(), GL_STATIC_DRAW);
-    }
+      GLuint vbo() const {
+        return vbo_;
+      }
 
-    inline void
-    GenerateVertexBufferData() {
-      glGenBuffers(1, &vbo_);
-      LoadVertexBufferData();
-    }
+      VertexList vertices() const {
+        return vertices_;
+      }
 
-    inline GLsizeiptr
-    GetIndexBufferSize() {
-      return indices_.size() * sizeof(Index);
-    }
+      virtual void Render();
+    public:
+      static Mesh* New(const VertexList& vertices) {
+        const auto mesh = new Mesh(vertices);
+        Mesh::Initialize(mesh);
+        return mesh;
+      }
+    };
 
-    inline void
-    BindIndexBuffer() {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    }
+    class IndexedMesh : public Mesh {
+      DEFINE_NON_COPYABLE_TYPE(IndexedMesh);
+    protected:
+      GLuint ebo_;
+      IndexList indices_;
 
-    inline void
-    LoadIndexBufferData() {
-      BindIndexBuffer();
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, GetIndexBufferSize(), indices_.data(), GL_STATIC_DRAW);
-    }
+      IndexedMesh(const VertexList& vertices, IndexList indices):
+        Mesh(vertices),
+        indices_(indices) {      
+      }
 
-    inline void
-    GenerateIndexBufferData() {
-      glGenBuffers(1, &ebo_);
-      LoadIndexBufferData();
-    }
-  public:
-    Mesh(VertexList vertices, IndexList indices);
-    virtual ~Mesh() = default;
-    DEFINE_NON_COPYABLE_TYPE(Mesh);
+      static void Initialize(IndexedMesh* mesh);
+    public:
+      ~IndexedMesh() override = default;
 
-    VertexList vertices() const {
-      return vertices_;
-    }
+      IndexList indices() const {
+        return indices_;
+      }
 
-    IndexList indices() const {
-      return indices_;
-    }
-  public:
-    void Render();
-
-    friend std::ostream& operator<<(std::ostream& stream, const Mesh& rhs) {
-      stream << "Mesh(";
-      stream << "vertices=" << rhs.vertices_ << ", ";
-      stream << "indices=" << rhs.indices_;
-      stream << ")";
-      return stream;
-    }
-  };
+      virtual void Render() override;
+    public:
+      static Mesh* New(const VertexList& vertices, IndexList indices) {
+        const auto mesh = new IndexedMesh(vertices, indices);
+        IndexedMesh::Initialize(mesh);
+        return mesh;
+      }
+    };
+  }
 }
 
 #endif //MCC_MESH_H

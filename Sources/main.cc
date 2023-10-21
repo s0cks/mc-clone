@@ -26,14 +26,14 @@ int main(int argc, char** argv) {
   Entities::Initialize();
   const auto loop = uv_loop_new();
   RenderLoop::Initialize(loop);
-  Coordinator::RegisterComponent<Renderable>();
+  Components::Register<Renderable>();
 
   const auto engine = new Engine(loop);
   const auto renderer = Systems::Register<Renderer>();
   engine->Register(renderer);
   {
     Signature sig;
-    sig.set(Coordinator::GetComponentId<Renderable>());
+    sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
   }
   font::Initialize();

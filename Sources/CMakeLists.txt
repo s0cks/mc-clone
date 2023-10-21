@@ -33,6 +33,8 @@ add_library(${PROJECT_NAME}
   mcc/mouse/mouse.h mcc/mouse/mouse.cc
   mcc/shape/shape.h
   mcc/shape/square.h
+  mcc/shape/cube.h mcc/shape/cube.cc
+  mcc/texture/texture.h mcc/texture/texture.cc
   mcc/murmur.h
   mcc/bitfield.h
   mcc/font/font.h mcc/font/font.cc
@@ -59,6 +61,7 @@ target_link_libraries(${PROJECT_NAME}
   OpenGL::GL
   glfw
   GLEW::GLEW
+  PNG::PNG
   Freetype::Freetype
   ${LIBUV_LIBRARIES})
 
