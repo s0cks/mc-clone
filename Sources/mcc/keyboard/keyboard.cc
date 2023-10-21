@@ -1,5 +1,6 @@
+#include "mcc/keyboard/keyboard.h"
+
 #include "mcc/window.h"
-#include "mcc/keyboard.h"
 #include "mcc/render_loop.h"
 
 namespace mcc {

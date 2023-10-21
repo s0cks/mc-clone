@@ -7,7 +7,6 @@
 
 #include "mcc/gfx.h"
 #include "mcc/common.h"
-#include "mcc/keyboard.h"
 #include "mcc/render_loop.h"
 #include "mcc/shape/square.h"
 #include "mcc/scene.h"
@@ -38,9 +37,10 @@ namespace mcc {
     static void OnPreRender();
     static void OnRender();
     static void OnPostRender();
-    static void OnEscapePressed();
     static void SetWindow(Window* window);
     static GLFWwindow* CreateGlfwWindow(const int width, const int height);
+
+    static void OnEscapePressed();
   public:
     virtual ~Window() = default;
     DEFINE_NON_COPYABLE_TYPE(Window);

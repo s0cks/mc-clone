@@ -1,10 +1,8 @@
 #ifndef MCC_KEYBOARD_H
 #define MCC_KEYBOARD_H
 
-#include <opengl/gl3.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
+#include "mcc/gfx.h"
+#include "mcc/common.h"
 #include "mcc/uv_utils.h"
 
 namespace mcc {

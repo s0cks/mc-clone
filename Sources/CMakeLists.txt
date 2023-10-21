@@ -12,7 +12,6 @@ add_library(${PROJECT_NAME}
   mcc/gfx.h
   mcc/common.h
   mcc/flags.h mcc/flags.cc
-  mcc/keyboard.h mcc/keyboard.cc
   mcc/platform.h
   mcc/mesh/vertex.h
   mcc/mesh/index.h
@@ -31,6 +30,7 @@ add_library(${PROJECT_NAME}
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_trie.h
   mcc/mouse/mouse.h mcc/mouse/mouse.cc
+  mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
   mcc/shape/shape.h
   mcc/shape/square.h
   mcc/shape/cube.h mcc/shape/cube.cc

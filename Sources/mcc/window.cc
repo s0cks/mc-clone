@@ -17,7 +17,9 @@
 #include "mcc/mesh/mesh.h"
 #include "mcc/shape/square.h"
 #include "mcc/shape/cube.h"
+
 #include "mcc/mouse/mouse.h"
+#include "mcc/keyboard/keyboard.h"
 
 #include "mcc/ecs/coordinator.h"
 
@@ -132,11 +134,12 @@ namespace mcc {
   void Window::Open() {
     handle_ = CreateGlfwWindow(size_[0], size_[1]);
     Mouse::Initialize(handle_);
+
     const auto windowSize = glm::vec2(static_cast<float>(size_[0]), static_cast<float>(size_[1]));
     const auto orthoCamera = OrthoCamera::Initialize(windowSize);
     const auto perspectiveCamera = PerspectiveCamera::Initialize(windowSize);
     const auto loop = RenderLoop::GetRenderLoop();
-    const auto escapeListener = new KeyPressedListener(KeyCode::kKeyEscape, &OnEscapePressed);
+
     PreRenderHandle preRender(loop, &OnPreRender);
     RenderHandle render(loop, &OnRender);
     PostRenderHandle postRender(loop, &OnPostRender);
