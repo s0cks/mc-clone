@@ -16,7 +16,7 @@
 #include "mcc/font/font_renderer.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/shape/square.h"
-#include "mcc/mouse.h"
+#include "mcc/mouse/mouse.h"
 
 #include "mcc/ecs/coordinator.h"
 

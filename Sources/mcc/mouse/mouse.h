@@ -11,33 +11,9 @@
 #include "mcc/bitfield.h"
 #include "mcc/ecs/event.h"
 
+#include "mcc/mouse/mouse_constants.h"
+
 namespace mcc {
-  typedef glm::vec2 MousePosition;
-
-  typedef std::function<void(const MousePosition& pos)> MousePositionCallback;
-  typedef std::vector<MousePositionCallback> MousePositionCallbackList;
-
-  enum MouseButtonState {
-    kMousePressed = GLFW_PRESS,
-    kMouseReleased = GLFW_RELEASE,
-    kNumberOfMouseButtonStates = 2,
-  };
-
-  enum MouseButton {
-    kMouseButton1 = GLFW_MOUSE_BUTTON_1,
-    kMouseButton2 = GLFW_MOUSE_BUTTON_2,
-    kNumberOfMouseButtons = 2,
-  };
-
-  typedef EventId MouseEventId;
-
-#define FOR_EACH_MOUSE_EVENT(V) \
-  V(Pressed)                    \
-  V(Released)
-
-  typedef std::function<void()> MouseButtonCallback;
-  typedef std::vector<MouseButtonCallback> MouseButtonCallbackList;
-
   class Mouse {
   public:
     typedef uint64_t RawSubscription;
@@ -160,18 +136,29 @@ namespace mcc {
     };
 
     static constexpr const uint64_t kMaxNumberOfPositionSubscriptions = 8;
-  private:
-#define DECLARE_SEND_EVENT(Name) \
-    static void Send##Name##Event();
-    FOR_EACH_MOUSE_EVENT(DECLARE_SEND_EVENT)
-#undef DECLARE_SEND_EVENT
+
+    static inline uint32_t
+    RandomId() {
+      return static_cast<uint32_t>(rand());
+    }
   public:
     DEFINE_NON_INSTANTIABLE_TYPE(Mouse);
     static void Initialize(GLFWwindow* window);
     static bool IsPressed(const MouseButton button);
     static glm::vec2 GetPosition();
     static glm::vec2 GetDelta();
-    static Subscription Register(MousePositionCallback callback);
+    static Subscription Register(const uint32_t id, MousePositionCallback callback);
+
+    static inline Subscription
+    Register(const char* name, MousePositionCallback callback) {
+      return Register(Murmur(name), callback);
+    }
+
+    static inline Subscription
+    Register(MousePositionCallback callback) {
+      return Register(RandomId(), callback);
+    }
+
     static Subscription Register(const uint32_t id, const MouseButton btn, const MouseButtonState state, MouseButtonCallback callback);
 
     static inline Subscription
@@ -181,15 +168,10 @@ namespace mcc {
 
     static inline Subscription
     Register(const MouseButton btn, const MouseButtonState state, MouseButtonCallback callback) {
-      return Register(static_cast<uint32_t>(rand()), btn, state, callback);
+      return Register(RandomId(), btn, state, callback);
     }
 
     static void Deregister(const Subscription& subscription);
-
-#define DECLARE_REGISTER_LISTENER(Name) \
-    static void Register##Name##EventListener(EventListener listener);
-    FOR_EACH_MOUSE_EVENT(DECLARE_REGISTER_LISTENER)
-#undef DECLARE_REGISTER_LISTENER
   };
 }
 

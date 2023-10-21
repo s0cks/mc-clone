@@ -26,7 +26,10 @@ add_library(${PROJECT_NAME}
   mcc/thread_local.h
   mcc/relaxed_atomic.h
   mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
-  mcc/mouse.h mcc/mouse.cc
+  mcc/trie.h
+  mcc/mouse/mouse_constants.h
+  mcc/mouse/mouse_trie.h
+  mcc/mouse/mouse.h mcc/mouse/mouse.cc
   mcc/shape/shape.h
   mcc/shape/square.h
   mcc/murmur.h

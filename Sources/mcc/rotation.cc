@@ -1,6 +1,6 @@
 #include "mcc/rotation.h"
 #include "mcc/scene.h"
-#include "mcc/mouse.h"
+#include "mcc/mouse/mouse.h"
 
 namespace mcc {
   void Rotation::Update(FixedRateLoop* updater) {
