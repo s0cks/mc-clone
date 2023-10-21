@@ -13,7 +13,7 @@
   public:                                  \
     Name() = delete;                       \
     ~Name() = delete;                      \
-    DEFINE_NON_COPYABLE_TYPE(Name);        \
+    DEFINE_NON_COPYABLE_TYPE(Name);
 
 namespace mcc {
   static inline uint64_t

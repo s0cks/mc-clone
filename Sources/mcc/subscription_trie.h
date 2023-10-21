@@ -34,7 +34,7 @@ namespace mcc::trie {
     }
   };
 
-  template<typename C>
+  template<typename Subscription, typename Callback>
   class SubscriptionSequenceNode : public trie::SequenceNode {
   protected:
     explicit SubscriptionSequenceNode():
@@ -43,12 +43,12 @@ namespace mcc::trie {
   public:
     ~SubscriptionSequenceNode() override = default;
 
-    void Register(const Mouse::Subscription& subscription, C callback) {
-      Append(new trie::SubscriptionNode<Mouse::Subscription, C>(subscription, callback));
+    void Register(const Subscription& subscription, Callback callback) {
+      Append(new trie::SubscriptionNode<Subscription, Callback>(subscription, callback));
     }
 
-    void Deregister(const Mouse::Subscription& subscription) {
-      const auto head = (trie::SubscriptionNode<Mouse::Subscription, C>*)head_;
+    void Deregister(const Subscription& subscription) {
+      const auto head = (trie::SubscriptionNode<Subscription, Callback>*)head_;
       if(head == nullptr)
         return;
 
@@ -60,7 +60,7 @@ namespace mcc::trie {
 
       SequenceNodeIterator iter(this);
       while(iter.HasNext()) {
-        const auto node = (trie::SubscriptionNode<Mouse::Subscription, C>*)iter.Next();
+        const auto node = (trie::SubscriptionNode<Subscription, Callback>*)iter.Next();
         if(node->GetSubscription() == subscription) {
           const auto prev = node->GetPrevious();
           const auto next = node->GetNext();

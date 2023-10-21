@@ -37,7 +37,7 @@ namespace mcc {
     }
   };
 
-  class MouseButtonStateNode : public trie::SubscriptionSequenceNode<MouseButtonCallback> {
+  class MouseButtonStateNode : public trie::SubscriptionSequenceNode<Mouse::Subscription, MouseButtonCallback> {
   protected:
     MouseButtonState state_;
   public:
@@ -166,10 +166,10 @@ namespace mcc {
     }
   };
 
-  class MousePositionsNode : public trie::SubscriptionSequenceNode<MousePositionCallback> {
+  class MousePositionsNode : public trie::SubscriptionSequenceNode<Mouse::Subscription, MousePositionCallback> {
   public:
     explicit MousePositionsNode():
-      SubscriptionSequenceNode<MousePositionCallback>() {
+      SubscriptionSequenceNode() {
     }
     ~MousePositionsNode() override = default;
 

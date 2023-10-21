@@ -30,7 +30,9 @@ add_library(${PROJECT_NAME}
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_trie.h
   mcc/mouse/mouse.h mcc/mouse/mouse.cc
+  mcc/keyboard/keyboard_constants.h
   mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
+  mcc/keyboard/keyboard_trie.h mcc/keyboard/keyboard_trie.cc
   mcc/shape/shape.h
   mcc/shape/square.h
   mcc/shape/cube.h mcc/shape/cube.cc

@@ -4,61 +4,123 @@
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 #include "mcc/uv_utils.h"
+#include "mcc/bitfield.h"
+#include "mcc/keyboard/keyboard_constants.h"
 
-namespace mcc {
-  class Window;
-
-#define FOR_EACH_KEY_STATE(V) \
-  V(Pressed, GLFW_PRESS)      \
-  V(Released, GLFW_RELEASE)
-
-  enum KeyState {
-#define DEFINE_KEY_STATE(Name, GLFW) k##Name = GLFW,
-    FOR_EACH_KEY_STATE(DEFINE_KEY_STATE)
-#undef DEFINE_KEY_STATE
-  };
-
-  enum KeyCode : int {
-    kKeyEscape = GLFW_KEY_ESCAPE,
-  };
-
-  bool IsKeyState(Window* window, const int key, const KeyState state);
-
-#define DEFINE_KEY_STATE_CHECK(Name, _) \
-  static inline bool IsKey##Name(Window* window, const int key) { return IsKeyState(window, key, KeyState::k##Name); }
-  FOR_EACH_KEY_STATE(DEFINE_KEY_STATE_CHECK)
-#undef DEFINE_KEY_STATE_CHECK
-
-  typedef std::function<void()> KeyStateCallback;
-
-  class KeyStateListener {
-  private:
-    uv::IdleHandle handle_;
+namespace mcc::keyboard {
+  class Keyboard {
+    DEFINE_NON_INSTANTIABLE_TYPE(Keyboard);
   public:
-    KeyStateListener(const KeyCode key, const KeyState state, KeyStateCallback callback);
-    virtual ~KeyStateListener() = default;
-  };
+    typedef uint64_t RawSubscription;
+    static constexpr const RawSubscription kInvalidSubscription = 0;
+    class Subscription {
+    public:
+      typedef uint16_t SubscriptionId;
+    private:
+      template<typename T, int Pos, int Size>
+      class SubscriptionField : public BitField<RawSubscription, T, Pos, Size>{};
+    public:
+      enum Layout {
+        kIdOffset = 0,
+        kBitsForId = 16,
 
-  class KeyPressedListener : public KeyStateListener {
-  public:
-    KeyPressedListener(const KeyCode key, KeyStateCallback callback):
-      KeyStateListener(key, KeyState::kPressed, std::move(callback)) {
+        kStateOffset = kIdOffset + kBitsForId,
+        kBitsForState = 8,
+        
+        kKeyCodeOffset = kStateOffset + kBitsForState,
+        kBitsForKeyCode = 32,
+
+        kTotalBits = kBitsForId + kBitsForState + kBitsForKeyCode,
+      };
+
+      class IdField : public SubscriptionField<SubscriptionId, kIdOffset, kBitsForId>{};
+      class StateField : public SubscriptionField<KeyState, kStateOffset, kBitsForState>{};
+      class KeyCodeField : public SubscriptionField<KeyCode, kKeyCodeOffset, kBitsForKeyCode>{};
+    private:
+      RawSubscription raw_;
+    public:
+      constexpr Subscription(const RawSubscription raw):
+        raw_(raw) {
+      }
+      constexpr Subscription(const Subscription& rhs):
+        raw_(rhs.raw_) {
+      }
+      ~Subscription() = default;
+
+      RawSubscription raw() const {
+        return raw_;
+      }
+
+      SubscriptionId GetId() const {
+        return IdField::Decode(raw_);
+      }
+
+      void SetId(const SubscriptionId value) {
+        raw_ = IdField::Update(value, raw_);
+      }
+
+      KeyState GetState() const {
+        return StateField::Decode(raw_);
+      }
+
+      void SetState(const KeyState value) {
+        raw_ = StateField::Update(value, raw_);
+      }
+
+      KeyCode GetKeyCode() const {
+        return KeyCodeField::Decode(raw_);
+      }
+
+      void SetKeyCode(const KeyCode value) {
+        raw_ = KeyCodeField::Update(value, raw_);
+      }
+
+      void operator=(const RawSubscription& rhs) {
+        raw_ = rhs;
+      }
+
+      constexpr operator RawSubscription () const {
+        return raw_;
+      }
+
+      friend std::ostream& operator<<(std::ostream& stream, const Subscription& rhs) {
+        stream << "Keyboard::Subscription(";
+        stream << "id=" << rhs.GetId() << ", ";
+        stream << "code=" << rhs.GetKeyCode() << ", ";
+        stream << "state=" << rhs.GetState();
+        stream << ")";
+        return stream;
+      }
+    public:
+      static inline constexpr Subscription
+      Empty() {
+        return kInvalidSubscription;
+      }
+
+      static inline constexpr Subscription
+      New(const SubscriptionId id, const KeyCode code, const KeyState state) {
+        return Empty() | IdField::Encode(id) | KeyCodeField::Encode(code) | StateField::Encode(state);
+      }
+
+      static inline constexpr Subscription
+      New(const KeyCode code, const KeyState state) {
+        return Empty() | KeyCodeField::Encode(code) | StateField::Encode(state);
+      }
+    };
+
+    static inline Subscription::SubscriptionId
+    RandomSubscriptionId() {
+      return static_cast<Subscription::SubscriptionId>(rand());
     }
-    ~KeyPressedListener() override = default;
-    DEFINE_NON_COPYABLE_TYPE(KeyPressedListener);
   public:
-    static inline KeyPressedListener*
-    New(const KeyCode key, KeyStateCallback callback) {
-      return new KeyPressedListener(key, callback);
-    }
-  };
+    static void Initialize();
+    static void Deregister(const Subscription& subscription);
+    static Subscription Register(const Subscription::SubscriptionId id, const KeyCode code, const KeyState state, KeyCallback callback);
 
-  class KeyReleasedListener : public KeyStateListener {
-  public:
-    KeyReleasedListener(const KeyCode key, KeyStateCallback callback):
-      KeyStateListener(key, KeyState::kReleased, std::move(callback)) {
+    static inline Subscription
+    Register(const KeyCode key, const KeyState state, KeyCallback callback) {
+      return Register(RandomSubscriptionId(), key, state, callback);
     }
-    ~KeyReleasedListener() override = default;
   };
 }
 

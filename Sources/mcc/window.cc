@@ -134,7 +134,8 @@ namespace mcc {
   void Window::Open() {
     handle_ = CreateGlfwWindow(size_[0], size_[1]);
     Mouse::Initialize(handle_);
-
+    keyboard::Keyboard::Initialize();
+    keyboard::Keyboard::Register(keyboard::kEscape, keyboard::kPressed, &OnEscapePressed);
     const auto windowSize = glm::vec2(static_cast<float>(size_[0]), static_cast<float>(size_[1]));
     const auto orthoCamera = OrthoCamera::Initialize(windowSize);
     const auto perspectiveCamera = PerspectiveCamera::Initialize(windowSize);
