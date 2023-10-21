@@ -19,30 +19,37 @@ namespace mcc {
     typedef uint64_t RawSubscription;
     static constexpr const RawSubscription kInvalidSubscription = 0;
     class Subscription {
+    public:
+      typedef uint32_t SubscriptionId;
+      enum Type : uint8_t {
+        kPositionType = 0,
+        kButtonType = 1,
+        kNumberOfTypes = 2,
+      };
     private:
       template<typename T, int Pos, int Size>
       class SubscriptionField : public BitField<RawSubscription, T, Pos, Size>{};
     public:
       enum Layout {
-        kButtonOffset = 0,
+        kTypeOffset = 0,
+        kBitsForType = 8,
+
+        kButtonOffset = kTypeOffset + kBitsForType,
         kBitsForButton = 8,
         
         kStateOffset = kButtonOffset + kBitsForButton,
         kBitsForState = 8,
 
-        kPositionOffset = kStateOffset + kBitsForState,
-        kBitsForPosition = 1,
-
         kIdOffset = kStateOffset + kBitsForState,
         kBitsForId = 32,
 
-        kTotaBits = kBitsForButton + kBitsForState + kBitsForId,
+        kTotaBits = kBitsForType + kBitsForButton + kBitsForState + kBitsForId,
       };
 
+      class TypeField : public SubscriptionField<Type, kTypeOffset, kBitsForType>{};
       class ButtonField : public SubscriptionField<MouseButton, kButtonOffset, kBitsForButton>{};
       class StateField : public SubscriptionField<MouseButtonState, kStateOffset, kBitsForState>{};
-      class PositionField : public SubscriptionField<bool, kPositionOffset, kBitsForPosition>{};
-      class IdField : public SubscriptionField<uint32_t, kIdOffset, kBitsForId>{};
+      class IdField : public SubscriptionField<SubscriptionId, kIdOffset, kBitsForId>{};
 
       static constexpr const uint64_t kMaxNumberOfPositionSubscriptions = 8;
     private:
@@ -60,11 +67,11 @@ namespace mcc {
         return raw_;
       }
 
-      uint32_t GetId() const {
+      SubscriptionId GetId() const {
         return IdField::Decode(raw_);
       }
 
-      void SetId(const uint32_t value) {
+      void SetId(const SubscriptionId value) {
         raw_ = IdField::Update(value, raw_);
       }
 
@@ -84,12 +91,12 @@ namespace mcc {
         raw_ = StateField::Update(value, raw_);
       }
 
-      bool IsPosition() const {
-        return PositionField::Decode(raw_);
+      Type GetType() const {
+        return TypeField::Decode(raw_);
       }
 
-      void SetPosition(const bool value) {
-        raw_ = PositionField::Update(value, raw_);
+      void SetType(const Type value) {
+        raw_ = TypeField::Update(value, raw_);
       }
 
       void operator=(const RawSubscription& rhs) {
@@ -115,23 +122,28 @@ namespace mcc {
       }
 
       static inline constexpr Subscription
-      Id(const uint32_t id) {
-        return Empty() | IdField::Encode(id);
+      New(const Type type) {
+        return Empty() | TypeField::Encode(type);
+      }
+
+      static inline constexpr Subscription
+      New(const Type type, const uint32_t id) {
+        return New(type) | IdField::Encode(id);
       }
 
       static inline constexpr Subscription
       NewPositionSubscription(const uint32_t id) {
-        return Id(id) | PositionField::Encode(true);
+        return New(Type::kPositionType, id);
       }
 
       static inline constexpr Subscription
       NewButtonSubscription(const uint32_t id, const MouseButton btn, const MouseButtonState state) {
-        return Id(id) | ButtonField::Encode(btn) | StateField::Encode(state);
+        return New(Type::kButtonType, id) | ButtonField::Encode(btn) | StateField::Encode(state);
       }
 
       static inline constexpr Subscription
       NewButtonSubscription(const MouseButton btn, const MouseButtonState state) {
-        return Empty() | ButtonField::Encode(btn) | StateField::Encode(state);
+        return New(Type::kButtonType) | ButtonField::Encode(btn) | StateField::Encode(state);
       }
     };
 

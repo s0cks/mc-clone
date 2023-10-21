@@ -135,12 +135,19 @@ namespace mcc {
     }
   };
 
-  class MouseButtonNode : public trie::EdgeNode<kNumberOfMouseButtonStates> {
+  template<const uint64_t NumberOfChildren>
+  class SubscriptionEdgeNode : public trie::EdgeNode<NumberOfChildren> {
+  public:
+    virtual void Call(const Mouse::Subscription& subscription) = 0;
+    virtual void Deregister(const Mouse::Subscription& subscription) = 0;
+  };
+
+  class MouseButtonNode : public SubscriptionEdgeNode<kNumberOfMouseButtonStates> {
   protected:
     MouseButton button_;
   public:
     explicit MouseButtonNode(const MouseButton button):
-      trie::EdgeNode<kNumberOfMouseButtonStates>(),
+      SubscriptionEdgeNode<kNumberOfMouseButtonStates>(),
       button_(button) {
       for(auto idx = 0; idx < kNumberOfMouseButtonStates; idx++) {
         children_[idx] = new MouseButtonStateNode(static_cast<MouseButtonState>(idx));
@@ -160,7 +167,7 @@ namespace mcc {
       return GetButtonStateNode(subscription.GetState());
     }
 
-    void Call(const Mouse::Subscription& subscription) {
+    void Call(const Mouse::Subscription& subscription) override {
       return GetButtonStateNode(subscription)->Call(subscription);
     }
 
@@ -168,7 +175,7 @@ namespace mcc {
       return GetButtonStateNode(subscription)->Register(subscription, callback);
     }
 
-    void Deregister(const Mouse::Subscription& subscription) {
+    virtual void Deregister(const Mouse::Subscription& subscription) override {
       return GetButtonStateNode(subscription)->Deregister(subscription);
     }
 
@@ -179,10 +186,10 @@ namespace mcc {
     }
   };
 
-  class MouseButtonsNode : public trie::EdgeNode<kNumberOfMouseButtons> {
+  class MouseButtonsNode : public SubscriptionEdgeNode<kNumberOfMouseButtons> {
   public:
     explicit MouseButtonsNode():
-      trie::EdgeNode<kNumberOfMouseButtons>() {
+      SubscriptionEdgeNode<kNumberOfMouseButtons>() {
       for(auto idx = 0; idx < kNumberOfMouseButtons; idx++)
         children_[idx] = new MouseButtonNode(static_cast<MouseButton>(idx));
     }
@@ -196,7 +203,7 @@ namespace mcc {
       return GetMouseButtonNode(subscription.GetButton());
     }
 
-    void Call(const Mouse::Subscription& subscription) {
+    void Call(const Mouse::Subscription& subscription) override {
       return GetMouseButtonNode(subscription)->Call(subscription);
     }
 
@@ -204,7 +211,7 @@ namespace mcc {
       return GetMouseButtonNode(subscription)->Register(subscription, callback);
     }
 
-    void Deregister(const Mouse::Subscription& subscription) {
+    void Deregister(const Mouse::Subscription& subscription) override {
       return GetMouseButtonNode(subscription)->Deregister(subscription);
     }
   };
@@ -285,9 +292,7 @@ namespace mcc {
     }
 
     void Deregister(const Mouse::Subscription& subscription) {
-      return subscription.IsPosition() 
-          ? GetPositionsNode()->Deregister(subscription)
-          : GetButtonsNode()->Deregister(subscription);
+      return GetPositionsNode()->Deregister(subscription);
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const RootNode& rhs) {
