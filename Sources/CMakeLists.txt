@@ -44,7 +44,6 @@ add_library(${PROJECT_NAME}
   mcc/rotation.h mcc/rotation.cc
   mcc/renderer/renderable.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
-  mcc/overlay/overlay.h mcc/overlay/overlay.cc
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/ecs/ecs.h
   mcc/ecs/coordinator.h
