@@ -27,6 +27,7 @@ add_library(${PROJECT_NAME}
   mcc/relaxed_atomic.h
   mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
   mcc/trie.h
+  mcc/subscription_trie.h
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_trie.h
   mcc/mouse/mouse.h mcc/mouse/mouse.cc

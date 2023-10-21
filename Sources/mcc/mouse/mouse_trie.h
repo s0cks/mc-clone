@@ -1,117 +1,48 @@
 #ifndef MCC_MOUSE_TRIE_H
 #define MCC_MOUSE_TRIE_H
 
-#include "mcc/trie.h"
 #include "mcc/mouse/mouse.h"
+#include "mcc/subscription_trie.h"
 
 namespace mcc {
-  class SubscriptionNode : public trie::SequenceItemNode {
-  protected:
-    Mouse::Subscription subscription_;
+#define FOR_EACH_MOUSE_TRIE_NODE(V) \
+  V(Root)                           \
+  V(MousePosition)                  \
+  V(MousePositionSubscription)      \
+  V(MouseButton)                    \
+  V(MouseButtonState)               \
+  V(MouseButtonSubscription)
 
-    explicit SubscriptionNode(const Mouse::Subscription& subscription):
-      trie::SequenceItemNode(),
-      subscription_(subscription) {
-    }
-  public:
-    ~SubscriptionNode() override = default;
-
-    Mouse::Subscription GetSubscription() const {
-      return subscription_;
-    }
-
-    friend bool operator==(const SubscriptionNode& lhs, const Mouse::Subscription& rhs) {
-      return lhs.subscription_ == rhs;
-    }
-
-    friend bool operator!=(const SubscriptionNode& lhs, const Mouse::Subscription& rhs) {
-      return lhs.subscription_ != rhs;
-    }
-  };
-
-  template<class C>
-  class SubscriptionNodeTemplate : public SubscriptionNode {
-  protected:
-    C callback_;
-  public:
-    SubscriptionNodeTemplate(const Mouse::Subscription& subscription, C callback):
-      SubscriptionNode(subscription),
-      callback_(callback) {
-    }
-    ~SubscriptionNodeTemplate() override = default;
-  };
-
-  template<typename C>
-  class SubscriptionListNode : public trie::SequenceNode {
-  protected:
-    explicit SubscriptionListNode():
-      trie::SequenceNode() {
-    }
-  public:
-    ~SubscriptionListNode() override = default;
-
-    void Register(const Mouse::Subscription& subscription, C callback) {
-      const auto new_node = new SubscriptionNodeTemplate(subscription, callback);
-      Append(new_node);
-    }
-
-    void Deregister(const Mouse::Subscription& subscription) {
-      const auto head = (SubscriptionNode*)head_;
-      if(head == nullptr)
-        return;
-
-      if((*head) == subscription) {
-        head_ = head->GetNext();
-        delete head_;
-        return;
-      }
-
-      SequenceNodeIterator iter(this);
-      while(iter.HasNext()) {
-        const auto node = (SubscriptionNode*)iter.Next();
-        if((*node) == subscription) {
-          const auto prev = node->GetPrevious();
-          const auto next = node->GetNext();
-          if(prev)
-            prev->SetNext(next);
-          if(next)
-            next->SetPrevious(prev);
-          delete node;
-          break;
-        }
-      }
-    }
-  };
+#define FORWARD_DECLARE_NODE(Name) \
+  class Name##Node;
+  FOR_EACH_MOUSE_TRIE_NODE(FORWARD_DECLARE_NODE)
+#undef FORWARD_DECLARE_NODE
 
   class MouseButtonStateNode;
-  class MouseButtonStateSubscriptionNode : public SubscriptionNodeTemplate<MouseButtonCallback> {
+  class MouseButtonSubscriptionNode : public trie::SubscriptionNode<Mouse::Subscription, MouseButtonCallback> {
   public:
-    MouseButtonStateSubscriptionNode(const Mouse::Subscription& subscription, MouseButtonCallback callback):
-      SubscriptionNodeTemplate(subscription, callback) {
+    MouseButtonSubscriptionNode(const Mouse::Subscription& subscription, MouseButtonCallback callback):
+      SubscriptionNode(subscription, callback) {
     }
-    ~MouseButtonStateSubscriptionNode() override = default;
+    ~MouseButtonSubscriptionNode() override = default;
 
     void Call(const Mouse::Subscription& subscription) {
       return callback_();
     }
-
-    friend bool operator==(const MouseButtonStateSubscriptionNode& lhs, const Mouse::Subscription& rhs) {
-      return lhs.subscription_ == rhs;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const MouseButtonStateSubscriptionNode& rhs) {
-      stream << "MouseButtonStateSubscriptionNode(";
+    
+    friend std::ostream& operator<<(std::ostream& stream, const MouseButtonSubscriptionNode& rhs) {
+      stream << "MouseButtonSubscriptionNode(";
       stream << "subscription=" << rhs.subscription_;
       return stream << ")";
     }
   };
 
-  class MouseButtonStateNode : public SubscriptionListNode<MouseButtonCallback> {
+  class MouseButtonStateNode : public trie::SubscriptionSequenceNode<MouseButtonCallback> {
   protected:
     MouseButtonState state_;
   public:
     MouseButtonStateNode(const MouseButtonState state):
-      SubscriptionListNode(),
+      SubscriptionSequenceNode(),
       state_(state) {
     }
     ~MouseButtonStateNode() override = default;
@@ -123,7 +54,7 @@ namespace mcc {
     void Call(const Mouse::Subscription& subscription) {
       SequenceNodeIterator iter(this);
       while(iter.HasNext()) {
-        const auto next = (MouseButtonStateSubscriptionNode*)iter.Next();
+        const auto next = (MouseButtonSubscriptionNode*)iter.Next();
         next->Call(subscription);
       }
     }
@@ -217,19 +148,15 @@ namespace mcc {
   };
 
   class MousePositionsNode;
-  class MousePositionSubscriptionNode : public SubscriptionNodeTemplate<MousePositionCallback> {
+  class MousePositionSubscriptionNode : public trie::SubscriptionNode<Mouse::Subscription, MousePositionCallback> {
   public:
     MousePositionSubscriptionNode(const Mouse::Subscription& subscription, MousePositionCallback callback):
-      SubscriptionNodeTemplate(subscription, callback) {
+      SubscriptionNode(subscription, callback) {
     }
     ~MousePositionSubscriptionNode() override = default;
 
     void Call(const Mouse::Subscription& subscription, const glm::vec2 pos) {
       return callback_(pos);
-    }
-
-    friend bool operator==(const MousePositionSubscriptionNode& lhs, const Mouse::Subscription& rhs) {
-      return lhs.subscription_ == rhs;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const MousePositionSubscriptionNode& rhs) {
@@ -239,10 +166,10 @@ namespace mcc {
     }
   };
 
-  class MousePositionsNode : public SubscriptionListNode<MousePositionCallback> {
+  class MousePositionsNode : public trie::SubscriptionSequenceNode<MousePositionCallback> {
   public:
     explicit MousePositionsNode():
-      SubscriptionListNode<MousePositionCallback>() {
+      SubscriptionSequenceNode<MousePositionCallback>() {
     }
     ~MousePositionsNode() override = default;
 
