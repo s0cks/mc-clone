@@ -27,6 +27,7 @@ namespace mcc {
       };
     private:
       static void PreTick();
+      static void OnTick();
       static void PostTick();
       static void SetState(const State state);
     public:

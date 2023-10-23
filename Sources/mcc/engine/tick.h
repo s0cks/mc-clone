@@ -29,7 +29,6 @@ namespace mcc {
     };
 
     typedef std::function<void(Tick&)> TickCallback;
-    typedef std::vector<TickCallback> TickCallbackList;
 
     class TickListener {
     protected:
