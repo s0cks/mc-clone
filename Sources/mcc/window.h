@@ -15,7 +15,7 @@
 namespace mcc {
   class Window : public scene::WindowNode {
   public:
-    static constexpr const glm::vec4 kDefaultBackgroundColor = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
+    static constexpr const glm::vec4 kDefaultBackgroundColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   protected:
     GLFWwindow* handle_;
     glm::dvec2 init_size_;
