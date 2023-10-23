@@ -10,6 +10,12 @@ namespace mcc {
       return root_->Call(subscription);
   }
 
+  static inline void
+  Call(const Mouse::Subscription subscription, const glm::vec2 delta) {
+    if(root_ != nullptr)
+      return root_->Call(subscription, delta);
+  }
+
   static bool state[] = {
     false,
     false,
@@ -49,9 +55,10 @@ namespace mcc {
   static inline void
   OnCursor(GLFWwindow* window, double x, double y) {
     const auto p = glm::vec2(static_cast<float>(x), static_cast<float>(y));
-    delta = p - pos;
-    delta = glm::vec2(Clamp(delta[0], -100.0f, 100.0f), Clamp(delta[1], -100.0f, 100.0f));
+    delta = glm::vec2(p.x - pos.x, pos.y - y);
     pos = p;
+    const auto subscription = Mouse::Subscription::NewPositionSubscription();
+    Call(subscription, delta);
   }
 
   void Mouse::Initialize(GLFWwindow* window) {

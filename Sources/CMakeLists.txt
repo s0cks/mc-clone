@@ -50,6 +50,7 @@ add_library(${PROJECT_NAME}
   mcc/renderer/renderable.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc
+  mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/ecs.h
   mcc/ecs/coordinator.h
   mcc/ecs/entity.h mcc/ecs/entity.cc

@@ -40,9 +40,13 @@ namespace mcc {
 
   void Systems::ForEachEntityInSystem(const char* typeName, EntityCallback callback) {
     const auto pos = systems_.find(typeName);
-    if(pos == systems_.end())
+    if(pos == systems_.end()) {
+      LOG(ERROR) << "cannot find system named: " << typeName;
       return;
+    }
     const auto& entities = pos->second->entities;
-    std::for_each(entities.begin(), entities.end(), callback);
+    std::for_each(entities.begin(), entities.end(), [&](const Entity& e) {
+      callback(e);
+    });
   }
 }

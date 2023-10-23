@@ -54,6 +54,7 @@ namespace mcc::keyboard {
   _(T, T) \
   _(U, U) \
   _(V, V) \
+  _(W, W) \
   _(X, X) \
   _(Y, Y) \
   _(Z, Z) \

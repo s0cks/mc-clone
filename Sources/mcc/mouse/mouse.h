@@ -137,6 +137,11 @@ namespace mcc {
       }
 
       static inline constexpr Subscription
+      NewPositionSubscription() {
+        return New(Type::kPositionType);
+      }
+
+      static inline constexpr Subscription
       NewButtonSubscription(const uint32_t id, const MouseButton btn, const MouseButtonState state) {
         return New(Type::kButtonType, id) | ButtonField::Encode(btn) | StateField::Encode(state);
       }

@@ -35,14 +35,16 @@ namespace mcc::engine {
     listeners_.push_back(callback);
   }
 
+#define MSEC_PER_SEC (NSEC_PER_SEC / NSEC_PER_MSEC)
+
   void Engine::PreTick() {
     SetState(Engine::kPreTick);
     ts_ = uv_hrtime();
     total_ticks_ += 1;
     ticks_ += 1;
     const auto dts = (((uint64_t)ts_) - (uint64_t)last_);
-    if(dts >= (NSEC_PER_SEC / (NSEC_PER_MSEC * 10))) {
-      tps_ = (1.0 / (dts / NSEC_PER_SEC)) * (uint64_t) ticks_;
+    if(dts >= (NSEC_PER_MSEC * 1)) {
+      tps_ = ((uint64_t) ticks_) * (1.0 * (NSEC_PER_SEC / dts));
       ticks_ = 0;
     }
 

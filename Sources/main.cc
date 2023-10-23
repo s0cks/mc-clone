@@ -12,6 +12,8 @@
 #include "mcc/render_loop.h"
 #include "mcc/scene.h"
 
+#include "mcc/camera/perspective_camera.h"
+
 #include "mcc/engine/engine.h"
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
@@ -27,7 +29,8 @@ int main(int argc, char** argv) {
   const auto loop = uv_loop_new();
   Engine::Init(loop);
   RenderLoop::Initialize(loop);
-  Renderer::Init();
+  Renderer::RegisterComponents();
+  camera::PerspectiveCameraBehavior::RegisterComponents();
   font::Initialize();
 
   auto window = Window::Initialize({ 512, 512 });

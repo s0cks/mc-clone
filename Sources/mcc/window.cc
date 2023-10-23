@@ -24,6 +24,8 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/camera/perspective_camera.h"
+
 namespace mcc {
   static ThreadLocal<Window> window_;
 
@@ -81,6 +83,7 @@ namespace mcc {
     }
 
     glfwMakeContextCurrent(handle);
+    glfwSwapInterval(0);
     glfwSetFramebufferSizeCallback(handle, &OnWindowResized);
 
     glEnable(GL_TEXTURE_2D);
@@ -135,11 +138,12 @@ namespace mcc {
   void Window::Open() {
     handle_ = CreateGlfwWindow(size_[0], size_[1]);
     Mouse::Initialize(handle_);
-    keyboard::Keyboard::Initialize();
-    keyboard::Keyboard::Register(keyboard::kEscape, keyboard::kPressed, &OnEscapePressed);
+    
+    camera::PerspectiveCameraBehavior::Init();
+    Renderer::Init();
+
     const auto windowSize = glm::vec2(static_cast<float>(size_[0]), static_cast<float>(size_[1]));
     const auto orthoCamera = OrthoCamera::Initialize(windowSize);
-    const auto perspectiveCamera = PerspectiveCamera::Initialize(windowSize);
     const auto loop = RenderLoop::GetRenderLoop();
 
     PreRenderHandle preRender(loop, &OnPreRender);

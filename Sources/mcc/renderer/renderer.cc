@@ -1,30 +1,31 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/ecs/coordinator.h"
-#include "mcc/camera/camera.h"
 #include "mcc/engine/engine.h"
+
+#include "mcc/camera/perspective_camera.h"
 
 namespace mcc {
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
 
+  void Renderer::RegisterComponents() {
+    Components::Register<Renderable>();
+  }
+
   void Renderer::Init() {
     Engine::Register(&OnTick);
     Systems::Register<Renderer>();
-    Components::Register<Renderable>();
-
+    
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
   }
 
-  void Renderer::RenderEntity(const Entity e) {
-    const auto camera = PerspectiveCamera::Get();
+  void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
     const auto& renderable = Components::GetComponent<Renderable>(e);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    glm::mat4 view = camera->GetViewMatrix();
-    glm::mat4 projection = camera->GetProjectionMatrix();
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
     texture.Bind0();
@@ -39,15 +40,20 @@ namespace mcc {
   }
 
   void Renderer::OnTick(Tick& tick) {
-    DLOG(INFO) << tick;
+    VLOG(10) << tick;
     frames_ += 1;
-    if(tick.dts >= (NSEC_PER_SEC * 0.01)) {
+    if(tick.dts >= (NSEC_PER_MSEC * 1)) {
       const auto diff = (tick.ts - last_.ts);
-      fps_ = (1.0 / (diff / NSEC_PER_SEC)) * (uint64_t) frames_;
+      fps_ = ((uint64_t) frames_) * (1.0 * (NSEC_PER_SEC / diff));
       last_ = tick;
       frames_ = 0;
     }
-    Systems::ForEachEntityInSystem<Renderer>(&RenderEntity);
+
+    const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
+    const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
+    Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
+      RenderEntity(projection, view, e);
+    });
   }
 
   uint64_t Renderer::GetFrameCount() {
