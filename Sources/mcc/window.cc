@@ -22,13 +22,14 @@
 #include "mcc/keyboard/keyboard.h"
 
 #include "mcc/ecs/coordinator.h"
+#include "mcc/engine/engine.h"
 
 namespace mcc {
   static ThreadLocal<Window> window_;
 
-  Window* Window::Initialize(Renderer* renderer,  glm::dvec2 init_size) {
+  Window* Window::Initialize(glm::dvec2 init_size) {
     //TODO: check for open window
-    const auto instance = new Window(renderer, init_size);
+    const auto instance = new Window(init_size);
     SetWindow(instance);
     return instance;
   }
@@ -112,10 +113,10 @@ namespace mcc {
     static constexpr const uint64_t kCounterLength = 3 + 2 + 4;
     
     char fps[kCounterLength];
-    snprintf(fps, kCounterLength, "FPS: %" PRIu64, loop->fps());
+    snprintf(fps, kCounterLength, "FPS: %" PRIu64, Renderer::GetFPS());
     font.RenderText(fps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - kFontSize));
     char tps[kCounterLength];
-    snprintf(tps, kCounterLength, "TPS: %" PRIu64, loop->tps());
+    snprintf(tps, kCounterLength, "TPS: %" PRIu64, Engine::GetTPS());
     font.RenderText(tps, glm::vec2(topLeft[0] + 5.0f, topLeft[1] - (kFontSize * 2)));
 
     std::stringstream ss;

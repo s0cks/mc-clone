@@ -2,62 +2,54 @@
 #define MCC_ENGINE_H
 
 #include "mcc/uv_utils.h"
+#include "mcc/common.h"
 #include "mcc/engine/tick.h"
 #include "mcc/relaxed_atomic.h"
 
 namespace mcc {
-  typedef RelaxedAtomic<uint64_t> TickCounter;
+  namespace engine {
+    typedef RelaxedAtomic<uint64_t> TickCounter;
 
-  class Engine : public uv::Loop {
-  protected:
-    uv::IdleHandle pre_;
-    uv::PrepareHandle tick_;
-    uv::CheckHandle post_;
+#define FOR_EACH_ENGINE_STATE(V) \
+  V(Uninitialized)               \
+  V(Initialized)                 \
+  V(PreTick)                     \
+  V(Tick)                        \
+  V(PostTick)
 
-    TickCounter total_ticks_;
-    TickCounter ticks_;
-    RelaxedAtomic<uint64_t> ts_;
-    RelaxedAtomic<uint64_t> last_;
-    TickCallbackList listeners_;
-
-    void PreTick() {
-      ts_ = uv_hrtime();
-    }
-
-    void OnTick() {
-      const auto dts = (((uint64_t)ts_) - (uint64_t)last_);
-      Tick tick = {
-        .id = (uint64_t)total_ticks_,
-        .ts = (uint64_t)ts_,
-        .dts = dts,
+    class Engine {
+      DEFINE_NON_INSTANTIABLE_TYPE(Engine);
+    public:
+      enum State {
+#define DEFINE_STATE(Name) k##Name,
+        FOR_EACH_ENGINE_STATE(DEFINE_STATE)
+#undef DEFINE_STATE
       };
-      std::for_each(listeners_.begin(), listeners_.end(), [&tick](const TickCallback& listener) {
-        listener(tick);
-      });
-    }
+    private:
+      static void PreTick();
+      static void PostTick();
+      static void SetState(const State state);
+    public:
+      static void Init(uv_loop_t* loop = uv_loop_new());
+      static uv_loop_t* GetLoop();
+      static State GetState();
 
-    void PostTick() {
-      total_ticks_ += 1;
-      last_ = ts_;
-    }
-  public:
-    explicit Engine(uv_loop_t* loop):
-      uv::Loop(loop),
-      pre_(loop, [this]() { PreTick(); }),
-      post_(loop, [this]() { PostTick(); }),
-      tick_(loop, [this]() { OnTick(); }),
-      listeners_() {
-    }
-    ~Engine() override = default;
+#define DEFINE_STATE_CHECK(Name) static inline bool Is##Name() { return GetState() == State::k##Name; }
+      FOR_EACH_ENGINE_STATE(DEFINE_STATE_CHECK)
+#undef DEFINE_STATE_CHECK
+      
+      static void Register(TickCallback callback);
 
-    void Register(TickCallback callback) {
-      listeners_.push_back(callback);
-    }
+      static inline void
+      Register(TickListener* listener) {
+        return Register(std::bind(&TickListener::OnTick, listener, std::placeholders::_1));
+      }
 
-    void Register(TickListener* listener) {
-      return Register(std::bind(&TickListener::OnTick, listener, std::placeholders::_1));
-    }
-  };
+      static uint64_t GetTPS();
+      static uint64_t GetTotalTicks();
+    };
+  }
+  using engine::Engine;
 }
 
 #endif //MCC_ENGINE_H

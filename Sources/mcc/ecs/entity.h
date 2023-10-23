@@ -2,7 +2,9 @@
 #define MCC_ENTITY_H
 
 #include <cstdint>
+#include <unordered_set>
 #include <unordered_map>
+#include <functional>
 #include <array>
 #include <queue>
 #include <bitset>
@@ -26,6 +28,9 @@ namespace mcc {
     static void SetSignature(const Entity e, const Signature& sig);
     static Signature GetSignature(const Entity e);
   };
+
+  typedef std::unordered_set<Entity> EntitySet;
+  typedef std::function<void(const Entity)> EntityCallback;
 }
 
 #endif //MCC_ENTITY_H

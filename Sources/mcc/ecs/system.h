@@ -2,31 +2,19 @@
 #define MCC_SYSTEM_H
 
 #include <set>
+#include <functional>
 #include "mcc/ecs/entity.h"
 #include "mcc/engine/tick.h"
 
 namespace mcc {
-  class System {
-    friend class Systems;
-    friend class SystemManager;
-  protected:
-    std::set<Entity> entities_;
-  public:
-    System() = default;
-    virtual ~System() = default;
-  };
-
-  class TickSystem : public System, public TickListener  {
-  public:
-    TickSystem() = default;
-    ~TickSystem() override = default;
-  };
+  typedef std::function<void(const Entity, Signature)> EntitySignatureChangeCallback;
 
   class Systems {
     DEFINE_NON_INSTANTIABLE_TYPE(Systems);
   private:
     static void SetSignature(const char* type, const Signature& sig);
-    static void Register(const char* type, System* sys);
+    static void Register(const char* type);
+    static void ForEachEntityInSystem(const char* type, EntityCallback callback);
 
     template<typename T>
     static inline const char*
@@ -35,17 +23,21 @@ namespace mcc {
     }
   public:
     template<typename T>
-    static inline T*
+    static inline void
     Register() {
-      const auto system = new T();
-      Register(TypeId<T>(), system);
-      return system;
+      return Register(TypeId<T>());
     }
 
     template<typename T>
     static inline void
     SetSignature(Signature sig) {
       return SetSignature(TypeId<T>(), sig);
+    }
+
+    template<typename T>
+    static inline void
+    ForEachEntityInSystem(EntityCallback callback) {
+      return ForEachEntityInSystem(TypeId<T>(), callback);
     }
 
     static void OnDestroyed(const Entity e);

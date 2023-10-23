@@ -6,11 +6,15 @@
 #include "mcc/renderer/renderable.h"
 
 namespace mcc {
-  class Renderer : public TickSystem {
+  class Renderer {
+    DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
+  private:
+    static void OnTick(Tick& tick);
+    static void RenderEntity(const Entity e);
   public:
-    Renderer() = default;
-    ~Renderer() override = default;
-    void OnTick(Tick& tick) override;
+    static void Init();
+    static uint64_t GetFrameCount();
+    static uint64_t GetFPS();
   };
 }
 

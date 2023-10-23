@@ -25,20 +25,12 @@ int main(int argc, char** argv) {
   using namespace mcc;
   Entities::Initialize();
   const auto loop = uv_loop_new();
+  Engine::Init(loop);
   RenderLoop::Initialize(loop);
-  Components::Register<Renderable>();
-
-  const auto engine = new Engine(loop);
-  const auto renderer = Systems::Register<Renderer>();
-  engine->Register(renderer);
-  {
-    Signature sig;
-    sig.set(Components::GetComponentIdForType<Renderable>());
-    Systems::SetSignature<Renderer>(sig);
-  }
+  Renderer::Init();
   font::Initialize();
 
-  auto window = Window::Initialize(renderer, { 512, 512 });
+  auto window = Window::Initialize({ 512, 512 });
   window->Open();
   return EXIT_SUCCESS;
 }
