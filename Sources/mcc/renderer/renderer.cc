@@ -9,17 +9,21 @@ namespace mcc {
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
 
+  static Shader lightingShader_;
+
   void Renderer::RegisterComponents() {
     Components::Register<Renderable>();
   }
 
   void Renderer::Init() {
-    Engine::Register(&OnTick);
     Systems::Register<Renderer>();
-    
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
+
+    lightingShader_ = CompileShader("lighting");
+
+    Engine::Register(&OnTick);
   }
 
   void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
@@ -28,7 +32,15 @@ namespace mcc {
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
-    texture.Bind0();
+
+    lightingShader_.ApplyShader();
+    lightingShader_.SetVec3("objColor", glm::vec3(1.0f, 0.5f, 0.31f));
+    lightingShader_.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    lightingShader_.SetMat4("projection", projection);
+    lightingShader_.SetMat4("view", view);
+    lightingShader_.SetMat4("model", model);
+
+    //texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);
