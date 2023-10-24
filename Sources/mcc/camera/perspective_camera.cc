@@ -87,9 +87,9 @@ namespace mcc::camera {
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.pos -= (camera.front * velocity);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.pos -= (camera.right * velocity);
+        camera.pos -= (camera.right * (velocity - 0.15f));
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.pos += (camera.right * velocity);
+        camera.pos += (camera.right * (velocity - 0.15f));
     });
   }
 

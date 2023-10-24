@@ -40,7 +40,7 @@ namespace mcc {
     lightingShader_.SetMat4("view", view);
     lightingShader_.SetMat4("model", model);
 
-    //texture.Bind0();
+    texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);

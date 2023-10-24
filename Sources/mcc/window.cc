@@ -149,11 +149,11 @@ namespace mcc {
     PostRenderHandle postRender(loop, &OnPostRender);
     
     font_ = new font::Font("arial/arial", kFontSize);
-    //const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
+    const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
 
     ProgramCompiler compiler;
-    compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/lighting.vs");
-    compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fsh");
+    compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/cube.vs");
+    compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fs");
     Shader lightCube;
     LOG_IF(FATAL, !compiler.Compile(&lightCube)) << "failed to compile light cube shader.";
 
@@ -162,6 +162,7 @@ namespace mcc {
     Coordinator::AddComponent(e2, Renderable {
       .shader = lightCube,
       .mesh = mesh,
+      .texture = texture,
     });
 
     while(!glfwWindowShouldClose(handle_)) {

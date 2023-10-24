@@ -8,12 +8,22 @@ namespace mcc {
       glBindVertexArray(mesh->vao_);
       glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo_);
       glBufferData(GL_ARRAY_BUFFER, CalculateVertexBufferSize(mesh->vertices_), &mesh->vertices_[0], GL_STATIC_DRAW);
-      // position attribute
-      glVertexAttribPointer(0, kVertexPosLength, GL_FLOAT, GL_FALSE, kVertexSize, (const GLvoid*) kVertexPosOffset);
+      // position
       glEnableVertexAttribArray(0);
-      // texture coord attribute
-      glVertexAttribPointer(1, kVertexTexLength, GL_FLOAT, GL_FALSE, kVertexSize, (const GLvoid*) kVertexTexOffset);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
+      // normal
       glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+      // tex
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex));
+      // tangent
+      glEnableVertexAttribArray(3);
+      glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+      // bitangent
+      glEnableVertexAttribArray(4);
+      glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
       glBindVertexArray(0);
     }
 
@@ -32,7 +42,23 @@ namespace mcc {
       glBufferData(GL_ARRAY_BUFFER, CalculateVertexBufferSize(mesh->vertices_), &mesh->vertices_[0], GL_STATIC_DRAW);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo_);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, CalculateIndexBufferSize(mesh->indices_), &mesh->indices_[0], GL_STATIC_DRAW);
-      glVertexAttribPointer(0, kVertexLength, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+      // position
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
+      // normal
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+      // tex
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex));
+      // tangent
+      glEnableVertexAttribArray(3);
+      glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+      // bitangent
+      glEnableVertexAttribArray(4);
+      glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
       glEnableVertexAttribArray(0);
       glBindVertexArray(0);
     }

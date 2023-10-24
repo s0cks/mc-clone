@@ -10,7 +10,10 @@
 namespace mcc {
   struct Vertex {
     glm::vec3 pos;
+    glm::vec3 normal;
     glm::vec2 tex;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
   };
 
   static inline std::ostream& 
@@ -18,22 +21,11 @@ namespace mcc {
     return stream << "Vertex()"; //TODO: implement
   }
 
-  static constexpr const GLint kVertexPosLength = 3;
-  static constexpr const GLint kVertexPosSize = kVertexPosLength * sizeof(float);
-  static constexpr const GLint kVertexPosOffset = 0;
-
-  static constexpr const GLint kVertexTexLength = 2;
-  static constexpr const GLint kVertexTexSize = kVertexTexLength * sizeof(float);
-  static constexpr const GLint kVertexTexOffset = kVertexPosOffset + kVertexPosSize;
-
-  static constexpr const GLint kVertexLength = kVertexPosLength + kVertexTexLength;
-  static constexpr const GLint kVertexSize = kVertexPosSize + kVertexTexSize;
-
   typedef std::vector<Vertex> VertexList;
 
 
   inline GLsizeiptr
-  CalculateVertexBufferSize(VertexList& list) {
+  CalculateVertexBufferSize(const VertexList& list) {
     return list.size() * sizeof(Vertex);
   }
 
