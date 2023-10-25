@@ -1,4 +1,5 @@
 #include "mcc/engine/engine.h"
+#include "mcc/event/event_bus.h"
 
 namespace mcc::engine {
   static uv_loop_t* loop_ = nullptr;
@@ -15,6 +16,7 @@ namespace mcc::engine {
   static RelaxedAtomic<Engine::State> state_(Engine::kUninitialized);
 
   static Tick tick_;
+
   class EngineTickCallback {
   protected:
     uv_async_t handle_;

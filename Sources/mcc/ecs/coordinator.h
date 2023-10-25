@@ -23,7 +23,6 @@ namespace mcc {
       auto sig = Entities::GetSignature(e);
       sig.set(Components::GetComponentIdForType<T>(), true);
       Entities::SetSignature(e, sig);
-      Systems::OnSignatureChanged(e, sig);
     }
 
     template<typename T>
@@ -32,7 +31,6 @@ namespace mcc {
       auto sig = Entities::GetSignature(e);
       sig.set(Components::GetComponentIdForType<T>(), false);
       Entities::SetSignature(e, sig);
-      Systems::OnSignatureChanged(e, sig);
     }
   };
 }

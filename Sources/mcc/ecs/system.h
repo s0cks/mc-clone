@@ -40,6 +40,7 @@ namespace mcc {
       return ForEachEntityInSystem(TypeId<T>(), callback);
     }
 
+    static void Init();
     static void OnDestroyed(const Entity e);
     static void OnSignatureChanged(const Entity e, Signature sig);
   };

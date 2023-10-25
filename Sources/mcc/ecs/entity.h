@@ -11,9 +11,48 @@
 #include <set>
 
 #include "mcc/common.h"
+#include "mcc/event/event_bus.h"
 
 namespace mcc {
-  typedef uint64_t Entity;
+  typedef uint64_t EntityId;
+  static constexpr const EntityId kInvalidEntityId = 0;
+
+  class Entity {
+  public:
+    struct SignatureChangedEvent {
+      const EntityId id;
+      Signature signature;
+    };
+  private:
+    EntityId id_;
+  public:
+    constexpr Entity(const EntityId id = kInvalidEntityId):
+      id_(id) {
+    }
+    constexpr Entity(const Entity& rhs):
+      id_(rhs.id_) {
+    }
+    ~Entity() = default;
+
+    EntityId id() const {
+      return id_;
+    }
+
+    constexpr operator EntityId() const {
+      return id_;
+    }
+
+    void operator=(const Entity& rhs) {
+      id_ = rhs.id_;
+    }
+
+    void operator=(const EntityId rhs) {
+      id_ = rhs;
+    }
+  public:
+    static void OnDestroyed(std::function<void(const Entity&)> callback);
+    static void OnSignatureChanged(std::function<void(const SignatureChangedEvent&)> callback);
+  };
 
   typedef std::bitset<32> Signature;
 

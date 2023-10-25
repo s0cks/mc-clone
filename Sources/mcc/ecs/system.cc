@@ -13,6 +13,10 @@ namespace mcc {
     systems_.insert({ typeName, new System() });
   }
 
+  void Systems::Init() {
+    Entity::OnDestroyed(&OnDestroyed);
+  }
+
   void Systems::SetSignature(const char* typeName, const Signature& sig) {
     const auto pos = systems_.find(typeName);
     if(pos == systems_.end())
