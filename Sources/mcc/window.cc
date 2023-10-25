@@ -152,15 +152,15 @@ namespace mcc {
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
 
     ProgramCompiler compiler;
-    compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/cube.vs");
-    compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fs");
-    Shader lightCube;
-    LOG_IF(FATAL, !compiler.Compile(&lightCube)) << "failed to compile light cube shader.";
+    compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fsh");
+    compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/cube.vsh");
+    Shader shader;
+    LOG_IF(FATAL, !compiler.Compile(&shader)) << "failed to compile cube shader.";
 
     const auto e2 = Entities::CreateEntity();
     const auto mesh = Cube::CreateMesh();
     Coordinator::AddComponent(e2, Renderable {
-      .shader = lightCube,
+      .shader = shader,
       .mesh = mesh,
       .texture = texture,
     });

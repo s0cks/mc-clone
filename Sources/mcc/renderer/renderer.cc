@@ -2,6 +2,8 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/shape/square.h"
+#include "mcc/shape/plane.h"
 #include "mcc/camera/perspective_camera.h"
 
 namespace mcc {
@@ -15,6 +17,23 @@ namespace mcc {
     Components::Register<Renderable>();
   }
 
+  static mesh::Mesh* plane_mesh_;
+  static Shader plane_shader_;
+
+  static inline mesh::Mesh*
+  GeneratePlaneMesh() {
+    VertexList plane_vertices;
+    Square::GenerateVertices(plane_vertices);
+    IndexList plane_indices;
+    Square::GenerateIndices(plane_indices);
+    return mesh::IndexedMesh::New(plane_vertices, plane_indices);
+  }
+
+  static inline Shader
+  GeneratePlaneShader() {
+    return GetColorizedShader();
+  }
+
   void Renderer::Init() {
     Systems::Register<Renderer>();
     Signature sig;
@@ -22,6 +41,9 @@ namespace mcc {
     Systems::SetSignature<Renderer>(sig);
 
     lightingShader_ = CompileShader("lighting");
+
+    plane_mesh_ = GeneratePlaneMesh();
+    plane_shader_ = GeneratePlaneShader();
 
     Engine::Register(&OnTick);
   }
@@ -33,22 +55,35 @@ namespace mcc {
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
 
-    lightingShader_.ApplyShader();
-    lightingShader_.SetVec3("objColor", glm::vec3(1.0f, 0.5f, 0.31f));
-    lightingShader_.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    lightingShader_.SetMat4("projection", projection);
-    lightingShader_.SetMat4("view", view);
-    lightingShader_.SetMat4("model", model);
+    // lightingShader_.ApplyShader();
+    // lightingShader_.SetVec3("objColor", glm::vec3(1.0f, 0.5f, 0.31f));
+    // lightingShader_.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    // lightingShader_.SetMat4("projection", projection);
+    // lightingShader_.SetMat4("view", view);
+    // lightingShader_.SetMat4("model", model);
 
     texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);
     shader.SetMat4("projection", projection);
-    shader.SetInt("texture1", 0);
+    shader.SetVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
+    // shader.SetInt("texture1", 0);
     shader.ApplyShader();
     const auto& mesh = renderable.mesh;
     mesh->Render();
+  }
+
+  void Renderer::RenderPlane(const glm::mat4 projection, const glm::mat4 view) {
+    DLOG(INFO) << "rendering plane....";
+    glm::mat4 model = glm::mat4(1.0f);
+    plane_shader_.ApplyShader();
+    plane_shader_.SetMat4("model", model);
+    plane_shader_.SetMat4("projection", projection);
+    plane_shader_.SetMat4("view", view);
+    plane_shader_.SetVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
+    plane_shader_.ApplyShader();
+    plane_mesh_->Render();
   }
 
   void Renderer::OnTick(Tick& tick) {
@@ -63,6 +98,7 @@ namespace mcc {
 
     const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
     const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
+    RenderPlane(projection, view);
     Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
       RenderEntity(projection, view, e);
     });

@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME}
   mcc/platform.h
   mcc/mesh/vertex.h
   mcc/mesh/index.h
+  mcc/shape/plane.h mcc/shape/plane.cc
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/render_loop.h mcc/render_loop.cc
   mcc/buffer.h mcc/buffer.cc

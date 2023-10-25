@@ -10,6 +10,7 @@ namespace mcc {
     DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
   private:
     static void OnTick(Tick& tick);
+    static void RenderPlane(const glm::mat4 projection, const glm::mat4 view);
     static void RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e);
   public:
     static void Init();
