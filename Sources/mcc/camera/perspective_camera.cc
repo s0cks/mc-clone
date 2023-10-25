@@ -9,7 +9,7 @@
 #include "mcc/window.h"
 
 namespace mcc::camera {
-  static RelaxedAtomic<Entity> entity_;
+  static RelaxedAtomic<EntityId> entity_;
 
   static inline void
   UpdateCamera(PerspectiveCamera& camera) {
@@ -36,11 +36,11 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::SetCameraEntity(const Entity e) {
-    entity_ = e;
+    entity_ = (EntityId) e;
   }
 
   Entity PerspectiveCameraBehavior::GetCameraEntity() {
-    return (Entity) entity_;
+    return Entity((EntityId) entity_);
   }
 
   Entity PerspectiveCameraBehavior::CreateCameraEntity() {
@@ -73,7 +73,7 @@ namespace mcc::camera {
     Systems::SetSignature<PerspectiveCameraBehavior>(sig);
 
     SetCameraEntity(CreateCameraEntity());
-    Engine::Register(&OnTick);
+    Engine::OnTick(&OnTick);
     Mouse::Register(&OnMousePosition);
   }
 

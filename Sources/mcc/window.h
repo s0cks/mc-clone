@@ -30,10 +30,7 @@ namespace mcc {
       bg_color_(kDefaultBackgroundColor) {
     }
 
-    void Render();
-
     static void OnPreRender();
-    static void OnRender();
     static void OnPostRender();
     static void SetWindow(Window* window);
     static GLFWwindow* CreateGlfwWindow(const int width, const int height);

@@ -8,6 +8,7 @@ add_library(${PROJECT_NAME}
   mcc/window.h mcc/window.cc
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/timestamp.h mcc/timestamp.cc
+  mcc/engine/engine_state.h
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/gfx.h
   mcc/common.h

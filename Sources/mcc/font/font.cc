@@ -48,7 +48,7 @@ namespace mcc::font {
     chars_(),
     mesh_() {
       shader_.ApplyShader();
-      shader_.SetMat4("projection", OrthoCamera::GetCurrentProjectionMatrix());
+      shader_.SetMat4("projection", glm::mat4(1.0f));
       GlyphMapGenerator::Generate(name, chars_, size);
   }
 }

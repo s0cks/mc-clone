@@ -13,10 +13,6 @@ namespace mcc {
 
   static Shader lightingShader_;
 
-  void Renderer::RegisterComponents() {
-    Components::Register<Renderable>();
-  }
-
   static mesh::Mesh* plane_mesh_;
   static Shader plane_shader_;
 
@@ -34,18 +30,26 @@ namespace mcc {
     return GetColorizedShader();
   }
 
-  void Renderer::Init() {
+  void Renderer::OnPreInit() {
+    Components::Register<Renderable>();
+  }
+
+  void Renderer::OnInit() {
+
+  }
+
+  void Renderer::OnPostInit() {
     Systems::Register<Renderer>();
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
+  }
 
-    lightingShader_ = CompileShader("lighting");
-
-    plane_mesh_ = GeneratePlaneMesh();
-    plane_shader_ = GeneratePlaneShader();
-
-    Engine::Register(&OnTick);
+  void Renderer::Init() {
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+    Engine::OnTick(&OnTick);
   }
 
   void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
@@ -54,13 +58,6 @@ namespace mcc {
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
-
-    // lightingShader_.ApplyShader();
-    // lightingShader_.SetVec3("objColor", glm::vec3(1.0f, 0.5f, 0.31f));
-    // lightingShader_.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    // lightingShader_.SetMat4("projection", projection);
-    // lightingShader_.SetMat4("view", view);
-    // lightingShader_.SetMat4("model", model);
 
     texture.Bind0();
     shader.ApplyShader();
@@ -75,7 +72,6 @@ namespace mcc {
   }
 
   void Renderer::RenderPlane(const glm::mat4 projection, const glm::mat4 view) {
-    DLOG(INFO) << "rendering plane....";
     glm::mat4 model = glm::mat4(1.0f);
     plane_shader_.ApplyShader();
     plane_shader_.SetMat4("model", model);
@@ -87,7 +83,6 @@ namespace mcc {
   }
 
   void Renderer::OnTick(Tick& tick) {
-    VLOG(10) << tick;
     frames_ += 1;
     if(tick.dts >= (NSEC_PER_MSEC * 1)) {
       const auto diff = (tick.ts - last_.ts);
@@ -98,7 +93,6 @@ namespace mcc {
 
     const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
     const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
-    RenderPlane(projection, view);
     Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
       RenderEntity(projection, view, e);
     });

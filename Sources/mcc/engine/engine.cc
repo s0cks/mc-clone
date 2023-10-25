@@ -1,5 +1,6 @@
 #include "mcc/engine/engine.h"
 #include "mcc/event/event_bus.h"
+#include "mcc/window.h"
 
 namespace mcc::engine {
   static uv_loop_t* loop_ = nullptr;
@@ -13,67 +14,145 @@ namespace mcc::engine {
   static RelaxedAtomic<uint64_t> dts_;
   static RelaxedAtomic<uint64_t> tps_;
   static RelaxedAtomic<uint64_t> last_;
-  static RelaxedAtomic<Engine::State> state_(Engine::kUninitialized);
 
+  static RelaxedAtomic<State> state_(kUninitialized);
   static Tick tick_;
-
-  class EngineTickCallback {
-  protected:
-    uv_async_t handle_;
-    TickCallback callback_;
-
-    static inline void
-    OnSend(uv_async_t* handle) {
-      DLOG(INFO) << "tick: " << tick_;
-      const auto& callback = ((EngineTickCallback*) handle->data)->callback_;
-      callback(tick_);
-    }
-  public:
-    EngineTickCallback(uv_loop_t* loop, TickCallback callback):
-      handle_(),
-      callback_(callback) {
-      uv_async_init(loop, &handle_, &OnSend);
-      handle_.data = this;
-    }
-    ~EngineTickCallback() = default;
-
-    bool Invoke() {
-      uv_async_send(&handle_);
-      return true;
-    }
-  };
-
-  static std::vector<EngineTickCallback*> listeners_;
 
   void Engine::Init(uv_loop_t* loop) {
     loop_ = loop;
-    idle_ = new uv::IdleHandle(loop, &PreTick);
-    prepare_ = new uv::PrepareHandle(loop, &OnTick);
-    check_ = new uv::CheckHandle(loop, &PostTick);
-    SetState(Engine::kInitialized);
+    Engine::OnPreTick(&PreTick);
+    Engine::OnPostTick(&PostTick);
   }
 
-  void Engine::SetState(const Engine::State value) {
+  void Engine::SetState(const State value) {
     state_ = value;
   }
 
-  Engine::State Engine::GetState() {
-    return (Engine::State) state_;
+  State Engine::GetState() {
+    return (State) state_;
   }
 
   uv_loop_t* Engine::GetLoop() {
     return loop_;
   }
 
-  void Engine::Register(TickCallback callback) {
-    listeners_.push_back(new EngineTickCallback(loop_, callback));
-  }
-
 #define MSEC_PER_SEC (NSEC_PER_SEC / NSEC_PER_MSEC)
 
+  uint64_t Engine::GetTotalTicks() {
+    return (uint64_t) total_ticks_;
+  }
+
+  uint64_t Engine::GetTPS() {
+    return (uint64_t) tps_;
+  }
+
+  static std::vector<PreInitCallbackHandle*> preinit_listeners_;
+  static std::vector<InitCallbackHandle*> init_listeners_;
+  static std::vector<PostInitCallbackHandle*> postinit_listeners_;
+  static std::vector<PreTickCallbackHandle*> pretick_listeners_;
+  static std::vector<TickCallbackHandle*> tick_listeners_;
+  static std::vector<PostTickCallbackHandle*> posttick_listeners_;
+
+  void TickCallbackHandle::OnState() {
+    callback_(tick_);
+  }
+
+  class EnginePhase {
+  protected:
+    uv_prepare_t handle_;
+
+    explicit EnginePhase(uv_loop_t* loop):
+      handle_() {
+      uv_prepare_init(loop, &handle_);
+      handle_.data = this;
+      uv_prepare_start(&handle_, &OnPrepare);
+    }
+
+    static inline void
+    OnPrepare(uv_prepare_t* handle) {
+      const auto phase = ((EnginePhase*) handle->data);
+      phase->Prepare();
+    }
+
+    virtual void Prepare() = 0;
+  public:
+    virtual ~EnginePhase() {
+      uv_prepare_stop(&handle_);
+    }
+
+    virtual State GetState() const = 0;
+
+    void Run(const uv_run_mode mode = UV_RUN_NOWAIT) {
+      const auto state = GetState();
+      LOG(INFO) << "running " << state << "....";
+      const auto start = uv_hrtime();
+      Engine::SetState(state);
+      uv_run(loop_, mode);
+      const auto total_ns = (uv_hrtime() - start);
+      DLOG(INFO) << state << " done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+    }
+  };
+
+  template<const State S, typename Callback>
+  class EnginePhaseTemplate : public EnginePhase {
+  protected:
+    std::vector<Callback*>& listeners_;
+
+    EnginePhaseTemplate(uv_loop_t* loop, std::vector<Callback*>& listeners):
+      EnginePhase(loop),
+      listeners_(listeners) {
+    }
+
+    void Prepare() override {
+      std::for_each(listeners_.begin(), listeners_.end(), std::bind(&Callback::Send, std::placeholders::_1));
+    }
+  public:
+    State GetState() const override {
+      return S;
+    }
+  };
+
+#define DEFINE_ENGINE_PHASE(Name)                                                 \
+  class Name##Phase : public EnginePhaseTemplate<k##Name, Name##CallbackHandle> { \
+  public:                                                                         \
+    Name##Phase(uv_loop_t* loop, std::vector<Name##CallbackHandle*>& listeners):  \
+      EnginePhaseTemplate<k##Name, Name##CallbackHandle>(loop, listeners) { }     \
+    ~Name##Phase() override = default;                                            \
+  };
+  DEFINE_ENGINE_PHASE(PreInit);
+  DEFINE_ENGINE_PHASE(Init);
+  DEFINE_ENGINE_PHASE(PostInit);
+  DEFINE_ENGINE_PHASE(PreTick);
+  DEFINE_ENGINE_PHASE(PostTick);
+#undef DEFINE_ENGINE_PHASE
+
+  class TickPhase : public EnginePhase {
+  protected:
+    std::vector<TickCallbackHandle*>& listeners_;
+
+    void Prepare() override {
+      tick_ = Tick {
+        .id = (uint64_t)total_ticks_,
+        .ts = (uint64_t)ts_,
+        .dts = (uint64_t)dts_,
+      };
+      std::for_each(listeners_.begin(), listeners_.end(), [](TickCallbackHandle* callback) {
+        callback->Send();
+      });
+    }
+  public:
+    TickPhase(uv_loop_t* loop, std::vector<TickCallbackHandle*>& listeners):
+      EnginePhase(loop),
+      listeners_(listeners) {
+    }
+    ~TickPhase() override = default;
+
+    State GetState() const override {
+      return State::kTick;
+    }
+  };
+
   void Engine::PreTick() {
-    DLOG(INFO) << "pre-tick.";
-    SetState(Engine::kPreTick);
     ts_ = uv_hrtime();
     total_ticks_ += 1;
     ticks_ += 1;
@@ -84,30 +163,54 @@ namespace mcc::engine {
     }
   }
 
-  void Engine::OnTick() {
-    DLOG(INFO) << "tick.";
-    SetState(Engine::kTick);
-    tick_ = Tick {
-      .id = (uint64_t)total_ticks_,
-      .ts = (uint64_t)ts_,
-      .dts = (uint64_t)dts_,
-    };
-    std::for_each(listeners_.begin(), listeners_.end(), [](EngineTickCallback* callback) {
-      callback->Invoke();
-    });
-  }
-
   void Engine::PostTick() {
-    DLOG(INFO) << "post-tick.";
-    SetState(Engine::kPostTick);
     last_ = ts_;
   } 
+  
+  void Engine::Run() {
+    {
+      PreInitPhase phase(loop_, preinit_listeners_);
+      phase.Run();
+    }
 
-  uint64_t Engine::GetTotalTicks() {
-    return (uint64_t) total_ticks_;
+    {
+      InitPhase phase(loop_, init_listeners_);
+      phase.Run();
+    }
+
+    {
+      PostInitPhase phase(loop_, postinit_listeners_);
+      phase.Run();
+    }
+
+    const auto window = Window::GetWindow()->handle();
+    while(!glfwWindowShouldClose(window)) {
+      {
+        PreTickPhase phase(loop_, pretick_listeners_);
+        phase.Run();
+      }
+
+      {
+        TickPhase phase(loop_, tick_listeners_);
+        phase.Run();
+      }
+
+      {
+        PostTickPhase phase(loop_, posttick_listeners_);
+        phase.Run();
+      }
+    }
   }
 
-  uint64_t Engine::GetTPS() {
-    return (uint64_t) tps_;
+#define DEFINE_REGISTER_LISTENER(Name, Listeners) \
+  void Engine::On##Name(Name##Callback callback) { \
+    Listeners.push_back(new Name##CallbackHandle(loop_, callback)); \
   }
+
+  DEFINE_REGISTER_LISTENER(PreInit, preinit_listeners_);
+  DEFINE_REGISTER_LISTENER(Init, init_listeners_);
+  DEFINE_REGISTER_LISTENER(PostInit, postinit_listeners_);
+  DEFINE_REGISTER_LISTENER(PreTick, pretick_listeners_);
+  DEFINE_REGISTER_LISTENER(Tick, tick_listeners_);
+  DEFINE_REGISTER_LISTENER(PostTick, posttick_listeners_);
 }

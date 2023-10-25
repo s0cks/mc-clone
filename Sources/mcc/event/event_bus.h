@@ -65,7 +65,7 @@ namespace mcc {
 
       Node* Search(Node* root, const std::string& path) const {
         Node* curr = root;
-        for(auto idx = 0; idx < path.length(); idx++)
+        for(auto idx = 0; idx < path.length() && curr != nullptr; idx++)
           curr = curr->GetChildAt(idx);
         return curr;
       }
@@ -91,7 +91,8 @@ namespace mcc {
       template<typename Event>
       void Publish(const std::string& event, const Event& data) {
         const auto callback = (EventBusCallback<Event>*) Search(root_, event);
-        (*callback)(data);
+        if(callback != nullptr)
+          (*callback)(data);
       }
 
       template<typename Event>

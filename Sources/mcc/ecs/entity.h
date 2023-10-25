@@ -16,12 +16,19 @@
 namespace mcc {
   typedef uint64_t EntityId;
   static constexpr const EntityId kInvalidEntityId = 0;
+  typedef std::bitset<32> Signature;
 
   class Entity {
   public:
     struct SignatureChangedEvent {
       const EntityId id;
       Signature signature;
+    };
+
+    struct HashFunction {
+      size_t operator()(const Entity& k) const {
+        return k.id();
+      }
     };
   private:
     EntityId id_;
@@ -49,12 +56,18 @@ namespace mcc {
     void operator=(const EntityId rhs) {
       id_ = rhs;
     }
+
+    bool operator==(const Entity& rhs) {
+      return id_ == rhs.id_;
+    }
+
+    bool operator!=(const Entity& rhs) {
+      return id_ != rhs.id_;
+    }
   public:
     static void OnDestroyed(std::function<void(const Entity&)> callback);
     static void OnSignatureChanged(std::function<void(const SignatureChangedEvent&)> callback);
   };
-
-  typedef std::bitset<32> Signature;
 
   static constexpr const uint64_t kMaxNumberOfEntities = 32;
 
@@ -68,7 +81,7 @@ namespace mcc {
     static Signature GetSignature(const Entity e);
   };
 
-  typedef std::unordered_set<Entity> EntitySet;
+  typedef std::unordered_set<Entity, Entity::HashFunction> EntitySet;
   typedef std::function<void(const Entity)> EntityCallback;
 }
 

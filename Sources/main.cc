@@ -25,13 +25,21 @@ int main(int argc, char** argv) {
   ::google::ParseCommandLineFlags(&argc, &argv, true);
 
   using namespace mcc;
+  font::Initialize();
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);
   RenderLoop::Initialize(loop);
-  Renderer::RegisterComponents();
-  camera::PerspectiveCameraBehavior::RegisterComponents();
-  font::Initialize();
+  Renderer::Init();
+
+  Engine::OnPreInit([]() {
+    DLOG(INFO) << "pre-init.";
+    camera::PerspectiveCameraBehavior::RegisterComponents();
+  });
+
+  Engine::OnPostInit([]() {
+    camera::PerspectiveCameraBehavior::Init();
+  });
 
   auto window = Window::Initialize({ 512, 512 });
   window->Open();

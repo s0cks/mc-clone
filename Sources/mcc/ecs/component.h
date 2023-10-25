@@ -27,7 +27,7 @@ namespace mcc {
   class ComponentListTemplate : public ComponentList {
   protected:
     std::array<T, kMaxNumberOfEntities> components_;
-    std::unordered_map<Entity, uint64_t> e2i_;
+    std::unordered_map<Entity, uint64_t, Entity::HashFunction> e2i_;
     std::unordered_map<uint64_t, Entity> i2e_;
     uint64_t size_;
   public:
