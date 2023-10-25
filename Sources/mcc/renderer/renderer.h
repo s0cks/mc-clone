@@ -15,6 +15,9 @@ namespace mcc {
     static void OnTick(Tick& tick);
     static void RenderPlane(const glm::mat4 projection, const glm::mat4 view);
     static void RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e);
+
+    static void PreRender();
+    static void PostRender();
   public:
     static void Init();
     static void RegisterComponents();

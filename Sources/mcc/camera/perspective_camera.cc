@@ -78,7 +78,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnTick(Tick& tick) {
-    const auto window = Window::GetWindow()->handle();
+    const auto window = Window::GetHandle();
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);
       const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.025f);
@@ -95,7 +95,7 @@ namespace mcc::camera {
 
   glm::mat4 PerspectiveCameraBehavior::CalculateProjectionMatrix() {
     const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
-    const auto window_size = Window::GetWindow()->GetSize();
+    const auto window_size = Window::GetSize();
     return glm::perspective(glm::radians(camera.zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 100.0f);
   }
 

@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
   Engine::Init(loop);
   RenderLoop::Initialize(loop);
   Renderer::Init();
+  Window::Init();
 
   Engine::OnPreInit([]() {
     DLOG(INFO) << "pre-init.";
@@ -41,7 +42,7 @@ int main(int argc, char** argv) {
     camera::PerspectiveCameraBehavior::Init();
   });
 
-  auto window = Window::Initialize({ 512, 512 });
-  window->Open();
+  Engine::Run();
+  glfwTerminate();
   return EXIT_SUCCESS;
 }

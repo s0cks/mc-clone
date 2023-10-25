@@ -2,6 +2,7 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/window.h"
 #include "mcc/shape/square.h"
 #include "mcc/shape/plane.h"
 #include "mcc/camera/perspective_camera.h"
@@ -36,6 +37,17 @@ namespace mcc {
 
   void Renderer::OnInit() {
 
+  }
+
+  void Renderer::PreRender() {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  }
+
+  void Renderer::PostRender() {
+    const auto window = Window::GetHandle();
+    glfwSwapBuffers(window);
+    glfwPollEvents();
   }
 
   void Renderer::OnPostInit() {
@@ -91,11 +103,13 @@ namespace mcc {
       frames_ = 0;
     }
 
+    PreRender();
     const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
     const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
     Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
       RenderEntity(projection, view, e);
     });
+    PostRender();
   }
 
   uint64_t Renderer::GetFrameCount() {

@@ -183,7 +183,7 @@ namespace mcc::engine {
       phase.Run();
     }
 
-    const auto window = Window::GetWindow()->handle();
+    const auto window = Window::GetHandle();
     while(!glfwWindowShouldClose(window)) {
       {
         PreTickPhase phase(loop_, pretick_listeners_);

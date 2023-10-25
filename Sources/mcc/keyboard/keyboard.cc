@@ -30,8 +30,7 @@ namespace mcc::keyboard {
 
   void Keyboard::Initialize() {
     root_ = new RootNode();
-    const auto window = Window::GetWindow();
-    const auto handle = window->handle();
+    const auto handle = Window::GetHandle();
     glfwSetKeyCallback(handle, &OnKey);
   }
 
