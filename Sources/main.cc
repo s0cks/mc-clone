@@ -29,18 +29,14 @@ int main(int argc, char** argv) {
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);
+  Engine::OnPostInit([]() {
+    Mouse::Initialize(Window::GetHandle());
+  });
   RenderLoop::Initialize(loop);
   Renderer::Init();
+  camera::PerspectiveCameraBehavior::Init();
   Window::Init();
-
-  Engine::OnPreInit([]() {
-    DLOG(INFO) << "pre-init.";
-    camera::PerspectiveCameraBehavior::RegisterComponents();
-  });
-
-  Engine::OnPostInit([]() {
-    camera::PerspectiveCameraBehavior::Init();
-  });
+  Systems::Init();
 
   Engine::Run();
   glfwTerminate();

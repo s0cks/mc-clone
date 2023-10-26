@@ -6,8 +6,19 @@
 #include "mcc/renderer/renderable.h"
 
 namespace mcc {
+#define FOR_EACH_RENDERER_STATE(V) \
+  V(PreRender)                     \
+  V(Render)                        \
+  V(PostRender)
+
   class Renderer {
     DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
+  public:
+    enum State {
+#define DEFINE_RENDERER_STATE(Name) k##Name,
+      FOR_EACH_RENDERER_STATE(DEFINE_RENDERER_STATE)
+#undef DEFINE_RENDERER_STATE
+    };
   private:
     static void OnPreInit();
     static void OnInit();
@@ -18,11 +29,18 @@ namespace mcc {
 
     static void PreRender();
     static void PostRender();
+    static void SetState(const State state);
   public:
+    static State GetState();
     static void Init();
     static void RegisterComponents();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
+
+#define DEFINE_STATE_CHECK(Name) \
+    static inline bool Is##Name() { return GetState() == State::k##Name; }
+    FOR_EACH_RENDERER_STATE(DEFINE_STATE_CHECK)
+#undef DEFINE_STATE_CHECK
   };
 }
 

@@ -50,7 +50,7 @@ add_library(${PROJECT_NAME}
   mcc/scene.h mcc/scene.cc
   mcc/mesh/model.h mcc/mesh/model.cc
   mcc/rotation.h mcc/rotation.cc
-  mcc/renderer/renderable.h
+  mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc

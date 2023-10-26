@@ -4,11 +4,13 @@
 #include <cstdint>
 #include <unordered_set>
 #include <unordered_map>
+#include <iostream>
 #include <functional>
 #include <array>
 #include <queue>
 #include <bitset>
 #include <set>
+#include <glog/logging.h>
 
 #include "mcc/common.h"
 #include "mcc/event/event_bus.h"
@@ -23,6 +25,14 @@ namespace mcc {
     struct SignatureChangedEvent {
       const EntityId id;
       Signature signature;
+
+      friend std::ostream& operator<<(std::ostream& stream, const SignatureChangedEvent& rhs) {
+        stream << "Entity::SignatureChangedEvent(";
+        stream << "id=" << rhs.id << ", ";
+        stream << "signature=" << rhs.signature;
+        stream << ")";
+        return stream;
+      }
     };
 
     struct HashFunction {
@@ -53,7 +63,7 @@ namespace mcc {
       id_ = rhs.id_;
     }
 
-    void operator=(const EntityId rhs) {
+    void operator=(const EntityId& rhs) {
       id_ = rhs;
     }
 
@@ -63,6 +73,13 @@ namespace mcc {
 
     bool operator!=(const Entity& rhs) {
       return id_ != rhs.id_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Entity& rhs) {
+      stream << "Entity(";
+      stream << "id=" << rhs.id_;
+      stream << ")";
+      return stream;
     }
   public:
     static void OnDestroyed(std::function<void(const Entity&)> callback);

@@ -77,8 +77,6 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
-    Mouse::Initialize(handle_);
-
     glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);
     //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
@@ -88,23 +86,21 @@ namespace mcc {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // const auto size = Window::GetSize();
-    // const auto orthoCamera = OrthoCamera::Initialize(size);
-    // const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
+    const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
 
-    // ProgramCompiler compiler;
-    // compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fsh");
-    // compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/cube.vsh");
-    // Shader shader;
-    // LOG_IF(FATAL, !compiler.Compile(&shader)) << "failed to compile cube shader.";
+    ProgramCompiler compiler;
+    compiler.AttachFragmentShaderFromFile(FLAGS_resources + "/shaders/cube.fsh");
+    compiler.AttachVertexShaderFromFile(FLAGS_resources + "/shaders/cube.vsh");
+    Shader shader;
+    LOG_IF(FATAL, !compiler.Compile(&shader)) << "failed to compile cube shader.";
 
-    // const auto e2 = Entities::CreateEntity();
-    // const auto mesh = Cube::CreateMesh();
-    // Coordinator::AddComponent(e2, Renderable {
-    //   .shader = shader,
-    //   .mesh = mesh,
-    //   .texture = texture,
-    // });
+    const auto e2 = Entities::CreateEntity();
+    const auto mesh = Cube::CreateMesh();
+    Coordinator::AddComponent(e2, Renderable {
+      .shader = shader,
+      .mesh = mesh,
+      .texture = texture,
+    });
   }
 
   GLFWwindow* Window::GetHandle() {

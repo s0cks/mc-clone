@@ -54,7 +54,7 @@ namespace mcc::camera {
       .sensitivity = 0.1f,
       .zoom = 45.0f,
       .front = glm::vec3(0.0f, 0.0f, -1.0f),
-      .speed = 2.5f,
+      .speed = 1.0f,
     };
     DLOG(INFO) << "created camera entity: " << e;
     UpdateCamera(camera);
@@ -63,33 +63,48 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::RegisterComponents() {
+
+  }
+
+  void PerspectiveCameraBehavior::OnPreInit() {
     Components::Register<PerspectiveCamera>();
   }
 
-  void PerspectiveCameraBehavior::Init() {
+  void PerspectiveCameraBehavior::OnInit() {
+
+  }
+
+  void PerspectiveCameraBehavior::OnPostInit() {
     Systems::Register<PerspectiveCameraBehavior>();
     Signature sig;
     sig.set(Components::GetComponentIdForType<PerspectiveCamera>());
     Systems::SetSignature<PerspectiveCameraBehavior>(sig);
 
     SetCameraEntity(CreateCameraEntity());
-    Engine::OnTick(&OnTick);
     Mouse::Register(&OnMousePosition);
+  }
+
+  void PerspectiveCameraBehavior::Init() {
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+    Engine::OnTick(&OnTick);
   }
 
   void PerspectiveCameraBehavior::OnTick(Tick& tick) {
     const auto window = Window::GetHandle();
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);
-      const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.025f);
+      const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.00005f);
+      DLOG(INFO) << "velocity: " << velocity;
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.pos += (camera.front * velocity);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.pos -= (camera.front * velocity);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.pos -= (camera.right * (velocity - 0.15f));
+        camera.pos -= (camera.right * velocity);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.pos += (camera.right * (velocity - 0.15f));
+        camera.pos += (camera.right * velocity);
     });
   }
 

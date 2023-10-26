@@ -5,10 +5,12 @@ namespace mcc {
   static std::unordered_map<const char*, ComponentList*> components_;
   static ComponentId next_id_;
 
-  void Components::Register(const char* name, ComponentList* list) {
+  ComponentId Components::Register(const char* name, ComponentList* list) {
     types_.insert({ name, next_id_ });
     components_.insert({ name, list });
+    const auto id = next_id_;
     next_id_++;
+    return id;
   }
 
   ComponentList* Components::GetComponentList(const char* name) {

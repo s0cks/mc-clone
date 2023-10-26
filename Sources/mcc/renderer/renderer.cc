@@ -11,6 +11,7 @@ namespace mcc {
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
+  static RelaxedAtomic<Renderer::State> state_;
 
   static Shader lightingShader_;
 
@@ -31,8 +32,16 @@ namespace mcc {
     return GetColorizedShader();
   }
 
+  void Renderer::SetState(const Renderer::State state) {
+    state_ = state;
+  }
+
+  Renderer::State Renderer::GetState() {
+    return (Renderer::State) state_;
+  }
+
   void Renderer::OnPreInit() {
-    Components::Register<Renderable>();
+    Renderable::SetComponentId(Components::Register<Renderable>());
   }
 
   void Renderer::OnInit() {
@@ -40,11 +49,13 @@ namespace mcc {
   }
 
   void Renderer::PreRender() {
+    SetState(Renderer::kPreRender);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
 
   void Renderer::PostRender() {
+    SetState(Renderer::kPostRender);
     const auto window = Window::GetHandle();
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -71,7 +82,7 @@ namespace mcc {
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
 
-    texture.Bind0();
+    // texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);
@@ -95,6 +106,7 @@ namespace mcc {
   }
 
   void Renderer::OnTick(Tick& tick) {
+    DLOG(INFO) << "tick: " << tick;
     frames_ += 1;
     if(tick.dts >= (NSEC_PER_MSEC * 1)) {
       const auto diff = (tick.ts - last_.ts);
@@ -104,9 +116,11 @@ namespace mcc {
     }
 
     PreRender();
+    SetState(Renderer::kRender);
     const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
     const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
     Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
+      DLOG(INFO) << "rendering: " << e;
       RenderEntity(projection, view, e);
     });
     PostRender();

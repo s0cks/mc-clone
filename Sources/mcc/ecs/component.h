@@ -8,10 +8,9 @@
 
 #include "mcc/gfx.h"
 #include "mcc/ecs/entity.h"
+#include "mcc/ecs/component_id.h"
 
 namespace mcc {
-  typedef uint64_t ComponentId;
-
   class ComponentList {
   protected:
     ComponentList() = default;
@@ -77,12 +76,12 @@ namespace mcc {
       return typeid(T).name();
     }
 
-    static void Register(const char* name, ComponentList* list);
+    static ComponentId Register(const char* name, ComponentList* list);
     static ComponentList* GetComponentList(const char* name);
     static ComponentId GetComponentId(const char* name);
   public:
     template<typename T>
-    static inline void Register() {
+    static inline ComponentId Register() {
       return Register(TypeId<T>(), ComponentList::New<T>());
     }
 
@@ -113,19 +112,6 @@ namespace mcc {
     GetComponentListForType() {
       return reinterpret_cast<ComponentListTemplate<T>*>(GetComponentList(TypeId<T>()));
     }
-  };
-
-  class Coordinator;
-  class ComponentManager {
-    friend class Coordinator;
-  protected:
-    std::unordered_map<const char*, ComponentId> types_;
-    std::unordered_map<const char*, ComponentList*> components_;
-    ComponentId next_id_;
-
-    ComponentManager() = default;
-  public:
-    virtual ~ComponentManager() = default;
   };
 }
 

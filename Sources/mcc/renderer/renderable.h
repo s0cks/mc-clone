@@ -4,12 +4,19 @@
 #include "mcc/mesh/mesh.h"
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
+#include "mcc/ecs/component_id.h"
 
 namespace mcc {
   struct Renderable {
     Shader shader;
     mesh::Mesh* mesh;
     texture::Texture texture;
+
+    friend class Renderer;
+  private:
+    static void SetComponentId(const ComponentId id);
+  public:
+    static ComponentId GetComponentId();
   };
 }
 

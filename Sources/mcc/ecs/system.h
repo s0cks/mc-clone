@@ -7,8 +7,6 @@
 #include "mcc/engine/tick.h"
 
 namespace mcc {
-  typedef std::function<void(const Entity, Signature)> EntitySignatureChangeCallback;
-
   class Systems {
     DEFINE_NON_INSTANTIABLE_TYPE(Systems);
   private:
@@ -41,8 +39,8 @@ namespace mcc {
     }
 
     static void Init();
-    static void OnDestroyed(const Entity e);
-    static void OnSignatureChanged(const Entity e, Signature sig);
+    static void OnDestroyed(const Entity& e);
+    static void OnSignatureChanged(const Entity::SignatureChangedEvent& e);
   };
 }
 

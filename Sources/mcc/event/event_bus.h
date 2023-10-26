@@ -4,6 +4,7 @@
 #include <uv.h>
 #include <string>
 #include <functional>
+#include <glog/logging.h>
 
 #include "mcc/trie.h"
 #include "mcc/platform.h"
@@ -20,14 +21,42 @@ namespace mcc {
     public:
       typedef std::function<void(const Event&)> Callback;
     protected:
+      EventBusCallback* next_;
+      EventBusCallback* previous_;
       Callback callback_;
 
-      EventBusCallback(Callback callback):
+      explicit EventBusCallback(Callback callback):
         Node(),
+        next_(nullptr),
+        previous_(nullptr),
         callback_(callback) {
       }
     public:
       ~EventBusCallback() override = default;
+
+      EventBusCallback* GetNext() const {
+        return next_;
+      }
+
+      void SetNext(EventBusCallback* next) {
+        next_ = next;
+      }
+
+      bool HasNext() const {
+        return next_ != nullptr;
+      }
+
+      EventBusCallback* GetPrevious() const {
+        return previous_ != nullptr;
+      }
+
+      void SetPrevious(EventBusCallback* previous) {
+        previous_ = previous;
+      }
+
+      bool HasPrevious() const {
+        return previous_;
+      }
 
       void operator()(const Event& event) {
         return callback_(event);
@@ -37,10 +66,19 @@ namespace mcc {
     using trie::Node;
     using trie::EdgeNode;
 
-    class EventBusNode : public EdgeNode<kEventBusAlphabetSize> {
+    class EventBusNode : public EdgeNode<kEventBusAlphabetSize + 1> {
       friend class EventBus;
     protected:
-      EventBusNode() = default;
+      char key_;
+
+      EventBusNode():
+        EdgeNode(),
+        key_() {
+      }
+      EventBusNode(const char key):
+        EdgeNode(),
+        key_(key) {
+      }
     public:
       ~EventBusNode() override = default;
     };
@@ -53,21 +91,23 @@ namespace mcc {
 
       bool Insert(Node* root, const std::string& path, Node* node) {
         Node* curr = root;
-        for(auto idx = 0; idx < path.length() - 1; idx++) {
-          const auto pos = path[idx];
+        for(auto idx = 0; idx < path.length(); idx++) {
+          const auto pos = (int) (strchr(kEventBusAlphabet, tolower(path[idx])) - kEventBusAlphabet);
           if(!curr->HasChildAt(pos))
-            curr->SetChildAt(pos, new EventBusNode());
+            curr->SetChildAt(pos, new EventBusNode(pos));
           curr = curr->GetChildAt(pos);
         }
-        curr->SetChildAt(path[path.length()], node);
+        curr->SetChildAt(kEventBusAlphabetSize + 1, node);
         return true;
       }
 
       Node* Search(Node* root, const std::string& path) const {
         Node* curr = root;
-        for(auto idx = 0; idx < path.length() && curr != nullptr; idx++)
-          curr = curr->GetChildAt(idx);
-        return curr;
+        for(auto idx = 0; idx < path.length() && curr != nullptr; idx++) {
+          const auto pos = (int) (strchr(kEventBusAlphabet, tolower(path[idx])) - kEventBusAlphabet);
+          curr = curr->GetChildAt(pos);
+        }
+        return curr->GetChildAt(kEventBusAlphabetSize + 1);
       }
     public:
       EventBus():
