@@ -11,6 +11,9 @@ namespace mcc {
     static void OnPreInit();
     static void OnInit();
     static void OnPostInit();
+    static void OnTerminating();
+    static void OnTerminated();
+    static void OnWindowClosed(GLFWwindow* window);
   public:
     static void Init();
     static void Close();

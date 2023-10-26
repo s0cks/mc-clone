@@ -96,15 +96,14 @@ namespace mcc::camera {
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);
       const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.00005f);
-      DLOG(INFO) << "velocity: " << velocity;
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.pos += (camera.front * velocity);
+        camera.pos += (camera.front * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.pos -= (camera.front * velocity);
+        camera.pos -= (camera.front * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.pos -= (camera.right * velocity);
+        camera.pos -= (camera.right * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.pos += (camera.right * velocity);
+        camera.pos += (camera.right * velocity * 0.05f);
     });
   }
 

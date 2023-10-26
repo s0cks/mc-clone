@@ -13,7 +13,9 @@ namespace mcc::engine {
   V(PostInit)                    \
   V(PreTick)                     \
   V(Tick)                        \
-  V(PostTick)
+  V(PostTick)                    \
+  V(Terminating)                 \
+  V(Terminated)
 
   enum State {
     kUninitialized,
@@ -141,6 +143,24 @@ namespace mcc::engine {
       EngineStateCallbackHandleTemplate(loop, callback) {
     }
     ~PostTickCallbackHandle() override = default;
+  };
+
+  typedef std::function<void()> TerminatingCallback;
+  class TerminatingCallbackHandle : public EngineStateCallbackHandleTemplate<TerminatingCallback> {
+  public:
+    TerminatingCallbackHandle(uv_loop_t* loop, TerminatingCallback callback):
+      EngineStateCallbackHandleTemplate(loop, callback) {
+    }
+    ~TerminatingCallbackHandle() override = default;
+  };
+
+  typedef std::function<void()> TerminatedCallback;
+  class TerminatedCallbackHandle : public EngineStateCallbackHandleTemplate<TerminatedCallback> {
+  public:
+    TerminatedCallbackHandle(uv_loop_t* loop, TerminatedCallback callback):
+      EngineStateCallbackHandleTemplate(loop, callback) {
+    }
+    ~TerminatedCallbackHandle() override = default;
   };
 }
 

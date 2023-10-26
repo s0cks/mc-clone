@@ -39,6 +39,5 @@ int main(int argc, char** argv) {
   Systems::Init();
 
   Engine::Run();
-  glfwTerminate();
   return EXIT_SUCCESS;
 }

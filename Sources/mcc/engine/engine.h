@@ -19,10 +19,15 @@ namespace mcc {
       static void PreTick();
       static void OnTick();
       static void PostTick();
+      static void SetRunning(const bool value = true);
       static void SetState(const State state);
+
+      static void OnLoopClosed(uv_handle_t* handle);
     public:
       static void Init(uv_loop_t* loop = uv_loop_new());
       static void Run();
+      static void Shutdown();
+      static bool IsRunning();
       static uv_loop_t* GetLoop();
       static State GetState();
       

@@ -14,7 +14,7 @@ namespace mcc::engine {
   static RelaxedAtomic<uint64_t> dts_;
   static RelaxedAtomic<uint64_t> tps_;
   static RelaxedAtomic<uint64_t> last_;
-
+  static RelaxedAtomic<bool> running_(false);
   static RelaxedAtomic<State> state_(kUninitialized);
   static Tick tick_;
 
@@ -52,6 +52,8 @@ namespace mcc::engine {
   static std::vector<PreTickCallbackHandle*> pretick_listeners_;
   static std::vector<TickCallbackHandle*> tick_listeners_;
   static std::vector<PostTickCallbackHandle*> posttick_listeners_;
+  static std::vector<TerminatingCallbackHandle*> terminating_listeners_;
+  static std::vector<TerminatedCallbackHandle*> terminated_listeners_;
 
   void TickCallbackHandle::OnState() {
     callback_(tick_);
@@ -124,6 +126,8 @@ namespace mcc::engine {
   DEFINE_ENGINE_PHASE(PostInit);
   DEFINE_ENGINE_PHASE(PreTick);
   DEFINE_ENGINE_PHASE(PostTick);
+  DEFINE_ENGINE_PHASE(Terminating);
+  DEFINE_ENGINE_PHASE(Terminated);
 #undef DEFINE_ENGINE_PHASE
 
   class TickPhase : public EnginePhase {
@@ -165,41 +169,39 @@ namespace mcc::engine {
 
   void Engine::PostTick() {
     last_ = ts_;
-  } 
+  }
+
+  template<typename Phase, typename Callback>
+  static inline void
+  RunPhase(std::vector<Callback*>& listeners) {
+    Phase phase(loop_, listeners);
+    phase.Run();
+  }
   
   void Engine::Run() {
-    {
-      PreInitPhase phase(loop_, preinit_listeners_);
-      phase.Run();
+    RunPhase<PreInitPhase>(preinit_listeners_);
+    RunPhase<InitPhase>(init_listeners_);
+    RunPhase<PostInitPhase>(postinit_listeners_);
+    Engine::SetRunning(true);
+    while(Engine::IsRunning()) {
+      RunPhase<PreTickPhase>(pretick_listeners_);
+      RunPhase<TickPhase>(tick_listeners_);
+      RunPhase<PostTickPhase>(posttick_listeners_);
     }
+    RunPhase<TerminatingPhase>(terminating_listeners_);
+    RunPhase<TerminatedPhase>(terminated_listeners_);
+  }
 
-    {
-      InitPhase phase(loop_, init_listeners_);
-      phase.Run();
-    }
+  void Engine::Shutdown() {
+    return Engine::SetRunning(false);
+  }
 
-    {
-      PostInitPhase phase(loop_, postinit_listeners_);
-      phase.Run();
-    }
+  void Engine::SetRunning(const bool value) {
+    running_ = value;
+  }
 
-    const auto window = Window::GetHandle();
-    while(!glfwWindowShouldClose(window)) {
-      {
-        PreTickPhase phase(loop_, pretick_listeners_);
-        phase.Run();
-      }
-
-      {
-        TickPhase phase(loop_, tick_listeners_);
-        phase.Run();
-      }
-
-      {
-        PostTickPhase phase(loop_, posttick_listeners_);
-        phase.Run();
-      }
-    }
+  bool Engine::IsRunning() {
+    return (bool) running_;
   }
 
 #define DEFINE_REGISTER_LISTENER(Name, Listeners) \
@@ -213,4 +215,6 @@ namespace mcc::engine {
   DEFINE_REGISTER_LISTENER(PreTick, pretick_listeners_);
   DEFINE_REGISTER_LISTENER(Tick, tick_listeners_);
   DEFINE_REGISTER_LISTENER(PostTick, posttick_listeners_);
+  DEFINE_REGISTER_LISTENER(Terminating, terminating_listeners_);
+  DEFINE_REGISTER_LISTENER(Terminated, terminated_listeners_);
 }

@@ -47,16 +47,26 @@ namespace mcc {
     glfwSetWindowShouldClose(handle_, GL_TRUE);
   }
 
+  void Window::OnWindowClosed(GLFWwindow* window) {
+    Engine::Shutdown();
+  }
+
   void Window::Init() {
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
+    Engine::OnTerminating(&OnTerminating);
+    Engine::OnTerminated(&OnTerminated);
   }
 
   void Window::OnPreInit() {
     glfwSetErrorCallback(&OnGlfwError);
     LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
+    glfwWindowHint(GLFW_CURSOR_HIDDEN, GLFW_TRUE);
+    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
+    glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -74,12 +84,13 @@ namespace mcc {
       LOG(FATAL) << "failed to create GLFW window";
     }
     handle_ = handle;
+    glfwSetWindowCloseCallback(handle, &OnWindowClosed);
+    //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
   }
 
   void Window::OnPostInit() {
     glfwMakeContextCurrent(handle_);
     glfwSwapInterval(0);
-    //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
@@ -101,6 +112,14 @@ namespace mcc {
       .mesh = mesh,
       .texture = texture,
     });
+  }
+
+  void Window::OnTerminating() {
+    glfwSetWindowShouldClose(handle_, GLFW_TRUE);
+  }
+
+  void Window::OnTerminated() {
+    glfwTerminate();
   }
 
   GLFWwindow* Window::GetHandle() {
