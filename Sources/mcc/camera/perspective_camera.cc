@@ -91,7 +91,7 @@ namespace mcc::camera {
     Engine::OnTick(&OnTick);
   }
 
-  void PerspectiveCameraBehavior::OnTick(Tick& tick) {
+  void PerspectiveCameraBehavior::OnTick(const Tick& tick) {
     const auto window = Window::GetHandle();
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);

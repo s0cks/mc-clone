@@ -30,7 +30,7 @@ namespace mcc::camera {
     static void SetCameraEntity(const Entity e);
     static void OnMousePosition(const MousePosition& pos);
     
-    static void OnTick(Tick& tick);
+    static void OnTick(const Tick& tick);
     static void OnPreInit();
     static void OnInit();
     static void OnPostInit();

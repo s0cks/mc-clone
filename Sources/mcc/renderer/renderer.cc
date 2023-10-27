@@ -105,7 +105,7 @@ namespace mcc {
     plane_mesh_->Render();
   }
 
-  void Renderer::OnTick(Tick& tick) {
+  void Renderer::OnTick(const Tick& tick) {
     DLOG(INFO) << "tick: " << tick;
     frames_ += 1;
     if(tick.dts >= (NSEC_PER_MSEC * 1)) {

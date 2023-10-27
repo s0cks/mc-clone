@@ -15,14 +15,14 @@ namespace mcc {
       DEFINE_NON_INSTANTIABLE_TYPE(Engine);
 
       friend class EnginePhase;
+      friend class Stage;
     private:
-      static void PreTick();
-      static void OnTick();
-      static void PostTick();
       static void SetRunning(const bool value = true);
       static void SetState(const State state);
 
-      static void OnLoopClosed(uv_handle_t* handle);
+      static void OnLoopClosed(uv_handle_t* handle) {
+        //TODO: implement
+      }
     public:
       static void Init(uv_loop_t* loop = uv_loop_new());
       static void Run();

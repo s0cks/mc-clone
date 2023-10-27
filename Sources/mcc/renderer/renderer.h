@@ -23,7 +23,7 @@ namespace mcc {
     static void OnPreInit();
     static void OnInit();
     static void OnPostInit();
-    static void OnTick(Tick& tick);
+    static void OnTick(const Tick& tick);
     static void RenderPlane(const glm::mat4 projection, const glm::mat4 view);
     static void RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e);
 
@@ -33,7 +33,6 @@ namespace mcc {
   public:
     static State GetState();
     static void Init();
-    static void RegisterComponents();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
 

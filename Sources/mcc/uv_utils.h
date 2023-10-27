@@ -136,16 +136,6 @@ namespace mcc::uv {
     }
   };
 
-  typedef std::function<void()> AsyncHandleCallback;
-
-  class AsyncHandle : public HandleTemplate<uv_async_t, AsyncHandleCallback> {
-  public:
-    AsyncHandle(uv_loop_t* loop, AsyncHandleCallback callback):
-      HandleTemplate<uv_async_t, AsyncHandleCallback>(std::move(callback)) {
-    }
-    ~AsyncHandle() override = default;
-  };
-
   typedef std::function<void()> CheckCallback;
 
   class CheckHandle : public HandleTemplate<uv_check_t, CheckCallback> {
