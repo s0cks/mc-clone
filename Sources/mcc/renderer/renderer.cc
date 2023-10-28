@@ -7,6 +7,8 @@
 #include "mcc/shape/plane.h"
 #include "mcc/camera/perspective_camera.h"
 
+#include "mcc/gui/gui_window.h"
+
 namespace mcc {
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
@@ -50,7 +52,7 @@ namespace mcc {
 
   void Renderer::PreRender() {
     SetState(Renderer::kPreRender);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
 
@@ -66,6 +68,8 @@ namespace mcc {
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
+
+    gui::Window::SetCurrent(gui::Window::New(400.0f, 400.0f));
   }
 
   void Renderer::Init() {
@@ -98,7 +102,6 @@ namespace mcc {
     glm::mat4 model = glm::mat4(1.0f);
     plane_shader_.ApplyShader();
     plane_shader_.SetMat4("model", model);
-    plane_shader_.SetMat4("projection", projection);
     plane_shader_.SetMat4("view", view);
     plane_shader_.SetVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
     plane_shader_.ApplyShader();
@@ -106,7 +109,6 @@ namespace mcc {
   }
 
   void Renderer::OnTick(const Tick& tick) {
-    DLOG(INFO) << "tick: " << tick;
     frames_ += 1;
     if(tick.dts >= (NSEC_PER_MSEC * 1)) {
       const auto diff = (tick.ts - last_.ts);
@@ -115,14 +117,24 @@ namespace mcc {
       frames_ = 0;
     }
 
-    PreRender();
     SetState(Renderer::kRender);
-    const auto projection = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
-    const auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
-    Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
-      DLOG(INFO) << "rendering: " << e;
-      RenderEntity(projection, view, e);
-    });
+    PreRender();
+    {
+      auto proj = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
+      auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
+      Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
+        RenderEntity(proj, view, e);
+      });
+    }
+
+    if(gui::Window::HasCurrent()) {
+      glm::mat4 proj = glm::mat4(1.0f);
+      proj = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f, 0.1f, 10.0f);
+      glm::mat4 view = glm::mat4(1.0f);
+      view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+      gui::Window::GetCurrent()->Render(proj, view);
+    }
+
     PostRender();
   }
 

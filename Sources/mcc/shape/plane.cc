@@ -20,10 +20,8 @@ namespace mcc {
         glm::vec3 normal = glm::cross(tangent, bitangent);
         vertices.push_back(Vertex{
           .pos = pos,
-          .tex = tex,
+          .uv = tex,
           .normal = normal,
-          .bitangent = bitangent,
-          .tangent = tangent,
         });
       }
     }

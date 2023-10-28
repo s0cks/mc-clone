@@ -11,9 +11,7 @@ namespace mcc {
   struct Vertex {
     glm::vec3 pos;
     glm::vec3 normal;
-    glm::vec2 tex;
-    glm::vec3 tangent;
-    glm::vec3 bitangent;
+    glm::vec2 uv;
   };
 
   static inline std::ostream& 

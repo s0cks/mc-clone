@@ -1,7 +1,7 @@
 #ifndef MCC_GFX_H
 #define MCC_GFX_H
 
-#include <opengl/gl3.h>
+#include <OpenGL/gl3.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

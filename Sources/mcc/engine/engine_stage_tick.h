@@ -31,7 +31,6 @@ namespace mcc::engine {
     CallbackHandleList callbacks_;
 
     void Prepare() override {
-      DLOG(INFO) << "prepare.";
       for(auto& cb : callbacks_)
         cb->Send();
     }

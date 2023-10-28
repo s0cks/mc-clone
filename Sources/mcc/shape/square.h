@@ -19,7 +19,7 @@ namespace mcc {
         .pos = glm::vec3(-size, -size, 0.0f)
       });
       vertices.push_back(Vertex {
-        .pos = glm::vec3(-size, size, 0.5f)
+        .pos = glm::vec3(-size, size, 0.0f)
       });
     }
 
@@ -34,14 +34,18 @@ namespace mcc {
       indices.push_back(3);
     }
 
+    static inline mesh::Mesh*
+    GenerateMesh(const glm::vec2 pos = glm::vec2(0, 0), const float size = 0.5f) {
+      return mesh::IndexedMesh::New(GenerateVertexList(pos, size), GenerateIndexList());
+    }
   protected:
     static inline VertexList
     GenerateVertexList(const glm::vec2 pos, const float size) {
       return {
-        { glm::vec3(pos[0] + size, pos[1] + size, 0.0f) }, // top right
-        { glm::vec3(pos[0] + size, pos[1] - size, 0.0f) }, // bottom right
-        { glm::vec3(pos[0] - size, pos[1] - size, 0.0f) }, // bottom left
-        { glm::vec3(pos[0] - size, pos[1] + size, 0.0f) }, // top left
+        { .pos = glm::vec3(pos[0] + size, pos[1] + size, 0.0f) }, // top right
+        { .pos = glm::vec3(pos[0] + size, pos[1] - size, 0.0f) }, // bottom right
+        { .pos = glm::vec3(pos[0] - size, pos[1] - size, 0.0f) }, // bottom left
+        { .pos = glm::vec3(pos[0] - size, pos[1] + size, 0.0f) }, // top left
       };
     }
 
@@ -55,7 +59,7 @@ namespace mcc {
   public:
     Square(const glm::vec2 pos,
            const float size = 0.5f):
-      Shape(GetColorizedShader(), mesh::IndexedMesh::New(GenerateVertexList(pos, size), GenerateIndexList())) {
+      Shape(GetColorizedShader(), GenerateMesh()) {
     }
     ~Square() override = default;
     DEFINE_NON_COPYABLE_TYPE(Square);
