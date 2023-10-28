@@ -6,6 +6,9 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 color;
 
+out vec3 inColor;
+
 void main() {
   gl_Position = projection * view * model * vec4(pos, 1.0);
+  inColor = color;
 }

@@ -31,6 +31,13 @@ namespace mcc {
     void operator=(const Vbo& rhs) {
       id_ = rhs.id_;
     }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Vbo& rhs) {
+      stream << "Vbo(";
+      stream << "id=" << rhs.id_;
+      stream << ")";
+      return stream;
+    }
   };
 }
 

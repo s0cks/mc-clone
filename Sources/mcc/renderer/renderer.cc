@@ -17,6 +17,9 @@ namespace mcc {
 
   static Shader lightingShader_;
 
+  static mesh::Mesh* mesh_;
+  static Shader shader_;
+
   void Renderer::SetState(const Renderer::State state) {
     state_ = state;
   }
@@ -51,13 +54,19 @@ namespace mcc {
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
+    Engine::OnTick(&OnTick);
+
+    gui::Window::Init();
+
+    Mouse::Register(MouseButton::kMouseButton1, MouseButtonState::kMousePressed, []() {
+      gui::Window::SetCurrent(gui::Window::New(glm::vec2(400.0f, 400.0f)));
+    });
   }
 
   void Renderer::Init() {
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
-    Engine::OnTick(&OnTick);
   }
 
   void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
@@ -98,13 +107,17 @@ namespace mcc {
       });
     }
 
-    // if(gui::Window::HasCurrent()) {
-    //   glm::mat4 proj = glm::mat4(1.0f);
-    //   proj = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f, 0.1f, 10.0f);
-    //   glm::mat4 view = glm::mat4(1.0f);
-    //   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    //   gui::Window::GetCurrent()->Render(proj, view);
-    // }
+    if(gui::Window::HasCurrent()) {
+      glDisable(GL_DEPTH_TEST);
+      glDisable(GL_CULL_FACE);
+      const auto size = Window::GetSize();
+      glm::mat4 proj = glm::mat4(1.0f);
+      proj = glm::ortho(0.0f, size[0], size[1], 0.0f, -1000.0f, 1000.0f);
+      glm::mat4 view = glm::mat4(1.0f);
+      view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+      gui::Window::GetCurrent()->Render(proj, view);
+      glEnable(GL_DEPTH_TEST);
+    }
 
     PostRender();
   }

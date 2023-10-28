@@ -23,6 +23,7 @@ add_library(${PROJECT_NAME}
   mcc/platform.h
   mcc/vao.h mcc/vao.cc
   mcc/vbo.h mcc/vbo.cc
+  mcc/ibo.h mcc/ibo.cc
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
   mcc/shape/plane.h mcc/shape/plane.cc
@@ -69,7 +70,8 @@ add_library(${PROJECT_NAME}
   mcc/ecs/component.h mcc/ecs/component.cc
   mcc/ecs/system.h mcc/ecs/system.cc
   mcc/ecs/event.h mcc/ecs/event.cc
-  mcc/gui/gui_component.h
+  mcc/gui/gui_vertex.h
+  mcc/gui/gui_component.h mcc/gui/gui_component.cc
   mcc/gui/gui_window.h mcc/gui/gui_window.cc
   mcc/gui/gui_button.h mcc/gui/gui_button.cc)
 target_link_libraries(${PROJECT_NAME}

@@ -2,12 +2,15 @@
 #define MCC_WINDOW_H
 
 #include "mcc/gfx.h"
+#include "mcc/flags.h"
 #include "mcc/common.h"
 
 namespace mcc {
   class Window {
     DEFINE_NON_INSTANTIABLE_TYPE(Window);
   private:
+    static void SetHandle(GLFWwindow* handle);
+    static void SetSize(const glm::vec2 size);
     static void OnPreInit();
     static void OnInit();
     static void OnPostInit();
@@ -19,7 +22,29 @@ namespace mcc {
     static void Close();
     static GLFWwindow* GetHandle();
     static glm::vec2 GetSize();
-    static glm::vec2 GetInitSize();
+
+    static float GetWidth();
+    static float GetHeight();
+
+    static inline float
+    GetAspectRatio() {
+      return GetWidth() / GetHeight();
+    }
+
+    static inline glm::vec2
+    GetCenterCoord() {
+      return glm::vec2(GetWidth() / 2, GetHeight() / 2);
+    }
+
+    static inline bool
+    IsFullscreen() {
+      return FLAGS_fullscreen;
+    }
+
+    static inline glm::vec2
+    GetInitialSize() {
+      return glm::vec2(static_cast<float>(FLAGS_width), static_cast<float>(FLAGS_height));
+    }
   };
 }
 

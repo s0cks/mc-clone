@@ -5,6 +5,7 @@
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 #include "mcc/vao.h"
+#include "mcc/ibo.h"
 #include "mcc/mesh/index.h"
 #include "mcc/mesh/vertex.h"
 
@@ -14,11 +15,13 @@ namespace mcc {
       DEFINE_NON_COPYABLE_TYPE(Mesh);
     protected:
       Vao vao_;
+      Ibo ibo_;
       Vbo vbo_;
       uint64_t num_vertices_;
-
-      Mesh(const std::vector<glm::vec3>& vertices);
+      uint64_t num_indices_;
     public:
+      Mesh(const std::vector<glm::vec3>& vertices);
+      Mesh(const std::vector<glm::vec3>& vertices, const std::vector<GLubyte>& indices);
       virtual ~Mesh() {
         vbo_.Delete();
         vao_.Delete();

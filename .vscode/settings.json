@@ -76,6 +76,7 @@
     "algorithm": "cpp",
     "queue": "cpp",
     "functional": "cpp",
-    "filesystem": "cpp"
+    "filesystem": "cpp",
+    "__availability": "cpp"
   }
 }

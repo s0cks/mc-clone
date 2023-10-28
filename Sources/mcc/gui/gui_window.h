@@ -2,35 +2,19 @@
 #define MCC_GUI_WINDOW_H
 
 #include "mcc/gui/gui_component.h"
-#include "mcc/shape/square.h"
+#include "mcc/gui/gui_vertex.h"
 
 namespace mcc::gui {
   class Window : public ContainerComponent {
   private:
     std::string title_;
-    Shader shader_;
-    glm::vec2 dimension_;
-    float scale_;
-    float aspect_;
-    float near_;
-    float far_;
-    mesh::Mesh* mesh_;
+    glm::vec2 pos_;
+    glm::vec2 size_;
+    glm::vec3 color_;
+    GuiVertexBufferObject vbo_;
+    VertexList vertices_;
   public:
-    Window(const float width, 
-           const float height,
-           const float scale = 1.0f,
-           const float near = 0.0f,
-           const float far = 10.0f):
-      ContainerComponent(),
-      title_(),
-      shader_(CompileShader("gui_window")),
-      dimension_(width, height),
-      scale_(scale),
-      aspect_(width / height),
-      near_(near),
-      far_(far),
-      mesh_(nullptr) {
-    }
+    Window(const glm::vec2 size = glm::vec2(400.0f, 400.0f));
     ~Window() override = default;
 
     void Render() override {
@@ -43,10 +27,12 @@ namespace mcc::gui {
       title_ = value;
     }
   public:
+    static void Init();
+
     typedef std::shared_ptr<Window> WindowPtr;
 
-    static WindowPtr New(const float width, const float height) {
-      return std::make_shared<Window>(width, height);
+    static WindowPtr New(const glm::vec2 size) {
+      return std::make_shared<Window>(size);
     }
 
     static WindowPtr GetCurrent();

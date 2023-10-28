@@ -1,13 +1,14 @@
 #ifndef MCC_VAO_H
 #define MCC_VAO_H
 
+#include <iostream>
 #include "mcc/gfx.h"
 #include "mcc/vbo.h"
 
 namespace mcc {
   typedef GLuint VaoId;
 
-  static constexpr const VaoId kInvalidVaoId = 0;
+  static constexpr const VaoId kInvalidVao = 0;
 
   class Vao {
   public:
@@ -23,26 +24,36 @@ namespace mcc {
     ~Vao() = default;
 
     void Link(Vbo& vbo, GLuint layout);
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    void Unbind() const;
     void Delete();
 
-    void operator=(const Vao& rhs) {
+    Vao& operator=(const Vao& rhs) {
       id_ = rhs.id_;
+      return *this;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Vao& rhs) {
+      stream << "Vao(";
+      stream << "id=" << rhs.id_;
+      stream << ")";
+      return stream;
     }
   };
 
   class VaoScope {
   private:
-    Vao& vao_;
+    const Vao& vao_;
   public:
     VaoScope() = delete;
-    VaoScope(Vao& vao):
+    explicit VaoScope(const Vao& vao):
       vao_(vao) {
+      DLOG(INFO) << "enter vao-scope (" << vao_.id_ << ").";
       vao_.Bind();
     }
     VaoScope(const VaoScope& rhs) = delete;
     ~VaoScope() {
+      DLOG(INFO) << "exit vao-scope (" << vao_.id_ << ").";
       vao_.Unbind();
     }
 

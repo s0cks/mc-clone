@@ -26,8 +26,35 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/camera/perspective_camera.h"
 
+#include "mcc/thread_local.h"
+
 namespace mcc {
-  GLFWwindow* handle_;
+  static ThreadLocal<GLFWwindow> handle_;
+  static glm::vec2 size_;
+
+  void Window::SetHandle(GLFWwindow* handle) {
+    handle_.Set(handle);
+  }
+
+  GLFWwindow* Window::GetHandle() {
+    return handle_.Get();
+  }
+
+  void Window::SetSize(const glm::vec2 size) {
+    size_ = size;
+  }
+
+  glm::vec2 Window::GetSize() {
+    return size_;
+  }
+
+  float Window::GetWidth() {
+    return size_[0];
+  }
+
+  float Window::GetHeight() {
+    return size_[1];
+  }
 
   static inline void
   OnGlfwError(int code, const char* description) {
@@ -43,7 +70,7 @@ namespace mcc {
   }
 
   void Window::Close() {
-    glfwSetWindowShouldClose(handle_, GL_TRUE);
+    glfwSetWindowShouldClose(GetHandle(), GL_TRUE);
   }
 
   void Window::OnWindowClosed(GLFWwindow* window) {
@@ -51,6 +78,10 @@ namespace mcc {
   }
 
   void Window::Init() {
+    if(!Window::IsFullscreen()) {
+      SetSize(Window::GetInitialSize());
+    }
+
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
@@ -72,23 +103,25 @@ namespace mcc {
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-  }
 
-  void Window::OnInit() {
-    const auto size = Window::GetSize();
-    const auto handle = glfwCreateWindow(size[0], size[1], "Hello World", NULL, NULL);
+    const auto handle = glfwCreateWindow(GetWidth(), GetHeight(), "Hello World", NULL, NULL);
     if(!handle) {
       glfwTerminate();
       LOG(FATAL) << "failed to create GLFW window";
     }
-    handle_ = handle;
+    glfwMakeContextCurrent(handle);
+    glfwSwapInterval(0);
     glfwSetWindowCloseCallback(handle, &OnWindowClosed);
     //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
+
+    SetHandle(handle);
+  }
+
+  void Window::OnInit() {
+
   }
 
   void Window::OnPostInit() {
-    glfwMakeContextCurrent(handle_);
-    glfwSwapInterval(0);
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
@@ -101,22 +134,10 @@ namespace mcc {
   }
 
   void Window::OnTerminating() {
-    glfwSetWindowShouldClose(handle_, GLFW_TRUE);
+    glfwSetWindowShouldClose(GetHandle(), GLFW_TRUE);
   }
 
   void Window::OnTerminated() {
     glfwTerminate();
-  }
-
-  GLFWwindow* Window::GetHandle() {
-    return handle_;
-  }
-
-  glm::vec2 Window::GetSize() {
-    return glm::vec2(800, 800);
-  }
-  
-  glm::vec2 Window::GetInitSize() {
-    return glm::vec2(800, 800);
   }
 }
