@@ -21,6 +21,8 @@ add_library(${PROJECT_NAME}
   mcc/common.h
   mcc/flags.h mcc/flags.cc
   mcc/platform.h
+  mcc/vao.h mcc/vao.cc
+  mcc/vbo.h mcc/vbo.cc
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
   mcc/shape/plane.h mcc/shape/plane.cc

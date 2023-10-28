@@ -22,6 +22,18 @@ namespace mcc {
   operator<<(std::ostream& stream, const glm::vec2 rhs) {
     return stream << "(" << rhs[0] << ", " << rhs[1] << ")";
   }
+
+#ifdef MCC_DEBUG
+
+#define CHECK_GL(Severity) ({                                     \
+  const auto error = glGetError();                                \
+  LOG_IF(Severity, error != GL_NO_ERROR) << "glError: " << error; \
+})
+
+#else
+
+#endif//MCC_DEBUG
+
 }
 
 #endif //MCC_GFX_H

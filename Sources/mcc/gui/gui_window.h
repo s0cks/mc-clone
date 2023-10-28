@@ -29,13 +29,7 @@ namespace mcc::gui {
       aspect_(width / height),
       near_(near),
       far_(far),
-      mesh_(mesh::IndexedMesh::New({
-        { .pos = glm::vec3(0.5f, 0.5f, 0.0f) },
-        { .pos = glm::vec3(0.5f, -0.5f, 0.0f) },
-        { .pos = glm::vec3(-0.5f, -0.5f, 0.0f) },
-        { .pos = glm::vec3(-0.5f, 0.5f, 0.0f) },
-      }, { 0, 1, 3,
-           1, 2, 3 })) {
+      mesh_(nullptr) {
     }
     ~Window() override = default;
 

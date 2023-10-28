@@ -5,10 +5,10 @@
 
 namespace mcc {
   class Cube {
-  private:
-    static void InitializeVertices(VertexList& list);
   public:
     static mesh::Mesh* CreateMesh();
+    static void InitVertices(std::vector<glm::vec3>& vertices);
+    static void InitUv(std::vector<glm::vec3>& uv);
   };
 }
 

@@ -17,23 +17,6 @@ namespace mcc {
 
   static Shader lightingShader_;
 
-  static mesh::Mesh* plane_mesh_;
-  static Shader plane_shader_;
-
-  static inline mesh::Mesh*
-  GeneratePlaneMesh() {
-    VertexList plane_vertices;
-    Square::GenerateVertices(plane_vertices);
-    IndexList plane_indices;
-    Square::GenerateIndices(plane_indices);
-    return mesh::IndexedMesh::New(plane_vertices, plane_indices);
-  }
-
-  static inline Shader
-  GeneratePlaneShader() {
-    return GetColorizedShader();
-  }
-
   void Renderer::SetState(const Renderer::State state) {
     state_ = state;
   }
@@ -68,8 +51,6 @@ namespace mcc {
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
-
-    gui::Window::SetCurrent(gui::Window::New(400.0f, 400.0f));
   }
 
   void Renderer::Init() {
@@ -98,16 +79,6 @@ namespace mcc {
     mesh->Render();
   }
 
-  void Renderer::RenderPlane(const glm::mat4 projection, const glm::mat4 view) {
-    glm::mat4 model = glm::mat4(1.0f);
-    plane_shader_.ApplyShader();
-    plane_shader_.SetMat4("model", model);
-    plane_shader_.SetMat4("view", view);
-    plane_shader_.SetVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
-    plane_shader_.ApplyShader();
-    plane_mesh_->Render();
-  }
-
   void Renderer::OnTick(const Tick& tick) {
     frames_ += 1;
     if(tick.dts >= (NSEC_PER_MSEC * 1)) {
@@ -127,13 +98,13 @@ namespace mcc {
       });
     }
 
-    if(gui::Window::HasCurrent()) {
-      glm::mat4 proj = glm::mat4(1.0f);
-      proj = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f, 0.1f, 10.0f);
-      glm::mat4 view = glm::mat4(1.0f);
-      view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-      gui::Window::GetCurrent()->Render(proj, view);
-    }
+    // if(gui::Window::HasCurrent()) {
+    //   glm::mat4 proj = glm::mat4(1.0f);
+    //   proj = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f, 0.1f, 10.0f);
+    //   glm::mat4 view = glm::mat4(1.0f);
+    //   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    //   gui::Window::GetCurrent()->Render(proj, view);
+    // }
 
     PostRender();
   }
