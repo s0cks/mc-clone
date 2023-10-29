@@ -48,17 +48,29 @@ namespace mcc::mesh {
     }
     explicit VertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
       VertexBufferTemplate(vertices, num_vertices) {
+      // pos
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
+      CHECK_GL(FATAL);
       glEnableVertexAttribArray(0);
+      CHECK_GL(FATAL);
 
+      // normal
       glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, normal));
+      CHECK_GL(FATAL);
       glEnableVertexAttribArray(1);
+      CHECK_GL(FATAL);
 
+      // color
       glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color)); 
+      CHECK_GL(FATAL);
       glEnableVertexAttribArray(2);
+      CHECK_GL(FATAL);
 
+      // uv
       glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
+      CHECK_GL(FATAL);
       glEnableVertexAttribArray(3);
+      CHECK_GL(FATAL);
     }
     explicit VertexBuffer(const VertexList& vertices):
       VertexBuffer(&vertices[0], vertices.size()) {
