@@ -22,9 +22,6 @@ add_library(${PROJECT_NAME}
   mcc/common.h
   mcc/flags.h mcc/flags.cc
   mcc/platform.h
-  mcc/vao.h mcc/vao.cc
-  mcc/vbo.h mcc/vbo.cc
-  mcc/ibo.h mcc/ibo.cc
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
   mcc/event/event_bus.h mcc/event/event_bus.cc
@@ -46,7 +43,6 @@ add_library(${PROJECT_NAME}
   mcc/keyboard/keyboard_constants.h
   mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
   mcc/keyboard/keyboard_trie.h mcc/keyboard/keyboard_trie.cc
-  mcc/shape/shape.h
   mcc/shape/square.h
   mcc/shape/cube.h mcc/shape/cube.cc
   mcc/texture/texture.h mcc/texture/texture.cc
