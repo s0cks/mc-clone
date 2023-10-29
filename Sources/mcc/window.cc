@@ -31,6 +31,7 @@
 namespace mcc {
   static ThreadLocal<GLFWwindow> handle_;
   static glm::vec2 size_;
+  static std::string title_;
 
   void Window::SetHandle(GLFWwindow* handle) {
     handle_.Set(handle);
@@ -118,6 +119,13 @@ namespace mcc {
   }
 
   void Window::OnInit() {
+    Engine::OnTick([](const Tick& tick) {
+      const auto length = title_.length() + 26;
+      char title[length];
+      //TODO: %04.02f
+      snprintf(title, length, "%s TPS: %" PRIu64 " FPS: %" PRIu64 , title_.data(), Engine::GetTPS(), Renderer::GetFPS());
+      glfwSetWindowTitle(Window::GetHandle(), title);
+    });
   }
 
   void Window::OnPostInit() {

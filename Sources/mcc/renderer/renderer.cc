@@ -8,6 +8,8 @@
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/gui/gui_window.h"
+#include "mcc/font/font.h"
+#include "mcc/font/font_renderer.h"
 
 #include "mcc/terrain/terrain.h"
 
@@ -17,6 +19,7 @@ namespace mcc {
   static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<Renderer::State> state_;
 
+  static font::Font* font_ = nullptr;
   static Shader lightingShader_;
 
   static mesh::Mesh* mesh_;
@@ -36,6 +39,13 @@ namespace mcc {
 
   void Renderer::OnInit() {
 
+  }
+
+  static inline std::string
+  GetFps() {
+    std::stringstream ss;
+    ss << "FPS: " << (uint64_t) fps_;
+    return ss.str();
   }
 
   void Renderer::PreRender() {
@@ -61,8 +71,8 @@ namespace mcc {
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
     Engine::OnTick(&OnTick);
-
     gui::Window::Init();
+    font_ = new font::Font("roboto/roboto");
 
     Mouse::Register(MouseButton::kMouseButton1, MouseButtonState::kMousePressed, []() {
       gui::Window::SetCurrent(gui::Window::New(glm::vec2(400.0f, 400.0f)));
