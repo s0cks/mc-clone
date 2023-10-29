@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <uv.h>
 
-#define GL_SILENCE_DEPRECATION 1
 #include "mcc/mcc.h"
 #include "mcc/font/font.h"
 #include "mcc/window.h"
@@ -17,6 +16,8 @@
 #include "mcc/engine/engine.h"
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
+
+#include "mcc/terrain/terrain.h"
 
 int main(int argc, char** argv) {
   srand(time(NULL));
@@ -37,6 +38,7 @@ int main(int argc, char** argv) {
   camera::PerspectiveCameraBehavior::Init();
   Window::Init();
   Systems::Init();
+  terrain::Terrain::Init();
 
   Engine::Run();
   return EXIT_SUCCESS;

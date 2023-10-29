@@ -48,12 +48,10 @@ namespace mcc {
     VaoScope() = delete;
     explicit VaoScope(const Vao& vao):
       vao_(vao) {
-      DLOG(INFO) << "enter vao-scope (" << vao_.id_ << ").";
       vao_.Bind();
     }
     VaoScope(const VaoScope& rhs) = delete;
     ~VaoScope() {
-      DLOG(INFO) << "exit vao-scope (" << vao_.id_ << ").";
       vao_.Unbind();
     }
 

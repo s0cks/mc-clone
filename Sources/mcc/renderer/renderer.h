@@ -24,6 +24,7 @@ namespace mcc {
     static void OnInit();
     static void OnPostInit();
     static void OnTick(const Tick& tick);
+    static void RenderTerrain(const glm::mat4 projection, const glm::mat4 view);
     static void RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e);
 
     static void PreRender();

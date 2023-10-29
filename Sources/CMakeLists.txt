@@ -50,6 +50,7 @@ add_library(${PROJECT_NAME}
   mcc/shape/square.h
   mcc/shape/cube.h mcc/shape/cube.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+  mcc/terrain/terrain.h mcc/terrain/terrain.cc
   mcc/murmur.h
   mcc/bitfield.h
   mcc/font/font.h mcc/font/font.cc

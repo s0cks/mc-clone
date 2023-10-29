@@ -91,14 +91,21 @@ namespace mcc::texture {
         LOG(FATAL) << "unknown color type.";
     }
 
-    TextureId texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    Texture texture(true);
+    texture.Bind0();
+    CHECK_GL(FATAL);
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    CHECK_GL(FATAL);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, alpha, GL_UNSIGNED_BYTE, (GLvoid*) data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
     png_destroy_read_struct(&png, &info, NULL);
     free(data);
     fclose(file);

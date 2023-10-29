@@ -118,7 +118,6 @@ namespace mcc {
   }
 
   void Window::OnInit() {
-
   }
 
   void Window::OnPostInit() {

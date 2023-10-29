@@ -9,6 +9,8 @@
 
 #include "mcc/gui/gui_window.h"
 
+#include "mcc/terrain/terrain.h"
+
 namespace mcc {
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
@@ -97,27 +99,33 @@ namespace mcc {
       frames_ = 0;
     }
 
+    const auto mode = Mouse::IsPressed(kMouseButton1)
+        ? GL_LINE
+        : GL_FILL;
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
+
     SetState(Renderer::kRender);
     PreRender();
     {
       auto proj = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
       auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
+      terrain::Terrain::Render(proj, view);
       Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
         RenderEntity(proj, view, e);
       });
     }
 
-    if(gui::Window::HasCurrent()) {
-      glDisable(GL_DEPTH_TEST);
-      glDisable(GL_CULL_FACE);
-      const auto size = Window::GetSize();
-      glm::mat4 proj = glm::mat4(1.0f);
-      proj = glm::ortho(0.0f, size[0], size[1], 0.0f, -1000.0f, 1000.0f);
-      glm::mat4 view = glm::mat4(1.0f);
-      view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-      gui::Window::GetCurrent()->Render(proj, view);
-      glEnable(GL_DEPTH_TEST);
-    }
+    // if(gui::Window::HasCurrent()) {
+    //   glDisable(GL_DEPTH_TEST);
+    //   glDisable(GL_CULL_FACE);
+    //   const auto size = Window::GetSize();
+    //   glm::mat4 proj = glm::mat4(1.0f);
+    //   proj = glm::ortho(0.0f, size[0], size[1], 0.0f, -1000.0f, 1000.0f);
+    //   glm::mat4 view = glm::mat4(1.0f);
+    //   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    //   gui::Window::GetCurrent()->Render(proj, view);
+    //   glEnable(GL_DEPTH_TEST);
+    // }
 
     PostRender();
   }
