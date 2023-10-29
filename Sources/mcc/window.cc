@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-#include <OpenGL/gl3.h>
+#include "mcc/gui/gui.h"
 
 #include "mcc/flags.h"
 #include "mcc/window.h"
@@ -29,9 +29,29 @@
 #include "mcc/thread_local.h"
 
 namespace mcc {
+  typedef struct nk_context NuklearContext;
+
   static ThreadLocal<GLFWwindow> handle_;
+  static ThreadLocal<NuklearContext> nk_ctx_;
+
   static glm::vec2 size_;
   static std::string title_;
+
+  void Window::Init() {
+    if(!Window::IsFullscreen()) {
+      SetSize(Window::GetInitialSize());
+    }
+
+    auto ctx = new NuklearContext();
+    nk_init_default(ctx, NULL);
+    nk_ctx_.Set(ctx);
+
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+    Engine::OnTerminating(&OnTerminating);
+    Engine::OnTerminated(&OnTerminated);
+  }
 
   void Window::SetHandle(GLFWwindow* handle) {
     handle_.Set(handle);
@@ -58,11 +78,6 @@ namespace mcc {
   }
 
   static inline void
-  OnGlfwError(int code, const char* description) {
-    LOG(ERROR) << "GLFW error: [" << code << "]" << ": " << description;
-  }
-
-  static inline void
   OnWindowResized(GLFWwindow* window, int width, int height) {
     const auto orthoCamera = OrthoCamera::Get();
     orthoCamera->SetSize(glm::vec2(width, height));
@@ -78,33 +93,7 @@ namespace mcc {
     Engine::Shutdown();
   }
 
-  void Window::Init() {
-    if(!Window::IsFullscreen()) {
-      SetSize(Window::GetInitialSize());
-    }
-
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
-    Engine::OnTerminating(&OnTerminating);
-    Engine::OnTerminated(&OnTerminated);
-  }
-
   void Window::OnPreInit() {
-    glfwSetErrorCallback(&OnGlfwError);
-    LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
-    glfwWindowHint(GLFW_CURSOR_HIDDEN, GLFW_TRUE);
-    glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
     const auto handle = glfwCreateWindow(GetWidth(), GetHeight(), "Hello World", NULL, NULL);
     if(!handle) {
       glfwTerminate();

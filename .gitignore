@@ -5,6 +5,7 @@
 # Except These
 !/build/
 !/cmake/
+!/lib/
 !/resources/
 !/Sources/
 !/Tests/

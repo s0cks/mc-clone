@@ -7,7 +7,6 @@
 #include "mcc/shape/plane.h"
 #include "mcc/camera/perspective_camera.h"
 
-#include "mcc/gui/gui_window.h"
 #include "mcc/font/font.h"
 #include "mcc/font/font_renderer.h"
 
@@ -71,12 +70,6 @@ namespace mcc {
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
     Engine::OnTick(&OnTick);
-    gui::Window::Init();
-    font_ = new font::Font("roboto/roboto");
-
-    Mouse::Register(MouseButton::kMouseButton1, MouseButtonState::kMousePressed, []() {
-      gui::Window::SetCurrent(gui::Window::New(glm::vec2(400.0f, 400.0f)));
-    });
   }
 
   void Renderer::Init() {
@@ -126,19 +119,6 @@ namespace mcc {
       });
       glDisable(GL_DEPTH_TEST);
     }
-
-    // if(gui::Window::HasCurrent()) {
-    //   glDisable(GL_DEPTH_TEST);
-    //   glDisable(GL_CULL_FACE);
-    //   const auto size = Window::GetSize();
-    //   glm::mat4 proj = glm::mat4(1.0f);
-    //   proj = glm::ortho(0.0f, size[0], size[1], 0.0f, -1000.0f, 1000.0f);
-    //   glm::mat4 view = glm::mat4(1.0f);
-    //   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    //   gui::Window::GetCurrent()->Render(proj, view);
-    //   glEnable(GL_DEPTH_TEST);
-    // }
-
     PostRender();
   }
 

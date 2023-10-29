@@ -41,21 +41,13 @@ namespace mcc::terrain {
     return stream;
   }
 
-  class TerrainVertexBuffer : public VertexBufferObject {
-  private:
-    uint32_t num_vertices_;
+  class TerrainVertexBuffer : public VertexBufferTemplate<Vertex, kStaticUsage> {
   public:
-    explicit TerrainVertexBuffer(const VertexBufferObjectId id = kInvalidVertexBufferObject):
-      VertexBufferObject(id),
-      num_vertices_(0) {
+    explicit TerrainVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
+      VertexBufferTemplate(id) {  
     }
-    explicit TerrainVertexBuffer(const VertexList& vertices):
-      VertexBufferObject(kInvalidVertexBufferObject),
-      num_vertices_(vertices.size()) {
-      glGenBuffers(1, &id_);
-      glBindBuffer(GL_ARRAY_BUFFER, id_);
-      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
+    explicit TerrainVertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
+      VertexBufferTemplate(vertices, num_vertices) {
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
       glEnableVertexAttribArray(0);
 
@@ -65,23 +57,20 @@ namespace mcc::terrain {
       glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
       glEnableVertexAttribArray(2);
     }
+    explicit TerrainVertexBuffer(const VertexList& vertices):
+      TerrainVertexBuffer(&vertices[0], vertices.size()) {  
+    }
     TerrainVertexBuffer(const TerrainVertexBuffer& rhs):
-      VertexBufferObject(rhs.id_),
-      num_vertices_(rhs.num_vertices_) {
+      VertexBufferTemplate(rhs) {
     }
     ~TerrainVertexBuffer() override = default;
-
-    uint32_t length() const {
-      return num_vertices_;
-    }
     
     void operator=(const TerrainVertexBuffer& rhs) {
-      VertexBufferObject::operator=((const VertexBufferObject&) rhs);
-      num_vertices_ = rhs.num_vertices_;
+      VertexBufferTemplate::operator=(rhs);
     }
 
-    void operator=(const VertexBufferObjectId& rhs) {
-      VertexBufferObject::operator=(rhs);
+    void operator=(const BufferObjectId& rhs) {
+      BufferObject::operator=(rhs);
     }
   };
 
@@ -100,38 +89,26 @@ namespace mcc::terrain {
     return stream;
   }
 
-  class TerrainIndexBuffer : public IndexBufferObject {
-  private:
-    uint32_t num_indices_;
+  class IndexBuffer : public IndexBufferTemplate<Index, mcc::kStaticUsage> {
   public:
-    explicit TerrainIndexBuffer(const IndexBufferObjectId id = kInvalidIndexBufferObject):
-      IndexBufferObject(id),
-      num_indices_(0) {
+    explicit IndexBuffer(const BufferObjectId id = kInvalidBufferObject):
+      IndexBufferTemplate(id) {
     }
-    explicit TerrainIndexBuffer(const IndexList& indices):
-      IndexBufferObject(kInvalidIndexBufferObject),
-      num_indices_(indices.size()) {
-      glGenBuffers(1, &id_);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(Index), &indices[0], GL_STATIC_DRAW);
+    explicit IndexBuffer(const Index* indices, const uint64_t num_indices):
+      IndexBufferTemplate(indices, num_indices) {
     }
-    TerrainIndexBuffer(const TerrainIndexBuffer& rhs):
-      IndexBufferObject(rhs.id_),
-      num_indices_(rhs.num_indices_) {
+    explicit IndexBuffer(const IndexList& indices):
+      IndexBuffer(&indices[0], indices.size()) {
     }
-    ~TerrainIndexBuffer() override = default;
-
-    uint32_t length() const {
-      return num_indices_;
-    }
+    IndexBuffer(const IndexBuffer& rhs) = default;
+    ~IndexBuffer() override = default;
     
-    void operator=(const TerrainIndexBuffer& rhs) {
-      IndexBufferObject::operator=((const IndexBufferObject&) rhs);
-      num_indices_ = rhs.num_indices_;
+    void operator=(const IndexBuffer& rhs) {
+      IndexBufferTemplate::operator=(rhs);
     }
 
-    void operator=(const IndexBufferObjectId& rhs) {
-      IndexBufferObject::operator=(rhs);
+    void operator=(const BufferObjectId& rhs) {
+      BufferObject::operator=(rhs);
     }
   };
 
@@ -154,7 +131,7 @@ namespace mcc::terrain {
     static void Init();
     static VertexArrayObject GetVao();
     static TerrainVertexBuffer GetVbo();
-    static TerrainIndexBuffer GetIbo();
+    static IndexBuffer GetIbo();
   };
 }
 

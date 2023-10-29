@@ -2,6 +2,7 @@ configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
+include_directories(${NK_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
@@ -70,7 +71,8 @@ add_library(${PROJECT_NAME}
   mcc/ecs/entity.h mcc/ecs/entity.cc
   mcc/ecs/component.h mcc/ecs/component.cc
   mcc/ecs/system.h mcc/ecs/system.cc
-  mcc/ecs/event.h mcc/ecs/event.cc)
+  mcc/ecs/event.h mcc/ecs/event.cc
+  mcc/gui/gui.h mcc/gui/gui.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog

@@ -4,11 +4,12 @@
 #include <string>
 
 namespace mcc {
-#define POSEIDON_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
-#define POSEIDON_VERSION_MINOR @PROJECT_VERSION_MINOR@
-#define POSEIDON_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define MCC_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define MCC_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define MCC_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
     std::string GetVersion();
+    void OnGlfwError(int code, const char* description);
 }
 
 #endif //MCC_H

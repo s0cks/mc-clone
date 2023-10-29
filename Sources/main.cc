@@ -25,6 +25,18 @@ int main(int argc, char** argv) {
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);
 
+  glfwSetErrorCallback(&mcc::OnGlfwError);
+  LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+  glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
+  glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
+
   using namespace mcc;
   font::Initialize();
   Entities::Initialize();

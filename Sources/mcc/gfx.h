@@ -25,13 +25,18 @@
 
 namespace mcc {
   static inline std::ostream&
+  operator<<(std::ostream& stream, const glm::vec2 rhs) {
+    return stream << "(" << rhs[0] << ", " << rhs[1] << ")";
+  }
+
+  static inline std::ostream&
   operator<<(std::ostream& stream, const glm::vec3 rhs) {
     return stream << "(" << rhs[0] << ", " << rhs[1] << ", " << rhs[2] << ")";
   }
 
   static inline std::ostream&
-  operator<<(std::ostream& stream, const glm::vec2 rhs) {
-    return stream << "(" << rhs[0] << ", " << rhs[1] << ")";
+  operator<<(std::ostream& stream, const glm::vec4 rhs) {
+    return stream << "(" << rhs[0] << ", " << rhs[1] << ", " << rhs[2] << ", " << rhs[3] << ")";
   }
 
 #ifdef MCC_DEBUG
@@ -44,6 +49,12 @@ namespace mcc {
 #else
 
 #endif//MCC_DEBUG
+
+  enum GlObjectUsage {
+    kDynamicUsage = GL_DYNAMIC_DRAW,
+    kStaticUsage = GL_STATIC_DRAW,
+    kDefaultUsage = kDynamicUsage,
+  };
 
   typedef GLuint VertexArrayObjectId;
   static constexpr const VertexArrayObjectId kInvalidVertexArrayObject = 0;
@@ -132,141 +143,217 @@ namespace mcc {
     }
   };
 
-  typedef GLuint VertexBufferObjectId;
-  static constexpr VertexBufferObjectId kInvalidVertexBufferObject = 0;
-  class VertexBufferObject {
+  typedef GLuint BufferObjectId;
+  static constexpr const BufferObjectId kInvalidBufferObject = 0;
+
+  enum BufferObjectTarget {
+    kVertex = GL_ARRAY_BUFFER,
+    kIndex = GL_ELEMENT_ARRAY_BUFFER,
+  };
+
+  class BufferObject {
   protected:
-    VertexBufferObjectId id_;
+    BufferObjectId id_;
+
+    BufferObject():
+      id_(kInvalidBufferObject) {
+      glGenBuffers(1, &id_);
+      CHECK_GL(FATAL);
+    }
   public:
-    explicit VertexBufferObject(const VertexBufferObjectId id):
+    explicit BufferObject(const BufferObjectId id):
       id_(id) {
     }
-    VertexBufferObject(const VertexBufferObject& rhs):
+    BufferObject(const BufferObject& rhs):
       id_(rhs.id_) {
     }
-    virtual ~VertexBufferObject() = default;
+    virtual ~BufferObject() = default;
 
-    VertexBufferObjectId id() const {
+    BufferObjectId id() const {
       return id_;
     }
 
-    void Bind() {
-      glBindBuffer(GL_ARRAY_BUFFER, id_);
-      CHECK_GL(FATAL);
-    }
-
-    void Unbind() {
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      CHECK_GL(FATAL);
-    }
+    virtual BufferObjectTarget GetTarget() const = 0;
+    virtual void Bind() const = 0;
+    virtual void Unbind() const = 0;
 
     void Delete() {
       glDeleteBuffers(1, &id_);
       CHECK_GL(FATAL);
     }
 
-    void operator=(const VertexBufferObject& rhs) {
+    void operator=(const BufferObject& rhs) {
       id_ = rhs.id_;
     }
 
-    void operator=(const VertexBufferObjectId& rhs) {
+    void operator=(const BufferObjectId& rhs) {
       id_ = rhs;
     }
 
-    explicit operator VertexBufferObjectId () const {
+    explicit operator BufferObjectId () const {
       return id_;
     }
 
-    bool operator==(const VertexBufferObject& rhs) const {
+    bool operator==(const BufferObject& rhs) const {
       return id_ == rhs.id_;
     }
 
-    bool operator==(const VertexBufferObjectId& rhs) const {
+    bool operator==(const BufferObjectId& rhs) const {
       return id_ == rhs;
     }
 
-    bool operator!=(const VertexBufferObject& rhs) const {
+    bool operator!=(const BufferObject& rhs) const {
       return id_ != rhs.id_;
     }
 
-    bool operator!=(const VertexBufferObjectId& rhs) const {
+    bool operator!=(const BufferObjectId& rhs) const {
       return id_ != rhs;
     }
 
-    friend std::ostream& operator<<(std::ostream& stream, const VertexBufferObject& rhs) {
-      stream << "VertexBufferObject(";
+    friend std::ostream& operator<<(std::ostream& stream, const BufferObject& rhs) {
+      stream << "BufferObject(";
       stream << "id=" << rhs.id_;
       stream << ")";
       return stream;
     }
   };
 
-  typedef GLuint IndexBufferObjectId;
-  static constexpr IndexBufferObjectId kInvalidIndexBufferObject = 0;
-  class IndexBufferObject {
-  protected:
-    IndexBufferObjectId id_;
+  template<const BufferObjectTarget Target>
+  class BufferObjectTemplate : public BufferObject {
   public:
-    explicit IndexBufferObject(const IndexBufferObjectId id):
-      id_(id) {
+    explicit BufferObjectTemplate(const BufferObjectId id):
+      BufferObject(id) {
     }
+    BufferObjectTemplate() = default;
+    BufferObjectTemplate(const BufferObjectTemplate& rhs):
+      BufferObject(rhs) {
+    }
+    ~BufferObjectTemplate() override = default;
+
+    BufferObjectTarget GetTarget() const override {
+      return Target;
+    }
+
+    void Bind() const override {
+      glBindBuffer(Target, id_);
+      CHECK_GL(FATAL);
+    }
+
+    void Unbind() const override {
+      glBindBuffer(Target, 0);
+      CHECK_GL(FATAL);
+    }
+  };
+
+  class VertexBufferObject : public BufferObjectTemplate<kVertex> {
+  public:
+    explicit VertexBufferObject(const BufferObjectId id):
+      BufferObjectTemplate(id) {  
+    }
+    VertexBufferObject() = default;
+    VertexBufferObject(const VertexBufferObject& rhs):
+      BufferObjectTemplate(rhs) {
+    }
+    ~VertexBufferObject() override = default;
+    virtual uint64_t length() const = 0;
+    virtual uint64_t vertex_size() const = 0;
+    
+    virtual uint64_t size() const {
+      return length() * vertex_size();
+    }
+  };
+
+  template<typename Vertex, const GlObjectUsage Usage = kDefaultUsage>
+  class VertexBufferTemplate : public VertexBufferObject {
+  public:
+    static const uint64_t kVertexSize = sizeof(Vertex);
+    typedef std::vector<Vertex> VertexList;
+  protected:
+    uint64_t length_;
+
+    explicit VertexBufferTemplate(const BufferObjectId id):
+      VertexBufferObject(id) {
+    }
+    explicit VertexBufferTemplate(const Vertex* vertices, const uint64_t num_vertices):
+      VertexBufferObject(),
+      length_(num_vertices) {
+      BindBufferData(vertices, num_vertices);
+    }
+
+    void BindBufferData(const Vertex* vertices, const uint64_t num_vertices) {
+      DLOG_IF(ERROR, num_vertices == 0) << "binding VertexBufferObject w/ 0 vertices."; 
+      Bind();
+      glBufferData(GetTarget(), num_vertices * kVertexSize, vertices, Usage);
+      CHECK_GL(FATAL);
+    }
+  public:
+    ~VertexBufferTemplate() override = default;
+
+    uint64_t length() const override {
+      return length_;
+    }
+
+    uint64_t vertex_size() const override {
+      return kVertexSize;
+    }
+  };
+
+  class IndexBufferObject : public BufferObjectTemplate<kIndex> {
+  public:
+    explicit IndexBufferObject(const BufferObjectId id):
+      BufferObjectTemplate(id) {
+    }
+    IndexBufferObject() = default;
     IndexBufferObject(const IndexBufferObject& rhs):
-      id_(rhs.id_) {
+      BufferObjectTemplate(rhs) {  
     }
-    virtual ~IndexBufferObject() = default;
+    ~IndexBufferObject() override = default;
+    virtual uint64_t length() const = 0;
+    virtual uint64_t index_size() const = 0;
 
-    IndexBufferObjectId id() const {
-      return id_;
+    virtual uint64_t size() const {
+      return length() * index_size();
+    }
+  };
+
+  template<typename Index, const GlObjectUsage Usage = kDefaultUsage>
+  class IndexBufferTemplate : public IndexBufferObject {
+  public:
+    static const uint64_t kIndexSize = sizeof(Index);
+    typedef std::vector<Index> IndexList;
+  protected:
+    uint64_t length_;
+
+    explicit IndexBufferTemplate(const BufferObjectId id):
+      IndexBufferObject(id) {
+    }
+    explicit IndexBufferTemplate(const Index* indices,
+                                 const uint64_t num_indices):
+      IndexBufferObject(),
+      length_(num_indices) {
+      BindBufferData(indices, num_indices);
     }
 
-    void Bind() {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_);
+    void BindBufferData(const Index* indices, const uint64_t num_indices) {
+      DLOG_IF(ERROR, num_indices == 0) << "creating IndexBufferObject w/ 0 indices.";
+      Bind();
+      glBufferData(GetTarget(), num_indices * kIndexSize, &indices[0], Usage);
       CHECK_GL(FATAL);
     }
+  public:
+    ~IndexBufferTemplate() override = default;
 
-    void Unbind() {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-      CHECK_GL(FATAL);
+    uint64_t length() const override {
+      return length_;
     }
 
-    void Delete() {
-      glDeleteBuffers(1, &id_);
-      CHECK_GL(FATAL);
+    uint64_t index_size() const override {
+      return kIndexSize;
     }
 
-    void operator=(const IndexBufferObject& rhs) {
-      id_ = rhs.id_;
-    }
-
-    void operator=(const IndexBufferObjectId& rhs) {
-      id_ = rhs;
-    }
-
-    explicit operator IndexBufferObjectId () const {
-      return id_;
-    }
-
-    bool operator==(const IndexBufferObject& rhs) const {
-      return id_ == rhs.id_;
-    }
-
-    bool operator==(const IndexBufferObjectId& rhs) const {
-      return id_ == rhs;
-    }
-
-    bool operator!=(const IndexBufferObject& rhs) const {
-      return id_ != rhs.id_;
-    }
-
-    bool operator!=(const IndexBufferObjectId& rhs) const {
-      return id_ != rhs;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const IndexBufferObject& rhs) {
-      stream << "IndexBufferObject(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
+    void operator=(const IndexBufferTemplate<Index, Usage>& rhs) {
+      BufferObject::operator=((const BufferObject&) rhs);
+      length_ = rhs.length_;
     }
   };
 }

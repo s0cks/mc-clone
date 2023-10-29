@@ -7,8 +7,8 @@
 
 namespace mcc::terrain {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static TerrainVertexBuffer vbo_(kInvalidVertexBufferObject);
-  static TerrainIndexBuffer ibo_(kInvalidIndexBufferObject);
+  static TerrainVertexBuffer vbo_;
+  static IndexBuffer ibo_;
   static Shader shader_;
   static texture::Texture texture_(texture::kInvalidTextureId);
 
@@ -72,7 +72,7 @@ namespace mcc::terrain {
     return vbo_;
   }
 
-  TerrainIndexBuffer Terrain::GetIbo() {
+  IndexBuffer Terrain::GetIbo() {
     return ibo_;
   }
 
@@ -102,7 +102,7 @@ namespace mcc::terrain {
 
     VertexArrayObjectBindScope vao(vao_);
     vbo_ = TerrainVertexBuffer(vertices_);
-    ibo_ = TerrainIndexBuffer(indices_);
+    ibo_ = IndexBuffer(indices_);
   }
 
   void Terrain::Render(const glm::mat4 projection, const glm::mat4 view) {
