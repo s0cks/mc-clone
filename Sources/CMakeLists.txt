@@ -70,11 +70,7 @@ add_library(${PROJECT_NAME}
   mcc/ecs/entity.h mcc/ecs/entity.cc
   mcc/ecs/component.h mcc/ecs/component.cc
   mcc/ecs/system.h mcc/ecs/system.cc
-  mcc/ecs/event.h mcc/ecs/event.cc
-  mcc/gui/gui_vertex.h
-  mcc/gui/gui_component.h mcc/gui/gui_component.cc
-  mcc/gui/gui_window.h mcc/gui/gui_window.cc
-  mcc/gui/gui_button.h mcc/gui/gui_button.cc)
+  mcc/ecs/event.h mcc/ecs/event.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog
