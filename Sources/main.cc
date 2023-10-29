@@ -9,7 +9,6 @@
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/render_loop.h"
-#include "mcc/scene.h"
 
 #include "mcc/camera/perspective_camera.h"
 
@@ -48,9 +47,11 @@ int main(int argc, char** argv) {
   RenderLoop::Initialize(loop);
   Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
+  mesh::Mesh::Init();
   Window::Init();
   Systems::Init();
   terrain::Terrain::Init();
+
 
   Engine::Run();
   return EXIT_SUCCESS;

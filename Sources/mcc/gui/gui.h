@@ -22,9 +22,9 @@ namespace mcc::gui {
 
     friend std::ostream& operator<<(std::ostream& stream, const Vertex& rhs) {
       stream << "gui::Vertex(";
-      stream << "pos=" << rhs.position << ", ";
-      stream << "uv=" << rhs.uv << ", ";
-      stream << "color=" << rhs.color;
+      stream << "pos=" << glm::to_string(rhs.position) << ", ";
+      stream << "uv=" << glm::to_string(rhs.uv) << ", ";
+      stream << "color=" << glm::to_string(rhs.color);
       stream << ")";
       return stream;
     }

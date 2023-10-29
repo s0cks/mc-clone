@@ -17,28 +17,14 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
+#include <iostream>
 #include <glog/logging.h>
 
 namespace mcc {
-  static inline std::ostream&
-  operator<<(std::ostream& stream, const glm::vec2 rhs) {
-    return stream << "(" << rhs[0] << ", " << rhs[1] << ")";
-  }
-
-  static inline std::ostream&
-  operator<<(std::ostream& stream, const glm::vec3 rhs) {
-    return stream << "(" << rhs[0] << ", " << rhs[1] << ", " << rhs[2] << ")";
-  }
-
-  static inline std::ostream&
-  operator<<(std::ostream& stream, const glm::vec4 rhs) {
-    return stream << "(" << rhs[0] << ", " << rhs[1] << ", " << rhs[2] << ", " << rhs[3] << ")";
-  }
-
 #ifdef MCC_DEBUG
 
 #define CHECK_GL(Severity) ({                                     \
@@ -55,6 +41,18 @@ namespace mcc {
     kStaticUsage = GL_STATIC_DRAW,
     kDefaultUsage = kDynamicUsage,
   };
+
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const GlObjectUsage& rhs) {
+    switch(rhs) {
+      case kDynamicUsage:
+        return stream << "Dynamic";
+      case kStaticUsage:
+        return stream << "Static";
+      default:
+        return stream << "<unknown GlObjectUsage: " << rhs << ">";
+    }
+  }
 
   typedef GLuint VertexArrayObjectId;
   static constexpr const VertexArrayObjectId kInvalidVertexArrayObject = 0;
@@ -151,6 +149,18 @@ namespace mcc {
     kIndex = GL_ELEMENT_ARRAY_BUFFER,
   };
 
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const BufferObjectTarget& rhs) {
+    switch(rhs) {
+      case kVertex:
+        return stream << "Vertex";
+      case kIndex:
+        return stream << "Index";
+      default:
+        return stream << "<unknown BufferObjectTarget: " << rhs << ">";
+    }
+  }
+
   class BufferObject {
   protected:
     BufferObjectId id_;
@@ -173,7 +183,8 @@ namespace mcc {
       return id_;
     }
 
-    virtual BufferObjectTarget GetTarget() const = 0;
+    virtual GlObjectUsage usage() const = 0;
+    virtual BufferObjectTarget target() const = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
 
@@ -230,7 +241,7 @@ namespace mcc {
     }
     ~BufferObjectTemplate() override = default;
 
-    BufferObjectTarget GetTarget() const override {
+    BufferObjectTarget target() const override {
       return Target;
     }
 
@@ -283,11 +294,15 @@ namespace mcc {
     void BindBufferData(const Vertex* vertices, const uint64_t num_vertices) {
       DLOG_IF(ERROR, num_vertices == 0) << "binding VertexBufferObject w/ 0 vertices."; 
       Bind();
-      glBufferData(GetTarget(), num_vertices * kVertexSize, vertices, Usage);
+      glBufferData(target(), num_vertices * kVertexSize, vertices, Usage);
       CHECK_GL(FATAL);
     }
   public:
     ~VertexBufferTemplate() override = default;
+
+    GlObjectUsage usage() const override {
+      return Usage;
+    }
 
     uint64_t length() const override {
       return length_;
@@ -316,7 +331,7 @@ namespace mcc {
     }
   };
 
-  template<typename Index, const GlObjectUsage Usage = kDefaultUsage>
+  template<typename Index, const GLenum Type, const GlObjectUsage Usage = kDefaultUsage>
   class IndexBufferTemplate : public IndexBufferObject {
   public:
     static const uint64_t kIndexSize = sizeof(Index);
@@ -337,11 +352,15 @@ namespace mcc {
     void BindBufferData(const Index* indices, const uint64_t num_indices) {
       DLOG_IF(ERROR, num_indices == 0) << "creating IndexBufferObject w/ 0 indices.";
       Bind();
-      glBufferData(GetTarget(), num_indices * kIndexSize, &indices[0], Usage);
+      glBufferData(target(), num_indices * kIndexSize, &indices[0], Usage);
       CHECK_GL(FATAL);
     }
   public:
     ~IndexBufferTemplate() override = default;
+
+    GlObjectUsage usage() const override {
+      return Usage;
+    }
 
     uint64_t length() const override {
       return length_;
@@ -349,6 +368,10 @@ namespace mcc {
 
     uint64_t index_size() const override {
       return kIndexSize;
+    }
+
+    GLenum type() const {
+      return Type;
     }
 
     void operator=(const IndexBufferTemplate<Index, Usage>& rhs) {

@@ -7,8 +7,6 @@ namespace mcc {
   class Cube {
   public:
     static mesh::Mesh* CreateMesh();
-    static void InitVertices(std::vector<glm::vec3>& vertices);
-    static void InitUv(std::vector<glm::vec3>& uv);
   };
 }
 

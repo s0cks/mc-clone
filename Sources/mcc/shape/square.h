@@ -1,8 +1,7 @@
 #ifndef MCC_SQUARE_H
 #define MCC_SQUARE_H
 
-#include "mcc/shape/shape.h"
-#include "mcc/scene.h"
+#include "mcc/gfx.h"
 
 namespace mcc::shape {
   class Square {

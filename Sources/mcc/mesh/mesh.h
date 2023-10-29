@@ -1,47 +1,60 @@
 #ifndef MCC_MESH_H
 #define MCC_MESH_H
 
-#include <vector>
 #include "mcc/gfx.h"
 #include "mcc/common.h"
-#include "mcc/vao.h"
-#include "mcc/ibo.h"
-#include "mcc/mesh/index.h"
 #include "mcc/mesh/vertex.h"
+#include "mcc/mesh/index.h"
 
 namespace mcc {
-  namespace mesh {
-    class Mesh {
-      DEFINE_NON_COPYABLE_TYPE(Mesh);
-    protected:
-      Vao vao_;
-      Ibo ibo_;
-      Vbo vbo_;
-      uint64_t num_vertices_;
-      uint64_t num_indices_;
-    public:
-      Mesh(const std::vector<glm::vec3>& vertices);
-      Mesh(const std::vector<glm::vec3>& vertices, const std::vector<GLubyte>& indices);
-      virtual ~Mesh() {
-        vbo_.Delete();
-        vao_.Delete();
-      }
+  class Renderer;
+}
 
-      Vao vao() const {
-        return vao_;
-      }
+namespace mcc::mesh {
+  class Mesh {
+    friend class Renderer;
+  protected:
+    VertexBuffer vbo_;
+  public:
+    Mesh() = delete;
+    Mesh(const VertexList& vertices):
+      vbo_(vertices) {
+    }
+    virtual ~Mesh() = default;
 
-      Vbo vbo() const {
-        return vbo_;
-      }
+    VertexBuffer vbo() const {
+      return vbo_;
+    }
 
-      virtual void Render();
-    public:
-      static Mesh* New(const std::vector<glm::vec3>& vertices) {
-        return new Mesh(vertices);
-      }
-    };
-  }
+    virtual void Render();
+  private:
+    static void OnPostInit();
+  public:
+    static void Init();
+  };
+
+  class IndexedMesh : public Mesh {
+    friend class Renderer;
+  protected:
+    IndexBuffer ibo_;
+
+    void Render() override;
+  public:
+    IndexedMesh() = delete;
+    IndexedMesh(const VertexList& vertices,
+                const IndexList& indices):
+      Mesh(vertices),
+      ibo_(indices) {
+    }
+    ~IndexedMesh() override = default;
+
+    IndexBuffer ibo() const {
+      return ibo_;
+    }
+  };
+
+  Mesh* NewMesh(const VertexList& vertices);
+  Mesh* NewMesh(const VertexList& vertices, const IndexList& indices);
 }
 
 #endif //MCC_MESH_H

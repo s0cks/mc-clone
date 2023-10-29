@@ -4,7 +4,6 @@
 
 #include "mcc/window.h"
 #include "mcc/shape/square.h"
-#include "mcc/shape/plane.h"
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/font/font.h"

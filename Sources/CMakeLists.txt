@@ -27,7 +27,6 @@ add_library(${PROJECT_NAME}
   mcc/ibo.h mcc/ibo.cc
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
-  mcc/shape/plane.h mcc/shape/plane.cc
   mcc/event/event_bus.h mcc/event/event_bus.cc
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/render_loop.h mcc/render_loop.cc
@@ -59,9 +58,6 @@ add_library(${PROJECT_NAME}
   mcc/font/font_mesh.h mcc/font/font_mesh.cc
   mcc/font/truetype.h
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
-  mcc/scene.h mcc/scene.cc
-  mcc/mesh/model.h mcc/mesh/model.cc
-  mcc/rotation.h mcc/rotation.cc
   mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc

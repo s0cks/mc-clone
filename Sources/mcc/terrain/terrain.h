@@ -19,9 +19,9 @@ namespace mcc::terrain {
 
     friend std::ostream& operator<<(std::ostream& stream, const Vertex& rhs) {
       stream << "Vertex(";
-      stream << "pos=" << rhs.pos << ", ";
-      stream << "uv=" << rhs.uv << ", ";
-      stream << "color=" << rhs.color;
+      stream << "pos=" << glm::to_string(rhs.pos) << ", ";
+      stream << "uv=" << glm::to_string(rhs.uv) << ", ";
+      stream << "color=" << glm::to_string(rhs.color);
       stream << ")";
       return stream;
     }

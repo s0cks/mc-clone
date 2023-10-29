@@ -2,6 +2,7 @@
 #define MCC_RENDERER_H
 
 #include "mcc/common.h"
+#include "mcc/mesh/mesh.h"
 #include "mcc/ecs/system.h"
 #include "mcc/renderer/renderable.h"
 
