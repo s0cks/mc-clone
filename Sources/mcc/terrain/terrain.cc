@@ -15,37 +15,49 @@ namespace mcc::terrain {
   static VertexList vertices_;
   static IndexList indices_;
 
-  static inline void
-  GenerateIndices(IndexList& indices, const uint32_t num_vertices) {
-    const uint32_t num_indices = (num_vertices - 1) * (num_vertices - 1) * 6;
-    DLOG(INFO) << "generating " << num_indices << " indices for " << num_vertices << " vertices....";
-    for(uint32_t col = 0; col < num_vertices - 1; col++) {
-      for(uint32_t row = 0; row < num_vertices - 1; row++) {
-        uint32_t top_left = (row * num_vertices) + col;
-        uint32_t top_right = (top_left + 1);
-        uint32_t bottom_left = ((row + 1) * num_vertices) + col;
-        uint32_t bottom_right = bottom_left + 1;
+#define WIDTH (size[0])
+#define HALF_WIDTH (WIDTH / 2.0f)
+#define DEPTH (size[1])
+#define HALF_DEPTH (DEPTH / 2.0f)
+#define QUADS ((WIDTH - 1) * (DEPTH - 1))
+#define INDICES (QUADS * 6)
+#define VERTICES (QUADS * 4)
 
+  static inline uint32_t
+  GetNumberOfQuads(const glm::vec2 size) {
+    return static_cast<uint32_t>((WIDTH - 1) * (DEPTH - 1));
+  }
+
+  static inline void
+  GenerateIndices(IndexList& indices, const glm::vec2 size) {
+    DLOG(INFO) << "generating " << INDICES << ".....";
+    for(auto z = 0.0f; z < DEPTH - 1; z++) {
+      for(auto x = 0.0f; x < WIDTH - 1; x++) {
+        unsigned int btm_left = z * WIDTH + x;
+        unsigned int top_left = (z + 1) * WIDTH + x;
+        unsigned int top_right = (z + 1) * WIDTH + x + 1;
+        unsigned int btm_right = z * WIDTH + x + 1;
+        indices.push_back(btm_left);
         indices.push_back(top_left);
-        indices.push_back(bottom_left);
-        indices.push_back(bottom_right);
-        indices.push_back(top_left);
-        indices.push_back(bottom_right);
         indices.push_back(top_right);
+        
+        indices.push_back(btm_left);
+        indices.push_back(top_right);
+        indices.push_back(btm_right);
       }
     }
   }
 
   static inline void 
-  GenerateVertices(VertexList& vertices, const uint32_t width, const uint32_t length) {
-    DLOG(INFO) << "generating vertices for " << width << "x" << length << " terrain....";
-    for(auto z = 0; z < length; z++) {
-      for(auto x = 0; x < width; x++) {
-        const auto uvZ = z / static_cast<float>(length);
-        const auto uvX = x / static_cast<float>(width);
+  GenerateVertices(VertexList& vertices, const glm::vec2 size) {
+    DLOG(INFO) << "generating " << VERTICES << "....";
+    for(auto z = -HALF_DEPTH; z < +HALF_DEPTH; z++) {
+      for(auto x = -HALF_WIDTH; x < +HALF_WIDTH; x++) {
+        const auto uvZ = static_cast<float>(x) / DEPTH; 
+        const auto uvX = static_cast<float>(z) / WIDTH;
         vertices.push_back(Vertex {
-          .pos = glm::vec3(x * 1.0f, 1.0f, z * 1.0f),
-          .uv = glm::vec2(uvX, uvZ),
+          .pos = glm::vec3(x, 1.0f, z),
+          .uv = glm::vec2(abs(uvX), abs(uvZ)),
           .color = glm::vec3(1.0f, 1.0f, 1.0f),
         });
       }
@@ -72,9 +84,10 @@ namespace mcc::terrain {
 
   void Terrain::OnPreInit() {
     DLOG(INFO) << "generating terrain data....";
-    GenerateVertices(vertices_, 10, 10);
+    const glm::vec2 size(26, 26);
+    GenerateVertices(vertices_, size);
     DLOG(INFO) << "generated " << vertices_.size() << " vertices: " << vertices_;
-    GenerateIndices(indices_, 10);
+    GenerateIndices(indices_, size);
     DLOG(INFO) << "generated " << indices_.size() << " indices: " << indices_;
   }
 

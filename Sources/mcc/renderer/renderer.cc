@@ -40,6 +40,10 @@ namespace mcc {
 
   void Renderer::PreRender() {
     SetState(Renderer::kPreRender);
+    const auto mode = Mouse::IsPressed(kMouseButton1)
+        ? GL_LINE
+        : GL_FILL;
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   }
@@ -74,6 +78,7 @@ namespace mcc {
   void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
     const auto& renderable = Components::GetComponent<Renderable>(e);
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
@@ -99,20 +104,17 @@ namespace mcc {
       frames_ = 0;
     }
 
-    const auto mode = Mouse::IsPressed(kMouseButton1)
-        ? GL_LINE
-        : GL_FILL;
-    glPolygonMode(GL_FRONT_AND_BACK, mode);
-
     SetState(Renderer::kRender);
     PreRender();
     {
+      glEnable(GL_DEPTH_TEST);
       auto proj = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
       auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
       terrain::Terrain::Render(proj, view);
       Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
         RenderEntity(proj, view, e);
       });
+      glDisable(GL_DEPTH_TEST);
     }
 
     // if(gui::Window::HasCurrent()) {
