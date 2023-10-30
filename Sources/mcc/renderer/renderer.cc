@@ -26,7 +26,7 @@ namespace mcc::renderer {
   static ThreadLocal<RenderTerrainStage> render_terrain_;
   static ThreadLocal<RenderEntitiesStage> render_entities_;
   static ThreadLocal<RenderGuiStage> render_gui_;
-  static ThreadLocal<DrawGuiStage> draw_gui_;
+  static ThreadLocal<RenderScreenStage> draw_gui_;
   static ThreadLocal<PostRenderStage> post_render_;
 
   static Tick last_;
@@ -72,7 +72,7 @@ namespace mcc::renderer {
   void Renderer::OnInit() {
     const auto loop = uv_loop_new();
     post_render_.Set(new PostRenderStage(loop));
-    draw_gui_.Set(new DrawGuiStage(loop));
+    draw_gui_.Set(new RenderScreenStage(loop));
     render_gui_.Set(new RenderGuiStage(loop));
     render_entities_.Set(new RenderEntitiesStage(loop));
     render_terrain_.Set(new RenderTerrainStage(loop));

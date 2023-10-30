@@ -2,15 +2,18 @@
 #define MCC_RENDERER_STATE_H
 
 namespace mcc::renderer {
-#define FOR_EACH_RENDERER_STATE(V) \
-  V(PreInit)                       \
-  V(Init)                          \
-  V(PostInit)                      \
-  V(PreRender)                     \
-  V(RenderTerrain)                 \
-  V(RenderEntities)                \
-  V(RenderGui)                     \
-  V(DrawGui)                       \
+#define FOR_EACH_RENDERER_RENDER_STATE(V) \
+  V(RenderTerrain)                        \
+  V(RenderEntities)                       \
+  V(RenderGui)                            \
+  V(RenderScreen)
+
+#define FOR_EACH_RENDERER_STATE(V)  \
+  V(PreInit)                        \
+  V(Init)                           \
+  V(PostInit)                       \
+  V(PreRender)                      \
+  FOR_EACH_RENDERER_RENDER_STATE(V) \
   V(PostRender)
 
   enum RendererState {

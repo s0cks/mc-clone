@@ -10,6 +10,10 @@
 #include "mcc/ecs/entity.h"
 
 namespace mcc::renderer {
+#define FORWARD_DECLARE_STAGE(Name) class Name##Stage;
+  FOR_EACH_RENDERER_STATE(FORWARD_DECLARE_STAGE);
+#undef FORWARD_DECLARE_STAGE
+
   class Stage {
   protected:
     uv_loop_t* loop_;
@@ -181,13 +185,13 @@ namespace mcc::renderer {
     DEFINE_RENDER_STAGE(Gui);
   };
 
-  class DrawGuiStage : public RenderStage {
+  class RenderScreenStage : public RenderStage {
   public:
-    explicit DrawGuiStage(uv_loop_t* loop):
+    explicit RenderScreenStage(uv_loop_t* loop):
       RenderStage(loop) {
     }
-    ~DrawGuiStage() override = default;
-    DEFINE_RENDER_STAGE(Gui);
+    ~RenderScreenStage() override = default;
+    DEFINE_RENDER_STAGE(Screen);
   };
 }
 
