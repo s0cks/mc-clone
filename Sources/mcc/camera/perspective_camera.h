@@ -23,10 +23,11 @@ namespace mcc::camera {
     glm::mat4 view;
   };
 
+  static constexpr const glm::vec3 kDefaultCameraPosition = glm::vec3(2.0f, 2.0f, 0.0f);
   class PerspectiveCameraBehavior {
     DEFINE_NON_INSTANTIABLE_TYPE(PerspectiveCameraBehavior);
   private:
-    static Entity CreateCameraEntity();
+    static Entity CreateCameraEntity(const glm::vec3 pos = kDefaultCameraPosition);
     static void SetCameraEntity(const Entity e);
     static void OnMousePosition(const MousePosition& pos);
     

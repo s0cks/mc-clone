@@ -7,7 +7,7 @@
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 
-namespace mcc {
+namespace mcc::renderer {
   class Renderer;
 }
 
@@ -138,7 +138,7 @@ namespace mcc::terrain {
   }
 
   class Terrain {
-    friend class mcc::Renderer;
+    friend class mcc::renderer::Renderer;
     DEFINE_NON_COPYABLE_TYPE(Terrain);
   private:
 

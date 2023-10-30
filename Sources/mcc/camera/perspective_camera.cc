@@ -43,10 +43,10 @@ namespace mcc::camera {
     return Entity((EntityId) entity_);
   }
 
-  Entity PerspectiveCameraBehavior::CreateCameraEntity() {
+  Entity PerspectiveCameraBehavior::CreateCameraEntity(const glm::vec3 pos) {
     const auto e = Entities::CreateEntity();
     auto camera = PerspectiveCamera {
-      .pos = glm::vec3(0.0f, 0.0f, 0.0f),
+      .pos = pos,
       .up = glm::vec3(0.0f, 1.0f, 0.0f),
       .world_up = glm::vec3(0.0f, 1.0f, 0.0f),
       .yaw = -90.0f,

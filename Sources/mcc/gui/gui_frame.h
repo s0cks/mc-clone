@@ -7,7 +7,7 @@
 #include "mcc/gfx.h"
 #include "mcc/gui/gui.h"
 
-namespace mcc {
+namespace mcc::renderer {
   class Renderer;
 }
 
@@ -16,7 +16,7 @@ namespace mcc::gui {
   typedef std::shared_ptr<Frame> FramePtr;
 
   class Frame {
-    friend class mcc::Renderer;
+    friend class mcc::renderer::Renderer;
   public:
     enum Position {
       kTopLeft,

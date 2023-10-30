@@ -108,13 +108,7 @@ namespace mcc {
   }
 
   void Window::OnInit() {
-    Engine::OnTick([](const Tick& tick) {
-      const auto length = title_.length() + 26;
-      char title[length];
-      //TODO: %04.02f
-      snprintf(title, length, "%s TPS: %" PRIu64 " FPS: %" PRIu64 , title_.data(), Engine::GetTPS(), Renderer::GetFPS());
-      glfwSetWindowTitle(Window::GetHandle(), title);
-    });
+    
   }
 
   void Window::OnPostInit() {
@@ -124,7 +118,7 @@ namespace mcc {
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
     const auto mesh = Cube::CreateMesh();
-    Coordinator::AddComponent(e2, Renderable {
+    Coordinator::AddComponent(e2, renderer::Renderable {
       .shader = shader,
       .mesh = mesh,
       .texture = texture,

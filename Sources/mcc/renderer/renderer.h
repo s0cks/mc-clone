@@ -3,8 +3,10 @@
 
 #include "mcc/common.h"
 #include "mcc/mesh/mesh.h"
+#include "mcc/state_machine.h"
 #include "mcc/ecs/system.h"
 #include "mcc/renderer/renderable.h"
+#include "mcc/renderer/renderer_state.h"
 
 namespace mcc::gui {
   class Screen;
@@ -12,23 +14,12 @@ namespace mcc::gui {
   class SettingsFrame;
 }
 
-namespace mcc {
-#define FOR_EACH_RENDERER_STATE(V) \
-  V(PreRender)                     \
-  V(Render)                        \
-  V(PostRender)
-
+namespace mcc::renderer {
   class Renderer {
     friend class gui::Screen;
     friend class gui::SettingsFrame;
-    DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
+    DECLARE_STATE_MACHINE(Renderer);
   public:
-    enum State {
-#define DEFINE_RENDERER_STATE(Name) k##Name,
-      FOR_EACH_RENDERER_STATE(DEFINE_RENDERER_STATE)
-#undef DEFINE_RENDERER_STATE
-    };
-
     enum Mode {
       kFillMode = GL_FILL,
       kWireframeMode = GL_LINE,
@@ -46,7 +37,6 @@ namespace mcc {
 
     static void PreRender();
     static void PostRender();
-    static void SetState(const State state);
 
     static void SetMode(const Mode mode);
 
@@ -55,7 +45,6 @@ namespace mcc {
       return SetMode(kDefaultMode);
     }
   public:
-    static State GetState();
     static void Init();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
@@ -65,7 +54,8 @@ namespace mcc {
     static Mode GetMode();
 
 #define DEFINE_STATE_CHECK(Name) \
-    static inline bool Is##Name() { return GetState() == State::k##Name; }
+    static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }
+    
     FOR_EACH_RENDERER_STATE(DEFINE_STATE_CHECK)
 #undef DEFINE_STATE_CHECK
   };

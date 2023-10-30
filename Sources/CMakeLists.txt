@@ -54,8 +54,6 @@ add_library(${PROJECT_NAME}
   mcc/font/font_mesh.h mcc/font/font_mesh.cc
   mcc/font/truetype.h
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
-  mcc/renderer/renderable.h mcc/renderer/renderable.cc
-  mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/ecs.h
@@ -66,7 +64,11 @@ add_library(${PROJECT_NAME}
   mcc/ecs/event.h mcc/ecs/event.cc
   mcc/gui/gui.h mcc/gui/gui.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
-  mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc)
+  mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
+  mcc/state_machine.h
+  mcc/renderer/renderer_state.h
+  mcc/renderer/renderable.h mcc/renderer/renderable.cc
+  mcc/renderer/renderer.h mcc/renderer/renderer.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog

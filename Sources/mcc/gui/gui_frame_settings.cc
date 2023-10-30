@@ -4,6 +4,8 @@
 #include "mcc/terrain/terrain.h"
 
 namespace mcc::gui {
+  using renderer::Renderer;
+
   SettingsFrame::SettingsFrame():
     Frame("Settings", kBottom, glm::vec2(0.0f, Window::GetHeight() / 8.0f)) {
   }

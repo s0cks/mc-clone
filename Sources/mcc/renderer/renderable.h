@@ -6,7 +6,7 @@
 #include "mcc/texture/texture.h"
 #include "mcc/ecs/component_id.h"
 
-namespace mcc {
+namespace mcc::renderer {
   struct Renderable {
     Shader shader;
     mesh::Mesh* mesh;

@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
   });
   RenderLoop::Initialize(loop);
   gui::Screen::Init();
-  Renderer::Init();
+  renderer::Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
   mesh::Mesh::Init();
   Window::Init();

@@ -15,11 +15,11 @@
 #include "mcc/gui/gui_frame.h"
 #include "mcc/gui/gui_frame_settings.h"
 
-namespace mcc {
-  static Tick last_;
+namespace mcc::renderer {
+    static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
-  static RelaxedAtomic<Renderer::State> state_;
+  static RelaxedAtomic<RendererState> state_;
 
   static font::Font* font_ = nullptr;
   static Shader lightingShader_;
@@ -43,12 +43,12 @@ namespace mcc {
     return (Renderer::Mode) mode_;
   }
 
-  void Renderer::SetState(const Renderer::State state) {
+  void Renderer::SetState(const RendererState state) {
     state_ = state;
   }
 
-  Renderer::State Renderer::GetState() {
-    return (Renderer::State) state_;
+  RendererState Renderer::GetState() {
+    return (RendererState) state_;
   }
 
   void Renderer::OnPreInit() {
@@ -68,7 +68,7 @@ namespace mcc {
 
   void Renderer::PreRender() {
     DLOG(INFO) << "pre-render.";
-    SetState(Renderer::kPreRender);
+    SetState(kPreRenderState);
     int width;
     int height;
     glfwGetFramebufferSize(Window::GetHandle(), &width, &height);
@@ -85,7 +85,7 @@ namespace mcc {
 
   void Renderer::PostRender() {
     DLOG(INFO) << "post-render.";
-    SetState(Renderer::kPostRender);
+    SetState(kPostRenderState);
     const auto window = Window::GetHandle();
     glfwSwapBuffers(window);
     CHECK_GL(FATAL);
@@ -136,7 +136,6 @@ namespace mcc {
       frames_ = 0;
     }
 
-    SetState(Renderer::kRender);
     PreRender();
     {
       glPolygonMode(GL_FRONT_AND_BACK, (Renderer::Mode) mode_);
