@@ -7,17 +7,46 @@
 #include "mcc/ecs/system.h"
 #include "mcc/renderer/renderable.h"
 #include "mcc/renderer/renderer_state.h"
+#include "mcc/renderer/renderer_stats.h"
 
 namespace mcc::gui {
   class Screen;
   class Frame;
   class SettingsFrame;
+  class RendererFrame;
 }
 
+
+/*
+ * ---------------------------------------
+ * |            Pre Init                 |
+ * --------------------------------------- 
+ * |            Init                     |
+ * ---------------------------------------
+ * |            Post Init                |
+ * ---------------------------------------
+ * 
+ *              .........
+ * 
+ * 
+ * ============ Tick Start ===============
+ * ---------------------------------------
+ * |            PreRender                |
+ * --------------------------------------
+ * |            PostRender               |
+ * ---------------------------------------
+ * ============ Tick End =================
+*/
 namespace mcc::renderer {
   class Renderer {
     friend class gui::Screen;
     friend class gui::SettingsFrame;
+    friend class gui::RendererFrame;
+
+    friend class PreRenderStage;
+    friend class RenderStage;
+    friend class PostRenderStage;
+    friend class RenderEntitiesStage;
     DECLARE_STATE_MACHINE(Renderer);
   public:
     enum Mode {
@@ -37,12 +66,23 @@ namespace mcc::renderer {
 
     static void PreRender();
     static void PostRender();
-
+    static void SetLoop(uv_loop_t* loop);
     static void SetMode(const Mode mode);
+
+    static void Run(const uv_run_mode = UV_RUN_ONCE);
 
     static inline void
     ResetMode() {
       return SetMode(kDefaultMode);
+    }
+
+    static void IncrementEntityCounter(const uint64_t value = 1);
+    static void DecrementEntityCounter(const uint64_t value = 1);
+    static void SetEntityCounter(const uint64_t value);
+
+    static inline void
+    ResetEntityCounter() {
+      return SetEntityCounter(0);
     }
   public:
     static void Init();
@@ -52,6 +92,10 @@ namespace mcc::renderer {
     static void AddFrame(std::shared_ptr<gui::Frame> frame);
 
     static Mode GetMode();
+    static uv_loop_t* GetLoop();
+
+    static uint64_t GetEntityCounter();
+    static RendererStats GetStats();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

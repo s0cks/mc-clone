@@ -65,8 +65,16 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui.h mcc/gui/gui.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
+  mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
   mcc/state_machine.h
   mcc/renderer/renderer_state.h
+  mcc/renderer/renderer_stats.h
+  mcc/renderer/renderer_stage.h mcc/renderer/renderer_stage.cc
+  mcc/renderer/render_stage_pre.cc
+  mcc/renderer/render_stage_post.cc
+  mcc/renderer/stage_render_terrain.cc
+  mcc/renderer/stage_render_entities.cc
+  mcc/renderer/stage_render_gui.cc
   mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc)
 target_link_libraries(${PROJECT_NAME}

@@ -27,12 +27,27 @@
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/thread_local.h"
+#include "mcc/gui/gui_frame.h"
 
 namespace mcc {
   typedef struct nk_context NuklearContext;
 
   static ThreadLocal<GLFWwindow> handle_;
   static ThreadLocal<NuklearContext> nk_ctx_;
+
+  static std::vector<gui::FramePtr> frames_;
+
+  void Window::AddFrame(gui::FramePtr frame) {
+    frames_.push_back(frame);
+  }
+
+  bool Window::VisitFrames(gui::FrameVisitor* vis) {
+    for(auto& frame : frames_) {
+      if(!vis->Visit(frame))
+        return false;
+    }
+    return true;
+  }
 
   static glm::vec2 size_;
   static std::string title_;

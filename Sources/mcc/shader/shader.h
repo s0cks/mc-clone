@@ -78,6 +78,13 @@ namespace mcc {
       id_ = rhs.id_;
       return *this;
     }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Shader rhs) {
+      stream << "Shader(";
+      stream << "id=" << rhs.id_;
+      stream << ")";
+      return stream;
+    }
   };
 
   class GlCompiler {

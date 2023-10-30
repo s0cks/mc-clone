@@ -9,6 +9,7 @@
 
 namespace mcc::renderer {
   class Renderer;
+  class RenderTerrainStage;
 }
 
 namespace mcc::terrain {
@@ -138,7 +139,7 @@ namespace mcc::terrain {
   }
 
   class Terrain {
-    friend class mcc::renderer::Renderer;
+    friend class mcc::renderer::RenderTerrainStage;
     DEFINE_NON_COPYABLE_TYPE(Terrain);
   private:
 

@@ -9,14 +9,23 @@
 
 namespace mcc::renderer {
   class Renderer;
+  class FrameRenderer;
 }
 
 namespace mcc::gui {
   class Frame;
   typedef std::shared_ptr<Frame> FramePtr;
 
+  class FrameVisitor {
+  protected:
+    FrameVisitor() = default;
+  public:
+    virtual ~FrameVisitor() = default;
+    virtual bool Visit(FramePtr frame) = 0;
+  };
+
   class Frame {
-    friend class mcc::renderer::Renderer;
+    friend class mcc::renderer::FrameRenderer;
   public:
     enum Position {
       kTopLeft,

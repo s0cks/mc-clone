@@ -145,6 +145,8 @@ namespace mcc::gui {
 
   void Screen::RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer) {
     nk::Buffer vbuf, ebuf;
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    CHECK_GL(FATAL);
     glEnable(GL_BLEND);
     CHECK_GL(FATAL);
     glBlendEquation(GL_FUNC_ADD);

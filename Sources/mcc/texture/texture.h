@@ -63,6 +63,13 @@ namespace mcc::texture {
     void operator=(const TextureId& rhs) {
       id_ = rhs;
     }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Texture& rhs) {
+      stream << "Texture(";
+      stream << "id=" << rhs.id_;
+      stream << ")";
+      return stream;
+    }
   public:
     static Texture LoadFrom(const std::string& filename);
   };

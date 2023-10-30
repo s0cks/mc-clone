@@ -4,6 +4,7 @@
 #include "mcc/gfx.h"
 #include "mcc/flags.h"
 #include "mcc/common.h"
+#include "mcc/gui/gui_frame.h"
 
 namespace mcc {
   class Window {
@@ -25,6 +26,9 @@ namespace mcc {
 
     static float GetWidth();
     static float GetHeight();
+
+    static void AddFrame(gui::FramePtr frame);
+    static bool VisitFrames(gui::FrameVisitor* vis);
 
     static inline float
     GetAspectRatio() {

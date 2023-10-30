@@ -28,6 +28,10 @@ namespace mcc::engine {
   static TerminatingStage terminating_;
   static TerminatedStage terminated_;
 
+  Tick Engine::GetTick() {
+    return current_;
+  }
+
   void Engine::Init(uv_loop_t* loop) {
     loop_ = loop;
   }

@@ -12,6 +12,15 @@ namespace mcc::renderer {
     mesh::Mesh* mesh;
     texture::Texture texture;
 
+    friend std::ostream& operator<<(std::ostream& stream, const Renderable& rhs) {
+      stream << "Renderable(";
+      stream << "shader=" << rhs.shader << ", ";
+      stream << "texture=" << rhs.texture << ", ";
+      stream << "mesh=" << rhs.mesh;
+      stream << ")";
+      return stream;
+    }
+
     friend class Renderer;
   private:
     static void SetComponentId(const ComponentId id);

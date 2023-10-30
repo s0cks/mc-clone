@@ -2,6 +2,8 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/thread_local.h"
+
 #include "mcc/window.h"
 #include "mcc/shape/square.h"
 #include "mcc/camera/perspective_camera.h"
@@ -14,12 +16,24 @@
 #include "mcc/gui/gui.h"
 #include "mcc/gui/gui_frame.h"
 #include "mcc/gui/gui_frame_settings.h"
+#include "mcc/gui/gui_frame_renderer.h"
+
+#include "mcc/renderer/renderer_stage.h"
 
 namespace mcc::renderer {
-    static Tick last_;
+  static ThreadLocal<uv_loop_t> loop_;
+  static ThreadLocal<PreRenderStage> pre_render_;
+  static ThreadLocal<RenderTerrainStage> render_terrain_;
+  static ThreadLocal<RenderEntitiesStage> render_entities_;
+  static ThreadLocal<RenderGuiStage> render_gui_;
+  static ThreadLocal<DrawGuiStage> draw_gui_;
+  static ThreadLocal<PostRenderStage> post_render_;
+
+  static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<RendererState> state_;
+  static RelaxedAtomic<uint64_t> entities_(0);
 
   static font::Font* font_ = nullptr;
   static Shader lightingShader_;
@@ -50,45 +64,26 @@ namespace mcc::renderer {
   RendererState Renderer::GetState() {
     return (RendererState) state_;
   }
+ 
+  void Renderer::Init() {
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+  }
 
   void Renderer::OnPreInit() {
     Renderable::SetComponentId(Components::Register<Renderable>());
   }
 
   void Renderer::OnInit() {
-
-  }
-
-  static inline std::string
-  GetFps() {
-    std::stringstream ss;
-    ss << "FPS: " << (uint64_t) fps_;
-    return ss.str();
-  }
-
-  void Renderer::PreRender() {
-    DLOG(INFO) << "pre-render.";
-    SetState(kPreRenderState);
-    int width;
-    int height;
-    glfwGetFramebufferSize(Window::GetHandle(), &width, &height);
-    CHECK_GL(FATAL);
-    glViewport(0, 0, width, height);
-    CHECK_GL(FATAL);
-
-    glfwPollEvents();
-    CHECK_GL(FATAL);
-    gui::Screen::NewFrame();
-    for(auto& frame : gui_frames_)
-      frame->RenderFrame(gui::Screen::GetNuklearContext());
-  }
-
-  void Renderer::PostRender() {
-    DLOG(INFO) << "post-render.";
-    SetState(kPostRenderState);
-    const auto window = Window::GetHandle();
-    glfwSwapBuffers(window);
-    CHECK_GL(FATAL);
+    const auto loop = uv_loop_new();
+    post_render_.Set(new PostRenderStage(loop));
+    draw_gui_.Set(new DrawGuiStage(loop));
+    render_gui_.Set(new RenderGuiStage(loop));
+    render_entities_.Set(new RenderEntitiesStage(loop));
+    render_terrain_.Set(new RenderTerrainStage(loop));
+    pre_render_.Set(new PreRenderStage(loop));
+    SetLoop(loop);
   }
 
   void Renderer::OnPostInit() {
@@ -96,35 +91,11 @@ namespace mcc::renderer {
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
+
+    Window::AddFrame(gui::SettingsFrame::New());
+    Window::AddFrame(gui::RendererFrame::New());
+
     Engine::OnTick(&OnTick);
-
-    Renderer::AddFrame(gui::SettingsFrame::New());
-  }
-
-  void Renderer::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
-  }
-
-  void Renderer::RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e) {
-    const auto& renderable = Components::GetComponent<Renderable>(e);
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
-    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    const auto& shader = renderable.shader;
-    const auto& texture = renderable.texture;
-
-    // texture.Bind0();
-    shader.ApplyShader();
-    shader.SetMat4("model", model);
-    shader.SetMat4("view", view);
-    shader.SetMat4("projection", projection);
-    shader.SetVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
-    // shader.SetInt("texture1", 0);
-    shader.ApplyShader();
-    const auto& mesh = renderable.mesh;
-    mesh->Render();
   }
 
   void Renderer::OnTick(const Tick& tick) {
@@ -136,37 +107,7 @@ namespace mcc::renderer {
       frames_ = 0;
     }
 
-    PreRender();
-    {
-      glPolygonMode(GL_FRONT_AND_BACK, (Renderer::Mode) mode_);
-      CHECK_GL(FATAL);
-      glClearColor(0.4, 0.3, 0.4, 1.0f);
-      CHECK_GL(FATAL);
-      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-      CHECK_GL(FATAL);
-      glEnable(GL_DEPTH_TEST);
-      CHECK_GL(FATAL);
-      auto proj = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
-      auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
-      terrain::Terrain::Render(proj, view);
-      Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
-        RenderEntity(proj, view, e);
-      });
-      glDisable(GL_DEPTH_TEST);
-      CHECK_GL(FATAL);
-    }
-
-    {
-      const auto size = Window::GetSize();
-      glPolygonMode(GL_FRONT_AND_BACK, Renderer::Mode::kFillMode);
-      CHECK_GL(FATAL);
-      glm::mat4 projection(1.0f);
-      projection = glm::ortho(0.0f, size[0], size[1], 0.0f);
-      gui::Screen::RenderScreen(projection);
-      glPolygonMode(GL_FRONT_AND_BACK, (Renderer::Mode) mode_);
-      CHECK_GL(FATAL);
-    }
-    PostRender();
+    Run();
   }
 
   uint64_t Renderer::GetFrameCount() {
@@ -175,5 +116,46 @@ namespace mcc::renderer {
 
   uint64_t Renderer::GetFPS() {
     return (uint64_t) fps_;
+  }
+
+  void Renderer::SetLoop(uv_loop_t* loop) {
+    loop_.Set(loop);
+  }
+
+  uv_loop_t* Renderer::GetLoop() {
+    return loop_.Get();
+  }
+
+  void Renderer::Run(const uv_run_mode mode) {
+    VLOG(1) << "running....";
+    const auto start = uv_hrtime();
+    uv_run(GetLoop(), mode);
+    const auto total_ns = (uv_hrtime() - start);
+    VLOG(1) << "done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+  }
+
+  RendererStats Renderer::GetStats() {
+    return RendererStats {
+      .state = (RendererState) state_,
+      .entities = {
+        .count = (uint64_t) entities_,
+      },
+    };
+  }
+
+  void Renderer::IncrementEntityCounter(const uint64_t value) {
+    entities_ += value;
+  }
+
+  void Renderer::DecrementEntityCounter(const uint64_t value) {
+    entities_ -= value;
+  }
+
+  void Renderer::SetEntityCounter(const uint64_t value) {
+    entities_ = value;
+  }
+
+  uint64_t Renderer::GetEntityCounter() {
+    return (uint64_t) entities_;
   }
 }

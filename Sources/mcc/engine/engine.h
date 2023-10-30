@@ -30,6 +30,7 @@ namespace mcc {
       static bool IsRunning();
       static uv_loop_t* GetLoop();
       static State GetState();
+      static Tick GetTick();
       
 #define DEFINE_ON_EVENT(Name) \
       static void On##Name(Name##Callback callback);
