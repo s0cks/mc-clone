@@ -6,6 +6,7 @@
 
 #include "mcc/flags.h"
 #include "mcc/terrain/terrain.h"
+#include "mcc/renderer/renderer.h"
 
 namespace mcc::gui {
   static nk::Buffer cmds_;
@@ -132,31 +133,28 @@ namespace mcc::gui {
   }
 
   void Screen::TestScreen() {
-    if (nk_begin(&ctx_, "Demo", nk_rect(0, 0, width_ / 4, height_), NK_WINDOW_TITLE)) {
-      nk_layout_row_dynamic(&ctx_, 120, 1);
-      if(nk_option_label(&ctx_, "Concrete", terrain::Terrain::GetTexture() == terrain::kConcrete)) {
+    if (nk_begin(&ctx_, "Settings", nk_rect(0, 0, width_ / 4, height_), NK_WINDOW_TITLE)) {
+      nk_layout_row_dynamic(&ctx_, height_ / 8, 1);
+      nk_label(&ctx_, "Terrain", NK_TEXT_LEFT);
+      nk_layout_row_dynamic(&ctx_, height_ / 8, 2);
+      if(nk_option_label(&ctx_, "Concrete", terrain::Terrain::GetTexture() == terrain::kConcrete))
         terrain::Terrain::SetTexture(terrain::kConcrete);
-      }
-
-      if(nk_option_label(&ctx_, "Wood", terrain::Terrain::GetTexture() == terrain::kWood)) {
+      if(nk_option_label(&ctx_, "Wood", terrain::Terrain::GetTexture() == terrain::kWood))
         terrain::Terrain::SetTexture(terrain::kWood);
-      }
+
+      nk_layout_row_dynamic(&ctx_, height_ / 8, 1);
+      nk_label(&ctx_, "Render Mode", NK_TEXT_LEFT);
+      nk_layout_row_dynamic(&ctx_, height_ / 8, 2);
+      if(nk_option_label(&ctx_, "Default", Renderer::GetMode() == Renderer::kDefaultMode))
+        Renderer::SetMode(Renderer::kDefaultMode);
+      if(nk_option_label(&ctx_, "Wireframe", Renderer::GetMode() == Renderer::kWireframeMode))
+        Renderer::SetMode(Renderer::kWireframeMode);
     }
     nk_end(&ctx_);
   }
 
   void Screen::RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer) {
     nk::Buffer vbuf, ebuf;
-
-    glm::mat4 ortho = {
-        {2.0f, 0.0f, 0.0f, 0.0f},
-        {0.0f,-2.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f,-1.0f, 0.0f},
-        {-1.0f,1.0f, 0.0f, 1.0f},
-    };
-    ortho[0][0] /= static_cast<GLfloat>(width_);
-    ortho[1][1] /= static_cast<GLfloat>(height_);
-
     glEnable(GL_BLEND);
     CHECK_GL(FATAL);
     glBlendEquation(GL_FUNC_ADD);
@@ -174,7 +172,7 @@ namespace mcc::gui {
 
     shader_.ApplyShader();
     shader_.SetInt("tex", 0);
-    shader_.SetMat4("projection", ortho);
+    shader_.SetMat4("projection", projection);
     shader_.ApplyShader();
     glViewport(0,0, (GLsizei) display_width_, (GLsizei) display_height_);
     CHECK_GL(FATAL);

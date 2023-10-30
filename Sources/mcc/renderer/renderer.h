@@ -6,6 +6,10 @@
 #include "mcc/ecs/system.h"
 #include "mcc/renderer/renderable.h"
 
+namespace mcc::gui {
+  class Screen;
+}
+
 namespace mcc {
 #define FOR_EACH_RENDERER_STATE(V) \
   V(PreRender)                     \
@@ -13,12 +17,21 @@ namespace mcc {
   V(PostRender)
 
   class Renderer {
+    friend class gui::Screen;
     DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
   public:
     enum State {
 #define DEFINE_RENDERER_STATE(Name) k##Name,
       FOR_EACH_RENDERER_STATE(DEFINE_RENDERER_STATE)
 #undef DEFINE_RENDERER_STATE
+    };
+
+    enum Mode {
+      kFillMode = GL_FILL,
+      kWireframeMode = GL_LINE,
+
+      kNumberOfModes,
+      kDefaultMode = kFillMode,
     };
   private:
     static void OnPreInit();
@@ -31,11 +44,20 @@ namespace mcc {
     static void PreRender();
     static void PostRender();
     static void SetState(const State state);
+
+    static void SetMode(const Mode mode);
+
+    static inline void
+    ResetMode() {
+      return SetMode(kDefaultMode);
+    }
   public:
     static State GetState();
     static void Init();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
+
+    static Mode GetMode();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == State::k##Name; }

@@ -25,6 +25,16 @@ namespace mcc {
   static mesh::Mesh* mesh_;
   static Shader shader_;
 
+  static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
+
+  void Renderer::SetMode(const Renderer::Mode mode) {
+    mode_ = mode;
+  }
+
+  Renderer::Mode Renderer::GetMode() {
+    return (Renderer::Mode) mode_;
+  }
+
   void Renderer::SetState(const Renderer::State state) {
     state_ = state;
   }
@@ -118,10 +128,7 @@ namespace mcc {
     SetState(Renderer::kRender);
     PreRender();
     {
-      const auto mode = Mouse::IsPressed(kMouseButton1)
-          ? GL_LINE
-          : GL_FILL;
-      glPolygonMode(GL_FRONT_AND_BACK, mode);
+      glPolygonMode(GL_FRONT_AND_BACK, (Renderer::Mode) mode_);
       CHECK_GL(FATAL);
       glClearColor(0.4, 0.3, 0.4, 1.0f);
       CHECK_GL(FATAL);
@@ -140,8 +147,14 @@ namespace mcc {
     }
 
     {
+      const auto size = Window::GetSize();
+      glPolygonMode(GL_FRONT_AND_BACK, Renderer::Mode::kFillMode);
+      CHECK_GL(FATAL);
       glm::mat4 projection(1.0f);
+      projection = glm::ortho(0.0f, size[0], size[1], 0.0f);
       gui::Screen::RenderScreen(projection);
+      glPolygonMode(GL_FRONT_AND_BACK, (Renderer::Mode) mode_);
+      CHECK_GL(FATAL);
     }
     PostRender();
   }
