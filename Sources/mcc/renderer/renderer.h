@@ -8,6 +8,8 @@
 
 namespace mcc::gui {
   class Screen;
+  class Frame;
+  class SettingsFrame;
 }
 
 namespace mcc {
@@ -18,6 +20,7 @@ namespace mcc {
 
   class Renderer {
     friend class gui::Screen;
+    friend class gui::SettingsFrame;
     DEFINE_NON_INSTANTIABLE_TYPE(Renderer);
   public:
     enum State {
@@ -56,6 +59,8 @@ namespace mcc {
     static void Init();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
+
+    static void AddFrame(std::shared_ptr<gui::Frame> frame);
 
     static Mode GetMode();
 

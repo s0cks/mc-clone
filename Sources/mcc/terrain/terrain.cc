@@ -14,23 +14,8 @@ namespace mcc::terrain {
   static VertexList vertices_;
   static IndexList indices_;
 
-  static RelaxedAtomic<TerrainTexture> tex_(TerrainTexture::kConcrete);
-  static texture::Texture textures_[] = {
-    texture::Texture(texture::kInvalidTextureId),
-    texture::Texture(texture::kInvalidTextureId),
-  };
-
-  static inline std::string
-  GetTexturePath(const TerrainTexture texture) {
-    switch(texture) {
-      case TerrainTexture::kConcrete:
-        return FLAGS_resources + "/textures/concrete.png";
-      case TerrainTexture::kWood:
-        return FLAGS_resources + "/textures/wood.png";
-      default:
-        LOG(FATAL) << "unknown terrain texture: " << texture;
-    }
-  }
+  static RelaxedAtomic<TerrainTexture> tex_(TerrainTexture::kDefaultTerrainTexture);
+  static texture::Texture textures_[kNumberOfTerrainTextures];
 
   static inline texture::Texture
   GetSelectedTexture() {
@@ -118,8 +103,13 @@ namespace mcc::terrain {
   }
 
   void Terrain::OnPostInit() {
-    for(auto idx = 0; idx < TerrainTexture::kNumberOfTerrainTextures; idx++)
-      textures_[idx] = texture::Texture::LoadFrom(GetTexturePath(static_cast<TerrainTexture>(idx)));
+#define LOAD_TERRAIN_TEXTURE(Name, File) \
+    textures_[k##Name##Texture] = texture::Texture::LoadFrom(FLAGS_resources + "/textures/" + (File));
+
+    FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
+#undef LOAD_TERRAIN_TEXTURE
+
+
     shader_ = CompileShader("terrain");
     vao_ = VertexArrayObject();
 

@@ -98,6 +98,10 @@ namespace mcc::gui {
     vao_.Unbind();
   }
 
+  nk::Context* Screen::GetNuklearContext() {
+    return &ctx_;
+  }
+
   void Screen::OnPostInit() {
     nk_init_default(&ctx_, NULL);
     nk_buffer_init_default(&cmds_);
@@ -134,21 +138,7 @@ namespace mcc::gui {
 
   void Screen::TestScreen() {
     if (nk_begin(&ctx_, "Settings", nk_rect(0, 0, width_ / 4, height_), NK_WINDOW_TITLE)) {
-      nk_layout_row_dynamic(&ctx_, height_ / 8, 1);
-      nk_label(&ctx_, "Terrain", NK_TEXT_LEFT);
-      nk_layout_row_dynamic(&ctx_, height_ / 8, 2);
-      if(nk_option_label(&ctx_, "Concrete", terrain::Terrain::GetTexture() == terrain::kConcrete))
-        terrain::Terrain::SetTexture(terrain::kConcrete);
-      if(nk_option_label(&ctx_, "Wood", terrain::Terrain::GetTexture() == terrain::kWood))
-        terrain::Terrain::SetTexture(terrain::kWood);
 
-      nk_layout_row_dynamic(&ctx_, height_ / 8, 1);
-      nk_label(&ctx_, "Render Mode", NK_TEXT_LEFT);
-      nk_layout_row_dynamic(&ctx_, height_ / 8, 2);
-      if(nk_option_label(&ctx_, "Default", Renderer::GetMode() == Renderer::kDefaultMode))
-        Renderer::SetMode(Renderer::kDefaultMode);
-      if(nk_option_label(&ctx_, "Wireframe", Renderer::GetMode() == Renderer::kWireframeMode))
-        Renderer::SetMode(Renderer::kWireframeMode);
     }
     nk_end(&ctx_);
   }

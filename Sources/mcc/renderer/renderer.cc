@@ -12,6 +12,8 @@
 #include "mcc/terrain/terrain.h"
 
 #include "mcc/gui/gui.h"
+#include "mcc/gui/gui_frame.h"
+#include "mcc/gui/gui_frame_settings.h"
 
 namespace mcc {
   static Tick last_;
@@ -27,8 +29,14 @@ namespace mcc {
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
 
+  static std::vector<gui::FramePtr> gui_frames_;
+
   void Renderer::SetMode(const Renderer::Mode mode) {
     mode_ = mode;
+  }
+
+  void Renderer::AddFrame(gui::FramePtr frame) {
+    gui_frames_.push_back(frame);
   }
 
   Renderer::Mode Renderer::GetMode() {
@@ -71,7 +79,8 @@ namespace mcc {
     glfwPollEvents();
     CHECK_GL(FATAL);
     gui::Screen::NewFrame();
-    gui::Screen::TestScreen();
+    for(auto& frame : gui_frames_)
+      frame->RenderFrame(gui::Screen::GetNuklearContext());
   }
 
   void Renderer::PostRender() {
@@ -88,6 +97,8 @@ namespace mcc {
     sig.set(Components::GetComponentIdForType<Renderable>());
     Systems::SetSignature<Renderer>(sig);
     Engine::OnTick(&OnTick);
+
+    Renderer::AddFrame(gui::SettingsFrame::New());
   }
 
   void Renderer::Init() {

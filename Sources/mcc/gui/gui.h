@@ -190,6 +190,8 @@ namespace mcc::gui {
     static void NewFrame();
     static void TestScreen();
     static void RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA = NK_ANTI_ALIASING_OFF, int max_vertex_buffer = MAX_VERTEX_BUFFER, int max_element_buffer = MAX_ELEMENT_BUFFER);
+
+    static nk::Context* GetNuklearContext();
   };
 }
 

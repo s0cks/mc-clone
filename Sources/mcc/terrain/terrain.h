@@ -112,12 +112,30 @@ namespace mcc::terrain {
     }
   };
 
+#define FOR_EACH_TERRAIN_TEXTURE(V) \
+  V(Concrete, "concrete.png")       \
+  V(Wood, "wood.png")
+
   enum TerrainTexture {
-    kConcrete,
-    kWood,
+#define DEFINE_TERRAIN_TEXTURE(Name, file) k##Name##Texture,
+    FOR_EACH_TERRAIN_TEXTURE(DEFINE_TERRAIN_TEXTURE)
+#undef DEFINE_TERRAIN_TEXTURE
 
     kNumberOfTerrainTextures,
+    kDefaultTerrainTexture = kConcreteTexture,
   };
+
+  static inline const char*
+  GetTerrainTextureName(const TerrainTexture texture) {
+    switch(texture) {
+#define DEFINE_TOSTRING(Name, File) \
+      case k##Name##Texture: return #Name;
+      FOR_EACH_TERRAIN_TEXTURE(DEFINE_TOSTRING)
+#undef DEFINE_TOSTRING
+      default:
+        return "unknown";
+    }
+  }
 
   class Terrain {
     friend class mcc::Renderer;
