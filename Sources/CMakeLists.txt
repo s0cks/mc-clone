@@ -64,7 +64,8 @@ add_library(${PROJECT_NAME}
   mcc/ecs/component.h mcc/ecs/component.cc
   mcc/ecs/system.h mcc/ecs/system.cc
   mcc/ecs/event.h mcc/ecs/event.cc
-  mcc/gui/gui.h mcc/gui/gui.cc)
+  mcc/gui/gui.h mcc/gui/gui.cc
+  mcc/gui/gui_frame.h mcc/gui/gui_frame.cc)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog
