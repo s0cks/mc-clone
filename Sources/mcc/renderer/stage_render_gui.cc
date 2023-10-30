@@ -1,4 +1,4 @@
-#include "mcc/renderer/renderer_stage.h"
+#include "mcc/renderer/stage.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/window.h"
 #include "mcc/gui/gui.h"

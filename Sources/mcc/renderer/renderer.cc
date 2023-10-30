@@ -18,7 +18,7 @@
 #include "mcc/gui/gui_frame_settings.h"
 #include "mcc/gui/gui_frame_renderer.h"
 
-#include "mcc/renderer/renderer_stage.h"
+#include "mcc/renderer/stage.h"
 
 namespace mcc::renderer {
   static ThreadLocal<uv_loop_t> loop_;

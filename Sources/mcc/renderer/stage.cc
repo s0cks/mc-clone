@@ -1,4 +1,4 @@
-#include "mcc/renderer/renderer_stage.h"
+#include "mcc/renderer/stage.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/engine/engine.h"
 #include "mcc/camera/perspective_camera.h"

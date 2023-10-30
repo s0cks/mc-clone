@@ -1,4 +1,4 @@
-#include "mcc/renderer/renderer_stage.h"
+#include "mcc/renderer/stage.h"
 #include "mcc/terrain/terrain.h"
 #include "mcc/renderer/renderer.h"
 

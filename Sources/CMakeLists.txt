@@ -69,12 +69,13 @@ add_library(${PROJECT_NAME}
   mcc/state_machine.h
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h
-  mcc/renderer/renderer_stage.h mcc/renderer/renderer_stage.cc
-  mcc/renderer/render_stage_pre.cc
-  mcc/renderer/render_stage_post.cc
+  mcc/renderer/stage.h mcc/renderer/stage.cc
+  mcc/renderer/stage_render_pre.cc
+  mcc/renderer/stage_render_post.cc
   mcc/renderer/stage_render_terrain.cc
   mcc/renderer/stage_render_entities.cc
   mcc/renderer/stage_render_gui.cc
+  mcc/renderer/stage_render_screen.cc
   mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc)
 target_link_libraries(${PROJECT_NAME}
