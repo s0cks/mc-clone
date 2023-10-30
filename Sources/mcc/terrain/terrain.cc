@@ -10,10 +10,32 @@ namespace mcc::terrain {
   static TerrainVertexBuffer vbo_;
   static IndexBuffer ibo_;
   static Shader shader_;
-  static texture::Texture texture_(texture::kInvalidTextureId);
 
   static VertexList vertices_;
   static IndexList indices_;
+
+  static RelaxedAtomic<TerrainTexture> tex_(TerrainTexture::kConcrete);
+  static texture::Texture textures_[] = {
+    texture::Texture(texture::kInvalidTextureId),
+    texture::Texture(texture::kInvalidTextureId),
+  };
+
+  static inline std::string
+  GetTexturePath(const TerrainTexture texture) {
+    switch(texture) {
+      case TerrainTexture::kConcrete:
+        return FLAGS_resources + "/textures/concrete.png";
+      case TerrainTexture::kWood:
+        return FLAGS_resources + "/textures/wood.png";
+      default:
+        LOG(FATAL) << "unknown terrain texture: " << texture;
+    }
+  }
+
+  static inline texture::Texture
+  GetSelectedTexture() {
+    return textures_[(const TerrainTexture&) tex_];
+  }
 
 #define WIDTH (size[0])
 #define HALF_WIDTH (WIDTH / 2.0f)
@@ -96,7 +118,8 @@ namespace mcc::terrain {
   }
 
   void Terrain::OnPostInit() {
-    texture_ = texture::Texture::LoadFrom(FLAGS_resources + "/textures/concrete.png");
+    for(auto idx = 0; idx < TerrainTexture::kNumberOfTerrainTextures; idx++)
+      textures_[idx] = texture::Texture::LoadFrom(GetTexturePath(static_cast<TerrainTexture>(idx)));
     shader_ = CompileShader("terrain");
     vao_ = VertexArrayObject();
 
@@ -108,7 +131,7 @@ namespace mcc::terrain {
   void Terrain::Render(const glm::mat4 projection, const glm::mat4 view) {
     glm::mat4 model(1.0f);
 
-    texture_.Bind0();
+    GetSelectedTexture().Bind0();
     shader_.ApplyShader();
     shader_.SetMat4("projection", projection);
     shader_.SetMat4("view", view);
@@ -119,5 +142,13 @@ namespace mcc::terrain {
     VertexArrayObjectBindScope scope(vao_);
     glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, (const GLvoid*) 0);
     CHECK_GL(FATAL);
+  }
+
+  void Terrain::SetTexture(const TerrainTexture texture) {
+    tex_ = texture;
+  }
+
+  TerrainTexture Terrain::GetTexture() {
+    return (const TerrainTexture&) tex_;
   }
 }

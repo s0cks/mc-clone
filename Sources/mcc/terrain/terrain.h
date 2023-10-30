@@ -112,6 +112,13 @@ namespace mcc::terrain {
     }
   };
 
+  enum TerrainTexture {
+    kConcrete,
+    kWood,
+
+    kNumberOfTerrainTextures,
+  };
+
   class Terrain {
     friend class mcc::Renderer;
     DEFINE_NON_COPYABLE_TYPE(Terrain);
@@ -132,6 +139,9 @@ namespace mcc::terrain {
     static VertexArrayObject GetVao();
     static TerrainVertexBuffer GetVbo();
     static IndexBuffer GetIbo();
+
+    static TerrainTexture GetTexture(); //TODO: remove
+    static void SetTexture(const TerrainTexture texture); //TODO: remove
   };
 }
 

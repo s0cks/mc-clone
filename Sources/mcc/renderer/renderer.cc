@@ -11,6 +11,8 @@
 
 #include "mcc/terrain/terrain.h"
 
+#include "mcc/gui/gui.h"
+
 namespace mcc {
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
@@ -47,20 +49,27 @@ namespace mcc {
   }
 
   void Renderer::PreRender() {
+    DLOG(INFO) << "pre-render.";
     SetState(Renderer::kPreRender);
-    const auto mode = Mouse::IsPressed(kMouseButton1)
-        ? GL_LINE
-        : GL_FILL;
-    glPolygonMode(GL_FRONT_AND_BACK, mode);
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    int width;
+    int height;
+    glfwGetFramebufferSize(Window::GetHandle(), &width, &height);
+    CHECK_GL(FATAL);
+    glViewport(0, 0, width, height);
+    CHECK_GL(FATAL);
+
+    glfwPollEvents();
+    CHECK_GL(FATAL);
+    gui::Screen::NewFrame();
+    gui::Screen::TestScreen();
   }
 
   void Renderer::PostRender() {
+    DLOG(INFO) << "post-render.";
     SetState(Renderer::kPostRender);
     const auto window = Window::GetHandle();
     glfwSwapBuffers(window);
-    glfwPollEvents();
+    CHECK_GL(FATAL);
   }
 
   void Renderer::OnPostInit() {
@@ -109,7 +118,17 @@ namespace mcc {
     SetState(Renderer::kRender);
     PreRender();
     {
+      const auto mode = Mouse::IsPressed(kMouseButton1)
+          ? GL_LINE
+          : GL_FILL;
+      glPolygonMode(GL_FRONT_AND_BACK, mode);
+      CHECK_GL(FATAL);
+      glClearColor(0.4, 0.3, 0.4, 1.0f);
+      CHECK_GL(FATAL);
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+      CHECK_GL(FATAL);
       glEnable(GL_DEPTH_TEST);
+      CHECK_GL(FATAL);
       auto proj = camera::PerspectiveCameraBehavior::CalculateProjectionMatrix();
       auto view = camera::PerspectiveCameraBehavior::CalculateViewMatrix();
       terrain::Terrain::Render(proj, view);
@@ -117,6 +136,12 @@ namespace mcc {
         RenderEntity(proj, view, e);
       });
       glDisable(GL_DEPTH_TEST);
+      CHECK_GL(FATAL);
+    }
+
+    {
+      glm::mat4 projection(1.0f);
+      gui::Screen::RenderScreen(projection);
     }
     PostRender();
   }

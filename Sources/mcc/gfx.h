@@ -39,6 +39,7 @@ namespace mcc {
   enum GlObjectUsage {
     kDynamicUsage = GL_DYNAMIC_DRAW,
     kStaticUsage = GL_STATIC_DRAW,
+    kStreamUsage = GL_STREAM_DRAW,
     kDefaultUsage = kDynamicUsage,
   };
 
@@ -235,7 +236,10 @@ namespace mcc {
     explicit BufferObjectTemplate(const BufferObjectId id):
       BufferObject(id) {
     }
-    BufferObjectTemplate() = default;
+    BufferObjectTemplate():
+      BufferObject() {
+      glBindBuffer(Target, id_);
+    }
     BufferObjectTemplate(const BufferObjectTemplate& rhs):
       BufferObject(rhs) {
     }
@@ -285,20 +289,39 @@ namespace mcc {
     explicit VertexBufferTemplate(const BufferObjectId id):
       VertexBufferObject(id) {
     }
+    VertexBufferTemplate():
+      VertexBufferObject(),
+      length_(0) {
+    }
     explicit VertexBufferTemplate(const Vertex* vertices, const uint64_t num_vertices):
       VertexBufferObject(),
       length_(num_vertices) {
       BindBufferData(vertices, num_vertices);
     }
+  public:
+    ~VertexBufferTemplate() override = default;
 
-    void BindBufferData(const Vertex* vertices, const uint64_t num_vertices) {
+    void BufferData(const Vertex* vertices, const uint64_t num_vertices) {
       DLOG_IF(ERROR, num_vertices == 0) << "binding VertexBufferObject w/ 0 vertices."; 
-      Bind();
       glBufferData(target(), num_vertices * kVertexSize, vertices, Usage);
       CHECK_GL(FATAL);
     }
-  public:
-    ~VertexBufferTemplate() override = default;
+
+    void BindBufferData(const Vertex* vertices, const uint64_t num_vertices) {
+      Bind();
+      BufferData(vertices, num_vertices);
+    }
+
+    void BufferData(const uint64_t size) {
+      DLOG_IF(ERROR, size == 0) << "binding VertexBufferObject w/ size of " << size; 
+      glBufferData(target(), size, NULL, Usage);
+      CHECK_GL(FATAL);
+    }
+
+    void BindBufferData(const uint64_t size) {
+      Bind();
+      BufferData(size);
+    }
 
     GlObjectUsage usage() const override {
       return Usage;
@@ -342,21 +365,37 @@ namespace mcc {
     explicit IndexBufferTemplate(const BufferObjectId id):
       IndexBufferObject(id) {
     }
+    IndexBufferTemplate() = default;
     explicit IndexBufferTemplate(const Index* indices,
                                  const uint64_t num_indices):
       IndexBufferObject(),
       length_(num_indices) {
       BindBufferData(indices, num_indices);
     }
+  public:
+    ~IndexBufferTemplate() override = default;
 
-    void BindBufferData(const Index* indices, const uint64_t num_indices) {
+    void BufferData(const Index* indices, const uint64_t num_indices) {
       DLOG_IF(ERROR, num_indices == 0) << "creating IndexBufferObject w/ 0 indices.";
-      Bind();
       glBufferData(target(), num_indices * kIndexSize, &indices[0], Usage);
       CHECK_GL(FATAL);
     }
-  public:
-    ~IndexBufferTemplate() override = default;
+
+    void BindBufferData(const Index* indices, const uint64_t num_indices) {
+      Bind();
+      BufferData(indices, num_indices);
+    }
+
+    void BufferData(const uint64_t size) {
+      DLOG_IF(ERROR, size == 0) << "creating IndexBufferObject w/ size " << size;
+      glBufferData(target(), size, NULL, Usage);
+      CHECK_GL(FATAL);
+    }
+
+    void BindBufferData(const uint64_t size) {
+      Bind();
+      BufferData(size);
+    }
 
     GlObjectUsage usage() const override {
       return Usage;

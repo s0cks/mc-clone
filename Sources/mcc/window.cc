@@ -118,6 +118,8 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
+    glViewport(0, 0, size_[0], size_[1]);
+
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();

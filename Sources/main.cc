@@ -5,10 +5,15 @@
 #include <cstdlib>
 #include <uv.h>
 
+#define NK_IMPLEMENTATION
+#define NK_GLFW_GL3_IMPLEMENTATION
+#include "mcc/gui/gui.h"
+
 #include "mcc/mcc.h"
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/render_loop.h"
+
 
 #include "mcc/camera/perspective_camera.h"
 
@@ -32,7 +37,7 @@ int main(int argc, char** argv) {
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
+  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
@@ -45,13 +50,13 @@ int main(int argc, char** argv) {
     Mouse::Initialize(Window::GetHandle());
   });
   RenderLoop::Initialize(loop);
+  gui::Screen::Init();
   Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
   mesh::Mesh::Init();
   Window::Init();
   Systems::Init();
   terrain::Terrain::Init();
-
 
   Engine::Run();
   return EXIT_SUCCESS;
