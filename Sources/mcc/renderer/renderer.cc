@@ -34,23 +34,17 @@ namespace mcc::renderer {
   static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<RendererState> state_;
   static RelaxedAtomic<uint64_t> entities_(0);
-
-  static font::Font* font_ = nullptr;
-  static Shader lightingShader_;
+  static uint64_t frame_start_ns_;
+  static uint64_t last_frame_ns_;
 
   static mesh::Mesh* mesh_;
   static Shader shader_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
 
-  static std::vector<gui::FramePtr> gui_frames_;
 
   void Renderer::SetMode(const Renderer::Mode mode) {
     mode_ = mode;
-  }
-
-  void Renderer::AddFrame(gui::FramePtr frame) {
-    gui_frames_.push_back(frame);
   }
 
   Renderer::Mode Renderer::GetMode() {
@@ -118,6 +112,10 @@ namespace mcc::renderer {
     return (uint64_t) fps_;
   }
 
+  uint64_t Renderer::GetLastFrameTimeInNanoseconds() {
+    return last_frame_ns_;
+  }
+
   void Renderer::SetLoop(uv_loop_t* loop) {
     loop_.Set(loop);
   }
@@ -128,10 +126,10 @@ namespace mcc::renderer {
 
   void Renderer::Run(const uv_run_mode mode) {
     VLOG(1) << "running....";
-    const auto start = uv_hrtime();
+    frame_start_ns_ = uv_hrtime();
     uv_run(GetLoop(), mode);
-    const auto total_ns = (uv_hrtime() - start);
-    VLOG(1) << "done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+    last_frame_ns_ = (uv_hrtime() - frame_start_ns_);
+    VLOG(1) << "done in " << (last_frame_ns_ / NSEC_PER_MSEC) << "ms.";
   }
 
   RendererStats Renderer::GetStats() {

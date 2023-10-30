@@ -61,15 +61,9 @@ namespace mcc::renderer {
     static void OnInit();
     static void OnPostInit();
     static void OnTick(const Tick& tick);
-    static void RenderTerrain(const glm::mat4 projection, const glm::mat4 view);
-    static void RenderEntity(const glm::mat4 projection, const glm::mat4 view, const Entity e);
-
-    static void PreRender();
-    static void PostRender();
+    static void Run(const uv_run_mode = UV_RUN_ONCE);
     static void SetLoop(uv_loop_t* loop);
     static void SetMode(const Mode mode);
-
-    static void Run(const uv_run_mode = UV_RUN_ONCE);
 
     static inline void
     ResetMode() {
@@ -88,13 +82,10 @@ namespace mcc::renderer {
     static void Init();
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
-
-    static void AddFrame(std::shared_ptr<gui::Frame> frame);
-
+    static uint64_t GetEntityCounter();
+    static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
     static uv_loop_t* GetLoop();
-
-    static uint64_t GetEntityCounter();
     static RendererStats GetStats();
 
 #define DEFINE_STATE_CHECK(Name) \

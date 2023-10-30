@@ -22,5 +22,7 @@ namespace mcc::gui {
 
     nk_layout_row_dynamic(ctx, size.y / 2, 4);
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
+    nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
+    nk_labelf(ctx, NK_TEXT_LEFT, "Last Frame: %04.02fms", (renderer::Renderer::GetLastFrameTimeInNanoseconds() / (1.0f * NSEC_PER_MSEC)));
   }
 }
