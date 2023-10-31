@@ -71,7 +71,7 @@ namespace mcc::texture {
       return stream;
     }
   public:
-    static Texture LoadFrom(const std::string& filename);
+    static Texture LoadFrom(std::string filename);
   };
 }
 

@@ -91,7 +91,7 @@ namespace mcc::terrain {
 
   void Terrain::OnPreInit() {
     DLOG(INFO) << "generating terrain data....";
-    const glm::vec2 size(26, 26);
+    const glm::vec2 size(128);
     GenerateVertices(vertices_, size);
     DLOG(INFO) << "generated " << vertices_.size() << " vertices: " << vertices_;
     GenerateIndices(indices_, size);
