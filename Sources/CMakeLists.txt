@@ -46,6 +46,9 @@ add_library(${PROJECT_NAME}
   mcc/shape/square.h
   mcc/shape/cube.h mcc/shape/cube.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+  mcc/texture/texture_cache_flags.h mcc/texture/texture_cache.cc
+  mcc/texture/texture_cache.h mcc/texture/texture_cache.cc
+  mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
   mcc/murmur.h
   mcc/bitfield.h
