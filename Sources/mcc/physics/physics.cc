@@ -15,44 +15,44 @@ namespace mcc::physics {
 
   static glm::vec3 gravity_ = kNoForce;
 
-  void PhysicsBehavior::SetGravity(const glm::vec3& value) {
+  void PhysicsSimulator::SetGravity(const glm::vec3& value) {
     gravity_ = value;
   }
 
-  glm::vec3 PhysicsBehavior::GetGravity() {
+  glm::vec3 PhysicsSimulator::GetGravity() {
     return gravity_;
   }
 
-  void PhysicsBehavior::Init() {
+  void PhysicsSimulator::Init() {
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
   }
 
-  void PhysicsBehavior::OnPreInit() {
+  void PhysicsSimulator::OnPreInit() {
     Components::Register<Transform>();
     Components::Register<RigidBody>();
     Components::Register<Force>();
   }
   
-  void PhysicsBehavior::OnInit() {
+  void PhysicsSimulator::OnInit() {
 
   }
   
-  void PhysicsBehavior::OnPostInit() {
-    Systems::Register<PhysicsBehavior>();
+  void PhysicsSimulator::OnPostInit() {
+    Systems::Register<PhysicsSimulator>();
     Signature sig;
     sig.set(Components::GetComponentIdForType<RigidBody>());
     sig.set(Components::GetComponentIdForType<Transform>());
-    Systems::SetSignature<PhysicsBehavior>(sig);
+    Systems::SetSignature<PhysicsSimulator>(sig);
     DLOG(INFO) << "sig: " << sig;
 
     Engine::OnTick(&OnTick);
   }
 
-  void PhysicsBehavior::OnTick(const Tick& tick) {
+  void PhysicsSimulator::OnTick(const Tick& tick) {
     DLOG(INFO) << "tick.";
-    Systems::ForEachEntityInSystem<PhysicsBehavior>([&tick](const Entity& e) {
+    Systems::ForEachEntityInSystem<PhysicsSimulator>([&tick](const Entity& e) {
       auto& rigid_body = Components::GetComponent<RigidBody>(e);
       auto& transform = Components::GetComponent<Transform>(e);
       DLOG(INFO) << "performing physics for: " << e;

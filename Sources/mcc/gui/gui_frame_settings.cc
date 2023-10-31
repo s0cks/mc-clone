@@ -24,9 +24,9 @@ namespace mcc::gui {
     }
 
     nk_layout_row_dynamic(ctx, size.y / 2, 1);
-    const auto g = physics::PhysicsBehavior::GetGravity();
+    const auto g = physics::PhysicsSimulator::GetGravity();
     float gravity = g[1];
     nk_property_float(ctx, "Gravity:", -1.0f, &gravity, 1.0f, 0.1f, 1);
-    physics::PhysicsBehavior::SetGravity(glm::vec3(g[0], gravity, g[2]));
+    physics::PhysicsSimulator::SetGravity(glm::vec3(g[0], gravity, g[2]));
   }
 }

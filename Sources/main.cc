@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   gui::Screen::Init();
   renderer::Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
-  physics::PhysicsBehavior::Init();
+  physics::PhysicsSimulator::Init();
   mesh::Mesh::Init();
   Window::Init();
   Systems::Init();

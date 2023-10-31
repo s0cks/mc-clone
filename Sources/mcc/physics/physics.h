@@ -6,8 +6,8 @@
 #include "mcc/engine/tick.h"
 
 namespace mcc::physics {
-  class PhysicsBehavior {
-    DEFINE_NON_INSTANTIABLE_TYPE(PhysicsBehavior);
+  class PhysicsSimulator {
+    DEFINE_NON_INSTANTIABLE_TYPE(PhysicsSimulator);
   private:
     static void OnPreInit();
     static void OnInit();
