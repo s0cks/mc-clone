@@ -5,6 +5,8 @@
 #include <functional>
 #include <glog/logging.h>
 
+#include "mcc/relaxed_atomic.h"
+
 namespace mcc::uv {
 #ifndef UV_OK
 #define UV_OK 0
