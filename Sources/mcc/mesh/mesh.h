@@ -55,6 +55,7 @@ namespace mcc::mesh {
 
   Mesh* NewMesh(const VertexList& vertices);
   Mesh* NewMesh(const VertexList& vertices, const IndexList& indices);
+  Mesh* NewUVSphere(const uint64_t lat, const uint64_t lon);
 }
 
 #endif //MCC_MESH_H

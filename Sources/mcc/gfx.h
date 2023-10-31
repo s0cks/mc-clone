@@ -16,6 +16,7 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -419,5 +420,13 @@ namespace mcc {
     }
   };
 }
+
+#ifdef M_PI
+#define PI M_PI
+#endif //M_PI
+
+#ifndef PI
+#define PI 3.141592654
+#endif //PI
 
 #endif //MCC_GFX_H

@@ -3,6 +3,8 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/terrain/terrain.h"
 
+#include "mcc/physics/physics.h"
+
 namespace mcc::gui {
   using renderer::Renderer;
 
@@ -21,11 +23,10 @@ namespace mcc::gui {
         terrain::Terrain::SetTexture(tex);
     }
 
-    nk_layout_row_dynamic(ctx, size.y / 2, 3);
-    nk_label(ctx, "Render Mode: ", NK_TEXT_LEFT);
-    if(nk_option_label(ctx, "Default", Renderer::GetMode() == Renderer::kDefaultMode))
-      Renderer::SetMode(Renderer::kDefaultMode);
-    if(nk_option_label(ctx, "Wireframe", Renderer::GetMode() == Renderer::kWireframeMode))
-      Renderer::SetMode(Renderer::kWireframeMode);
+    nk_layout_row_dynamic(ctx, size.y / 2, 1);
+    const auto g = physics::PhysicsBehavior::GetGravity();
+    float gravity = g[1];
+    nk_property_float(ctx, "Gravity:", -1.0f, &gravity, 1.0f, 0.1f, 1);
+    physics::PhysicsBehavior::SetGravity(glm::vec3(g[0], gravity, g[2]));
   }
 }

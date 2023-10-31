@@ -29,6 +29,10 @@
 #include "mcc/thread_local.h"
 #include "mcc/gui/gui_frame.h"
 
+#include "mcc/physics/force.h"
+#include "mcc/physics/transform.h"
+#include "mcc/physics/rigid_body.h"
+
 namespace mcc {
   typedef struct nk_context NuklearContext;
 
@@ -132,11 +136,20 @@ namespace mcc {
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
-    const auto mesh = Cube::CreateMesh();
+    const auto mesh = mesh::NewUVSphere(10, 10);
     Coordinator::AddComponent(e2, renderer::Renderable {
       .shader = shader,
       .mesh = mesh,
       .texture = texture,
+    });
+    Coordinator::AddComponent(e2, physics::Transform {
+      .position = glm::vec3(0.0f, 3.0f, 0.0f),
+      .rotation = glm::vec3(0.0f),
+      .scale = glm::vec3(1.0f),
+    });
+    Coordinator::AddComponent(e2, physics::RigidBody {
+      .mass = 1.0f,
+      .velocity = glm::vec3(0.0f),
     });
   }
 

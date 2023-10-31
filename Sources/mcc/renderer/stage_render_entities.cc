@@ -2,12 +2,15 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
 
+#include "mcc/physics/transform.h"
+
 namespace mcc::renderer {
   void RenderEntitiesStage::RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e) {
     const auto& renderable = Components::GetComponent<Renderable>(e);
+    const auto& transform = Components::GetComponent<physics::Transform>(e);
     DLOG(INFO) << "rendering entity " << e << " w/ " << renderable;
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
+    model = glm::translate(model, transform.position);
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;

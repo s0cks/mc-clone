@@ -23,6 +23,10 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& pos) {
+    const auto window = Window::GetHandle();
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+      return;
+
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);
       camera.yaw += (pos[0] * camera.sensitivity);
@@ -54,7 +58,7 @@ namespace mcc::camera {
       .sensitivity = 0.1f,
       .zoom = 45.0f,
       .front = glm::vec3(0.0f, 0.0f, -1.0f),
-      .speed = 1.0f,
+      .speed = 1.5f,
     };
     DLOG(INFO) << "created camera entity: " << e;
     UpdateCamera(camera);
@@ -93,9 +97,13 @@ namespace mcc::camera {
 
   void PerspectiveCameraBehavior::OnTick(const Tick& tick) {
     const auto window = Window::GetHandle();
+
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+      return;
+
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
       auto& camera = Components::GetComponent<PerspectiveCamera>(e);
-      const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.00005f);
+      const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.pos += (camera.front * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

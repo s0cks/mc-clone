@@ -19,6 +19,7 @@
 #include "mcc/gui/gui_frame_renderer.h"
 
 #include "mcc/renderer/stage.h"
+#include "mcc/physics/transform.h"
 
 namespace mcc::renderer {
   static ThreadLocal<uv_loop_t> loop_;
@@ -84,7 +85,9 @@ namespace mcc::renderer {
     Systems::Register<Renderer>();
     Signature sig;
     sig.set(Components::GetComponentIdForType<Renderable>());
+    sig.set(Components::GetComponentIdForType<physics::Transform>());
     Systems::SetSignature<Renderer>(sig);
+    DLOG(INFO) << "signature: " << sig;
 
     Window::AddFrame(gui::SettingsFrame::New());
     Window::AddFrame(gui::RendererFrame::New());

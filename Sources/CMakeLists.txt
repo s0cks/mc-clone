@@ -19,6 +19,12 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stage_tick.h
   mcc/engine/engine_stage_terminating.h
   mcc/engine/engine_stage_terminated.h
+  mcc/aabb.h mcc/aabb.cc
+  mcc/physics/rigid_body.h
+  mcc/physics/force.h
+  mcc/physics/transform.h
+  mcc/physics/collision.h mcc/physics/collision.cc
+  mcc/physics/physics.h mcc/physics/physics.cc
   mcc/gfx.h
   mcc/common.h
   mcc/flags.h mcc/flags.cc

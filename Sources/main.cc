@@ -21,6 +21,7 @@
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
 
+#include "mcc/physics/physics.h"
 #include "mcc/terrain/terrain.h"
 
 int main(int argc, char** argv) {
@@ -53,6 +54,7 @@ int main(int argc, char** argv) {
   gui::Screen::Init();
   renderer::Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
+  physics::PhysicsBehavior::Init();
   mesh::Mesh::Init();
   Window::Init();
   Systems::Init();
