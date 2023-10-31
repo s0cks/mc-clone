@@ -3,6 +3,7 @@ include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${NK_INCLUDE_DIRS})
+include_directories(${RX_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
@@ -36,6 +37,8 @@ add_library(${PROJECT_NAME}
   mcc/relaxed_atomic.h
   mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
   mcc/trie.h
+  mcc/circular_buffer.h
+  mcc/series.h
   mcc/subscription_trie.h
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_trie.h

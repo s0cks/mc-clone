@@ -13,16 +13,24 @@ namespace mcc::gui {
   void RendererFrame::Render(nk::Context* ctx) {
     struct nk_vec2 size = nk_widget_size(ctx);
 
-    nk_layout_row_dynamic(ctx, size.y / 2, 3);
+    nk_layout_row_dynamic(ctx, size.y / 4, 3);
     nk_label(ctx, "Mode: ", NK_TEXT_LEFT);
     if(nk_option_label(ctx, "Default", Renderer::GetMode() == Renderer::kDefaultMode))
       Renderer::SetMode(Renderer::kDefaultMode);
     if(nk_option_label(ctx, "Wireframe", Renderer::GetMode() == Renderer::kWireframeMode))
       Renderer::SetMode(Renderer::kWireframeMode);
 
-    nk_layout_row_dynamic(ctx, size.y / 2, 4);
+    nk_layout_row_dynamic(ctx, size.y - (size.y - 4), 3);
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
     nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
-    nk_labelf(ctx, NK_TEXT_LEFT, "Last Frame: %04.02fms", (renderer::Renderer::GetLastFrameTimeInNanoseconds() / (1.0f * NSEC_PER_MSEC)));
+    const auto samples = renderer::Renderer::GetSamples();
+    DLOG(INFO) << "samples:";
+    for(auto& sample : (*samples)) {
+      DLOG(INFO) << " - " << sample;
+    }
+    nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, renderer::kNumberOfRendererSamples);
+    nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Avg): %04.02lfns", samples->GetAvgDuration() / (1.0f * NSEC_PER_MSEC));
+    nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Min): %04.02lfns", samples->GetMinDuration() / (1.0f * NSEC_PER_MSEC));
+    nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Max): %04.02lfns", samples->GetMaxDuration() / (1.0f * NSEC_PER_MSEC));
   }
 }

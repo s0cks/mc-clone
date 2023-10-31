@@ -86,7 +86,7 @@ namespace mcc::renderer {
     static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
     static uv_loop_t* GetLoop();
-    static RendererStats GetStats();
+    static RendererSampleSeries* GetSamples();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

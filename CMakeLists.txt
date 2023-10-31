@@ -14,7 +14,7 @@ find_package(libuv REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(PNG REQUIRED)
-find_package(rxcpp CONFIG)
+find_package(rx REQUIRED)
 find_package(nk REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)

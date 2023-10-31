@@ -77,6 +77,9 @@
     "queue": "cpp",
     "functional": "cpp",
     "filesystem": "cpp",
-    "__availability": "cpp"
+    "__availability": "cpp",
+    "future": "cpp",
+    "regex": "cpp",
+    "thread": "cpp"
   }
 }

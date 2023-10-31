@@ -41,7 +41,7 @@ namespace mcc::renderer {
   static Shader shader_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
-
+  static RendererSampleSeries samples_;
 
   void Renderer::SetMode(const Renderer::Mode mode) {
     mode_ = mode;
@@ -130,15 +130,14 @@ namespace mcc::renderer {
     uv_run(GetLoop(), mode);
     last_frame_ns_ = (uv_hrtime() - frame_start_ns_);
     VLOG(1) << "done in " << (last_frame_ns_ / NSEC_PER_MSEC) << "ms.";
+    samples_ << RendererSample {
+      .duration = last_frame_ns_,
+      .entities = (uint64_t) entities_,
+    };
   }
 
-  RendererStats Renderer::GetStats() {
-    return RendererStats {
-      .state = (RendererState) state_,
-      .entities = {
-        .count = (uint64_t) entities_,
-      },
-    };
+  RendererSampleSeries* Renderer::GetSamples() {
+    return &samples_;
   }
 
   void Renderer::IncrementEntityCounter(const uint64_t value) {
