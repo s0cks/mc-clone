@@ -58,6 +58,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
   mcc/murmur.h
+  mcc/settings.h mcc/settings.cc
   mcc/bitfield.h
   mcc/font/font.h mcc/font/font.cc
   mcc/font/glyph.h mcc/font/glyph.cc

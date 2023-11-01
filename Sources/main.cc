@@ -13,8 +13,7 @@
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/render_loop.h"
-
-
+#include "mcc/settings.h"
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/engine/engine.h"
@@ -43,6 +42,7 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   using namespace mcc;
+  settings::Init();
   font::Initialize();
   Entities::Initialize();
   const auto loop = uv_loop_new();

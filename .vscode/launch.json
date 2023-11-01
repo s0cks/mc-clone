@@ -18,7 +18,8 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Sources/minecraft-client",
       "args": [
-        "--resources=${workspaceFolder}/resources"
+        "--resources", "${workspaceFolder}/resources",
+        "--settings-dir", "${workspaceFolder}/test",
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
