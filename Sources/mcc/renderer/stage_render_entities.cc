@@ -15,9 +15,15 @@ namespace mcc::renderer {
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
 
+    float intensity = 0.2f;
     glm::vec3 lightColor = glm::vec3(1.0f);
-    Components::ForEachEntityWithComponent<AmbientLight>([&lightColor](const Entity& l, const AmbientLight& light) {
+    glm::vec3 lightPos = glm::vec3(0.0f);
+    Components::ForEachEntityWithComponent<AmbientLight>([&lightColor,&intensity,&lightPos](const Entity& l, const AmbientLight& light) {
       lightColor = light.color;
+      intensity = light.intensity;
+
+      const auto transform = Components::GetComponent<physics::Transform>(l);
+      lightPos = transform.position;
     });
 
     texture.Bind0();
@@ -25,7 +31,9 @@ namespace mcc::renderer {
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);
     shader.SetMat4("projection", projection);
+    shader.SetVec3("lightPos", lightPos);
     shader.SetVec3("lightColor", lightColor);
+    shader.SetFloat("lightIntensity", 0.20f);
     shader.SetInt("tex0", 0);
     shader.ApplyShader();
     const auto& mesh = renderable.mesh;

@@ -56,7 +56,11 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_cache_flags.h mcc/texture/texture_cache.cc
   mcc/texture/texture_cache.h mcc/texture/texture_cache.cc
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
+  mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
+  mcc/terrain/terrain_renderer.h mcc/terrain/terrain_renderer.cc
+  mcc/terrain/terrain_vertex.h
+  mcc/terrain/terrain_chunk.h mcc/terrain/terrain_chunk.cc
   mcc/murmur.h
   mcc/settings.h mcc/settings.cc
   mcc/bitfield.h

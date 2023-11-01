@@ -146,6 +146,7 @@ namespace mcc {
     });
     Coordinator::AddComponent(e3, AmbientLight {
       .color = glm::vec3(1.0f, 0.0f, 0.0f),
+      .intensity = 0.8f,
     });
 
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");

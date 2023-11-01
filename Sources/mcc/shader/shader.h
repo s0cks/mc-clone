@@ -57,6 +57,11 @@ namespace mcc {
       CHECK_GL(FATAL);
     }
 
+    virtual void SetFloat(const std::string& name, const float& value) const {
+      glUniform1f(GetUniformLocation(name), value);
+      CHECK_GL(FATAL);
+    }
+
     virtual void SetInt(const std::string& name, const GLint value) const {
       glUniform1i(GetUniformLocation(name), value);
       CHECK_GL(FATAL);

@@ -431,47 +431,53 @@ namespace mcc::mesh {
   }
 
   static const VertexList kCubeVertices = {
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3( 0.5f, -0.5f, -0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 0.0f), },
+    // back
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
+    { .pos = glm::vec3( 1.0f, -1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f)},
+    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
 
-    { .pos = glm::vec3(-0.5f, -0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f,  0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
+    // front
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
 
-    { .pos = glm::vec3(-0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
+    // left
+    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
 
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
+    // right
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
 
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f, -0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f, -0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
+    // bottom
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
 
-    { .pos = glm::vec3(-0.5f,  0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f, -0.5f), .uv = glm::vec2(1.0f, 1.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(0.5f,  0.5f,  0.5f), .uv = glm::vec2(1.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f,  0.5f), .uv = glm::vec2(0.0f, 0.0f), },
-    { .pos = glm::vec3(-0.5f,  0.5f, -0.5f), .uv = glm::vec2(0.0f, 1.0f), },
+    // top 
+    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
   };
 
   Mesh* NewCube() {
