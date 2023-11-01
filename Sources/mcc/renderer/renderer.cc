@@ -5,7 +5,6 @@
 #include "mcc/thread_local.h"
 
 #include "mcc/window.h"
-#include "mcc/shape/square.h"
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/font/font.h"

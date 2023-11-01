@@ -52,8 +52,6 @@ add_library(${PROJECT_NAME}
   mcc/keyboard/keyboard_constants.h
   mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
   mcc/keyboard/keyboard_trie.h mcc/keyboard/keyboard_trie.cc
-  mcc/shape/square.h
-  mcc/shape/cube.h mcc/shape/cube.cc
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_cache_flags.h mcc/texture/texture_cache.cc
   mcc/texture/texture_cache.h mcc/texture/texture_cache.cc

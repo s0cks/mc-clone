@@ -15,8 +15,6 @@
 #include "mcc/font/font.h"
 #include "mcc/font/font_renderer.h"
 #include "mcc/mesh/mesh.h"
-#include "mcc/shape/square.h"
-#include "mcc/shape/cube.h"
 
 #include "mcc/mouse/mouse.h"
 #include "mcc/keyboard/keyboard.h"
@@ -136,7 +134,7 @@ namespace mcc {
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
-    const auto mesh = mesh::NewUVSphere(10, 10);
+    const auto mesh = mesh::NewCube();
     Coordinator::AddComponent(e2, renderer::Renderable {
       .shader = shader,
       .mesh = mesh,

@@ -56,6 +56,10 @@ namespace mcc::mesh {
   Mesh* NewMesh(const VertexList& vertices);
   Mesh* NewMesh(const VertexList& vertices, const IndexList& indices);
   Mesh* NewUVSphere(const uint64_t lat, const uint64_t lon);
+  Mesh* NewIcosphere(const uint64_t resolution);
+  Mesh* NewCube();
+  Mesh* NewPlaneXY(const uint64_t xSize, const uint64_t ySize);
+  Mesh* NewPlaneXZ(const uint64_t xSize, const uint64_t zSize);
 }
 
 #endif //MCC_MESH_H

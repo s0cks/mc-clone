@@ -30,11 +30,6 @@ namespace mcc::terrain {
 #define INDICES (QUADS * 6)
 #define VERTICES (QUADS * 4)
 
-  static inline uint32_t
-  GetNumberOfQuads(const glm::vec2 size) {
-    return static_cast<uint32_t>((WIDTH - 1) * (DEPTH - 1));
-  }
-
   static inline void
   GenerateIndices(IndexList& indices, const glm::vec2 size) {
     DLOG(INFO) << "generating " << INDICES << ".....";
