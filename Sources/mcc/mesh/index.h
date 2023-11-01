@@ -27,6 +27,7 @@ namespace mcc {
     }
     explicit IndexBuffer(const Index* indices, const uint64_t num_indices):
       IndexBufferTemplate(indices, num_indices) {
+      Unbind();
     }
     explicit IndexBuffer(const IndexList& indices):
       IndexBuffer(&indices[0], indices.size()) {

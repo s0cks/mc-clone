@@ -19,6 +19,7 @@
 
 #include "mcc/renderer/stage.h"
 #include "mcc/physics/transform.h"
+#include "mcc/lighting/ambient_light.h"
 
 namespace mcc::renderer {
   static ThreadLocal<uv_loop_t> loop_;
@@ -67,6 +68,7 @@ namespace mcc::renderer {
 
   void Renderer::OnPreInit() {
     Renderable::SetComponentId(Components::Register<Renderable>());
+    Components::Register<AmbientLight>();
   }
 
   void Renderer::OnInit() {

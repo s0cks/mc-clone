@@ -16,7 +16,7 @@ namespace mcc {
     ComponentList() = default;
   public:
     virtual ~ComponentList() = default;
-    virtual void OnDestroyed(const Entity e) = 0;
+    virtual void OnDestroyed(const Entity& e) = 0;
   public:
     template<typename T>
     static ComponentList* New();
@@ -30,11 +30,17 @@ namespace mcc {
     std::unordered_map<uint64_t, Entity> i2e_;
     uint64_t size_;
   public:
-    T& GetData(const Entity entity) {
+    void ForEachEntityAndComponent(std::function<void(const Entity&, T&)> callback) {
+      for(auto idx = 0; idx < size_; idx++) {
+        callback(i2e_[idx], components_[idx]);
+      }
+    }
+
+    T& GetData(const Entity& entity) {
       return components_[e2i_[entity]];
     }
 
-    void InsertData(const Entity entity, const T component) {
+    void InsertData(const Entity& entity, const T& component) {
       const auto new_idx = size_;
       e2i_[entity] = new_idx;
       i2e_[new_idx] = entity;
@@ -42,7 +48,7 @@ namespace mcc {
       size_++;
     }
 
-    void RemoveData(const Entity entity) {
+    void RemoveData(const Entity& entity) {
       auto idx = e2i_[entity];
       auto last_idx = size_ - 1;
       components_[idx] = components_[last_idx];
@@ -56,7 +62,7 @@ namespace mcc {
       size_--;
     }
 
-    void OnDestroyed(const Entity e) override {
+    void OnDestroyed(const Entity& e) override {
       if(e2i_.find(e) != e2i_.end())
         RemoveData(e);
     }
@@ -100,7 +106,7 @@ namespace mcc {
     }
 
     template<typename T>
-    static inline void AddComponent(const Entity e, T component) {
+    static inline void AddComponent(const Entity e, const T& component) {
       return GetComponentListForType<T>()->InsertData(e, component);
     }
 
@@ -113,6 +119,12 @@ namespace mcc {
     static inline ComponentListTemplate<T>* 
     GetComponentListForType() {
       return reinterpret_cast<ComponentListTemplate<T>*>(GetComponentList(TypeId<T>()));
+    }
+
+    template<typename T>
+    static inline void
+    ForEachEntityWithComponent(std::function<void(const Entity&, const T&)> callback) {
+      return GetComponentListForType<T>()->ForEachEntityAndComponent(callback);
     }
   };
 }

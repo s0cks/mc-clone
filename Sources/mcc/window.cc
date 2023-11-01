@@ -31,6 +31,8 @@
 #include "mcc/physics/transform.h"
 #include "mcc/physics/rigid_body.h"
 
+#include "mcc/lighting/ambient_light.h"
+
 namespace mcc {
   typedef struct nk_context NuklearContext;
 
@@ -131,6 +133,21 @@ namespace mcc {
   void Window::OnPostInit() {
     glViewport(0, 0, size_[0], size_[1]);
 
+    const auto light = CompileShader("light_sphere");
+    const auto e3 = Entities::CreateEntity();
+    Coordinator::AddComponent(e3, renderer::Renderable {
+      .shader = light,
+      .mesh = mesh::NewUVSphere(10, 10),
+    });
+    Coordinator::AddComponent(e3, physics::Transform {
+      .position = glm::vec3(0.0f, 3.0f, 0.0f),
+      .rotation = glm::vec3(0.0f),
+      .scale = glm::vec3(1.0f),
+    });
+    Coordinator::AddComponent(e3, AmbientLight {
+      .color = glm::vec3(1.0f, 0.0f, 0.0f),
+    });
+
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
@@ -141,7 +158,7 @@ namespace mcc {
       .texture = texture,
     });
     Coordinator::AddComponent(e2, physics::Transform {
-      .position = glm::vec3(0.0f, 3.0f, 0.0f),
+      .position = glm::vec3(0.0f, 0.0f, 0.0f),
       .rotation = glm::vec3(0.0f),
       .scale = glm::vec3(1.0f),
     });

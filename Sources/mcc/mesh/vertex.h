@@ -71,6 +71,7 @@ namespace mcc::mesh {
       CHECK_GL(FATAL);
       glEnableVertexAttribArray(3);
       CHECK_GL(FATAL);
+      Unbind();
     }
     explicit VertexBuffer(const VertexList& vertices):
       VertexBuffer(&vertices[0], vertices.size()) {

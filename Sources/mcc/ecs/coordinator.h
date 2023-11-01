@@ -11,7 +11,7 @@ namespace mcc {
     DEFINE_NON_INSTANTIABLE_TYPE(Coordinator);
   public:
     template<typename T>
-    static inline void AddComponent(const Entity e, T component) {
+    static inline void AddComponent(const Entity e, const T& component) {
       Components::AddComponent<T>(e, component);
       auto sig = Entities::GetSignature(e);
       sig.set(Components::GetComponentIdForType<T>(), true);

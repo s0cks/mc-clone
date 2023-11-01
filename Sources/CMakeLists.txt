@@ -60,6 +60,7 @@ add_library(${PROJECT_NAME}
   mcc/murmur.h
   mcc/settings.h mcc/settings.cc
   mcc/bitfield.h
+  mcc/lighting/ambient_light.h
   mcc/font/font.h mcc/font/font.cc
   mcc/font/glyph.h mcc/font/glyph.cc
   mcc/font/font_mesh.h mcc/font/font_mesh.cc

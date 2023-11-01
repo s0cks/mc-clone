@@ -22,14 +22,18 @@ namespace mcc::mesh {
   
   void Mesh::Render() {
     VertexArrayObjectBindScope vao(vao_);
+    vbo_.Bind();
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
+    vbo_.Unbind();
   }
 
   void IndexedMesh::Render() {
     VertexArrayObjectBindScope vao(vao_);
-    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
+    ibo_.Bind();
+    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), (const GLvoid*) 0);
     CHECK_GL(FATAL);
+    ibo_.Unbind();
   }
 
   Mesh* NewMesh(const VertexList& vertices) {
