@@ -2,7 +2,6 @@
 #define MCC_COORDINATOR_H
 
 #include "mcc/ecs/component.h"
-#include "mcc/ecs/event.h"
 #include "mcc/ecs/system.h"
 #include "mcc/ecs/entity.h"
 #include "mcc/fixed_rate_loop.h"

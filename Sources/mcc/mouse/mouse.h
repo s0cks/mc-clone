@@ -9,7 +9,6 @@
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 #include "mcc/bitfield.h"
-#include "mcc/ecs/event.h"
 
 #include "mcc/mouse/mouse_constants.h"
 
