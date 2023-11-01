@@ -115,10 +115,14 @@ namespace mcc::camera {
     });
   }
 
+  PerspectiveCamera& PerspectiveCameraBehavior::GetCameraComponent() {
+    return Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
+  }
+
   glm::mat4 PerspectiveCameraBehavior::CalculateProjectionMatrix() {
     const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
     const auto window_size = Window::GetSize();
-    return glm::perspective(glm::radians(camera.zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 100.0f);
+    return glm::perspective(glm::radians(camera.zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
   }
 
   glm::mat4 PerspectiveCameraBehavior::CalculateViewMatrix() {

@@ -39,6 +39,7 @@ namespace mcc::camera {
     static void RegisterComponents();
     static void Init();
     static Entity GetCameraEntity();
+    static PerspectiveCamera& GetCameraComponent();
     static glm::mat4 CalculateProjectionMatrix();
     static glm::mat4 CalculateViewMatrix();
   };
