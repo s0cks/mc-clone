@@ -95,6 +95,7 @@ target_link_libraries(${PROJECT_NAME}
   glfw
   GLEW::GLEW
   PNG::PNG
+  ${LEVELDB_LIBRARIES}
   Freetype::Freetype
   ${LIBUV_LIBRARIES})
 

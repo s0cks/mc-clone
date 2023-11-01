@@ -2,14 +2,15 @@ if(APPLE)
   set(LEVELDB_SEARCH_PATHS
       ~/Library/Frameworks
       /Library/Frameworks
+      ${CMAKE_SOURCE_DIR}/lib
       /usr/local
       /usr
-      /sw # Fink
-      /opt/local # DarwinPorts
-      /opt/csw # Blastwave
-      /opt)
+      /sw
+      /opt/local
+      /opt/csw)
 else()
   set(LEVELDB_SEARCH_PATHS
+      ${CMAKE_SOURCE_DIR}/lib
       /usr/local
       /usr)
 endif()
