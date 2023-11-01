@@ -16,7 +16,6 @@ find_package(Freetype REQUIRED)
 find_package(PNG REQUIRED)
 find_package(rx REQUIRED)
 find_package(nk REQUIRED)
-find_package(leveldb REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     message(STATUS "Compiling with debug mode.")

@@ -15,13 +15,13 @@ namespace mcc::renderer {
     const auto& shader = renderable.shader;
     const auto& texture = renderable.texture;
 
-    // texture.Bind0();
+    texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
     shader.SetMat4("view", view);
     shader.SetMat4("projection", projection);
     shader.SetVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
-    // shader.SetInt("texture1", 0);
+    shader.SetInt("tex0", 0);
     shader.ApplyShader();
     const auto& mesh = renderable.mesh;
     mesh->Render();
