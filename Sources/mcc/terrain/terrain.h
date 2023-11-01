@@ -17,7 +17,8 @@ namespace mcc::terrain {
 
 #define FOR_EACH_TERRAIN_TEXTURE(V) \
   V(Concrete, "concrete.png")       \
-  V(Wood, "wood.png")
+  V(Wood, "wood.png")               \
+  V(Planks, "planks.png")
 
   enum TerrainTexture {
 #define DEFINE_TERRAIN_TEXTURE(Name, file) k##Name##Texture,

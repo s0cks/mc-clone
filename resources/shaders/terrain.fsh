@@ -6,6 +6,10 @@ uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform float lightIntensity;
 
+uniform vec3 globalLightPos;
+uniform vec3 globalLightColor;
+uniform float globalLightIntensity;
+
 in vec3 inColor;
 in vec2 inTex;
 in vec3 in_Pos;

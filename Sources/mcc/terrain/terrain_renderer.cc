@@ -40,6 +40,9 @@ namespace mcc::terrain {
 
     const auto& camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
 
+    const float globalLightIntensity = 0.0f;
+    const glm::vec3 globalLightColor(1.0f, 1.0f, 1.0f);
+
     glm::vec3 lightPos(1.0f);
     glm::vec3 lightColor(1.0f);
     float lightIntensity = 0.0f;
@@ -60,6 +63,10 @@ namespace mcc::terrain {
     shader_.SetVec3("lightPos", lightPos);
     shader_.SetVec3("lightColor", lightColor);
     shader_.SetFloat("lightIntensity", lightIntensity);
+    
+    shader_.SetVec3("globalLightColor", globalLightColor);
+    shader_.SetFloat("globalLightIntensity", globalLightIntensity);
+
     shader_.ApplyShader();
     chunk->Render();
   }
