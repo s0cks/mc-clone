@@ -8,7 +8,7 @@ namespace mcc::renderer {
   void RenderEntitiesStage::RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e) {
     const auto& renderable = Components::GetComponent<Renderable>(e);
     const auto& transform = Components::GetComponent<physics::Transform>(e);
-    DLOG(INFO) << "rendering entity " << e << " w/ " << renderable;
+    VLOG(3) << "rendering entity " << e << " w/ " << renderable;
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, transform.position);
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
@@ -29,7 +29,7 @@ namespace mcc::renderer {
   }
 
   void RenderEntitiesStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
-    DLOG(INFO) << "rendering entities....";
+    VLOG(3) << "rendering entities....";
     glEnable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);
     Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {

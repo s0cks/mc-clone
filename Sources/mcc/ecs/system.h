@@ -39,8 +39,6 @@ namespace mcc {
     }
 
     static void Init();
-    static void OnDestroyed(const Entity& e);
-    static void OnSignatureChanged(const Entity::SignatureChangedEvent& e);
   };
 }
 

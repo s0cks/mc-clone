@@ -14,8 +14,25 @@ namespace mcc {
   }
 
   void Systems::Init() {
-    Entity::OnSignatureChanged(&OnSignatureChanged);
-    Entity::OnDestroyed(&OnDestroyed);
+    Entity::OnSignatureChanged()
+      .subscribe([](EntitySignatureChangedEvent* e) {
+        DLOG(INFO) << e->id << " signature changed: " << e->signature;
+        for(const auto& pair : systems_) {
+          const auto& system = pair.second;
+          if((e->signature & system->signature) == system->signature) {
+            system->entities.insert(e->id);
+          } else {
+            system->entities.erase(e->id);
+          }
+        }
+      });
+    Entity::OnDestroyed()
+      .subscribe([](EntityDestroyedEvent* e) {
+        for(const auto& pair : systems_) {
+          const auto& system = pair.second;
+          system->entities.erase(e->id);
+        }
+      });
   }
 
   void Systems::SetSignature(const char* typeName, const Signature& sig) {
@@ -23,25 +40,6 @@ namespace mcc {
     if(pos == systems_.end())
       return;
     pos->second->signature = sig;
-  }
-
-  void Systems::OnDestroyed(const Entity& e) {
-    for(const auto& pair : systems_) {
-      const auto& system = pair.second;
-      system->entities.erase(e);
-    }
-  }
-
-  void Systems::OnSignatureChanged(const Entity::SignatureChangedEvent& e) {
-    DLOG(INFO) << e.id << " signature changed: " << e.signature;
-    for(const auto& pair : systems_) {
-      const auto& system = pair.second;
-      if((e.signature & system->signature) == system->signature) {
-        system->entities.insert(e.id);
-      } else {
-        system->entities.erase(e.id);
-      }
-    }
   }
 
   void Systems::ForEachEntityInSystem(const char* typeName, EntityCallback callback) {

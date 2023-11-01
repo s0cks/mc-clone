@@ -84,7 +84,6 @@ namespace mcc::renderer {
     }
 
     void operator<<(const RendererSample& rhs) {
-      DLOG(INFO) << "pushing sample: " << rhs;
       data_.put(rhs);
     }
   };

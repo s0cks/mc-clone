@@ -4,7 +4,7 @@
 
 namespace mcc::renderer {
   void RenderTerrainStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
-    DLOG(INFO) << "rendering terrain....";
+    VLOG(3) << "rendering terrain....";
     glEnable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);
     terrain::Terrain::Render(projection, view);

@@ -7,7 +7,7 @@ namespace mcc::renderer {
   void PreRenderStage::OnPrepare(uv_idle_t* handle) {
     const auto stage = GetHandleStage<PreRenderStage>(handle);
     Renderer::SetState(stage->GetState());
-    DLOG(INFO) << "pre-render.";
+    VLOG(3) << "pre-render.";
 
     const auto window = Window::GetHandle();
     int width;

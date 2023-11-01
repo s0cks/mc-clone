@@ -24,10 +24,6 @@ namespace mcc::gui {
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
     nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
     const auto samples = renderer::Renderer::GetSamples();
-    DLOG(INFO) << "samples:";
-    for(auto& sample : (*samples)) {
-      DLOG(INFO) << " - " << sample;
-    }
     nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, renderer::kNumberOfRendererSamples);
     nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Avg): %04.02lfns", samples->GetAvgDuration() / (1.0f * NSEC_PER_MSEC));
     nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Min): %04.02lfns", samples->GetMinDuration() / (1.0f * NSEC_PER_MSEC));

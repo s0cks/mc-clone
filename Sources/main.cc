@@ -58,6 +58,7 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   Window::Init();
   Systems::Init();
+  Components::Init();
   terrain::Terrain::Init();
 
   Engine::Run();

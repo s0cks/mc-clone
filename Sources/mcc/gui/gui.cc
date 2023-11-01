@@ -115,7 +115,6 @@ namespace mcc::gui {
   }
 
   void Screen::NewFrame() {
-    DLOG(INFO) << "new frame....";
     const auto window = Window::GetHandle();
     glfwGetWindowSize(window, &width_, &height_);
     CHECK_GL(FATAL);

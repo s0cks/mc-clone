@@ -7,7 +7,7 @@ namespace mcc::renderer {
     const auto window = Window::GetHandle();
     const auto stage = GetHandleStage<PostRenderStage>(handle);
     Renderer::SetState(stage->GetState());
-    DLOG(INFO) << "post-render.";
+    VLOG(3) << "post-render.";
 
     glfwSwapBuffers(window);
     CHECK_GL(FATAL);

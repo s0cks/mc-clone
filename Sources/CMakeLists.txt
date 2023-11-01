@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}
   mcc/physics/collision.h mcc/physics/collision.cc
   mcc/physics/physics.h mcc/physics/physics.cc
   mcc/gfx.h
+  mcc/rx.h
   mcc/common.h
   mcc/flags.h mcc/flags.cc
   mcc/platform.h

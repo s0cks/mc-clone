@@ -12,6 +12,7 @@
 #include <set>
 #include <glog/logging.h>
 
+#include "mcc/rx.h"
 #include "mcc/common.h"
 #include "mcc/event/event_bus.h"
 
@@ -20,21 +21,18 @@ namespace mcc {
   static constexpr const EntityId kInvalidEntityId = 0;
   typedef std::bitset<32> Signature;
 
+#define FOR_EACH_ENTITY_EVENT(V) \
+  V(Created)                     \
+  V(Destroyed)                   \
+  V(SignatureChanged)
+
+#define FORWARD_DECLARE(Name) \
+  struct Entity##Name##Event;
+  FOR_EACH_ENTITY_EVENT(FORWARD_DECLARE)
+#undef FORWARD_DECLARE
+
   class Entity {
   public:
-    struct SignatureChangedEvent {
-      const EntityId id;
-      Signature signature;
-
-      friend std::ostream& operator<<(std::ostream& stream, const SignatureChangedEvent& rhs) {
-        stream << "Entity::SignatureChangedEvent(";
-        stream << "id=" << rhs.id << ", ";
-        stream << "signature=" << rhs.signature;
-        stream << ")";
-        return stream;
-      }
-    };
-
     struct HashFunction {
       size_t operator()(const Entity& k) const {
         return k.id();
@@ -82,8 +80,34 @@ namespace mcc {
       return stream;
     }
   public:
-    static void OnDestroyed(std::function<void(const Entity&)> callback);
-    static void OnSignatureChanged(std::function<void(const SignatureChangedEvent&)> callback);
+#define DECLARE_GET_EVENT_OBSERVABLE(Name) \
+    static rx::observable<Entity##Name##Event*> On##Name();
+    FOR_EACH_ENTITY_EVENT(DECLARE_GET_EVENT_OBSERVABLE);
+#undef DECLARE_GET_EVENT_OBSERVABLE
+  };
+
+  struct EntitySignatureChangedEvent {
+    const EntityId id;
+    Signature signature;
+
+    friend std::ostream& operator<<(std::ostream& stream, const EntitySignatureChangedEvent& rhs) {
+      stream << "EntitySignatureChangedEvent(";
+      stream << "id=" << rhs.id << ", ";
+      stream << "signature=" << rhs.signature;
+      stream << ")";
+      return stream;
+    }
+  };
+
+  struct EntityDestroyedEvent {
+    const EntityId id;
+
+    friend std::ostream& operator<<(std::ostream& stream, const EntityDestroyedEvent& rhs) {
+      stream << "EntityDestroyedEvent(";
+      stream << "id=" << rhs.id;
+      stream << ")";
+      return stream;
+    }
   };
 
   static constexpr const uint64_t kMaxNumberOfEntities = 32;
@@ -93,7 +117,6 @@ namespace mcc {
   public:
     static void Initialize();
     static Entity CreateEntity();
-    static void OnDestroyed(const Entity e);
     static void SetSignature(const Entity e, const Signature& sig);
     static Signature GetSignature(const Entity e);
   };

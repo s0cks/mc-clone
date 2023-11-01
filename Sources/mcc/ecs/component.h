@@ -80,6 +80,8 @@ namespace mcc {
     static ComponentList* GetComponentList(const char* name);
     static ComponentId GetComponentId(const char* name);
   public:
+    static void Init();
+
     template<typename T>
     static inline ComponentId Register() {
       return Register(TypeId<T>(), ComponentList::New<T>());

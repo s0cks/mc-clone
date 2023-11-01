@@ -11,12 +11,6 @@ namespace mcc {
   class Coordinator {
     DEFINE_NON_INSTANTIABLE_TYPE(Coordinator);
   public:
-    static inline void DestoryEntity(const Entity e) {
-      Entities::OnDestroyed(e);
-      Components::OnDestroyed(e);
-      Systems::OnDestroyed(e);
-    }
-
     template<typename T>
     static inline void AddComponent(const Entity e, T component) {
       Components::AddComponent<T>(e, component);
