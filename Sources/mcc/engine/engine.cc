@@ -1,5 +1,4 @@
 #include "mcc/engine/engine.h"
-#include "mcc/event/event_bus.h"
 #include "mcc/window.h"
 
 #include "mcc/engine/engine_stage_preinit.h"

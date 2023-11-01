@@ -291,7 +291,7 @@ namespace mcc::mesh {
           auto second = indices[t + (t + e + 1) % 3];
           if(first > second)
             std::swap(first, second);
-          uint64_t hash = first | second << (sizeof(uint64_t) * 8);
+          uint64_t hash = first | second << 8;
           auto [ triangle, wasNewEdge ] = edge_map.insert({ hash, currentVertex });
           if(wasNewEdge) {
             vertices[currentVertex].pos = (vertices[first].pos + vertices[second].pos) / 2.0f;

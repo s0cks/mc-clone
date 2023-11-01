@@ -4,7 +4,6 @@ namespace mcc {
   static std::queue<Entity> available_;
   static std::array<Signature, kMaxNumberOfEntities> signatures_;
   static uint32_t living_;
-  static EventBus events_;
 
 #define DEFINE_EVENT_SUBJECT(Name) \
   static const rxsub::subject<Entity##Name##Event*> on##Name##Event_;

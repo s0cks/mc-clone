@@ -32,7 +32,6 @@ add_library(${PROJECT_NAME}
   mcc/platform.h
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
-  mcc/event/event_bus.h mcc/event/event_bus.cc
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/render_loop.h mcc/render_loop.cc
   mcc/buffer.h mcc/buffer.cc
@@ -96,6 +95,7 @@ target_link_libraries(${PROJECT_NAME}
   glfw
   GLEW::GLEW
   PNG::PNG
+  ${LEVELDB_LIBRARIES}
   Freetype::Freetype
   ${LIBUV_LIBRARIES})
 

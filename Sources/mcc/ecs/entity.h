@@ -14,7 +14,6 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
-#include "mcc/event/event_bus.h"
 
 namespace mcc {
   typedef uint64_t EntityId;
