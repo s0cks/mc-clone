@@ -4,16 +4,47 @@
 #include "mcc/engine/engine.h"
 
 namespace mcc::mesh {
-  static VertexArrayObject vao_(kInvalidVertexArrayObject);
+#define FOR_EACH_BUILTIN_MESH(V) \
+  V(UVSphere)                    \
+  V(Icosphere)                   \
+  V(Cube)                        \
+  V(PlaneXZ)                     \
+  V(PlaneXY)
 
-  static inline void
-  InitializeVao() {
-    vao_ = VertexArrayObject();
-    VertexArrayObjectBindScope scope(vao_);
+  enum BuiltinVao {
+#define DEFINE_BUILTIN_VAO(Name) k##Name##Vao,
+    FOR_EACH_BUILTIN_MESH(DEFINE_BUILTIN_VAO)
+#undef DEFINE_BUILTIN_VAO
+    kTotalNumberOfBuiltinVaos,
+  };
+
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const BuiltinVao& rhs) {
+    switch(rhs) {
+#define DEFINE_TOSTRING(Name) \
+      case k##Name##Vao: return stream << #Name;
+
+      FOR_EACH_BUILTIN_MESH(DEFINE_TOSTRING)
+      default: return stream << "unknown";
+#undef DEFINE_TOSTRING
+    }
   }
 
+  static VertexArrayObject* kBuiltinVaos = nullptr;
+
+  static inline void
+  InitializeBuiltinVaos() {
+    DLOG(INFO) << "initializing builtin vaos....";
+    VertexArrayObject::GenerateBatch(kTotalNumberOfBuiltinVaos, &kBuiltinVaos);
+    for(auto idx = 0; idx < kTotalNumberOfBuiltinVaos; idx++) {
+      DLOG(INFO) << static_cast<BuiltinVao>(idx) << " := " << kBuiltinVaos[idx];
+    }
+  }
+
+#define BUILTIN_VAO(Name) kBuiltinVaos[k##Name##Vao]
+
   void Mesh::OnPostInit() {
-    InitializeVao();
+    InitializeBuiltinVaos();
   }
 
   void Mesh::Init() {
@@ -23,27 +54,94 @@ namespace mcc::mesh {
   void Mesh::Render() {
     VertexArrayObjectBindScope vao(vao_);
     vbo_.Bind();
+    // pos
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(0);
+    CHECK_GL(FATAL);
+
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, normal));
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(1);
+    CHECK_GL(FATAL);
+
+    // color
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color)); 
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(2);
+    CHECK_GL(FATAL);
+
+    // uv
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(3);
+    CHECK_GL(FATAL);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
     vbo_.Unbind();
   }
 
+  std::string Mesh::ToString() const {
+    std::stringstream ss;
+    ss << "mesh::Mesh(";
+    ss << "vao=" << vao_ << ", ";
+    ss << "vbo=" << vbo_;
+    ss << ")";
+    return ss.str();
+  }
+
   void IndexedMesh::Render() {
     VertexArrayObjectBindScope vao(vao_);
+    vbo_.Bind();
+        // pos
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(0);
+    CHECK_GL(FATAL);
+
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, normal));
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(1);
+    CHECK_GL(FATAL);
+
+    // color
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color)); 
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(2);
+    CHECK_GL(FATAL);
+
+    // uv
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
+    CHECK_GL(FATAL);
+    glEnableVertexAttribArray(3);
+    CHECK_GL(FATAL);
     ibo_.Bind();
-    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), (const GLvoid*) 0);
+    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
     CHECK_GL(FATAL);
     ibo_.Unbind();
+    vbo_.Unbind();
   }
 
-  Mesh* NewMesh(const VertexList& vertices) {
-    VertexArrayObjectBindScope vao(vao_);
-    return new Mesh(vertices);
+  std::string IndexedMesh::ToString() const {
+    std::stringstream ss;
+    ss << "mesh::IndexedMesh(";
+    ss << "vao=" << vao_ << ", ";
+    ss << "vbo=" << vbo_ << ", ";
+    ss << "ibo=" << ibo_;
+    ss << ")";
+    return ss.str();
   }
 
-  Mesh* NewMesh(const VertexList& vertices, const IndexList& indices) {
-    VertexArrayObjectBindScope vao(vao_);
-    return new IndexedMesh(vertices, indices);
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices) {
+    VertexArrayObjectBindScope scope(vao);
+    return new Mesh(vao, vertices);
+  }
+
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const IndexList& indices) {
+    VertexArrayObjectBindScope scope(vao);
+    return new IndexedMesh(vao, vertices, indices);
   }
 
   Mesh* NewUVSphere(const uint64_t latCount, const uint64_t lonCount) {
@@ -109,7 +207,7 @@ namespace mcc::mesh {
       v += 1;
     }
 
-    return NewMesh(vertices, indices);
+    return NewMesh(BUILTIN_VAO(UVSphere), vertices, indices);
   }
 
   Mesh* NewPlaneXY(const uint64_t xSize, const uint64_t ySize) {
@@ -145,7 +243,7 @@ namespace mcc::mesh {
       indices.push_back(v + ySize + 2);
       indices.push_back(v + ySize + 1);
     }
-    return NewMesh(vertices, indices);
+    return NewMesh(BUILTIN_VAO(PlaneXY), vertices, indices);
   }
 
   Mesh* NewPlaneXZ(const uint64_t xSize, const uint64_t zSize) {
@@ -181,7 +279,7 @@ namespace mcc::mesh {
       indices.push_back(v + zSize + 2);
       indices.push_back(v + zSize + 1);
     }
-    return NewMesh(vertices, indices);
+    return NewMesh(BUILTIN_VAO(PlaneXZ), vertices, indices);
   }
 
   static const float Z = (1.0f + sqrt(5.0f)) / 2.0f;
@@ -329,7 +427,7 @@ namespace mcc::mesh {
 
     for(auto& vertex : vertices)
       vertex.pos = glm::normalize(vertex.pos);
-    return NewMesh(vertices, indices);
+    return NewMesh(BUILTIN_VAO(Icosphere), vertices, indices);
   }
 
   static const VertexList kCubeVertices = {
@@ -377,6 +475,6 @@ namespace mcc::mesh {
   };
 
   Mesh* NewCube() {
-    return NewMesh(kCubeVertices);
+    return NewMesh(BUILTIN_VAO(Cube), kCubeVertices);
   }
 }

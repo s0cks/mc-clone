@@ -16,7 +16,7 @@ namespace mcc::renderer {
       stream << "Renderable(";
       stream << "shader=" << rhs.shader << ", ";
       stream << "texture=" << rhs.texture << ", ";
-      stream << "mesh=" << rhs.mesh;
+      stream << "mesh=" << (*rhs.mesh);
       stream << ")";
       return stream;
     }

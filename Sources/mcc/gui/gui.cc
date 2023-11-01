@@ -96,6 +96,7 @@ namespace mcc::gui {
     vbo_.Unbind();
     ibo_.Unbind();
     vao_.Unbind();
+    DLOG(INFO) << "gui vao: " << vao_;
   }
 
   nk::Context* Screen::GetNuklearContext() {

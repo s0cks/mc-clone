@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstdint>
+#include <cassert>
 
 #define DEFINE_NON_COPYABLE_TYPE(Name) \
   public:                              \
@@ -25,5 +26,15 @@ namespace mcc {
     return sz;
   }
 }
+
+#ifdef MCC_DEBUG
+
+#define MCC_ASSERT(x) assert(x)
+
+#else
+
+#define MCC_ASSERT(x)
+
+#endif //MCC_DEBUG
 
 #endif //MCC_COMMON_H

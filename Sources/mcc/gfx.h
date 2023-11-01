@@ -25,6 +25,8 @@
 #include <iostream>
 #include <glog/logging.h>
 
+#include "mcc/common.h"
+
 namespace mcc {
 #ifdef MCC_DEBUG
 
@@ -62,7 +64,7 @@ namespace mcc {
   protected:
     VertexArrayObjectId id_;
   public:
-    explicit VertexArrayObject(const VertexArrayObjectId id):
+    explicit constexpr VertexArrayObject(const VertexArrayObjectId id):
       id_(id) {
     }
     VertexArrayObject():
@@ -127,6 +129,23 @@ namespace mcc {
       stream << "id=" << rhs.id_;
       stream << ")";
       return stream;
+    }
+  public:
+    static inline void
+    GenerateBatch(const uint64_t num_vaos, VertexArrayObject** vaos) {
+      static constexpr const auto kInvalidVao = VertexArrayObject(kInvalidVertexArrayObject);
+
+      MCC_ASSERT((*vaos) == nullptr);
+      DLOG(INFO) << "generating " << num_vaos << " VertexArrayObjects....";
+      VertexArrayObjectId ids[num_vaos];
+      glGenVertexArrays(num_vaos, ids);
+      CHECK_GL(FATAL);
+      (*vaos) = (VertexArrayObject*)malloc(sizeof(VertexArrayObject) * num_vaos);
+      for(auto idx = 0; idx < num_vaos; idx++) {
+        memcpy(&(*vaos)[idx], &kInvalidVao, sizeof(VertexArrayObject));
+        (*vaos)[idx] = VertexArrayObject(ids[idx]);
+      }
+      DLOG(INFO) << "done.";
     }
   };
 

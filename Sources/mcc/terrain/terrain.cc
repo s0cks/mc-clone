@@ -107,6 +107,7 @@ namespace mcc::terrain {
 
     shader_ = CompileShader("terrain");
     vao_ = VertexArrayObject();
+    DLOG(INFO) << "terrain vao: " << vao_;
 
     VertexArrayObjectBindScope vao(vao_);
     vbo_ = TerrainVertexBuffer(vertices_);

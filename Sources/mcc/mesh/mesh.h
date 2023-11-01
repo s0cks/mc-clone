@@ -14,12 +14,13 @@ namespace mcc::mesh {
   class Mesh {
     friend class Renderer;
   protected:
+    VertexArrayObject vao_;
     VertexBuffer vbo_;
   public:
-    Mesh() = delete;
-    Mesh(const VertexList& vertices):
+    Mesh(const VertexArrayObject vao, const VertexList& vertices):
       vbo_(vertices) {
     }
+    Mesh() = delete;
     virtual ~Mesh() = default;
 
     VertexBuffer vbo() const {
@@ -27,6 +28,11 @@ namespace mcc::mesh {
     }
 
     virtual void Render();
+    virtual std::string ToString() const;
+
+    friend std::ostream& operator<<(std::ostream& stream, const Mesh& rhs) {
+      return stream << rhs.ToString();
+    }
   private:
     static void OnPostInit();
   public:
@@ -41,9 +47,10 @@ namespace mcc::mesh {
     void Render() override;
   public:
     IndexedMesh() = delete;
-    IndexedMesh(const VertexList& vertices,
+    IndexedMesh(const VertexArrayObject& vao,
+                const VertexList& vertices,
                 const IndexList& indices):
-      Mesh(vertices),
+      Mesh(vao, vertices),
       ibo_(indices) {
     }
     ~IndexedMesh() override = default;
@@ -51,10 +58,13 @@ namespace mcc::mesh {
     IndexBuffer ibo() const {
       return ibo_;
     }
+
+    std::string ToString() const override;
   };
 
-  Mesh* NewMesh(const VertexList& vertices);
-  Mesh* NewMesh(const VertexList& vertices, const IndexList& indices);
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices);
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const IndexList& indices);
+  
   Mesh* NewUVSphere(const uint64_t lat, const uint64_t lon);
   Mesh* NewIcosphere(const uint64_t resolution);
   Mesh* NewCube();
