@@ -13,3 +13,5 @@
 !/.gitignore
 !/.gitattributes
 !/*.md
+!/.vscode/
+!/Benchmarks/
