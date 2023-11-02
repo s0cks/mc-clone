@@ -32,7 +32,7 @@ public:                                                                         
   void Name::SetComponentId(const ComponentId id) { component_id_ = id; }                         \
   ComponentId Name::GetComponentId() { return (ComponentId) component_id_; }                      \
   void Name::RegisterComponent() {                                                                \
-    return SetComponentId(Components::Register<Name>());                                          \
+    return SetComponentId(Component::Register<Name>());                                          \
   }                                                                                               \
   bool Name::PutState(const Entity& e, const ComponentState<Name>& state) {                       \
     return component_table_.Put(e, state);                                                        \
@@ -116,8 +116,8 @@ public:                                                                         
     return new ComponentListTemplate<T>();
   }
 
-  class Components {
-    DEFINE_NON_INSTANTIABLE_TYPE(Components);
+  class Component {
+    DEFINE_NON_INSTANTIABLE_TYPE(Component);
   private:
     template<typename T>
     static inline const char*
@@ -128,8 +128,6 @@ public:                                                                         
     static ComponentId Register(const char* name);
     static ComponentId GetComponentId(const char* name);
   public:
-    static void Init();
-
     template<typename T>
     static inline ComponentId Register() {
       return Register(TypeId<T>());

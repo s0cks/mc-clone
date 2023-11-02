@@ -57,7 +57,6 @@ int main(int argc, char** argv) {
   physics::PhysicsSimulator::Init();
   mesh::Mesh::Init();
   Window::Init();
-  Components::Init();
   terrain::Terrain::Init();
 
   Engine::Run();

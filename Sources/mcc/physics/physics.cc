@@ -30,9 +30,7 @@ namespace mcc::physics {
   }
 
   void PhysicsSimulator::OnPreInit() {
-    Components::Register<Transform>();
-    Components::Register<RigidBody>();
-    Components::Register<Force>();
+    
   }
   
   void PhysicsSimulator::OnInit() {
