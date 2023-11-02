@@ -2,7 +2,7 @@
 #define MCC_PHYSICS_FORCE_H
 
 #include "mcc/gfx.h"
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 
 namespace mcc::physics {
   struct Force {

@@ -1,7 +1,7 @@
 #ifndef MCC_COORDINATOR_H
 #define MCC_COORDINATOR_H
 
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 #include "mcc/ecs/entity.h"
 #include "mcc/fixed_rate_loop.h"
 

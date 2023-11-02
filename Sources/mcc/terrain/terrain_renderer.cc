@@ -5,7 +5,6 @@
 #include "mcc/relaxed_atomic.h"
 #include "mcc/flags.h"
 
-#include "mcc/ecs/component.h"
 #include "mcc/lighting/ambient_light.h"
 #include "mcc/physics/transform.h"
 

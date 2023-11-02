@@ -18,7 +18,9 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stage_tick.h
   mcc/engine/engine_stage_terminating.h
   mcc/engine/engine_stage_terminated.h
+  mcc/component/component_id.h
   mcc/component/component_state.h
+  mcc/component/component.h mcc/component/component.cc
   mcc/aabb.h mcc/aabb.cc
   mcc/physics/rigid_body.h mcc/physics/rigid_body.cc
   mcc/physics/force.h mcc/physics/force.cc
@@ -75,7 +77,6 @@ add_library(${PROJECT_NAME}
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/coordinator.h
   mcc/ecs/entity.h mcc/ecs/entity.cc
-  mcc/ecs/component.h mcc/ecs/component.cc
   mcc/gui/gui.h mcc/gui/gui.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc

@@ -2,7 +2,7 @@
 #define MCC_AMBIENT_LIGHT_H
 
 #include "mcc/gfx.h"
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 
 namespace mcc {
   struct AmbientLight {

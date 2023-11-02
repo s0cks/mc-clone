@@ -5,8 +5,7 @@
 #include "mcc/common.h"
 #include "mcc/mouse/mouse.h"
 #include "mcc/engine/engine.h"
-
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 
 namespace mcc::camera {
   class PerspectiveCameraBehavior;

@@ -4,8 +4,7 @@
 #include "mcc/mesh/mesh.h"
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
-
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 
 namespace mcc::renderer {
   struct Renderable {

@@ -4,8 +4,6 @@
 #include "mcc/physics/force.h"
 #include "mcc/physics/transform.h"
 #include "mcc/physics/rigid_body.h"
-
-#include "mcc/ecs/component.h"
 #include "mcc/ecs/coordinator.h"
 
 namespace mcc::physics {

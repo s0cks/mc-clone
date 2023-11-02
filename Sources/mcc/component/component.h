@@ -9,7 +9,8 @@
 #include "mcc/gfx.h"
 #include "mcc/relaxed_atomic.h"
 #include "mcc/ecs/entity.h"
-#include "mcc/ecs/component_id.h"
+
+#include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
 
 namespace mcc {

@@ -1,5 +1,5 @@
 #include <unordered_map>
-#include "mcc/ecs/component.h"
+#include "mcc/component/component.h"
 
 namespace mcc {
   static std::unordered_map<const char*, ComponentId> types_;
