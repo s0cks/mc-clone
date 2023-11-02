@@ -4,11 +4,11 @@
 #include "mcc/common.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/state_machine.h"
-#include "mcc/ecs/system.h"
 #include "mcc/renderer/renderable.h"
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
-
+#include "mcc/engine/tick.h"
+#include "mcc/ecs/entity.h"
 #include "mcc/framebuffer.h"
 
 namespace mcc::gui {
@@ -69,6 +69,8 @@ namespace mcc::renderer {
     static uv_loop_t* GetLoop();
     static RendererSampleSeries* GetSamples();
     static FrameBuffer* GetFrameBuffer();
+    static Signature GetSignature();
+    static bool VisitEntities(std::function<bool(const Entity&)> callback);
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

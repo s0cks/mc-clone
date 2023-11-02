@@ -6,7 +6,6 @@
 #include "mcc/flags.h"
 
 #include "mcc/terrain/terrain_renderer.h"
-#include "mcc/ecs/system.h"
 #include "mcc/ecs/component.h"
 #include "mcc/lighting/ambient_light.h"
 #include "mcc/physics/transform.h"

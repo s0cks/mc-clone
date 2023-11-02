@@ -10,6 +10,8 @@
 
 namespace mcc::camera {
   static RelaxedAtomic<EntityId> entity_;
+  static EntitySet tracked_;
+  static Signature signature_;
 
   static inline void
   UpdateCamera(ComponentState<PerspectiveCamera> camera) {
@@ -22,12 +24,19 @@ namespace mcc::camera {
     camera->up = glm::normalize(glm::cross(camera->right, camera->front));
   }
 
+  bool PerspectiveCameraBehavior::VisitEntities(std::function<bool(const Entity&)> callback) {
+    for(auto& e : tracked_) {
+      if(!callback(e))
+        return false;
+    }
+    return true;
+  }
+
   void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& pos) {
     const auto window = Window::GetHandle();
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
-
-    Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
+    VisitEntities([&](const Entity& e) {
       auto camera = Components::GetComponent<PerspectiveCamera>(e);
       camera->yaw += (pos[0] * camera->sensitivity);
       camera->pitch += (pos[1] * camera->sensitivity);
@@ -36,6 +45,7 @@ namespace mcc::camera {
       else if(camera->pitch < -89.0f)
         camera->pitch = -89.0f;
       UpdateCamera(camera);
+      return true;
     });
   }
 
@@ -74,15 +84,24 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnInit() {
-
+    Entity::OnSignatureChanged()
+      .subscribe([](EntitySignatureChangedEvent* e) {
+        const auto& esig = e->signature;
+        const auto& eid = e->id;
+        if((esig & signature_) == signature_) {
+          tracked_.insert(eid);
+        } else {
+          tracked_.erase(eid);
+        }
+      });
+    Entity::OnDestroyed()
+      .subscribe([](EntityDestroyedEvent* e) {
+        tracked_.erase(e->id);
+      });
   }
 
   void PerspectiveCameraBehavior::OnPostInit() {
-    Systems::Register<PerspectiveCameraBehavior>();
-    Signature sig;
-    sig.set(Components::GetComponentIdForType<PerspectiveCamera>());
-    Systems::SetSignature<PerspectiveCameraBehavior>(sig);
-
+    signature_.set(Components::GetComponentIdForType<PerspectiveCamera>());
     SetCameraEntity(CreateCameraEntity());
     Mouse::Register(&OnMousePosition);
   }
@@ -100,7 +119,7 @@ namespace mcc::camera {
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
 
-    Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
+    VisitEntities([&](const Entity& e) {
       auto camera = Components::GetComponent<PerspectiveCamera>(e);
       const auto velocity = camera->speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -111,6 +130,7 @@ namespace mcc::camera {
         camera->pos -= (camera->right * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->pos += (camera->right * velocity * 0.05f);
+      return true;
     });
   }
 
@@ -127,5 +147,9 @@ namespace mcc::camera {
   glm::mat4 PerspectiveCameraBehavior::CalculateViewMatrix() {
     const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
     return glm::lookAt(camera->pos, camera->pos + camera->front, camera->up);
+  }
+
+  Signature PerspectiveCameraBehavior::GetSignature() {
+    return signature_;
   }
 }

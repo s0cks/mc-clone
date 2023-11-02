@@ -42,6 +42,9 @@ namespace mcc::renderer {
   static mesh::Mesh* mesh_;
   static Shader shader_;
 
+  static Signature signature_;
+  static EntitySet tracked_;
+
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
   static RendererSampleSeries samples_;
 
@@ -85,12 +88,9 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnPostInit() {
-    Systems::Register<Renderer>();
-    Signature sig;
-    sig.set(Components::GetComponentIdForType<Renderable>());
-    sig.set(Components::GetComponentIdForType<physics::Transform>());
-    Systems::SetSignature<Renderer>(sig);
-    DLOG(INFO) << "signature: " << sig;
+    signature_.set(Components::GetComponentIdForType<Renderable>());
+    signature_.set(Components::GetComponentIdForType<physics::Transform>());
+    DLOG(INFO) << "signature: " << signature_;
 
     Window::AddFrame(gui::SettingsFrame::New());
     Window::AddFrame(gui::RendererFrame::New());
@@ -99,6 +99,21 @@ namespace mcc::renderer {
     frame_buffer_.Set(FrameBuffer::New(size[0], size[1]));
 
     Engine::OnTick(&OnTick);
+
+    Entity::OnSignatureChanged()
+      .subscribe([](EntitySignatureChangedEvent* e) {
+        const auto& esig = e->signature;
+        const auto& eid = e->id;
+        if((esig & signature_) == signature_) {
+          tracked_.insert(eid);
+        } else {
+          tracked_.erase(eid);
+        }
+      });
+    Entity::OnDestroyed()
+      .subscribe([](EntityDestroyedEvent* e) {
+        tracked_.erase(e->id);
+      });
   }
 
   void Renderer::OnTick(const Tick& tick) {
@@ -167,5 +182,17 @@ namespace mcc::renderer {
 
   uint64_t Renderer::GetEntityCounter() {
     return (uint64_t) entities_;
+  }
+
+  Signature Renderer::GetSignature() {
+    return signature_;
+  }
+
+  bool Renderer::VisitEntities(std::function<bool(const Entity&)> callback) {
+    for(auto& e : tracked_) {
+      if(!callback(e))
+        return false;
+    }
+    return true;
   }
 }

@@ -45,8 +45,9 @@ namespace mcc::renderer {
     VLOG(3) << "rendering entities....";
     glEnable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);
-    Systems::ForEachEntityInSystem<Renderer>([&](const Entity& e) {
+    Renderer::VisitEntities([&](const Entity& e) {
       RenderEntity(projection, view, e);
+      return true;
     });
     glDisable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);

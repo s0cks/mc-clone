@@ -4,6 +4,7 @@
 #include "mcc/common.h"
 #include "mcc/gfx.h"
 #include "mcc/engine/tick.h"
+#include "mcc/ecs/entity.h"
 
 namespace mcc::physics {
   class PhysicsSimulator {
@@ -15,6 +16,8 @@ namespace mcc::physics {
     static void OnTick(const Tick& tick);
   public:
     static void Init();
+    static Signature GetSignature();
+    static bool VisitEntities(std::function<bool(const Entity&)> callback);
 
     static glm::vec3 GetGravity();
     static void SetGravity(const glm::vec3& value);

@@ -43,6 +43,8 @@ namespace mcc::camera {
     static ComponentState<PerspectiveCamera> GetCameraComponent();
     static glm::mat4 CalculateProjectionMatrix();
     static glm::mat4 CalculateViewMatrix();
+    static Signature GetSignature();
+    static bool VisitEntities(std::function<bool(const Entity&)> callback);
   };
 }
 

@@ -5,13 +5,15 @@
 #include "mcc/physics/transform.h"
 #include "mcc/physics/rigid_body.h"
 
-#include "mcc/ecs/system.h"
 #include "mcc/ecs/component.h"
 #include "mcc/ecs/coordinator.h"
 
 namespace mcc::physics {
   static constexpr const auto kGravityForce = glm::vec3(0.0f, -9.81f, 0.0f);
   static constexpr const auto kNoForce = glm::vec3(0.0f);
+
+  static Signature signature_;
+  static EntitySet tracked_;
 
   static glm::vec3 gravity_ = kNoForce;
 
@@ -36,22 +38,38 @@ namespace mcc::physics {
   }
   
   void PhysicsSimulator::OnInit() {
-
+    Entity::OnDestroyed()
+      .subscribe([](EntityDestroyedEvent* e) {
+        tracked_.erase(e->id);
+      });
+    Entity::OnSignatureChanged()
+      .subscribe([](EntitySignatureChangedEvent* e) {
+        const auto& esig = e->signature;
+        const auto& eid = e->id;
+        if((esig & signature_) == signature_) {
+          tracked_.insert(eid);
+        } else {
+          tracked_.erase(eid);
+        }
+      });
   }
   
   void PhysicsSimulator::OnPostInit() {
-    Systems::Register<PhysicsSimulator>();
-    Signature sig;
-    sig.set(Components::GetComponentIdForType<RigidBody>());
-    sig.set(Components::GetComponentIdForType<Transform>());
-    Systems::SetSignature<PhysicsSimulator>(sig);
-    DLOG(INFO) << "sig: " << sig;
-
+    signature_.set(Components::GetComponentIdForType<RigidBody>());
+    signature_.set(Components::GetComponentIdForType<Transform>());
     Engine::OnTick(&OnTick);
+  }
+  
+  bool PhysicsSimulator::VisitEntities(std::function<bool(const Entity&)> callback) {
+    for(auto& e : tracked_) {
+      if(!callback(e))
+        return false;
+    }
+    return true;
   }
 
   void PhysicsSimulator::OnTick(const Tick& tick) {
-    Systems::ForEachEntityInSystem<PhysicsSimulator>([&tick](const Entity& e) {
+    VisitEntities([&tick](const Entity& e) {
       auto rigid_body = Components::GetComponent<RigidBody>(e);
       auto transform = Components::GetComponent<Transform>(e);
       
@@ -59,6 +77,7 @@ namespace mcc::physics {
       force += rigid_body->mass * gravity_;
       rigid_body->velocity += force / rigid_body->mass * static_cast<float>(tick.dts);
       transform->position += rigid_body->velocity * static_cast<float>(tick.dts);
+      return true;
     });
   }
 }
