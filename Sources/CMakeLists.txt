@@ -3,7 +3,6 @@ include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${NK_INCLUDE_DIRS})
-include_directories(${RX_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
@@ -21,9 +20,9 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stage_terminated.h
   mcc/component/component_state.h
   mcc/aabb.h mcc/aabb.cc
-  mcc/physics/rigid_body.h
-  mcc/physics/force.h
-  mcc/physics/transform.h
+  mcc/physics/rigid_body.h mcc/physics/rigid_body.cc
+  mcc/physics/force.h mcc/physics/force.cc
+  mcc/physics/transform.h mcc/physics/transform.cc
   mcc/physics/collision.h mcc/physics/collision.cc
   mcc/physics/physics.h mcc/physics/physics.cc
   mcc/gfx.h
@@ -66,7 +65,7 @@ add_library(${PROJECT_NAME}
   mcc/murmur.h
   mcc/settings.h mcc/settings.cc
   mcc/bitfield.h
-  mcc/lighting/ambient_light.h
+  mcc/lighting/ambient_light.h mcc/lighting/ambient_light.cc
   mcc/font/font.h mcc/font/font.cc
   mcc/font/glyph.h mcc/font/glyph.cc
   mcc/font/font_mesh.h mcc/font/font_mesh.cc

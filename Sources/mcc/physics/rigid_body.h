@@ -2,6 +2,7 @@
 #define MCC_RIGID_BODY_H
 
 #include "mcc/gfx.h"
+#include "mcc/ecs/component.h"
 
 namespace mcc::physics {
   struct RigidBody {
@@ -15,6 +16,14 @@ namespace mcc::physics {
       stream << ")";
       return stream;
     }
+
+    DECLARE_COMPONENT(RigidBody);
+  private:
+    static void OnPreInit();
+    static void OnInit();
+    static void OnPostInit();
+  public:
+    static void Init();
   };
 }
 

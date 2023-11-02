@@ -6,24 +6,27 @@
 
 namespace mcc::renderer {
   void RenderEntitiesStage::RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e) {
-    const auto renderable = Components::GetComponent<Renderable>(e);
-    const auto transform = Components::GetComponent<physics::Transform>(e);
-    DLOG(INFO) << "rendering entity " << e << " w/ " << renderable;
+    const auto renderable = Renderable::GetState(e);
+    const auto transform = physics::Transform::GetState(e);
+
+    DLOG(INFO) << "rendering entity " << e << " w/ " << *(*renderable).data();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, transform->position);
+    model = glm::translate(model, (*transform)->position);
     // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    const auto& shader = renderable->shader;
-    const auto& texture = renderable->texture;
+    const auto& shader = (*renderable)->shader;
+    const auto& texture = (*renderable)->texture;
 
     float intensity = 0.2f;
     glm::vec3 lightColor = glm::vec3(1.0f);
     glm::vec3 lightPos = glm::vec3(0.0f);
-    Components::ForEachEntityWithComponent<AmbientLight>([&lightColor,&intensity,&lightPos](const Entity& l, ComponentState<AmbientLight> light) {
+    AmbientLight::Visit([&lightColor,&intensity,&lightPos](const Entity& l, const ComponentState<AmbientLight>& light) {
       lightColor = light->color;
       intensity = light->intensity;
 
-      const auto transform = Components::GetComponent<physics::Transform>(l);
-      lightPos = transform->position;
+      const auto lt = physics::Transform::GetState(l);
+      LOG_IF(FATAL, !lt) << "no transform found for AmbientLight component of entity " << l;
+      lightPos = (*lt)->position;
+      return true;
     });
 
     texture.Bind0();
@@ -36,7 +39,7 @@ namespace mcc::renderer {
     shader.SetFloat("lightIntensity", 0.20f);
     shader.SetInt("tex0", 0);
     shader.ApplyShader();
-    const auto& mesh = renderable->mesh;
+    const auto& mesh = (*renderable)->mesh;
     mesh->Render();
     Renderer::IncrementEntityCounter();
   }

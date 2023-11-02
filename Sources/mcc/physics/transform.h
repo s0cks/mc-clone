@@ -2,6 +2,7 @@
 #define MCC_TRANSFORM_H
 
 #include "mcc/gfx.h"
+#include "mcc/ecs/component.h"
 
 namespace mcc::physics {
   struct Transform {
@@ -17,6 +18,14 @@ namespace mcc::physics {
       stream << ")";
       return stream;
     }
+
+    DECLARE_COMPONENT(Transform);
+  private:
+    static void OnPreInit();
+    static void OnInit();
+    static void OnPostInit();
+  public:
+    static void Init();
   };
 }
 

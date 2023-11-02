@@ -11,8 +11,12 @@ namespace mcc {
   public:
     template<typename T>
     static inline ComponentState<T> AddComponent(const Entity e, const T& component) {
-      const auto state = ComponentState<T>(component);
-      Components::AddComponent<T>(e, component);
+      auto state = ComponentState<T>(component);
+      if(!T::PutState(e, state)) {
+        LOG(ERROR) << "failed to put " << state << " for " << e;
+        return state;
+      }
+
       auto sig = Entities::GetSignature(e);
       sig.set(Components::GetComponentIdForType<T>(), true);
       Entities::SetSignature(e, sig);
@@ -21,7 +25,7 @@ namespace mcc {
 
     template<typename T>
     static inline void RemoveComponent(const Entity e) {
-      Components::RemoveComponent<T>(e);
+      LOG_IF(ERROR, !T::RemoveState(e)) << "failed to remove state for " << e;
       auto sig = Entities::GetSignature(e);
       sig.set(Components::GetComponentIdForType<T>(), false);
       Entities::SetSignature(e, sig);

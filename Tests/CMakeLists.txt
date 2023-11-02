@@ -3,7 +3,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME}-tests
   main.cc
-  mcc/mesh/test_vertex.h mcc/mesh/test_vertex.cc)
+  mcc/mesh/test_vertex.h mcc/mesh/test_vertex.cc
+  mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}
   Threads::Threads

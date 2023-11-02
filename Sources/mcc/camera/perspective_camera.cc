@@ -9,6 +9,36 @@
 #include "mcc/window.h"
 
 namespace mcc::camera {
+  DEFINE_COMPONENT(PerspectiveCamera);
+
+  void PerspectiveCamera::OnPreInit() {
+    RegisterComponent();
+  }
+
+  void PerspectiveCamera::OnInit() {
+
+  }
+
+  void PerspectiveCamera::OnPostInit() {
+
+  }
+
+  void PerspectiveCamera::Init() {
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+    Entity::OnDestroyed().subscribe(&OnEntityDestroyed);
+  }
+
+  glm::mat4 PerspectiveCamera::GetProjectionMatrix() const {
+    const auto window_size = Window::GetSize();
+    return glm::perspective(glm::radians(zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
+  }
+
+  glm::mat4 PerspectiveCamera::GetViewMatrix() const {
+    return glm::lookAt(pos, pos + front, up);
+  }
+
   static RelaxedAtomic<EntityId> entity_;
   static EntitySet tracked_;
   static Signature signature_;
@@ -37,7 +67,13 @@ namespace mcc::camera {
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
     VisitEntities([&](const Entity& e) {
-      auto camera = Components::GetComponent<PerspectiveCamera>(e);
+      auto state = PerspectiveCamera::GetState(e);
+      if(!state) {
+        LOG(WARNING) << "no state for " << e;
+        return false;
+      }
+
+      auto camera = state.value();
       camera->yaw += (pos[0] * camera->sensitivity);
       camera->pitch += (pos[1] * camera->sensitivity);
       if(camera->pitch > 89.0f)
@@ -120,7 +156,13 @@ namespace mcc::camera {
       return;
 
     VisitEntities([&](const Entity& e) {
-      auto camera = Components::GetComponent<PerspectiveCamera>(e);
+      const auto state = PerspectiveCamera::GetState(e);
+      if(!state) {
+        LOG(ERROR) << "no state for " << e;
+        return false;
+      }
+
+      auto camera = state.value();
       const auto velocity = camera->speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->pos += (camera->front * velocity * 0.05f);
@@ -134,19 +176,8 @@ namespace mcc::camera {
     });
   }
 
-  ComponentState<PerspectiveCamera> PerspectiveCameraBehavior::GetCameraComponent() {
-    return Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
-  }
-
-  glm::mat4 PerspectiveCameraBehavior::CalculateProjectionMatrix() {
-    const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
-    const auto window_size = Window::GetSize();
-    return glm::perspective(glm::radians(camera->zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
-  }
-
-  glm::mat4 PerspectiveCameraBehavior::CalculateViewMatrix() {
-    const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
-    return glm::lookAt(camera->pos, camera->pos + camera->front, camera->up);
+  std::optional<ComponentState<PerspectiveCamera>> PerspectiveCameraBehavior::GetCameraComponent() {
+    return PerspectiveCamera::GetState(GetCameraEntity());
   }
 
   Signature PerspectiveCameraBehavior::GetSignature() {

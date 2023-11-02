@@ -1,14 +1,25 @@
 #include "mcc/renderer/renderable.h"
-#include "mcc/relaxed_atomic.h"
+#include "mcc/engine/engine.h"
 
 namespace mcc::renderer {
-  static RelaxedAtomic<ComponentId> id_;
+  DEFINE_COMPONENT(Renderable);
 
-  void Renderable::SetComponentId(const ComponentId id) {
-    id_ = id;
+  void Renderable::OnPreInit() {
+    RegisterComponent();
   }
 
-  ComponentId Renderable::GetComponentId() {
-    return (ComponentId) id_;
+  void Renderable::OnInit() {
+
+  }
+
+  void Renderable::OnPostInit() {
+
+  }
+
+  void Renderable::Init() {
+    Engine::OnPreInit(&OnPreInit);
+    Engine::OnInit(&OnInit);
+    Engine::OnPostInit(&OnPostInit);
+    Entity::OnDestroyed().subscribe(&OnEntityDestroyed);
   }
 }

@@ -31,6 +31,7 @@ namespace mcc::gui {
     physics::PhysicsSimulator::SetGravity(glm::vec3(g[0], gravity, g[2]));
 
     auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
-    nk_property_float(ctx, "Camera Speed:", -1.0f, &camera->speed, 2.0f, 0.05f, 1);
+    if(camera)
+      nk_property_float(ctx, "Camera Speed:", -1.0f, &camera.value()->speed, 2.0f, 0.05f, 1);
   }
 }

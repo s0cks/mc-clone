@@ -4,7 +4,8 @@
 #include "mcc/mesh/mesh.h"
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
-#include "mcc/ecs/component_id.h"
+
+#include "mcc/ecs/component.h"
 
 namespace mcc::renderer {
   struct Renderable {
@@ -22,10 +23,13 @@ namespace mcc::renderer {
     }
 
     friend class Renderer;
+    DECLARE_COMPONENT(Renderable);
   private:
-    static void SetComponentId(const ComponentId id);
+    static void OnPreInit();
+    static void OnInit();
+    static void OnPostInit();
   public:
-    static ComponentId GetComponentId();
+    static void Init();
   };
 }
 

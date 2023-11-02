@@ -37,7 +37,7 @@ namespace mcc::terrain {
     glm::mat4 model(1.0f);
     const auto chunk = Terrain::GetChunk();
 
-    const auto& camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
+    auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
 
     const float globalLightIntensity = 0.0f;
     const glm::vec3 globalLightColor(1.0f, 1.0f, 1.0f);
@@ -45,11 +45,17 @@ namespace mcc::terrain {
     glm::vec3 lightPos(1.0f);
     glm::vec3 lightColor(1.0f);
     float lightIntensity = 0.0f;
-    Components::ForEachEntityWithComponent<AmbientLight>([&](const Entity& e, ComponentState<AmbientLight> light) {
-      const auto transform = Components::GetComponent<physics::Transform>(e);
-      lightPos = transform->position;
+    AmbientLight::Visit([&](const Entity& e, const ComponentState<AmbientLight>& light) {
+      const auto transform = physics::Transform::GetState(e);
+      if(!transform) {
+        LOG(ERROR) << "no physics::Transform component found for entity " << e;
+        return false;
+      }
+
+      lightPos = (*transform)->position;
       lightColor = light->color;
       lightIntensity = light->intensity;
+      return true;
     });
 
     GetSelectedTexture().Bind0();
@@ -58,7 +64,7 @@ namespace mcc::terrain {
     shader_.SetMat4("view", view_);
     shader_.SetMat4("model", chunk->GetModelMatrix());
     shader_.SetInt("tex0", 0);
-    shader_.SetVec3("cameraPos", camera->pos);
+    shader_.SetVec3("cameraPos", (*camera)->pos);
     shader_.SetVec3("lightPos", lightPos);
     shader_.SetVec3("lightColor", lightColor);
     shader_.SetFloat("lightIntensity", lightIntensity);

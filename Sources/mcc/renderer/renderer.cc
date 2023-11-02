@@ -19,6 +19,7 @@
 
 #include "mcc/renderer/stage.h"
 #include "mcc/physics/transform.h"
+#include "mcc/physics/rigid_body.h"
 #include "mcc/lighting/ambient_light.h"
 
 namespace mcc::renderer {
@@ -69,11 +70,13 @@ namespace mcc::renderer {
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
     FrameBuffer::Init();
+    Renderable::Init();
+    AmbientLight::Init();
+    physics::Transform::Init();
+    physics::RigidBody::Init();
   }
 
   void Renderer::OnPreInit() {
-    Renderable::SetComponentId(Components::Register<Renderable>());
-    Components::Register<AmbientLight>();
   }
 
   void Renderer::OnInit() {
