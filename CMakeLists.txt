@@ -30,6 +30,7 @@ set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 0)
 
 include_directories(${RX_INCLUDE_DIRS})
+include_directories(${RAPIDJSON_INCLUDE_DIRS})
 
 add_subdirectory(Tests)
 add_subdirectory(Sources)
