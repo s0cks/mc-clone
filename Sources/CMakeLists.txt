@@ -45,6 +45,7 @@ add_library(${PROJECT_NAME}
   mcc/trie.h
   mcc/circular_buffer.h
   mcc/series.h
+  mcc/framebuffer.h mcc/framebuffer.cc
   mcc/subscription_trie.h
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_trie.h

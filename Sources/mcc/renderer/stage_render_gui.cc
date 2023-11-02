@@ -28,6 +28,9 @@ namespace mcc::renderer {
   void RenderScreenStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
+    auto fb = Renderer::GetFrameBuffer();
+    fb->Draw();
+    fb->Unbind();
     auto proj = glm::mat4(1.0f);
     proj = glm::ortho(0.0f, size[0], size[1], 0.0f);
     gui::Screen::RenderScreen(proj);

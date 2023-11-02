@@ -9,6 +9,9 @@ namespace mcc::renderer {
     Renderer::SetState(stage->GetState());
     VLOG(3) << "pre-render.";
 
+    auto fb = Renderer::GetFrameBuffer();
+    fb->Bind();
+
     const auto window = Window::GetHandle();
     int width;
     int height;

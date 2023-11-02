@@ -9,6 +9,8 @@
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
 
+#include "mcc/framebuffer.h"
+
 namespace mcc::gui {
   class Screen;
   class Frame;
@@ -16,27 +18,6 @@ namespace mcc::gui {
   class RendererFrame;
 }
 
-
-/*
- * ---------------------------------------
- * |            Pre Init                 |
- * --------------------------------------- 
- * |            Init                     |
- * ---------------------------------------
- * |            Post Init                |
- * ---------------------------------------
- * 
- *              .........
- * 
- * 
- * ============ Tick Start ===============
- * ---------------------------------------
- * |            PreRender                |
- * --------------------------------------
- * |            PostRender               |
- * ---------------------------------------
- * ============ Tick End =================
-*/
 namespace mcc::renderer {
   class Renderer {
     friend class gui::Screen;
@@ -87,6 +68,7 @@ namespace mcc::renderer {
     static Mode GetMode();
     static uv_loop_t* GetLoop();
     static RendererSampleSeries* GetSamples();
+    static FrameBuffer* GetFrameBuffer();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

@@ -29,6 +29,7 @@ namespace mcc::renderer {
   static ThreadLocal<RenderGuiStage> render_gui_;
   static ThreadLocal<RenderScreenStage> draw_gui_;
   static ThreadLocal<PostRenderStage> post_render_;
+  static ThreadLocal<FrameBuffer> frame_buffer_;
 
   static Tick last_;
   static RelaxedAtomic<uint64_t> frames_;
@@ -64,6 +65,7 @@ namespace mcc::renderer {
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
+    FrameBuffer::Init();
   }
 
   void Renderer::OnPreInit() {
@@ -92,6 +94,9 @@ namespace mcc::renderer {
 
     Window::AddFrame(gui::SettingsFrame::New());
     Window::AddFrame(gui::RendererFrame::New());
+
+    const auto size = Window::GetSize();
+    frame_buffer_.Set(FrameBuffer::New(size[0], size[1]));
 
     Engine::OnTick(&OnTick);
   }
@@ -142,6 +147,10 @@ namespace mcc::renderer {
 
   RendererSampleSeries* Renderer::GetSamples() {
     return &samples_;
+  }
+
+  FrameBuffer* Renderer::GetFrameBuffer() {
+    return frame_buffer_.Get();
   }
 
   void Renderer::IncrementEntityCounter(const uint64_t value) {
