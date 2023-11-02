@@ -13,6 +13,18 @@
       "MIMode": "lldb"
     },
     {
+      "name": "minecraft-benchmarks",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Benchmarks/minecraft-benchmarks",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
       "name": "minecraft",
       "type": "cppdbg",
       "request": "launch",

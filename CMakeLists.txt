@@ -31,3 +31,4 @@ set(PROJECT_VERSION_PATCH 0)
 
 add_subdirectory(Tests)
 add_subdirectory(Sources)
+add_subdirectory(Benchmarks)
