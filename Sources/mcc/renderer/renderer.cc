@@ -91,8 +91,8 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnPostInit() {
-    signature_.set(Components::GetComponentIdForType<Renderable>());
-    signature_.set(Components::GetComponentIdForType<physics::Transform>());
+    signature_.set(Renderable::GetComponentId());
+    signature_.set(physics::Transform::GetComponentId());
     DLOG(INFO) << "signature: " << signature_;
 
     Window::AddFrame(gui::SettingsFrame::New());

@@ -116,7 +116,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnPreInit() {
-    Components::Register<PerspectiveCamera>();
+
   }
 
   void PerspectiveCameraBehavior::OnInit() {
@@ -137,7 +137,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnPostInit() {
-    signature_.set(Components::GetComponentIdForType<PerspectiveCamera>());
+    signature_.set(PerspectiveCamera::GetComponentId());
     SetCameraEntity(CreateCameraEntity());
     Mouse::Register(&OnMousePosition);
   }
@@ -147,6 +147,7 @@ namespace mcc::camera {
     Engine::OnInit(&OnInit);
     Engine::OnPostInit(&OnPostInit);
     Engine::OnTick(&OnTick);
+    PerspectiveCamera::Init();
   }
 
   void PerspectiveCameraBehavior::OnTick(const Tick& tick) {

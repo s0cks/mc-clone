@@ -136,7 +136,7 @@ public:                                                                         
     }
 
     template<typename T>
-    static inline ComponentId GetComponentIdForType() {
+    static inline ComponentId GetComponentId() {
       return GetComponentId(TypeId<T>());
     }
   };

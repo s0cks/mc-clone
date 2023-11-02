@@ -18,7 +18,7 @@ namespace mcc {
       }
 
       auto sig = Entities::GetSignature(e);
-      sig.set(Components::GetComponentIdForType<T>(), true);
+      sig.set(T::GetComponentId(), true);
       Entities::SetSignature(e, sig);
       return state;
     }
@@ -27,7 +27,7 @@ namespace mcc {
     static inline void RemoveComponent(const Entity e) {
       LOG_IF(ERROR, !T::RemoveState(e)) << "failed to remove state for " << e;
       auto sig = Entities::GetSignature(e);
-      sig.set(Components::GetComponentIdForType<T>(), false);
+      sig.set(T::GetComponentId(), false);
       Entities::SetSignature(e, sig);
     }
   };

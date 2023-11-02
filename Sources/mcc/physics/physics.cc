@@ -53,8 +53,8 @@ namespace mcc::physics {
   }
   
   void PhysicsSimulator::OnPostInit() {
-    signature_.set(Components::GetComponentIdForType<RigidBody>());
-    signature_.set(Components::GetComponentIdForType<Transform>());
+    signature_.set(RigidBody::GetComponentId());
+    signature_.set(Transform::GetComponentId());
     Engine::OnTick(&OnTick);
   }
   
