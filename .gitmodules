@@ -1,3 +1,6 @@
 [submodule "lib/nuklear"]
 	path = lib/nuklear
 	url = git@github.com:Immediate-Mode-UI/Nuklear.git
+[submodule "lib/rapidjson"]
+	path = lib/rapidjson
+	url = git@github.com:tencent/rapidjson.git
