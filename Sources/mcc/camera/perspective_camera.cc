@@ -12,14 +12,14 @@ namespace mcc::camera {
   static RelaxedAtomic<EntityId> entity_;
 
   static inline void
-  UpdateCamera(PerspectiveCamera& camera) {
+  UpdateCamera(ComponentState<PerspectiveCamera> camera) {
     glm::vec3 front;
-    front.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    front.y = sin(glm::radians(camera.pitch));
-    front.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    camera.front = glm::normalize(front);
-    camera.right = glm::normalize(glm::cross(camera.front, camera.world_up));
-    camera.up = glm::normalize(glm::cross(camera.right, camera.front));
+    front.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+    front.y = sin(glm::radians(camera->pitch));
+    front.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
+    camera->front = glm::normalize(front);
+    camera->right = glm::normalize(glm::cross(camera->front, camera->world_up));
+    camera->up = glm::normalize(glm::cross(camera->right, camera->front));
   }
 
   void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& pos) {
@@ -28,13 +28,13 @@ namespace mcc::camera {
       return;
 
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
-      auto& camera = Components::GetComponent<PerspectiveCamera>(e);
-      camera.yaw += (pos[0] * camera.sensitivity);
-      camera.pitch += (pos[1] * camera.sensitivity);
-      if(camera.pitch > 89.0f)
-        camera.pitch = 89.0f;
-      else if(camera.pitch < -89.0f)
-        camera.pitch = -89.0f;
+      auto camera = Components::GetComponent<PerspectiveCamera>(e);
+      camera->yaw += (pos[0] * camera->sensitivity);
+      camera->pitch += (pos[1] * camera->sensitivity);
+      if(camera->pitch > 89.0f)
+        camera->pitch = 89.0f;
+      else if(camera->pitch < -89.0f)
+        camera->pitch = -89.0f;
       UpdateCamera(camera);
     });
   }
@@ -49,7 +49,7 @@ namespace mcc::camera {
 
   Entity PerspectiveCameraBehavior::CreateCameraEntity(const glm::vec3 pos) {
     const auto e = Entities::CreateEntity();
-    auto camera = PerspectiveCamera {
+    auto camera = Coordinator::AddComponent(e, PerspectiveCamera {
       .pos = pos,
       .up = glm::vec3(0.0f, 1.0f, 0.0f),
       .world_up = glm::vec3(0.0f, 1.0f, 0.0f),
@@ -59,10 +59,9 @@ namespace mcc::camera {
       .zoom = 45.0f,
       .front = glm::vec3(0.0f, 0.0f, -1.0f),
       .speed = 1.5f,
-    };
+    });
     DLOG(INFO) << "created camera entity: " << e;
     UpdateCamera(camera);
-    Coordinator::AddComponent<PerspectiveCamera>(e, camera);
     return e;
   }
 
@@ -102,31 +101,31 @@ namespace mcc::camera {
       return;
 
     Systems::ForEachEntityInSystem<PerspectiveCameraBehavior>([&](const Entity& e) {
-      auto& camera = Components::GetComponent<PerspectiveCamera>(e);
-      const auto velocity = camera.speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
+      auto camera = Components::GetComponent<PerspectiveCamera>(e);
+      const auto velocity = camera->speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.pos += (camera.front * velocity * 0.05f);
+        camera->pos += (camera->front * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.pos -= (camera.front * velocity * 0.05f);
+        camera->pos -= (camera->front * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.pos -= (camera.right * velocity * 0.05f);
+        camera->pos -= (camera->right * velocity * 0.05f);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.pos += (camera.right * velocity * 0.05f);
+        camera->pos += (camera->right * velocity * 0.05f);
     });
   }
 
-  PerspectiveCamera& PerspectiveCameraBehavior::GetCameraComponent() {
+  ComponentState<PerspectiveCamera> PerspectiveCameraBehavior::GetCameraComponent() {
     return Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
   }
 
   glm::mat4 PerspectiveCameraBehavior::CalculateProjectionMatrix() {
     const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
     const auto window_size = Window::GetSize();
-    return glm::perspective(glm::radians(camera.zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
+    return glm::perspective(glm::radians(camera->zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
   }
 
   glm::mat4 PerspectiveCameraBehavior::CalculateViewMatrix() {
     const auto camera = Components::GetComponent<PerspectiveCamera>(GetCameraEntity());
-    return glm::lookAt(camera.pos, camera.pos + camera.front, camera.up);
+    return glm::lookAt(camera->pos, camera->pos + camera->front, camera->up);
   }
 }

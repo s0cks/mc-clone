@@ -9,6 +9,7 @@
 #include "mcc/gfx.h"
 #include "mcc/ecs/entity.h"
 #include "mcc/ecs/component_id.h"
+#include "mcc/component/component_state.h"
 
 namespace mcc {
   class ComponentList {
@@ -25,27 +26,31 @@ namespace mcc {
   template<typename T>
   class ComponentListTemplate : public ComponentList {
   protected:
-    std::array<T, kMaxNumberOfEntities> components_;
+    std::array<ComponentState<T>, kMaxNumberOfEntities> components_;
     std::unordered_map<Entity, uint64_t, Entity::HashFunction> e2i_;
     std::unordered_map<uint64_t, Entity> i2e_;
     uint64_t size_;
   public:
-    void ForEachEntityAndComponent(std::function<void(const Entity&, T&)> callback) {
+    void ForEachEntityAndComponent(std::function<void(const Entity&, const ComponentState<T>&)> callback) {
       for(auto idx = 0; idx < size_; idx++) {
         callback(i2e_[idx], components_[idx]);
       }
     }
 
-    T& GetData(const Entity& entity) {
+    ComponentState<T> GetData(const Entity& entity) {
       return components_[e2i_[entity]];
     }
 
-    void InsertData(const Entity& entity, const T& component) {
+    void InsertData(const Entity& entity, T* component) {
       const auto new_idx = size_;
       e2i_[entity] = new_idx;
       i2e_[new_idx] = entity;
       components_[new_idx] = component;
       size_++;
+    }
+
+    void InsertData(const Entity& e, const T& component) {
+      return InsertData(e, new T(component));
     }
 
     void RemoveData(const Entity& entity) {
@@ -96,7 +101,7 @@ namespace mcc {
     static void OnDestroyed(const Entity e);
 
     template<typename T>
-    static inline T& GetComponent(const Entity e) {
+    static inline ComponentState<T> GetComponent(const Entity e) {
       return GetComponentListForType<T>()->GetData(e);
     }
 
@@ -123,7 +128,7 @@ namespace mcc {
 
     template<typename T>
     static inline void
-    ForEachEntityWithComponent(std::function<void(const Entity&, const T&)> callback) {
+    ForEachEntityWithComponent(std::function<void(const Entity&, const ComponentState<T>&)> callback) {
       return GetComponentListForType<T>()->ForEachEntityAndComponent(callback);
     }
   };

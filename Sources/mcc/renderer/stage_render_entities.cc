@@ -6,24 +6,24 @@
 
 namespace mcc::renderer {
   void RenderEntitiesStage::RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e) {
-    const auto& renderable = Components::GetComponent<Renderable>(e);
-    const auto& transform = Components::GetComponent<physics::Transform>(e);
+    const auto renderable = Components::GetComponent<Renderable>(e);
+    const auto transform = Components::GetComponent<physics::Transform>(e);
     DLOG(INFO) << "rendering entity " << e << " w/ " << renderable;
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, transform.position);
+    model = glm::translate(model, transform->position);
     // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    const auto& shader = renderable.shader;
-    const auto& texture = renderable.texture;
+    const auto& shader = renderable->shader;
+    const auto& texture = renderable->texture;
 
     float intensity = 0.2f;
     glm::vec3 lightColor = glm::vec3(1.0f);
     glm::vec3 lightPos = glm::vec3(0.0f);
-    Components::ForEachEntityWithComponent<AmbientLight>([&lightColor,&intensity,&lightPos](const Entity& l, const AmbientLight& light) {
-      lightColor = light.color;
-      intensity = light.intensity;
+    Components::ForEachEntityWithComponent<AmbientLight>([&lightColor,&intensity,&lightPos](const Entity& l, ComponentState<AmbientLight> light) {
+      lightColor = light->color;
+      intensity = light->intensity;
 
       const auto transform = Components::GetComponent<physics::Transform>(l);
-      lightPos = transform.position;
+      lightPos = transform->position;
     });
 
     texture.Bind0();
@@ -36,7 +36,7 @@ namespace mcc::renderer {
     shader.SetFloat("lightIntensity", 0.20f);
     shader.SetInt("tex0", 0);
     shader.ApplyShader();
-    const auto& mesh = renderable.mesh;
+    const auto& mesh = renderable->mesh;
     mesh->Render();
     Renderer::IncrementEntityCounter();
   }

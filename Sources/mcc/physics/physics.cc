@@ -52,13 +52,13 @@ namespace mcc::physics {
 
   void PhysicsSimulator::OnTick(const Tick& tick) {
     Systems::ForEachEntityInSystem<PhysicsSimulator>([&tick](const Entity& e) {
-      auto& rigid_body = Components::GetComponent<RigidBody>(e);
-      auto& transform = Components::GetComponent<Transform>(e);
+      auto rigid_body = Components::GetComponent<RigidBody>(e);
+      auto transform = Components::GetComponent<Transform>(e);
       
       auto force = kNoForce;
-      force += rigid_body.mass * gravity_;
-      rigid_body.velocity += force / rigid_body.mass * static_cast<float>(tick.dts);
-      transform.position += rigid_body.velocity * static_cast<float>(tick.dts);
+      force += rigid_body->mass * gravity_;
+      rigid_body->velocity += force / rigid_body->mass * static_cast<float>(tick.dts);
+      transform->position += rigid_body->velocity * static_cast<float>(tick.dts);
     });
   }
 }

@@ -6,6 +6,7 @@
 #include "mcc/ecs/entity.h"
 #include "mcc/mouse/mouse.h"
 #include "mcc/engine/engine.h"
+#include "mcc/component/component_state.h"
 
 namespace mcc::camera {
   struct PerspectiveCamera {
@@ -39,7 +40,7 @@ namespace mcc::camera {
     static void RegisterComponents();
     static void Init();
     static Entity GetCameraEntity();
-    static PerspectiveCamera& GetCameraComponent();
+    static ComponentState<PerspectiveCamera> GetCameraComponent();
     static glm::mat4 CalculateProjectionMatrix();
     static glm::mat4 CalculateViewMatrix();
   };
