@@ -66,6 +66,9 @@ namespace mcc::shader {
 
     CompilerResult AttachVertexShader(const Source& source);
     CompilerResult AttachFragmentShader(const Source& source);
+    CompilerResult AttachGeometryShader(const Source& source);
+    CompilerResult AttachTessControlShader(const Source& source);
+    CompilerResult AttachTessEvalShader(const Source& source);
 
     CompilerResult Build(Shader* result) {
       return Link(GetShaderId(), result);

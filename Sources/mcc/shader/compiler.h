@@ -6,13 +6,15 @@
 #include "mcc/shader/compiler_result.h"
 
 namespace mcc::shader {
+  template<const ShaderType Type>
   class Compiler {
+    DEFINE_NON_COPYABLE_TYPE(Compiler);
   protected:
     ShaderId id_;
     const Source& source_;
 
-    explicit Compiler(const ShaderId id, const Source& source):
-      id_(id),
+    explicit Compiler(const Source& source):
+      id_(glCreateShader(Type)),
       source_(source) {
     }
 
@@ -28,19 +30,6 @@ namespace mcc::shader {
     static inline CompilerResult
     Failed(const std::string& message) {
       return CompilerResult(false, message);
-    }
-  public:
-    virtual ~Compiler() = default;
-    DEFINE_NON_COPYABLE_TYPE(Compiler);
-  public:
-    virtual CompilerResult Compile(Shader* result) = 0;
-  };
-
-  template<const ShaderType Type>
-  class ShaderCompiler : public Compiler {
-  protected:
-    ShaderCompiler(const Source& source):
-      Compiler(glCreateShader(Type), source) {
     }
 
     static inline CompilerResult
@@ -58,10 +47,9 @@ namespace mcc::shader {
       return Success();
     }
   public:
-    ~ShaderCompiler() override = default;
-    DEFINE_NON_COPYABLE_TYPE(ShaderCompiler);
-
-    CompilerResult Compile(Shader* result) override {
+    virtual ~Compiler() = default;
+    
+    virtual CompilerResult Compile(Shader* result) {
       DLOG(INFO) << "compiling " << (Type) << " shader....";
       auto code = source_.data();
       const auto length = source_.size();
@@ -73,37 +61,28 @@ namespace mcc::shader {
     }
   };
 
-  class VertexShaderCompiler : public ShaderCompiler<kVertexShader> {
-  protected:
-    VertexShaderCompiler(const Source& source):
-      ShaderCompiler(source) {
-    }
-  public:
-    ~VertexShaderCompiler() override = default;
-    DEFINE_NON_COPYABLE_TYPE(VertexShaderCompiler);
-
-    static inline CompilerResult
-    CompileShader(const Source& source, Shader* result) {
-      VertexShaderCompiler compiler(source);
-      return compiler.Compile(result);
-    }
+#define DEFINE_SHADER_COMPILER(Name)                              \
+  class Name##ShaderCompiler : public Compiler<k##Name##Shader> { \
+    DEFINE_NON_COPYABLE_TYPE(Name##ShaderCompiler);               \
+  private:                                                        \
+    explicit Name##ShaderCompiler(const Source& src):             \
+      Compiler(src) {                                             \
+    }                                                             \
+  public:                                                         \
+    ~Name##ShaderCompiler() override = default;                   \
+    static inline CompilerResult                                  \
+    CompileShader(const Source& src, Shader* result) {            \
+      Name##ShaderCompiler compiler(src);                         \
+      return compiler.Compile(result);                            \
+    }                                                             \
   };
 
-  class FragmentShaderCompiler : public ShaderCompiler<kFragmentShader> {
-  protected:
-    FragmentShaderCompiler(const Source& source):
-      ShaderCompiler(source) {
-    }
-  public:
-    ~FragmentShaderCompiler() override = default;
-    DEFINE_NON_COPYABLE_TYPE(FragmentShaderCompiler);
-
-    static inline CompilerResult
-    CompileShader(const Source& source, Shader* result) {
-      FragmentShaderCompiler compiler(source);
-      return compiler.Compile(result);
-    }
-  };
+  DEFINE_SHADER_COMPILER(Vertex);
+  DEFINE_SHADER_COMPILER(Fragment);
+  DEFINE_SHADER_COMPILER(Geometry);
+  DEFINE_SHADER_COMPILER(TessEval);
+  DEFINE_SHADER_COMPILER(TessControl);
+#undef DEFINE_SHADER_COMPILER
 }
 
 #endif //MCC_SHADER_COMPILER_H

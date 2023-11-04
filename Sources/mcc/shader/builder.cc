@@ -15,4 +15,16 @@ namespace mcc::shader {
   CompilerResult ProgramBuilder::AttachFragmentShader(const Source& source) {
     return Attach<FragmentShaderCompiler>(source);
   }
+
+  CompilerResult ProgramBuilder::AttachGeometryShader(const Source& source) {
+    return Attach<GeometryShaderCompiler>(source);
+  }
+
+  CompilerResult ProgramBuilder::AttachTessEvalShader(const Source& source) {
+    return Attach<TessEvalShaderCompiler>(source);
+  }
+
+  CompilerResult ProgramBuilder::AttachTessControlShader(const Source& source) {
+    return Attach<TessControlShaderCompiler>(source);
+  }
 }
