@@ -1,29 +1,29 @@
-#ifndef MCC_SHADER_COMPILATION_RESULT_H
-#define MCC_SHADER_COMPILATION_RESULT_H
+#ifndef MCC_SHADER_COMPILER_RESULT_H
+#define MCC_SHADER_COMPILER_RESULT_H
 
 #include <string>
 #include <glog/logging.h>
 
 namespace mcc::shader {
-  class CompilationResult {
+  class CompilerResult {
   protected:
     bool success_;
     std::string message_;
   public:
-    CompilationResult():
+    CompilerResult():
       success_(false),
       message_() {
     }
-    CompilationResult(const bool success,
+    CompilerResult(const bool success,
                       const std::string& message):
       success_(success),
       message_(message) {
     }
-    CompilationResult(const CompilationResult& rhs):
+    CompilerResult(const CompilerResult& rhs):
       success_(rhs.success_),
       message_(rhs.message_) {
     }
-    ~CompilationResult() = default;
+    ~CompilerResult() = default;
 
     bool success() const {
       return success_;
@@ -37,13 +37,13 @@ namespace mcc::shader {
       return success_;
     }
 
-    void operator=(const CompilationResult& rhs) {
+    void operator=(const CompilerResult& rhs) {
       success_ = rhs.success_;
       message_ = rhs.message_;
     }
 
-    friend std::ostream& operator<<(std::ostream& stream, const CompilationResult& rhs)  {
-      stream << "CompilationResult(";
+    friend std::ostream& operator<<(std::ostream& stream, const CompilerResult& rhs)  {
+      stream << "CompilerResult(";
       stream << "success=" << rhs.success_ << ", ";
       stream << "message=" << rhs.message_;
       stream << ")";
@@ -52,4 +52,4 @@ namespace mcc::shader {
   };
 }
 
-#endif //MCC_SHADER_COMPILATION_RESULT_H
+#endif //MCC_SHADER_COMPILER_RESULT_H

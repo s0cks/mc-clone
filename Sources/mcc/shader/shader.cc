@@ -16,8 +16,7 @@ namespace mcc::shader {
     LOG_IF(FATAL, !fragResult.success()) << "failed to compile fragment shader: " << fragResult;
     
     Shader shader;
-    GlCompiler::CompilationResult result;
-    result = compiler.Compile(&shader);
+    auto result = compiler.Compile(&shader);
     LOG_IF(ERROR, !result.success()) << "failed to compile shader: " << result;
     return shader;
   }
