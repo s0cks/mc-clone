@@ -10,6 +10,7 @@
 
 namespace mcc {
   class Buffer {
+    DEFINE_NON_COPYABLE_TYPE(Buffer);
   public:
     static constexpr const uint64_t kDefaultBufferSize = 4096;
   protected:
@@ -38,7 +39,10 @@ namespace mcc {
     }
     Buffer(const uint8_t* data, const uint64_t capacity):
       data_(nullptr),
-      capacity_(capacity) {
+      capacity_(),
+      wpos_(capacity),
+      rpos_(0) {
+      CopyFrom(data, capacity);
     }
     ~Buffer() {
       if(data_) {
@@ -46,7 +50,25 @@ namespace mcc {
         free(data_);
       }
     }
-    DEFINE_NON_COPYABLE_TYPE(Buffer);
+
+    inline void
+    Resize(const uint64_t new_size) {
+      if(new_size < 0 || new_size <= capacity_)
+        return;
+      const auto new_cap = RoundUpPow2(new_size);
+      const auto data = (uint8_t*)realloc(data_, new_cap);
+      LOG_IF(FATAL, !data) << "failed to reallocate Buffer to " << new_cap << " bytes.";
+      data_ = data;
+      capacity_ = new_cap;
+      DLOG(INFO) << "resized Buffer to " << new_cap << " bytes.";
+    }
+
+    inline void
+    CopyFrom(const uint8_t* src, const uint64_t nbytes) {
+      Resize(nbytes);
+      MCC_ASSERT(capacity_ >= nbytes);
+      memcpy(data_, src, sizeof(uint8_t) * nbytes);
+    }
   public:
     uint8_t* data() const {
       return data_;

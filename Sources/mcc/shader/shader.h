@@ -16,6 +16,9 @@ namespace mcc::shader {
     kCompositeShader = 1,
     kVertexShader = GL_VERTEX_SHADER,
     kFragmentShader = GL_FRAGMENT_SHADER,
+    kGeometryShader = GL_GEOMETRY_SHADER,
+    kTessEvalShader = GL_TESS_EVALUATION_SHADER,
+    kTessControlShader = GL_TESS_CONTROL_SHADER,
   };
 
   class Shader {

@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <cassert>
 
+#include "mcc/platform.h"
+
 #define DEFINE_NON_COPYABLE_TYPE(Name) \
   public:                              \
     Name(const Name& rhs) = delete;    \
@@ -24,6 +26,20 @@ namespace mcc {
     const auto sz = ftell(file);
     fseek(file, pos, SEEK_SET);
     return sz;
+  }
+
+  static inline uword
+  RoundUpPow2(uword x){
+    x = x - 1;
+    x = x | (x >> 1);
+    x = x | (x >> 2);
+    x = x | (x >> 4);
+    x = x | (x >> 8);
+    x = x | (x >> 16);
+#if defined(ARCHITECTURE_IS_X64) || defined(ARCHITECTURE_IS_ARM64)
+    x = x | (x >> 32);
+#endif
+    return x + 1;
   }
 }
 
