@@ -41,7 +41,7 @@ namespace mcc::renderer {
   static uint64_t last_frame_ns_;
 
   static mesh::Mesh* mesh_;
-  static Shader shader_;
+  static shader::Shader shader_;
 
   static Signature signature_;
   static EntitySet tracked_;

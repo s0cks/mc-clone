@@ -33,6 +33,8 @@
 
 #include "mcc/lighting/ambient_light.h"
 
+#include "mcc/shader/cache.h"
+
 namespace mcc {
   typedef struct nk_context NuklearContext;
 
@@ -133,10 +135,9 @@ namespace mcc {
   void Window::OnPostInit() {
     glViewport(0, 0, size_[0], size_[1]);
 
-    const auto light = CompileShader("light_sphere");
     const auto e3 = Entities::CreateEntity();
     Coordinator::AddComponent(e3, renderer::Renderable {
-      .shader = light,
+      .shader = shader::Cache::Get("light_sphere"),
       .mesh = mesh::NewUVSphere(10, 10),
     });
     Coordinator::AddComponent(e3, physics::Transform {
@@ -150,11 +151,10 @@ namespace mcc {
     });
 
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
-    const auto shader = CompileShader("cube");
     const auto e2 = Entities::CreateEntity();
     const auto mesh = mesh::NewCube();
     Coordinator::AddComponent(e2, renderer::Renderable {
-      .shader = shader,
+      .shader = shader::Cache::Get("cube"),
       .mesh = mesh,
       .texture = texture,
     });

@@ -1,6 +1,5 @@
 #include "mcc/terrain/terrain_renderer.h"
 #include "mcc/terrain/terrain.h"
-#include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
 #include "mcc/relaxed_atomic.h"
 #include "mcc/flags.h"
@@ -9,9 +8,10 @@
 #include "mcc/physics/transform.h"
 
 #include "mcc/camera/perspective_camera.h"
+#include "mcc/shader/cache.h"
 
 namespace mcc::terrain {
-  static Shader shader_;
+  static shader::Shader shader_;
   static texture::Texture textures_[kNumberOfTerrainTextures];
 
   static inline texture::Texture
@@ -29,7 +29,7 @@ namespace mcc::terrain {
 
     FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
 #undef LOAD_TERRAIN_TEXTURE
-    shader_ = CompileShader("terrain");
+    shader_ = shader::Cache::Get("terrain");
   }
 
   void TerrainRenderer::Render() {

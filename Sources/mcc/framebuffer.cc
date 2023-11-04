@@ -1,6 +1,6 @@
 #include "mcc/framebuffer.h"
-#include "mcc/shader/shader.h"
 #include "mcc/engine/engine.h"
+#include "mcc/shader/cache.h"
 
 namespace mcc {
   static const FrameBufferVertexList kFrameBufferVertices = {
@@ -13,7 +13,7 @@ namespace mcc {
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static Shader shader_;
+  static shader::Shader shader_;
 
   FrameBuffer::FrameBuffer(const uint64_t width, 
                            const uint64_t height):
@@ -29,7 +29,7 @@ namespace mcc {
   }
 
   void FrameBuffer::OnInit() {
-    shader_ = CompileShader("framebuffer");
+    shader_ = shader::Cache::Get("framebuffer");
     vao_ = VertexArrayObject();
   }
 

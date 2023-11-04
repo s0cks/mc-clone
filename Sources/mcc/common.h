@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <cassert>
+#include <string>
 
 #include "mcc/platform.h"
 
@@ -40,6 +41,18 @@ namespace mcc {
     x = x | (x >> 32);
 #endif
     return x + 1;
+  }
+
+  static inline bool
+  StartsWith(const std::string& str, const std::string& prefix) {
+     return str.size() >= prefix.size() 
+         && str.compare(0, prefix.size(), prefix) == 0;
+  }
+
+  static bool
+  EndsWith(const std::string& str, const std::string& suffix){
+    return str.size() >= suffix.size() 
+        && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
   }
 }
 

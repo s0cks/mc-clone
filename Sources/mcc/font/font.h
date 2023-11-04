@@ -21,7 +21,7 @@ namespace mcc::font {
 
     static constexpr const FontSize kDefaultFontSize = 32;
   protected:
-    Shader shader_;
+    shader::Shader shader_;
     GlyphMap chars_;
     FontMesh mesh_;
   public:

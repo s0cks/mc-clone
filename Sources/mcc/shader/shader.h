@@ -94,26 +94,6 @@ namespace mcc::shader {
       return stream;
     }
   };
-
-  Shader CompileShader(const std::string& name);
-  
-  static inline Shader
-  GetColorizedShader() {
-    return CompileShader("colorized");
-  }
-
-  static inline Shader
-  GetTextShader() {
-    return CompileShader("text");
-  }
-}
-
-//TODO: remove
-namespace mcc {
-  using shader::Shader;
-  using shader::CompileShader;
-  using shader::GetTextShader;
-  using shader::GetColorizedShader;
 }
 
 #endif //MCC_SHADER_H

@@ -15,13 +15,12 @@
 #include "mcc/render_loop.h"
 #include "mcc/settings.h"
 #include "mcc/camera/perspective_camera.h"
-
 #include "mcc/engine/engine.h"
 #include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
-
 #include "mcc/physics/physics.h"
 #include "mcc/terrain/terrain.h"
+#include "mcc/shader/cache.h"
 
 int main(int argc, char** argv) {
   srand(time(NULL));
@@ -42,6 +41,8 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   using namespace mcc;
+  shader::Cache::Init();
+
   settings::Init();
   font::Initialize();
   Entities::Initialize();

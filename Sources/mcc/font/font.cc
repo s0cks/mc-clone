@@ -3,6 +3,7 @@
 #include "mcc/thread_local.h"
 
 #include "mcc/camera/camera.h"
+#include "mcc/shader/cache.h"
 
 namespace mcc::font {
   static FT_Library ft;
@@ -44,7 +45,7 @@ namespace mcc::font {
   }
 
   Font::Font(const std::string& name, const FontSize size):
-    shader_(GetTextShader()),
+    shader_(shader::Cache::Get("font")),
     chars_(),
     mesh_() {
       shader_.ApplyShader();

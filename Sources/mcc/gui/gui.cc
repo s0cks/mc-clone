@@ -1,5 +1,5 @@
 #include "mcc/gui/gui.h"
-#include "mcc/shader/shader.h"
+#include "mcc/shader/cache.h"
 #include "mcc/thread_local.h"
 #include "mcc/window.h"
 #include "mcc/engine/engine.h"
@@ -14,7 +14,7 @@ namespace mcc::gui {
   static nk::FontAtlas fonts_;
   static nk::DrawNullTexture draw_null;
 
-  static Shader shader_;
+  static shader::Shader shader_;
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
   static VertexBuffer vbo_(kInvalidBufferObject);
   static IndexBuffer ibo_(kInvalidBufferObject);
@@ -65,7 +65,7 @@ namespace mcc::gui {
 
   static inline void
   CreateShader() {
-    shader_ = CompileShader("gui");
+    shader_ = shader::Cache::Get("gui");
   }
 
   static inline void

@@ -8,7 +8,7 @@
 
 namespace mcc::renderer {
   struct Renderable {
-    Shader shader;
+    shader::Shader shader;
     mesh::Mesh* mesh;
     texture::Texture texture;
 

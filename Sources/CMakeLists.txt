@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME}
   mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/shader/builder.h mcc/shader/builder.cc
   mcc/shader/source.h
+  mcc/shader/cache.h mcc/shader/cache.cc
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_state.h
   mcc/engine/engine.h mcc/engine/engine.cc
