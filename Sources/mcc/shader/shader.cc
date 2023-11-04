@@ -1,7 +1,8 @@
 #include "mcc/flags.h"
 #include "mcc/shader/shader.h"
+#include "mcc/shader/compiler.h"
 
-namespace mcc {
+namespace mcc::shader {
   static inline std::string
   GetShaderFilename(const std::string& rel) {
     return FLAGS_resources + "/shaders/" + rel;

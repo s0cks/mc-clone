@@ -8,6 +8,8 @@ add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   mcc/window.h mcc/window.cc
   mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/compilation_result.h
+  mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_state.h
   mcc/engine/engine.h mcc/engine/engine.cc

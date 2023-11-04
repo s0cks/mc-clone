@@ -13,7 +13,7 @@ namespace mcc {
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static Shader shader_(kUnknownShaderId);
+  static Shader shader_;
 
   FrameBuffer::FrameBuffer(const uint64_t width, 
                            const uint64_t height):
