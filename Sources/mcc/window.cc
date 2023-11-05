@@ -33,7 +33,7 @@
 
 #include "mcc/lighting/ambient_light.h"
 
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 
 namespace mcc {
   typedef struct nk_context NuklearContext;
@@ -137,7 +137,7 @@ namespace mcc {
 
     const auto e3 = Entities::CreateEntity();
     Coordinator::AddComponent(e3, renderer::Renderable {
-      .shader = shader::Cache::Get("light_sphere"),
+      .shader = shader::Shader::Get("light_sphere"),
       .mesh = mesh::NewUVSphere(10, 10),
     });
     Coordinator::AddComponent(e3, physics::Transform {
@@ -154,7 +154,7 @@ namespace mcc {
     const auto e2 = Entities::CreateEntity();
     const auto mesh = mesh::NewCube();
     Coordinator::AddComponent(e2, renderer::Renderable {
-      .shader = shader::Cache::Get("cube"),
+      .shader = shader::Shader::Get("cube"),
       .mesh = mesh,
       .texture = texture,
     });

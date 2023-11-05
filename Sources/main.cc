@@ -20,7 +20,7 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/physics/physics.h"
 #include "mcc/terrain/terrain.h"
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 
 int main(int argc, char** argv) {
   srand(time(NULL));
@@ -41,8 +41,6 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   using namespace mcc;
-  shader::Cache::Init();
-
   settings::Init();
   font::Initialize();
   Entities::Initialize();

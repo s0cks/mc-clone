@@ -4,10 +4,25 @@
 #include <glog/logging.h>
 
 #include "mcc/gfx.h"
+#include "mcc/flags.h"
 #include "mcc/buffer.h"
 #include "mcc/common.h"
 
+#include "mcc/cache.h"
+
 namespace mcc::shader {
+  static constexpr const char* kDefaultShaderCacheDir = "";
+  DECLARE_string(shader_cache_dir);
+
+  static constexpr const uint64_t kDefaultShaderCacheSize = 128;
+  DECLARE_uint32(shader_cache_size);
+
+  static constexpr const uint32_t kDefaultShaderCacheBuckets = 10;
+  DECLARE_uint32(shader_cache_buckets);
+
+  static constexpr const char* kVertexShaderExtension = ".vsh";
+  static constexpr const char* kFragmentShaderExtension = ".fsh";
+
   typedef GLuint ShaderId;
 
   static constexpr const ShaderId kUnknownShaderId = 0;
@@ -22,6 +37,8 @@ namespace mcc::shader {
   };
 
   class Shader {
+  public:
+    typedef Cache<std::string, Shader> Cache;
   protected:
     ShaderId id_;
   public:
@@ -93,7 +110,38 @@ namespace mcc::shader {
       stream << ")";
       return stream;
     }
+  private:
+    static const std::function<Shader(const std::string&)> kDefaultShaderCacheLoader;
+  public:
+    static inline std::string
+    GetCacheDirectory() {
+      if(FLAGS_shader_cache_dir.empty())
+        return FLAGS_resources + "/shaders";
+      return FLAGS_shader_cache_dir;
+    }
+
+    static inline uint64_t
+    GetCacheCapacity() {
+      return FLAGS_shader_cache_size;
+    }
+
+    static uint64_t GetCacheSize();
+    static Shader Get(const std::string& k, std::function<Shader(const std::string&)> loader);
+    
+    static inline Shader
+    Get(const std::string& name) {
+      return Get(name, kDefaultShaderCacheLoader);
+    }
+
+    static inline Shader
+    GetOrDefault(const std::string& name, const Shader& defaultShader) {
+      return Get(name, [&defaultShader](const std::string& name) {
+        return defaultShader;
+      });
+    }
   };
+
+  typedef Cache<std::string, Shader> ShaderCache;
 }
 
 #endif //MCC_SHADER_H

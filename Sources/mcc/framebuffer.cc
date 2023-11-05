@@ -1,6 +1,6 @@
 #include "mcc/framebuffer.h"
 #include "mcc/engine/engine.h"
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 
 namespace mcc {
   static const FrameBufferVertexList kFrameBufferVertices = {
@@ -29,7 +29,7 @@ namespace mcc {
   }
 
   void FrameBuffer::OnInit() {
-    shader_ = shader::Cache::Get("framebuffer");
+    shader_ = shader::Shader::Get("framebuffer");
     vao_ = VertexArrayObject();
   }
 

@@ -1,5 +1,5 @@
 #include "mcc/gui/gui.h"
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 #include "mcc/thread_local.h"
 #include "mcc/window.h"
 #include "mcc/engine/engine.h"
@@ -65,7 +65,7 @@ namespace mcc::gui {
 
   static inline void
   CreateShader() {
-    shader_ = shader::Cache::Get("gui");
+    shader_ = shader::Shader::Get("gui");
   }
 
   static inline void

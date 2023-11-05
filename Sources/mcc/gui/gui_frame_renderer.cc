@@ -3,7 +3,7 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/terrain/terrain.h"
 
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 
 namespace mcc::gui {
   using renderer::Renderer;
@@ -26,7 +26,7 @@ namespace mcc::gui {
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
     nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
     const auto samples = renderer::Renderer::GetSamples();
-    nk_labelf(ctx, NK_TEXT_LEFT, "Active Shaders: %" PRIu32, shader::Cache::GetSize());
+    nk_labelf(ctx, NK_TEXT_LEFT, "Active Shaders: %" PRIu64, shader::Shader::GetCacheSize());
     nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, renderer::kNumberOfRendererSamples);
     nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Avg): %04.02lfns", samples->GetAvgDuration() / (1.0f * NSEC_PER_MSEC));
     nk_labelf(ctx, NK_TEXT_LEFT, "Render Time (Min): %04.02lfns", samples->GetMinDuration() / (1.0f * NSEC_PER_MSEC));

@@ -8,7 +8,7 @@
 #include "mcc/physics/transform.h"
 
 #include "mcc/camera/perspective_camera.h"
-#include "mcc/shader/cache.h"
+#include "mcc/shader/shader.h"
 
 namespace mcc::terrain {
   static shader::Shader shader_;
@@ -29,7 +29,7 @@ namespace mcc::terrain {
 
     FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
 #undef LOAD_TERRAIN_TEXTURE
-    shader_ = shader::Cache::Get("terrain");
+    shader_ = shader::Shader::Get("terrain");
   }
 
   void TerrainRenderer::Render() {
