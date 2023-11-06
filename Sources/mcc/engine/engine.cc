@@ -10,6 +10,9 @@
 
 #include "mcc/renderer/renderer.h"
 
+#include "mcc/input/mouse.h"
+#include "mcc/input/keyboard.h"
+
 namespace mcc::engine {
   static uv_loop_t* loop_;
   static uint64_t ticks_;
@@ -52,8 +55,6 @@ namespace mcc::engine {
     return loop_;
   }
 
-#define MSEC_PER_SEC (NSEC_PER_SEC / NSEC_PER_MSEC)
-
   uint64_t Engine::GetTotalTicks() {
     return (uint64_t) total_ticks_;
   }
@@ -84,6 +85,13 @@ namespace mcc::engine {
         last_second_ = ts_;
       }
 
+      current_ = Tick {
+        .id = total_ticks_,
+        .ts = ts_,
+        .dts = dts_,
+      };
+      Mouse::Process();
+      Keyboard::Process();
       tick_.RunStage();
 
       renderer::Renderer::Run();

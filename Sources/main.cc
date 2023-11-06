@@ -46,9 +46,6 @@ int main(int argc, char** argv) {
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);
-  Engine::OnPostInit([]() {
-    Mouse::Initialize(Window::GetHandle());
-  });
   RenderLoop::Initialize(loop);
   gui::Screen::Init();
   renderer::Renderer::Init();

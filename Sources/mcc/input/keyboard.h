@@ -1,18 +1,12 @@
-#ifndef MCC_KEYBOARD_CONSTANTS_H
-#define MCC_KEYBOARD_CONSTANTS_H
+#ifndef MCC_KEYBOARD_H
+#define MCC_KEYBOARD_H
 
-#include <functional>
+#include "mcc/rx.h"
 #include "mcc/gfx.h"
+#include "mcc/input/constants.h"
 
-namespace mcc::keyboard {
-  typedef std::function<void()> KeyCallback;
+namespace mcc {
 
-  enum KeyState : uint8_t {
-    kPressed = GLFW_PRESS,
-    kReleased = GLFW_RELEASE,
-    kNumberOfKeyStates = 2,
-  };
-  
 #define FOR_EACH_KEY_CODE(_) \
   _(Space, SPACE) \
   _(Apostrophe, APOSTROPHE) \
@@ -89,6 +83,45 @@ namespace mcc::keyboard {
 #undef DEFINE_KEY_CODE
     kNumberOfKeyCodes,
   };
+
+  static inline KeyCode
+  ToKeyCode(const int code) {
+    switch(code) {
+#define DEFINE_GET_KEYCODE(Name, Binding) \
+      case GLFW_KEY_##Binding: return k##Name;
+      FOR_EACH_KEY_CODE(DEFINE_GET_KEYCODE)
+#undef DEFINE_GET_KEYCODE
+      case GLFW_KEY_UNKNOWN:
+      default: return kKeyUnknown;
+    }
+  }
+
+  static inline int
+  FromKeyCode(const KeyCode code) {
+    switch(code) {
+#define DEFINE_GET_KEYCODE(Name, Binding) \
+      case k##Name: return GLFW_KEY_##Binding;
+      FOR_EACH_KEY_CODE(DEFINE_GET_KEYCODE)
+#undef DEFINE_GET_KEYCODE
+      case kKeyUnknown:
+      default:
+        return GLFW_KEY_UNKNOWN;
+    }
+  }
+
+  struct KeyEvent {
+    InputState state;
+    KeyCode code;
+  };
+
+  typedef rxsub::subject<KeyEvent> KeyEventSubject;
+
+  class Keyboard {
+    DEFINE_NON_INSTANTIABLE_TYPE(Keyboard);
+  public:
+    static void Process();
+    static rx::observable<KeyEvent> GetKeyEventObservable();
+  };
 }
 
-#endif //MCC_KEYBOARD_CONSTANTS_H
+#endif //MCC_KEYBOARD_H

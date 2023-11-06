@@ -16,8 +16,8 @@
 #include "mcc/font/font_renderer.h"
 #include "mcc/mesh/mesh.h"
 
-#include "mcc/mouse/mouse.h"
-#include "mcc/keyboard/keyboard.h"
+#include "mcc/input/mouse.h"
+#include "mcc/input/keyboard.h"
 
 #include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
@@ -169,6 +169,21 @@ namespace mcc {
       .velocity = glm::vec3(0.0f),
     });
     DLOG(INFO) << "cube: " << e2;
+
+    Mouse::GetButtonEventSubject()
+      .get_observable()
+      .filter([](const MouseButtonEvent& e) {
+        return e.button == MouseButton::kButton1
+            && e.state == kPressed;
+      })
+      .subscribe([](const MouseButtonEvent& e) {
+        const auto entity = Mouse::CastRayTo(1.0f);
+        if(entity) {
+          DLOG(INFO) << "found entity: " << (*entity);
+        } else {
+          DLOG(INFO) << "couldn't find an entity.";
+        }
+      });
   }
 
   void Window::OnTerminating() {

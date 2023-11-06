@@ -4,8 +4,8 @@
 #include "mcc/camera/camera.h"
 #include "mcc/engine/engine.h"
 
-#include "mcc/mouse/mouse.h"
-#include "mcc/keyboard/keyboard.h"
+#include "mcc/input/mouse.h"
+#include "mcc/input/keyboard.h"
 #include "mcc/window.h"
 
 namespace mcc::camera {
@@ -62,7 +62,7 @@ namespace mcc::camera {
     return true;
   }
 
-  void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& pos) {
+  void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& mpos) {
     const auto window = Window::GetHandle();
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
@@ -74,8 +74,9 @@ namespace mcc::camera {
       }
 
       auto camera = state.value();
+      const auto& pos = mpos.delta;
       camera->yaw += (pos[0] * camera->sensitivity);
-      camera->pitch += (pos[1] * camera->sensitivity);
+      camera->pitch -= (pos[1] * camera->sensitivity);
       if(camera->pitch > 89.0f)
         camera->pitch = 89.0f;
       else if(camera->pitch < -89.0f)
@@ -104,7 +105,7 @@ namespace mcc::camera {
       .sensitivity = 0.1f,
       .zoom = 45.0f,
       .front = glm::vec3(0.0f, 0.0f, -1.0f),
-      .speed = 1.5f,
+      .speed = 0.5f,
     });
     DLOG(INFO) << "created camera entity: " << e;
     UpdateCamera(camera);
@@ -134,12 +135,14 @@ namespace mcc::camera {
       .subscribe([](EntityDestroyedEvent* e) {
         tracked_.erase(e->id);
       });
+    Mouse::GetPositionSubject()
+      .get_observable()
+      .subscribe(&OnMousePosition);
   }
 
   void PerspectiveCameraBehavior::OnPostInit() {
     signature_.set(PerspectiveCamera::GetComponentId());
     SetCameraEntity(CreateCameraEntity());
-    Mouse::Register(&OnMousePosition);
   }
 
   void PerspectiveCameraBehavior::Init() {
@@ -164,15 +167,15 @@ namespace mcc::camera {
       }
 
       auto camera = state.value();
-      const auto velocity = camera->speed * ((NSEC_PER_SEC / tick.dts) * 0.0005f);
+      const auto velocity = (camera->speed * 100.0f) * ((1.0f * tick.dts) / NSEC_PER_SEC);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera->pos += (camera->front * velocity * 0.05f);
+        camera->pos += (camera->front * velocity);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->pos -= (camera->front * velocity * 0.05f);
+        camera->pos -= (camera->front * velocity);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->pos -= (camera->right * velocity * 0.05f);
+        camera->pos -= (camera->right * velocity);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->pos += (camera->right * velocity * 0.05f);
+        camera->pos += (camera->right * velocity);
       return true;
     });
   }

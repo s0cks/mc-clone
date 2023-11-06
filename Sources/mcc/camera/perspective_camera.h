@@ -3,7 +3,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/common.h"
-#include "mcc/mouse/mouse.h"
+#include "mcc/input/mouse.h"
 #include "mcc/engine/engine.h"
 #include "mcc/component/component.h"
 

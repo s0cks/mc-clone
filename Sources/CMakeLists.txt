@@ -55,12 +55,9 @@ add_library(${PROJECT_NAME}
   mcc/series.h
   mcc/framebuffer.h mcc/framebuffer.cc
   mcc/subscription_trie.h
-  mcc/mouse/mouse_constants.h
-  mcc/mouse/mouse_trie.h
-  mcc/mouse/mouse.h mcc/mouse/mouse.cc
-  mcc/keyboard/keyboard_constants.h
-  mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
-  mcc/keyboard/keyboard_trie.h mcc/keyboard/keyboard_trie.cc
+  mcc/input/constants.h
+  mcc/input/mouse.h mcc/input/mouse.cc
+  mcc/input/keyboard.h mcc/input/keyboard.cc
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_cache_flags.h mcc/texture/texture_cache.cc
   mcc/texture/texture_cache.h mcc/texture/texture_cache.cc
