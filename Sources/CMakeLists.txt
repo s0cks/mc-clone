@@ -41,7 +41,6 @@ add_library(${PROJECT_NAME}
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
-  mcc/render_loop.h mcc/render_loop.cc
   mcc/buffer.h mcc/buffer.cc
   mcc/uv_utils.h
   mcc/os_thread.h mcc/os_thread.cc
@@ -49,7 +48,6 @@ add_library(${PROJECT_NAME}
   mcc/os_thread_osx.h mcc/os_thread_osx.cc
   mcc/thread_local.h
   mcc/relaxed_atomic.h
-  mcc/fixed_rate_loop.h mcc/fixed_rate_loop.cc
   mcc/trie.h
   mcc/circular_buffer.h
   mcc/series.h

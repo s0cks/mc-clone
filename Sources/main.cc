@@ -12,7 +12,6 @@
 #include "mcc/mcc.h"
 #include "mcc/font/font.h"
 #include "mcc/window.h"
-#include "mcc/render_loop.h"
 #include "mcc/settings.h"
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/engine/engine.h"
@@ -46,7 +45,6 @@ int main(int argc, char** argv) {
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);
-  RenderLoop::Initialize(loop);
   gui::Screen::Init();
   renderer::Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();

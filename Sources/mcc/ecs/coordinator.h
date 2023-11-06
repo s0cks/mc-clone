@@ -3,7 +3,6 @@
 
 #include "mcc/component/component.h"
 #include "mcc/ecs/entity.h"
-#include "mcc/fixed_rate_loop.h"
 
 namespace mcc {
   class Coordinator {
