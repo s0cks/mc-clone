@@ -92,7 +92,9 @@ namespace mcc {
       FOR_EACH_KEY_CODE(DEFINE_GET_KEYCODE)
 #undef DEFINE_GET_KEYCODE
       case GLFW_KEY_UNKNOWN:
-      default: return kKeyUnknown;
+      default: {
+        return kKeyUnknown;
+      }
     }
   }
 
