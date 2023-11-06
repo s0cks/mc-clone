@@ -1,6 +1,11 @@
 #include "mcc/mouse/mouse.h"
 #include "mcc/mouse/mouse_trie.h"
 
+#include "mcc/window.h"
+#include "mcc/camera/perspective_camera.h"
+
+#include "mcc/physics/transform.h"
+
 namespace mcc {
   static RootNode* root_;
 
@@ -32,6 +37,11 @@ namespace mcc {
     }
     const auto subscription = Mouse::Subscription::NewButtonSubscription(static_cast<MouseButton>(btn), static_cast<MouseButtonState>(action));
     Call(subscription);
+
+    const auto e = Mouse::CastRayTo(0.25f);
+    if(!e)
+      return;
+    DLOG(INFO) << "e: " << (*e);
   }
 
   template<typename T>
@@ -92,7 +102,40 @@ namespace mcc {
     return glm::vec2(pos);
   }
 
+  glm::vec2 Mouse::GetNormalizedPosition() {
+    const auto size = Window::GetSize();
+    return glm::vec2(pos.x / (size[0] * 0.5f) - 1.0f, pos.y / (size[1] * 0.5f) - 1.0f);
+  }
+
   glm::vec2 Mouse::GetDelta() {
     return glm::vec2(delta);
+  }
+
+  glm::vec3 Mouse::CastRay() {
+    auto pos = GetNormalizedPosition();
+    const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
+    const auto projection = (*camera)->GetProjectionMatrix();
+    const auto view = (*camera)->GetViewMatrix();
+    const auto inverseVP = glm::inverse(view * projection);
+    const auto screenPos = glm::vec4(pos.x, -pos.y, 1.0f, 1.0f);
+    const auto worldPos = inverseVP * screenPos;
+    return glm::normalize(glm::vec3(worldPos));
+  }
+
+  std::optional<Entity> Mouse::CastRayTo(const float diff) {
+    std::optional<Entity> result = std::nullopt;
+    const auto ray = Mouse::CastRay();
+    DLOG(INFO) << "ray: " << glm::to_string(ray);
+    physics::Transform::Visit([&result,&ray,&diff](const Entity& e, const ComponentState<physics::Transform>& transform) {
+      const auto& pos = (*transform).position;
+      if((ray.x - diff <= pos.x || pos.x <= ray.x + diff)
+      && (ray.y - diff <= pos.y || pos.y <= ray.y + diff)
+      && (ray.z - diff <= pos.z || pos.z <= ray.z + diff)) {
+        result = std::optional<Entity>{ e };
+        return false;
+      }
+      return true;
+    });
+    return result;
   }
 }

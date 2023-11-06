@@ -1,0 +1,5 @@
+#ifndef MCC_MOUSE_PICKER_H
+#define MCC_MOUSE_PICKER_H
+
+
+#endif //MCC_MOUSE_PICKER_H

@@ -149,6 +149,7 @@ namespace mcc {
       .color = glm::vec3(1.0f, 0.0f, 0.0f),
       .intensity = 0.8f,
     });
+    DLOG(INFO) << "light sphere: " << e3;
 
     const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
     const auto e2 = Entities::CreateEntity();
@@ -167,6 +168,7 @@ namespace mcc {
       .mass = 1.0f,
       .velocity = glm::vec3(0.0f),
     });
+    DLOG(INFO) << "cube: " << e2;
   }
 
   void Window::OnTerminating() {

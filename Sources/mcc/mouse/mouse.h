@@ -9,6 +9,7 @@
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 #include "mcc/bitfield.h"
+#include "mcc/ecs/entity.h"
 
 #include "mcc/mouse/mouse_constants.h"
 
@@ -162,7 +163,10 @@ namespace mcc {
     static void Initialize(GLFWwindow* window);
     static bool IsPressed(const MouseButton button);
     static glm::vec2 GetPosition();
+    static glm::vec2 GetNormalizedPosition();
     static glm::vec2 GetDelta();
+    static glm::vec3 CastRay();
+    static std::optional<Entity> CastRayTo(const float diff = 0.5);
     static Subscription Register(const uint32_t id, MousePositionCallback callback);
 
     static inline Subscription

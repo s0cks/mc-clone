@@ -9,7 +9,7 @@ namespace mcc::renderer {
     const auto renderable = Renderable::GetState(e);
     const auto transform = physics::Transform::GetState(e);
 
-    DLOG(INFO) << "rendering entity " << e << " w/ " << *(*renderable).data();
+    VLOG(1) << "rendering entity " << e << " w/ " << *(*renderable).data();
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, (*transform)->position);
     // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));

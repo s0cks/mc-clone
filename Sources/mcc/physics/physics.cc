@@ -65,24 +65,24 @@ namespace mcc::physics {
   }
 
   void PhysicsSimulator::OnTick(const Tick& tick) {
-    VisitEntities([&tick](const Entity& e) {
-      auto rigid_body = RigidBody::GetState(e);
-      if(!rigid_body) {
-        LOG(ERROR) << "no physics::RigidBody component found for " << e;
-        return false;
-      }
+    // VisitEntities([&tick](const Entity& e) {
+    //   auto rigid_body = RigidBody::GetState(e);
+    //   if(!rigid_body) {
+    //     LOG(ERROR) << "no physics::RigidBody component found for " << e;
+    //     return false;
+    //   }
 
-      auto transform = Transform::GetState(e);
-      if(!transform) {
-        LOG(ERROR) << "no physics::Transform component found for " << e;
-        return false;
-      }
+    //   auto transform = Transform::GetState(e);
+    //   if(!transform) {
+    //     LOG(ERROR) << "no physics::Transform component found for " << e;
+    //     return false;
+    //   }
       
-      auto force = kNoForce;
-      force += (*rigid_body)->mass * gravity_;
-      (*rigid_body)->velocity += force / (*rigid_body)->mass * static_cast<float>(tick.dts);
-      (*transform)->position += (*rigid_body)->velocity * static_cast<float>(tick.dts);
-      return true;
-    });
+    //   auto force = kNoForce;
+    //   force += (*rigid_body)->mass * gravity_;
+    //   (*rigid_body)->velocity += force / (*rigid_body)->mass * static_cast<float>(tick.dts);
+    //   (*transform)->position += (*rigid_body)->velocity * static_cast<float>(tick.dts);
+    //   return true;
+    // });
   }
 }

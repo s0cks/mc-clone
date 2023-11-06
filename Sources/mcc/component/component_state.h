@@ -47,6 +47,10 @@ namespace mcc {
       return data();
     }
 
+    const C& operator *() const {
+      return (*data());
+    }
+
     void operator=(const ComponentState<C>& rhs) {
       data_ = rhs.data_;
     }
