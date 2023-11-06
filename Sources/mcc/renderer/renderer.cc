@@ -32,13 +32,15 @@ namespace mcc::renderer {
   static ThreadLocal<PostRenderStage> post_render_;
   static ThreadLocal<FrameBuffer> frame_buffer_;
 
-  static Tick last_;
-  static RelaxedAtomic<uint64_t> frames_;
-  static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<RendererState> state_;
-  static RelaxedAtomic<uint64_t> entities_(0);
   static uint64_t frame_start_ns_;
   static uint64_t last_frame_ns_;
+  static uint64_t frame_end_ns_;
+  static uint64_t frame_dts_;
+  static uint64_t last_second_;
+  static RelaxedAtomic<uint64_t> frames_;
+  static RelaxedAtomic<uint64_t> fps_;
+  static RelaxedAtomic<uint64_t> entities_;
 
   static mesh::Mesh* mesh_;
   static shader::Shader shader_;
@@ -77,6 +79,7 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnPreInit() {
+
   }
 
   void Renderer::OnInit() {
@@ -101,8 +104,6 @@ namespace mcc::renderer {
     const auto size = Window::GetSize();
     frame_buffer_.Set(FrameBuffer::New(size[0], size[1]));
 
-    Engine::OnTick(&OnTick);
-
     Entity::OnSignatureChanged()
       .subscribe([](EntitySignatureChangedEvent* e) {
         const auto& esig = e->signature;
@@ -117,18 +118,6 @@ namespace mcc::renderer {
       .subscribe([](EntityDestroyedEvent* e) {
         tracked_.erase(e->id);
       });
-  }
-
-  void Renderer::OnTick(const Tick& tick) {
-    frames_ += 1;
-    if(tick.dts >= (NSEC_PER_MSEC * 1)) {
-      const auto diff = (tick.ts - last_.ts);
-      fps_ = ((uint64_t) frames_) * (1.0 * (NSEC_PER_SEC / diff));
-      last_ = tick;
-      frames_ = 0;
-    }
-
-    Run();
   }
 
   uint64_t Renderer::GetFrameCount() {
@@ -151,16 +140,31 @@ namespace mcc::renderer {
     return loop_.Get();
   }
 
+  static constexpr const auto kTargetFramesPerSecond = 60.0f;
+  static constexpr const float kRate = NSEC_PER_SEC / (kTargetFramesPerSecond * NSEC_PER_SEC);
+
   void Renderer::Run(const uv_run_mode mode) {
-    VLOG(1) << "running....";
-    frame_start_ns_ = uv_hrtime();
+    const auto start_ns = uv_hrtime();
+    const auto delta_ns = (start_ns - last_frame_ns_);
+    if((delta_ns / (NSEC_PER_SEC * 1.0f)) < kRate) {
+      return;
+    }
+    frame_start_ns_ = start_ns;
+    frame_dts_ = delta_ns;
+    if((start_ns - last_second_) >= NSEC_PER_SEC) {
+      fps_ = frames_;
+      frames_ = 0;
+      last_second_ = frame_start_ns_;
+    }
     uv_run(GetLoop(), mode);
-    last_frame_ns_ = (uv_hrtime() - frame_start_ns_);
-    VLOG(1) << "done in " << (last_frame_ns_ / NSEC_PER_MSEC) << "ms.";
+    frame_end_ns_ = uv_hrtime();
+    const auto total_ns = (frame_end_ns_ - frame_start_ns_);
     samples_ << RendererSample {
-      .duration = last_frame_ns_,
+      .duration = total_ns,
       .entities = (uint64_t) entities_,
     };
+    frames_ += 1;
+    last_frame_ns_ = frame_start_ns_;
   }
 
   RendererSampleSeries* Renderer::GetSamples() {

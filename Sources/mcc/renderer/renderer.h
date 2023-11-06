@@ -41,8 +41,6 @@ namespace mcc::renderer {
     static void OnPreInit();
     static void OnInit();
     static void OnPostInit();
-    static void OnTick(const Tick& tick);
-    static void Run(const uv_run_mode = UV_RUN_ONCE);
     static void SetLoop(uv_loop_t* loop);
     static void SetMode(const Mode mode);
 
@@ -61,6 +59,7 @@ namespace mcc::renderer {
     }
   public:
     static void Init();
+    static void Run(const uv_run_mode = UV_RUN_NOWAIT); //TODO: make private
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
     static uint64_t GetEntityCounter();

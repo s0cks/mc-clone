@@ -6,21 +6,11 @@
 #include "mcc/engine/tick.h"
 #include "mcc/engine/engine_state.h"
 #include "mcc/relaxed_atomic.h"
-
-#include "mcc/series.h"
+#include "mcc/engine/engine_stats.h"
 
 namespace mcc {
   namespace engine {
     typedef RelaxedAtomic<uint64_t> TickCounter;
-
-    typedef uint64_t TickDuration;
-
-    static constexpr const uint64_t kNumberOfTickDurationSamples = 10;
-    class TickDurationSeries : public NumericSeries<TickDuration, kNumberOfTickDurationSamples> {
-    public:
-      TickDurationSeries() = default;
-      ~TickDurationSeries() override = default;
-    };
 
     class Engine {
       DEFINE_NON_INSTANTIABLE_TYPE(Engine);
@@ -42,8 +32,7 @@ namespace mcc {
       static uv_loop_t* GetLoop();
       static State GetState();
       static Tick GetTick();
-
-      static TickDurationSeries* GetTickDurationSeries();
+      static SampleSeries* GetSamples();
       
 #define DEFINE_ON_EVENT(Name) \
       static void On##Name(Name##Callback callback);

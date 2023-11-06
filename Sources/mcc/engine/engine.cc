@@ -8,14 +8,17 @@
 #include "mcc/engine/engine_stage_terminating.h"
 #include "mcc/engine/engine_stage_terminated.h"
 
+#include "mcc/renderer/renderer.h"
+
 namespace mcc::engine {
-  static uv_loop_t* loop_ = nullptr;
-  static TickCounter ticks_;
-  static TickCounter total_ticks_;
-  static RelaxedAtomic<uint64_t> ts_;
-  static RelaxedAtomic<uint64_t> dts_;
-  static RelaxedAtomic<uint64_t> tps_;
-  static RelaxedAtomic<uint64_t> last_;
+  static uv_loop_t* loop_;
+  static uint64_t ticks_;
+  static uint64_t total_ticks_;
+  static uint64_t ts_;
+  static uint64_t dts_;
+  static uint64_t tps_;
+  static uint64_t last_;
+  static uint64_t last_second_;
   static RelaxedAtomic<bool> running_(false);
   static RelaxedAtomic<State> state_(kUninitialized);
   static Tick current_;
@@ -26,6 +29,8 @@ namespace mcc::engine {
   static TickStage tick_;
   static TerminatingStage terminating_;
   static TerminatedStage terminated_;
+
+  static SampleSeries samples_;
 
   Tick Engine::GetTick() {
     return current_;
@@ -64,28 +69,33 @@ namespace mcc::engine {
   }
   
   void Engine::Run() {
+    loop_ = uv_loop_new();
     preinit_.RunStage();
     init_.RunStage();
     postinit_.RunStage();
+
     SetRunning(true);
     while(IsRunning()) {
       ts_ = uv_hrtime();
-      total_ticks_ += 1;
-      ticks_ += 1;
-      dts_ = (((uint64_t)ts_) - (uint64_t)last_);
-      if((uint64_t) dts_ >= (NSEC_PER_MSEC * 1)) {
-        tps_ = ((uint64_t) ticks_) * (1.0 * (NSEC_PER_SEC / (uint64_t) dts_));
+      dts_ = (ts_ - last_);
+      if((ts_ - last_second_) >= NSEC_PER_SEC) {
+        tps_ = ticks_;
         ticks_ = 0;
+        last_second_ = ts_;
       }
-      current_ = Tick {
-        .id = (uint64_t) total_ticks_, 
-        .ts = (uint64_t) ts_,
-        .dts = (uint64_t) dts_,
-      };
+
       tick_.RunStage();
+
+      renderer::Renderer::Run();
+      const auto duration = (uv_hrtime() - ts_);
+      samples_ << Sample {
+        .duration = duration,
+      };
+      ticks_ += 1;
+      total_ticks_ += 1;
       last_ = ts_;
     }
-    
+
     terminating_.RunStage();
     terminated_.RunStage();
   }
@@ -127,5 +137,9 @@ namespace mcc::engine {
 
   void Engine::OnTerminated(TerminatedCallback callback) {
     return terminated_.AddCallback(callback);
+  }
+
+  SampleSeries* Engine::GetSamples() {
+    return &samples_;
   }
 }
