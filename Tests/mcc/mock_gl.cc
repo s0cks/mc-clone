@@ -1,0 +1,234 @@
+#include "mcc/mock_gl.h"
+#include "mcc/thread_local.h"
+
+namespace mcc {
+  static ThreadLocal<MockGl> mock_;
+
+  MockGl::MockGl() {
+    mock_.Set(this);
+  }
+
+  MockGl::~MockGl() {
+    mock_.Set(nullptr);
+  }
+}
+
+static inline mcc::MockGl*
+GetMock() {
+  const auto mock = mcc::mock_.Get();
+  assert(mock != nullptr);
+  return mock;
+}
+
+#define __ return GetMock()->
+
+// vertex array objects
+void glBindVertexArray(GLuint array) {
+  __ glBindVertexArray(array);
+}
+
+void glGenVertexArrays(GLsizei n, GLuint *arrays) {
+  __ glGenVertexArrays(n, arrays);
+}
+
+void glEnableVertexAttribArray(GLuint index) {
+  __ glEnableVertexAttribArray(index);
+}
+
+GLint glGetAttribLocation(GLuint program, const GLchar* name) {
+  __ glGetAttribLocation(program, name);
+}
+
+// textures
+void glGenTextures(GLsizei n, GLuint* textures) {
+  __ glGenTextures(n, textures);
+}
+
+void glBindTexture(GLenum target, GLuint texture) {
+  __ glBindTexture(target, texture);
+}
+
+void glActiveTexture(GLuint texture) {
+  __ glActiveTexture(texture);
+}
+
+void glTexParameterIiv(GLenum target, GLenum pname, const GLint *params) {
+  __ glTexParameterIiv(target, pname, params);
+}
+
+void glTexParameteri(GLenum target, GLenum pname, GLint param) {
+  __ glTexParameteri(target, pname, param);
+}
+
+void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels) {
+  __ glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+}
+
+// shaders
+void glAttachShader(GLuint program, GLuint shader) {
+  __ glAttachShader(program, shader);
+}
+
+void glCompileShader(GLuint shader) {
+  __ glCompileShader(shader);
+}
+
+GLuint glCreateProgram() {
+  __ glCreateProgram();
+}
+
+GLuint glCreateShader(GLenum type) {
+  __ glCreateShader(type);
+}
+
+void glDeleteShader(GLuint shader) {
+  __ glDeleteShader(shader);
+}
+
+void glDeleteProgram(GLuint program) {
+  __ glDeleteProgram(program);
+}
+
+void glGetProgramInfoLog (GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
+  __ glGetProgramInfoLog(program, bufSize, length, infoLog);
+}
+
+void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {
+  __ glGetShaderiv(shader, pname, params);
+}
+
+void glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
+  __ glGetProgramiv(program, pname, params);
+}
+
+void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
+  __ glGetShaderInfoLog(shader, bufSize, length, infoLog);
+}
+
+GLint glGetUniformLocation (GLuint program, const GLchar *name)  {
+  __ glGetUniformLocation (program, name);
+}
+
+void glLinkProgram (GLuint program) {
+  __ glLinkProgram(program);
+}
+
+void glUniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
+  __ glUniformMatrix4fv(location, count, transpose, value);
+}
+
+void glUseProgram (GLuint program) {
+  __ glUseProgram(program);
+}
+
+void glVertexAttribPointer (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer) {
+  __ glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void glShaderSource (GLuint shader, GLsizei count, const GLchar* const *string, const GLint *length) {
+  __ glShaderSource(shader, count, string, length);
+}
+
+void glUniform4fv (GLint location, GLsizei count, const GLfloat *value) {
+  __ glUniform4fv(location, count, value);
+}
+
+void glUniform3fv (GLint location, GLsizei count, const GLfloat *value) {
+  __ glUniform3fv(location, count, value);
+}
+
+void glUniform1i (GLint location, GLint v0) {
+  __ glUniform1i(location, v0);
+}
+
+void glUniform1f (GLint location, GLfloat v0) {
+  __ glUniform1f(location, v0);
+}
+
+// buffers
+void glBindBuffer(GLenum target, GLuint buffer) {
+  __ glBindBuffer(target, buffer);
+}
+
+void glBufferData(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage) {
+  __ glBufferData(target, size, data, usage);
+}
+
+void glGenBuffers(GLsizei n, GLuint* buffers) {
+  __ glGenBuffers(n, buffers);
+}
+
+// framebuffers
+void glBindFramebuffer(GLenum target, GLuint framebuffer) {
+  __ glBindFramebuffer(target, framebuffer);
+}
+
+void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
+  __ glFramebufferTexture2D(target, attachment, textarget, texture, level);
+}
+
+void glGenFramebuffers(GLsizei n, GLuint* framebuffers) {
+  __ glGenFramebuffers(n, framebuffers);
+}
+
+// misc
+void glBlendEquation(GLenum mode) {
+  __ glBlendEquation(mode);
+}
+
+void glBlendFunc(GLenum sfactor, GLenum dfactor) {
+  __ glBlendFunc(sfactor, dfactor);
+}
+
+void glClear(GLbitfield mask) {
+  __ glClear(mask);
+}
+
+void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+  __ glClearColor(red, green, blue, alpha);
+}
+
+void glDisable(GLenum cap) {
+  __ glDisable(cap);
+}
+
+void glEnable(GLenum cap) {
+  __ glDisable(cap);
+}
+
+GLenum glGetError(void) {
+  __ glGetError();
+}
+
+GLboolean glUnmapBuffer (GLenum target) {
+  __ glUnmapBuffer(target);
+}
+
+void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
+  __ glViewport(x, y, width, height);
+}
+
+void glPolygonMode(GLenum face, GLenum mode) {
+  __ glPolygonMode(face, mode);
+}
+
+void glPixelStorei(GLenum pname, GLint param) {
+  __ glPixelStorei(pname, param);
+}
+
+GLvoid* glMapBuffer(GLenum target, GLenum access) {
+  __ glMapBuffer(target, access);
+}
+
+void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
+  __ glScissor(x, y, width, height);
+}
+
+// draw
+void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
+  __ glDrawArrays(mode, first, count);
+}
+
+void glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)  {
+  __ glDrawElements(mode, count, type, indices);
+}

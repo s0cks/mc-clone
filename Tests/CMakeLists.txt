@@ -6,6 +6,9 @@ add_executable(${PROJECT_NAME}-tests
   mcc/test_cache.h mcc/test_cache.cc
   mcc/test_rapidjson.h mcc/test_rapidjson.cc
   mcc/mesh/test_vertex.h mcc/mesh/test_vertex.cc
+  mcc/mesh/test_mesh.h mcc/mesh/test_mesh.cc
+  mcc/mock_gl.h mcc/mock_gl.cc
+  mcc/mock_glfw.h mcc/mock_glfw.cc
   mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}

@@ -13,9 +13,12 @@ namespace mcc {
 namespace mcc::mesh {
   class Mesh {
     friend class Renderer;
+    friend class MeshTest;
   protected:
     VertexArrayObject vao_;
     VertexBuffer vbo_;
+
+    static void InitializeBuiltinVaos();
   public:
     Mesh(const VertexArrayObject vao, const VertexList& vertices):
       vbo_(vertices) {

@@ -32,8 +32,7 @@ namespace mcc::mesh {
 
   static VertexArrayObject* kBuiltinVaos = nullptr;
 
-  static inline void
-  InitializeBuiltinVaos() {
+  void Mesh::InitializeBuiltinVaos() {
     DLOG(INFO) << "initializing builtin vaos....";
     VertexArrayObject::GenerateBatch(kTotalNumberOfBuiltinVaos, &kBuiltinVaos);
     for(auto idx = 0; idx < kTotalNumberOfBuiltinVaos; idx++) {

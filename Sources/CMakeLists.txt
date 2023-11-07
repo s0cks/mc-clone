@@ -2,7 +2,6 @@ configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
-include_directories(${NK_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
@@ -98,9 +97,6 @@ target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog
   ${GFLAGS_LIBRARIES}
-  OpenGL::GL
-  glfw
-  GLEW::GLEW
   PNG::PNG
   ${LEVELDB_LIBRARIES}
   Freetype::Freetype
@@ -113,6 +109,10 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/Sources ${PROJECT_BINARY_DIR})
 
 add_executable(${PROJECT_NAME}-client
-  main.cc)
+  main.cc
+  )
 target_link_libraries(${PROJECT_NAME}-client
-  ${PROJECT_NAME})
+  ${PROJECT_NAME}
+  OpenGL::GL
+  glfw
+  GLEW::GLEW)
