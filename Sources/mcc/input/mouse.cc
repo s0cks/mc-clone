@@ -17,7 +17,7 @@ namespace mcc {
 
   glm::vec2 Mouse::GetNormalizedPosition() {
     const auto size = Window::GetSize();
-    return glm::vec2((2.0f * pos.x) / size[0] - 1.0f, 1.0f - (2.0f * pos.y) / size[1]);
+    return glm::vec2(2.0f * pos.x / size[0] - 1.0f, 1.0f - 2.0f * pos.y / size[1]);
   }
 
   glm::vec2 Mouse::GetDelta() {
@@ -25,15 +25,14 @@ namespace mcc {
   }
 
   glm::vec3 Mouse::CastRay() {
-    auto pos = GetNormalizedPosition();
+    auto ndc = GetNormalizedPosition();
     const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
     const auto projection = (*camera)->GetProjectionMatrix();
     const auto view = (*camera)->GetViewMatrix();
-    const auto ray_clip = glm::vec4(pos.x, pos.y, -1.0f, 1.0f);
-    auto ray_eye = glm::inverse(projection) * ray_clip;
-    ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0f, 0.0f);
-    const auto ray_world = glm::inverse(view) * ray_eye;
-    return glm::normalize(glm::vec3(ray_world.x, ray_world.y, ray_world.z));
+    const auto screen_pos = glm::vec4(ndc.x, -ndc.y, 1.0f, 1.0f);
+    const auto inverse_vp = glm::inverse(projection * view);
+    const auto world_pos = inverse_vp * screen_pos;
+    return glm::normalize(glm::vec3(world_pos));
   }
 
   std::optional<Entity> Mouse::CastRayTo(const float diff) {
