@@ -6,6 +6,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/common.h"
+#include "mcc/material.h"
 #include "mcc/terrain/terrain_chunk.h"
 
 namespace mcc::renderer {
@@ -64,7 +65,8 @@ namespace mcc::terrain {
     static TerrainVertexBuffer GetVbo();
     static IndexBuffer GetIbo();
     static TerrainChunk* GetChunk();
-
+    static std::string GetTerrainMaterial();
+    static void SetTerrainMaterial(const std::string& material);
     static TerrainTexture GetTexture(); //TODO: remove
     static void SetTexture(const TerrainTexture texture); //TODO: remove
   };

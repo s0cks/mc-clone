@@ -85,8 +85,8 @@ namespace mcc::renderer {
   void Renderer::OnInit() {
     const auto loop = uv_loop_new();
     post_render_.Set(new PostRenderStage(loop));
-    draw_gui_.Set(new RenderScreenStage(loop));
     render_gui_.Set(new RenderGuiStage(loop));
+    draw_gui_.Set(new RenderScreenStage(loop));
     render_entities_.Set(new RenderEntitiesStage(loop));
     render_terrain_.Set(new RenderTerrainStage(loop));
     pre_render_.Set(new PreRenderStage(loop));

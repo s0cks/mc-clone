@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace mcc {
-  typedef uint64_t ComponentId;
+  typedef uint32_t ComponentId;
 
   static constexpr const ComponentId kInvalidComponentId = 0;
 }

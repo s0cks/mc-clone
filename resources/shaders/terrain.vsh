@@ -7,13 +7,15 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec2 inTex;
-out vec3 inColor;
-out vec3 in_Pos;
+out vec2 vUv;
+out vec3 vColor;
+out vec3 vPos;
+out vec3 vNormal;
 
 void main() {
-  in_Pos = vec3(model * vec4(pos, 1.0f));
-  gl_Position = projection * view * model * vec4(in_Pos, 1.0);
-  inColor = color;
-  inTex = uv;
+  vPos = pos;
+  vNormal = vec3(0.0f, 1.0f, 0.0f);
+  vColor = color;
+  vUv = uv;
+  gl_Position = projection * view * model * vec4(pos, 1.0f);
 }

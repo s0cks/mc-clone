@@ -73,6 +73,9 @@ namespace mcc {
     MOCK_METHOD2(glPixelStorei, void(GLenum pname, GLint param));
     MOCK_METHOD2(glMapBuffer, GLvoid*(GLenum target, GLenum access));
     MOCK_METHOD4(glScissor, void(GLint x, GLint y, GLsizei width, GLsizei height));
+    MOCK_METHOD1(glCullFace, void(GLenum mode));
+    MOCK_METHOD1(glFrontFace, void(GLenum mode));
+    MOCK_METHOD1(glDepthFunc, void(GLenum mode));
   };
 }
 

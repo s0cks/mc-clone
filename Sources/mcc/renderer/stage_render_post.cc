@@ -11,6 +11,8 @@ namespace mcc::renderer {
 
     glfwSwapBuffers(window);
     CHECK_GL(FATAL);
+    glDisable(GL_DEPTH_TEST);
+    CHECK_GL(FATAL);
 
     Renderer::ResetEntityCounter();
   }

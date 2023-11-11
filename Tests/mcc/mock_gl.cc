@@ -224,6 +224,18 @@ void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
   __ glScissor(x, y, width, height);
 }
 
+void glFrontFace(GLenum mode) {
+  __ glFrontFace(mode);
+}
+
+void glCullFace(GLenum mode) {
+  __ glCullFace(mode);
+}
+
+void glDepthFunc(GLenum mode) {
+  __ glDepthFunc(mode);
+}
+
 // draw
 void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
   __ glDrawArrays(mode, first, count);

@@ -80,6 +80,7 @@
     "__availability": "cpp",
     "future": "cpp",
     "regex": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "span": "cpp"
   }
 }

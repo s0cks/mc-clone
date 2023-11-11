@@ -51,7 +51,7 @@ namespace mcc::terrain {
         const auto uvZ = static_cast<float>(x) / DEPTH; 
         const auto uvX = static_cast<float>(z) / WIDTH;
         vertices.push_back(Vertex {
-          .pos = glm::vec3(x, -3.0f, z),
+          .pos = glm::vec3(x, 0.0f, z),
           .uv = glm::vec2(abs(uvX), abs(uvZ)),
           .color = glm::vec3(1.0f, 1.0f, 1.0f),
         });

@@ -8,6 +8,12 @@
 
 #include "mcc/platform.h"
 
+#if defined(OS_IS_LINUX) || defined(OS_IS_OSX)
+#include <unistd.h>
+#else
+#error "unsupported operating system"
+#endif
+
 #define DEFINE_NON_COPYABLE_TYPE(Name) \
   public:                              \
     Name(const Name& rhs) = delete;    \
@@ -41,6 +47,15 @@ namespace mcc {
     x = x | (x >> 32);
 #endif
     return x + 1;
+  }
+
+  static inline bool
+  FileExists(const std::string& name){
+#if defined(OS_IS_OSX) || defined(OS_IS_LINUX)
+    return access(name.data(), F_OK) == 0;
+#else
+#error "unsupported operating system"
+#endif
   }
 
   static inline bool

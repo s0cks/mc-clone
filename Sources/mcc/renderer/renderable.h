@@ -6,17 +6,21 @@
 #include "mcc/texture/texture.h"
 #include "mcc/component/component.h"
 
+#include "mcc/material.h"
+
 namespace mcc::renderer {
   struct Renderable {
     shader::Shader shader;
     mesh::Mesh* mesh;
     texture::Texture texture;
+    Material material;
 
     friend std::ostream& operator<<(std::ostream& stream, const Renderable& rhs) {
       stream << "Renderable(";
       stream << "shader=" << rhs.shader << ", ";
       stream << "texture=" << rhs.texture << ", ";
-      stream << "mesh=" << (*rhs.mesh);
+      stream << "mesh=" << (*rhs.mesh) << ", ";
+      stream << "material=" << rhs.material;
       stream << ")";
       return stream;
     }

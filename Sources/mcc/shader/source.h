@@ -8,10 +8,10 @@
 namespace mcc::shader {
   class Source {
   private:
-    std::shared_ptr<Buffer> data_;
+    BufferPtr data_;
   public:
     Source() = default;
-    Source(const std::shared_ptr<Buffer>& data):
+    Source(const BufferPtr& data):
       data_(data) {
     }
     Source(const Source& rhs):
@@ -19,7 +19,7 @@ namespace mcc::shader {
     }
     ~Source() = default;
 
-    std::shared_ptr<Buffer> buffer() const {
+    BufferPtr buffer() const {
       return data_;
     }
 
@@ -41,7 +41,7 @@ namespace mcc::shader {
   public:
     static inline Source
     FromString(const std::string& source) {
-      return Source(std::make_shared<Buffer>((const uint8_t*) source.data(), source.length()));
+      return Source(Buffer::CopyFrom(source));
     }
 
     static inline Source
@@ -52,7 +52,7 @@ namespace mcc::shader {
         return Source();
       }
       const auto filesize = GetFilesize(file);
-      const auto data = std::make_shared<Buffer>(filesize);
+      const auto data = Buffer::New(filesize);
       if(!data->ReadFrom(file)) {
         LOG(ERROR) << "failed to read shader source from file: " << filename;
         return Source();

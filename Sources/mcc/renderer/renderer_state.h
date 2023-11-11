@@ -5,8 +5,8 @@ namespace mcc::renderer {
 #define FOR_EACH_RENDERER_RENDER_STATE(V) \
   V(RenderTerrain)                        \
   V(RenderEntities)                       \
-  V(RenderGui)                            \
-  V(RenderScreen)
+  V(RenderScreen)                         \
+  V(RenderGui)
 
 #define FOR_EACH_RENDERER_STATE(V)  \
   V(PreInit)                        \

@@ -10,6 +10,7 @@
 #include "mcc/gui/gui.h"
 
 #include "mcc/mcc.h"
+#include "mcc/material.h"
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/settings.h"
@@ -42,6 +43,7 @@ int main(int argc, char** argv) {
   using namespace mcc;
   settings::Init();
   font::Initialize();
+  InitializeMaterials();
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);

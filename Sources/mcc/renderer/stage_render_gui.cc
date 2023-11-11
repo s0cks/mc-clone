@@ -23,6 +23,10 @@ namespace mcc::renderer {
   void RenderGuiStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
     FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
     Window::VisitFrames(&frame_renderer);
+    const auto size = Window::GetSize();
+    auto proj = glm::mat4(1.0f);
+    proj = glm::ortho(0.0f, size[0], size[1], 0.0f);
+    gui::Screen::RenderScreen(proj);
   }
 
   void RenderScreenStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
@@ -31,8 +35,5 @@ namespace mcc::renderer {
     auto fb = Renderer::GetFrameBuffer();
     fb->Draw();
     fb->Unbind();
-    auto proj = glm::mat4(1.0f);
-    proj = glm::ortho(0.0f, size[0], size[1], 0.0f);
-    gui::Screen::RenderScreen(proj);
   }
 }

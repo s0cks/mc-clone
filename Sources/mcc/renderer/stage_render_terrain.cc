@@ -5,10 +5,10 @@
 namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
   void RenderTerrainStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
     VLOG(3) << "rendering terrain....";
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
     CHECK_GL(FATAL);
     terrain::Terrain::Render(projection, view);
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     CHECK_GL(FATAL);
   }
 }

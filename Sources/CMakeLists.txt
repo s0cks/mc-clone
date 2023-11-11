@@ -3,6 +3,16 @@ include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 
+set(FB_SCHEMAS
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/materials.fbs")
+build_flatbuffers("${FB_SCHEMAS}"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/"
+                  fbschemas
+                  ""
+                  "${PROJECT_BINARY_DIR}/mcc"
+                  ""
+                  "")
+
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   mcc/window.h mcc/window.cc
@@ -24,6 +34,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stage_terminating.h
   mcc/engine/engine_stage_terminated.h
   mcc/component/component_id.h
+  mcc/component/component_table.h mcc/component/component_table.cc
   mcc/component/component_state.h
   mcc/component/component.h mcc/component/component.cc
   mcc/aabb.h mcc/aabb.cc
@@ -32,6 +43,7 @@ add_library(${PROJECT_NAME}
   mcc/physics/transform.h mcc/physics/transform.cc
   mcc/physics/collision.h mcc/physics/collision.cc
   mcc/physics/physics.h mcc/physics/physics.cc
+  mcc/material.h mcc/material.cc
   mcc/gfx.h
   mcc/rx.h
   mcc/common.h
@@ -93,12 +105,14 @@ add_library(${PROJECT_NAME}
   mcc/renderer/stage_render_screen.cc
   mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc)
+add_dependencies(${PROJECT_NAME} fbschemas)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog
   ${GFLAGS_LIBRARIES}
   PNG::PNG
   ${LEVELDB_LIBRARIES}
+  flatbuffers::flatbuffers
   Freetype::Freetype
   ${LIBUV_LIBRARIES})
 

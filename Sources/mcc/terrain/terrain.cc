@@ -50,6 +50,7 @@ namespace mcc::terrain {
   }
 
   static RelaxedAtomic<TerrainTexture> tex_(TerrainTexture::kDefaultTerrainTexture);
+  static std::string material = "emerald";
 
   void Terrain::SetTexture(const TerrainTexture texture) {
     tex_ = texture;
@@ -57,5 +58,13 @@ namespace mcc::terrain {
 
   TerrainTexture Terrain::GetTexture() {
     return (const TerrainTexture&) tex_;
+  }
+
+  void Terrain::SetTerrainMaterial(const std::string& mat) {
+    material = mat;
+  }
+
+  std::string Terrain::GetTerrainMaterial() {
+    return material;
   }
 }

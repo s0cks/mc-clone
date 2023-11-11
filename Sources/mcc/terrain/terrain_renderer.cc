@@ -36,40 +36,32 @@ namespace mcc::terrain {
     glm::mat4 model(1.0f);
     const auto chunk = Terrain::GetChunk();
 
-    auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
-
-    const float globalLightIntensity = 0.0f;
-    const glm::vec3 globalLightColor(1.0f, 1.0f, 1.0f);
-
-    glm::vec3 lightPos(1.0f);
-    glm::vec3 lightColor(1.0f);
-    float lightIntensity = 0.0f;
-    AmbientLight::Visit([&](const Entity& e, const ComponentState<AmbientLight>& light) {
-      const auto transform = physics::Transform::GetState(e);
-      if(!transform) {
-        LOG(ERROR) << "no physics::Transform component found for entity " << e;
-        return false;
-      }
-
-      lightPos = (*transform)->position;
+    glm::vec3 lightColor = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 lightPos = glm::vec3(0.0f);
+    AmbientLight::Visit([&lightColor,&lightPos](const Entity& l, const ComponentState<AmbientLight>& light) {
       lightColor = light->color;
-      lightIntensity = light->intensity;
+
+      const auto lt = physics::Transform::GetState(l);
+      LOG_IF(FATAL, !lt) << "no transform found for AmbientLight component of entity " << l;
+      lightPos = (*lt)->position;
       return true;
     });
+    const auto& cameraPos = (*camera::PerspectiveCameraBehavior::GetCameraComponent())->pos;
+
+    const auto material = GetMaterial(Terrain::GetTerrainMaterial());
 
     GetSelectedTexture().Bind0();
     shader_.ApplyShader();
     shader_.SetMat4("projection", projection_);
     shader_.SetMat4("view", view_);
     shader_.SetMat4("model", chunk->GetModelMatrix());
-    shader_.SetInt("tex0", 0);
-    shader_.SetVec3("cameraPos", (*camera)->pos);
-    shader_.SetVec3("lightPos", lightPos);
+    shader_.SetInt("tex", 0);
+    shader_.SetCamera("camera", cameraPos);
+    const auto diffuseColor = lightColor * glm::vec3(0.5f);
+    const auto ambientColor = diffuseColor * glm::vec3(0.2f);
+    shader_.SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
     shader_.SetVec3("lightColor", lightColor);
-    shader_.SetFloat("lightIntensity", lightIntensity);
-    
-    shader_.SetVec3("globalLightColor", globalLightColor);
-    shader_.SetFloat("globalLightIntensity", globalLightIntensity);
+    shader_.SetMaterial("material", material);
 
     shader_.ApplyShader();
     chunk->Render();

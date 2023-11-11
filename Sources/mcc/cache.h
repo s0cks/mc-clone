@@ -123,6 +123,7 @@ namespace mcc {
           PushFront(node);
           return node->value;
         }
+        node = node->next;
       }
 
       if((size_ + 1) >= capacity_) {

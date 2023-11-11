@@ -4,12 +4,17 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstdlib>
+#include <fstream>
 #include <glog/logging.h>
 
 #include "mcc/common.h"
 
 namespace mcc {
+  class Buffer;
+  typedef std::shared_ptr<Buffer> BufferPtr;
+
   class Buffer {
+    friend class std::shared_ptr<Buffer>;
     DEFINE_NON_COPYABLE_TYPE(Buffer);
   public:
     static constexpr const uint64_t kDefaultBufferSize = 4096;
@@ -18,58 +23,19 @@ namespace mcc {
     uint64_t capacity_;
     uint64_t wpos_;
     uint64_t rpos_;
-  public:
-    explicit Buffer(const uint64_t init_cap):
-      data_(nullptr),
-      capacity_(0),
-      wpos_(0),
-      rpos_(0) {
-        if(init_cap > 0) {
-          const auto cap = init_cap * sizeof(uint8_t);
-          const auto data = reinterpret_cast<uint8_t*>(malloc(sizeof(uint8_t) * cap));
-          if(!data) {
-            DLOG(ERROR) << "cannot allocate buffer of size " << cap;
-            return;
-          }
-          VLOG(3) << "allocated new buffer of size " << cap;
-          data_ = data;
-          capacity_ = cap;
-          memset(data_, 0, sizeof(uint8_t) * capacity_);
-        }
-    }
-    Buffer(const uint8_t* data, const uint64_t capacity):
-      data_(nullptr),
-      capacity_(),
-      wpos_(capacity),
-      rpos_(0) {
-      CopyFrom(data, capacity);
-    }
-    ~Buffer() {
-      if(data_) {
-        VLOG(3) << "freeing buffer of size " << capacity_;
-        free(data_);
-      }
+
+    Buffer(uint8_t* data, uint64_t capacity, uint64_t wpos, uint64_t rpos):
+      data_(data),
+      capacity_(capacity),
+      wpos_(wpos),
+      rpos_(rpos) {
     }
 
-    inline void
-    Resize(const uint64_t new_size) {
-      if(new_size < 0 || new_size <= capacity_)
-        return;
-      const auto new_cap = RoundUpPow2(new_size);
-      const auto data = (uint8_t*)realloc(data_, new_cap);
-      LOG_IF(FATAL, !data) << "failed to reallocate Buffer to " << new_cap << " bytes.";
-      data_ = data;
-      capacity_ = new_cap;
-      DLOG(INFO) << "resized Buffer to " << new_cap << " bytes.";
-    }
-
-    inline void
-    CopyFrom(const uint8_t* src, const uint64_t nbytes) {
-      Resize(nbytes);
-      MCC_ASSERT(capacity_ >= nbytes);
-      memcpy(data_, src, sizeof(uint8_t) * nbytes);
-    }
+    virtual void Resize(const uint64_t new_cap) = 0;
   public:
+    Buffer() = delete;
+    virtual ~Buffer() = default;
+
     uint8_t* data() const {
       return data_;
     }
@@ -140,6 +106,13 @@ namespace mcc {
       return true;
     }
 
+    bool WriteTo(std::fstream& stream) const {
+      DLOG(INFO) << "writing " << wpos_ << " bytes to fstream";
+      stream.write((char*)&data_[rpos_], wpos_);
+      stream.flush();
+      return true;
+    }
+
     bool ReadFrom(FILE* file, const uint64_t pos, const uint64_t nbytes) {
       if((pos + nbytes) > capacity_) {
         DLOG(ERROR) << "cannot read " << nbytes << " from file, buffer is full.";
@@ -162,12 +135,27 @@ namespace mcc {
       return ReadFrom(file, capacity_);
     }
 
+    bool ReadFrom(std::ifstream& stream, const uint64_t pos, const uint64_t nbytes) {
+      if((pos + nbytes) > capacity_) {
+        DLOG(ERROR) << "cannot read " << nbytes << " from file, buffer is full.";
+        return false;
+      }
+      DLOG(INFO) << "reading " << nbytes << " from file.";
+      stream.read((char*) &data_[pos], sizeof(uint8_t) * nbytes);
+      wpos_ = pos + nbytes;
+      return true;
+    }
+
+    bool ReadFrom(std::ifstream& stream, const uint64_t nbytes) {
+      return ReadFrom(stream, wpos_, nbytes);
+    }
+
     bool Put(const uint8_t* data, const uint64_t pos, const uint64_t nbytes) {
       if((pos + nbytes) > capacity_) {
         VLOG(3) << "cannot put " << nbytes << " in " << (*this) << " at " << pos;
         return false;
       }
-      memcpy(&data_[pos], data, nbytes);
+      memcpy(&data_[pos], data, sizeof(uint8_t) * nbytes);
       wpos_ = pos + nbytes;
       return true;
     }
@@ -182,6 +170,32 @@ namespace mcc {
       stream << "capacity=" << rhs.capacity();
       stream << ")";
       return stream;
+    }
+  public:
+    static BufferPtr New(const uint64_t init_capacity);
+    static BufferPtr FromFile(const std::string& filename);
+    static BufferPtr CopyFrom(const uint8_t* data, const uint64_t length, const uint64_t wpos, const uint64_t rpos = 0);
+    
+    static inline BufferPtr
+    CopyFrom(const uint8_t* data, const uint64_t length) {
+      return CopyFrom(data, length, length);
+    }
+
+    static inline BufferPtr
+    CopyFrom(const std::string& data) {
+      return CopyFrom((const uint8_t*) data.data(), data.length());
+    }
+
+    static BufferPtr Wrap(uint8_t* data, const uint64_t length, const uint64_t wpos, const uint64_t rpos = 0);
+
+    static inline BufferPtr
+    Wrap(uint8_t* data, const uint64_t length) {
+      return Wrap(data, length, length);
+    }
+
+    static inline BufferPtr
+    Wrap(const std::string& data) {
+      return Wrap((uint8_t*) data.data(), data.length());
     }
   };
 }

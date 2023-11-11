@@ -58,10 +58,11 @@ public:                                                                         
     TypeId() {
       return typeid(T).name();
     }
-
+  public:
+    static void ClearRegisteredComponents();
     static ComponentId Register(const char* name);
     static ComponentId GetComponentId(const char* name);
-  public:
+    
     template<typename T>
     static inline ComponentId Register() {
       return Register(TypeId<T>());

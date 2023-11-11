@@ -16,7 +16,7 @@ namespace mcc::gui {
   void SettingsFrame::Render(nk::Context* ctx) {
     struct nk_vec2 size = nk_widget_size(ctx);
 
-    nk_layout_row_dynamic(ctx, size.y / 2, terrain::kNumberOfTerrainTextures + 1);
+    nk_layout_row_dynamic(ctx, size.y / 3, terrain::kNumberOfTerrainTextures + 1);
     nk_label(ctx, "Terrain: ", NK_TEXT_LEFT);
     for(auto idx = 0; idx < terrain::kNumberOfTerrainTextures; idx++) {
       const auto tex = static_cast<terrain::TerrainTexture>(idx);
@@ -24,7 +24,19 @@ namespace mcc::gui {
         terrain::Terrain::SetTexture(tex);
     }
 
-    nk_layout_row_dynamic(ctx, size.y / 2, 3);
+    static const std::vector<std::string> materials = {
+      "emerald",
+      "jade",
+      "obsidian",
+    };
+    nk_layout_row_dynamic(ctx, size.y / 3, materials.size() + 1);
+    nk_label(ctx, "Terrain Material:", NK_TEXT_LEFT);
+    for(auto idx = 0; idx < materials.size(); idx++) {
+      if(nk_option_label(ctx, materials[idx].c_str(), materials[idx] == terrain::Terrain::GetTerrainMaterial()))
+        terrain::Terrain::SetTerrainMaterial(materials[idx]);
+    }
+
+    nk_layout_row_dynamic(ctx, size.y / 3, 3);
     const auto g = physics::PhysicsSimulator::GetGravity();
     float gravity = g[1];
     nk_property_float(ctx, "Gravity:", -1.0f, &gravity, 1.0f, 0.1f, 1);

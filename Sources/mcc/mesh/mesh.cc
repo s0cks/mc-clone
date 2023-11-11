@@ -76,8 +76,18 @@ namespace mcc::mesh {
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(3);
     CHECK_GL(FATAL);
+
+    glEnable(GL_CULL_FACE);
+    CHECK_GL(FATAL);
+    glFrontFace(GL_CCW);
+    CHECK_GL(FATAL);
+    glCullFace(GL_BACK);
+    CHECK_GL(FATAL);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
+    glDisable(GL_CULL_FACE);
+    CHECK_GL(FATAL);
+    
     vbo_.Unbind();
   }
 
@@ -93,7 +103,7 @@ namespace mcc::mesh {
   void IndexedMesh::Render() {
     VertexArrayObjectBindScope vao(vao_);
     vbo_.Bind();
-        // pos
+    // pos
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(0);
@@ -429,57 +439,103 @@ namespace mcc::mesh {
     return NewMesh(BUILTIN_VAO(Icosphere), vertices, indices);
   }
 
-  static const VertexList kCubeVertices = {
-    // back
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
-    { .pos = glm::vec3( 1.0f, -1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f)},
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, -1.0f) },
+  static const glm::vec3 kFrontNormal = glm::vec3(0.0f, 0.0f, 1.0f);
+  static const glm::vec3 kBackNormal = glm::vec3(0.0f, 0.0f, -1.0f);
+  static const glm::vec3 kRightNormal = glm::vec3(1.0f, 0.0f, 0.0f);
+  static const glm::vec3 kLeftNormal = glm::vec3(-1.0f, 0.0f, 0.0f);
+  static const glm::vec3 kTopNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+  static const glm::vec3 kBottomNormal = glm::vec3(0.0f, -1.0f, 0.0f);
 
-    // front
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), },
+  static const glm::vec2 kBottomLeft = glm::vec2(0.0f, 0.0f);
+  static const glm::vec2 kBottomRight = glm::vec2(1.0f, 0.0f);
+  static const glm::vec2 kTopLeft = glm::vec2(0.0f, 1.0f);
+  static const glm::vec2 kTopRight = glm::vec2(1.0f, 1.0f);
+
+  static const glm::vec3 kRed = glm::vec3(1.0f, 0.0f, 0.0f);
+  static const glm::vec3 kBlue = glm::vec3(0.0f, 1.0f, 0.0f);
+  static const glm::vec3 kGreen = glm::vec3(0.0f, 0.0f, 1.0f);
+  static const glm::vec3 kYellow = glm::vec3(1.0f, 1.0f, 0.0f);
+  static const glm::vec3 kCyan = glm::vec3(0.0f, 0.0f, 1.0f);
+  static const glm::vec3 kPink = glm::vec3(1.0f, 0.0f, 1.0f);
+
+  static const VertexList kCubeVertices = {
+    // bottom
+    { .pos = glm::vec3(1.0f, 1.0f, 1.0f),     .uv = kTopRight,      .normal = kRightNormal,   .color = kGreen, },
+    { .pos = glm::vec3(1.0f, 1.0f,  -1.0f),   .uv = kTopLeft,       .normal = kRightNormal,   .color = kGreen, },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f),   .uv = kBottomLeft,    .normal = kRightNormal,   .color = kGreen, },
+
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f),   .uv = kBottomLeft,    .normal = kRightNormal,   .color = kGreen, },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f),   .uv = kBottomRight,   .normal = kRightNormal,   .color = kGreen, },
+    { .pos = glm::vec3(1.0f, 1.0f, 1.0f),     .uv = kTopRight,      .normal = kRightNormal,   .color = kGreen, },    
 
     // left
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(-1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f),  .uv = kBottomLeft,    .normal = kBottomNormal, .color = kBlue, },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f),   .uv = kBottomRight,   .normal = kBottomNormal, .color = kBlue, },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f),   .uv = kTopRight,      .normal = kBottomNormal, .color = kBlue, },
+    
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f),   .uv = kTopRight,      .normal = kBottomNormal, .color = kBlue, },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kTopLeft,       .normal = kBottomNormal, .color = kBlue, },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f),  .uv = kBottomLeft,    .normal = kBottomNormal, .color = kBlue, },
 
     // right
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(1.0f, 0.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kLeftNormal,  .color = kCyan, },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f),  .uv = kBottomRight,   .normal = kLeftNormal,  .color = kCyan, },
+    { .pos = glm::vec3(-1.0f, 1.0f, -1.0f),   .uv = kTopRight,      .normal = kLeftNormal,  .color = kCyan, },
+    
+    { .pos = glm::vec3(-1.0f, 1.0f, -1.0f),   .uv = kTopRight,      .normal = kLeftNormal,  .color = kCyan, },
+    { .pos = glm::vec3(-1.0f, 1.0f,  1.0f),   .uv = kTopLeft,       .normal = kLeftNormal,  .color = kCyan, },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kLeftNormal,  .color = kCyan, },
 
-    // bottom
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, -1.0f, 0.0f) },
+    // back
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f),  .uv = kBottomRight,   .normal = kBackNormal,  .color = kPink, },
+    { .pos = glm::vec3(1.0f, -1.0f, -1.0f),   .uv = kBottomLeft,    .normal = kBackNormal,  .color = kPink, },
+    { .pos = glm::vec3(1.0f, 1.0f, -1.0f),    .uv = kTopLeft,       .normal = kBackNormal,  .color = kPink, },
+    
+    { .pos = glm::vec3(1.0f, 1.0f, -1.0f),    .uv = kTopLeft,       .normal = kBackNormal,  .color = kPink, },
+    { .pos = glm::vec3(-1.0f, 1.0f, -1.0f),   .uv = kTopRight,      .normal = kBackNormal,  .color = kPink, },
+    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f),  .uv = kBottomRight,   .normal = kBackNormal,  .color = kPink, },
 
     // top 
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f), .uv = glm::vec2(1.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f), .uv = glm::vec2(1.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f), .uv = glm::vec2(0.0f, 0.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), .uv = glm::vec2(0.0f, 1.0f), .normal = glm::vec3(0.0f, 1.0f, 0.0f) },
+    { .pos = glm::vec3(-1.0f,  1.0f, 1.0f),   .uv = kBottomLeft,    .normal = kTopNormal,   .color = kRed, },
+    { .pos = glm::vec3(1.0f,  1.0f, 1.0f),    .uv = kBottomRight,   .normal = kTopNormal,   .color = kRed, },
+    { .pos = glm::vec3(1.0f,  1.0f,  -1.0f),  .uv = kTopRight,      .normal = kTopNormal,   .color = kRed, },
+    
+    { .pos = glm::vec3(1.0f,  1.0f,  -1.0f),  .uv = kTopRight,      .normal = kTopNormal,   .color = kRed, },
+    { .pos = glm::vec3(-1.0f,  1.0f,  -1.0f), .uv = kTopLeft,       .normal = kTopNormal,   .color = kRed, },
+    { .pos = glm::vec3(-1.0f,  1.0f, 1.0f),   .uv = kBottomLeft,    .normal = kTopNormal,   .color = kRed, },
+
+    // front
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kFrontNormal,   .color = kYellow, },
+    { .pos = glm::vec3(1.0f, -1.0f,  1.0f),   .uv = kBottomRight,   .normal = kFrontNormal,   .color = kYellow, },
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f),   .uv = kTopRight,      .normal = kFrontNormal,   .color = kYellow, },
+    
+    { .pos = glm::vec3(1.0f,  1.0f,  1.0f),   .uv = kTopRight,      .normal = kFrontNormal,   .color = kYellow, },
+    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f),  .uv = kTopLeft,       .normal = kFrontNormal,   .color = kYellow, },
+    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kFrontNormal,   .color = kYellow, },
+  };
+
+  static const IndexList kCubeIndices = {
+    // Bottom face
+    0, 1, 2, 
+    3, 4, 5,
+    // Left face
+    6, 7, 8,
+    9, 10, 11,
+    // Right face
+    12, 13, 14,
+    15, 16, 17,
+    // Back face
+    18, 19, 20,
+    21, 22, 23,
+    // Top face
+    24, 25, 26,
+    27, 28, 29,
+    // front face
+    30, 31, 32,
+    33, 34, 35
   };
 
   Mesh* NewCube() {
-    return NewMesh(BUILTIN_VAO(Cube), kCubeVertices);
+    return NewMesh(BUILTIN_VAO(Cube), kCubeVertices, kCubeIndices);
   }
 }

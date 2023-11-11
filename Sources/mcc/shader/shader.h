@@ -9,6 +9,7 @@
 #include "mcc/common.h"
 
 #include "mcc/cache.h"
+#include "mcc/material.h"
 
 namespace mcc::shader {
   static constexpr const char* kDefaultShaderCacheDir = "";
@@ -95,6 +96,24 @@ namespace mcc::shader {
     virtual void DeleteShader() const {
       glDeleteShader(id_);
       CHECK_GL(FATAL);
+    }
+
+    virtual void SetMaterial(const std::string& name, const Material& value) const {
+      SetVec3(name + ".ambient", value.ambient);
+      SetVec3(name + ".diffuse", value.diffuse);
+      SetVec3(name + ".specular", value.specular);
+      SetFloat(name + ".shininess", value.shininess);
+    }
+
+    virtual void SetCamera(const std::string& name, const glm::vec3 pos) const {
+      SetVec3(name + ".pos", pos);
+    }
+
+    virtual void SetLight(const std::string& name, const glm::vec3 pos, const glm::vec3 ambient, const glm::vec3 diffuse, const glm::vec3 specular) const {
+      SetVec3(name + ".pos", pos);
+      SetVec3(name + ".ambient", ambient);
+      SetVec3(name + ".diffuse", diffuse);
+      SetVec3(name + ".specular", specular);
     }
 
     Shader& operator=(const Shader& rhs) {

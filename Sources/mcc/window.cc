@@ -133,12 +133,11 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
-    glViewport(0, 0, size_[0], size_[1]);
-
     const auto e3 = Entities::CreateEntity();
     Coordinator::AddComponent(e3, renderer::Renderable {
       .shader = shader::Shader::Get("light_sphere"),
       .mesh = mesh::NewUVSphere(10, 10),
+      .material = GetDefaultMaterial(),
     });
     Coordinator::AddComponent(e3, physics::Transform {
       .position = glm::vec3(0.0f, 3.0f, 0.0f),
@@ -151,24 +150,25 @@ namespace mcc {
     });
     DLOG(INFO) << "light sphere: " << e3;
 
-    const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
-    const auto e2 = Entities::CreateEntity();
-    const auto mesh = mesh::NewCube();
-    Coordinator::AddComponent(e2, renderer::Renderable {
-      .shader = shader::Shader::Get("cube"),
-      .mesh = mesh,
-      .texture = texture,
-    });
-    Coordinator::AddComponent(e2, physics::Transform {
-      .position = glm::vec3(0.0f, 0.0f, 0.0f),
-      .rotation = glm::vec3(0.0f),
-      .scale = glm::vec3(1.0f),
-    });
-    Coordinator::AddComponent(e2, physics::RigidBody {
-      .mass = 1.0f,
-      .velocity = glm::vec3(0.0f),
-    });
-    DLOG(INFO) << "cube: " << e2;
+    // const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
+    // const auto e2 = Entities::CreateEntity();
+    // const auto mesh = mesh::NewCube();
+    // Coordinator::AddComponent(e2, renderer::Renderable {
+    //   .shader = shader::Shader::Get("cube"),
+    //   .mesh = mesh,
+    //   .texture = texture,
+    //   .material = GetMaterial("emerald"),
+    // });
+    // Coordinator::AddComponent(e2, physics::Transform {
+    //   .position = glm::vec3(0.0f, 0.0f, 0.0f),
+    //   .rotation = glm::vec3(0.0f),
+    //   .scale = glm::vec3(1.0f),
+    // });
+    // Coordinator::AddComponent(e2, physics::RigidBody {
+    //   .mass = 1.0f,
+    //   .velocity = glm::vec3(0.0f),
+    // });
+    // DLOG(INFO) << "cube: " << e2;
 
     Mouse::GetButtonEventSubject()
       .get_observable()

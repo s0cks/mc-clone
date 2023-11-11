@@ -1,32 +1,45 @@
 #version 330 core
-
-uniform sampler2D tex0;
-uniform vec3 cameraPos;
-uniform vec3 lightPos;
-uniform vec3 lightColor;
-uniform float lightIntensity;
-
-uniform vec3 globalLightPos;
-uniform vec3 globalLightColor;
-uniform float globalLightIntensity;
-
-in vec3 inColor;
-in vec2 inTex;
-in vec3 in_Pos;
-
 out vec4 FragColor;
 
+struct Material {
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+  float shininess;
+};
+
+struct Light {
+  vec3 pos;
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
+};
+
+struct Camera {
+  vec3 pos;
+};
+
+uniform sampler2D tex;
+uniform Camera camera;
+uniform Material material;
+uniform Light light;
+uniform vec3 lightColor;
+
+in vec3 vPos;
+in vec3 vNormal;
+in vec2 vUv;
+in vec3 vColor;
+
 void main() {
-  float ambient = lightIntensity;
-  vec3 normal = vec3(0.0f, 1.0f, 0.0f);
-  vec3 lightDirection = normalize(lightPos - in_Pos);
-  float diffuse = max(dot(normal, lightDirection), 0.0f);
+  vec3 ambient = light.ambient * material.ambient;
+  vec3 lightDir = normalize(light.pos - vPos);
+  float diff = max(dot(vNormal, lightDir), 0.0f);
+  vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
-  float specLight = 0.9f;
-  vec3 viewDirection = normalize(cameraPos - in_Pos);
-  vec3 reflectionDirection = reflect(-lightDirection, normal);
-  float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 8);
-  float specular = specAmount * specLight;
+  vec3 viewDir = normalize(camera.pos - vPos);
+  vec3 reflectDir = reflect(-lightDir, vNormal);
+  float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess * 10);
+  vec3 specular = light.specular * (spec * material.specular);
 
-  FragColor = texture(tex0, inTex) * vec4(lightColor, 1.0f) * (diffuse * ambient * specular);
+  FragColor = texture(tex, vUv) * vec4(lightColor, 1.0f) * vec4(ambient + diffuse + specular, 1.0f);
 }
