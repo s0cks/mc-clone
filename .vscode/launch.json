@@ -32,7 +32,10 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/Benchmarks/minecraft-benchmarks",
-      "args": [],
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--benchmark_filter=ObjParser*"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

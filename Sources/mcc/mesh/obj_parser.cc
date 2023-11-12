@@ -22,8 +22,9 @@ namespace mcc {
             LOG(ERROR) << "failed to parse vertex.";
             return false;
           }
+          num_vertices_++;
           if(config_.on_vertex_parsed)
-            config_.on_vertex_parsed(this, num_vertices_++, current_vertex_);
+            config_.on_vertex_parsed(this, num_vertices_, current_vertex_);
           break;
         }
         case Token::kTexcoord: {
@@ -31,8 +32,9 @@ namespace mcc {
             LOG(ERROR) << "failed to parse texcoord.";
             return false;
           }
+          num_uvs_++;
           if(config_.on_uv_parsed)
-            config_.on_uv_parsed(this, num_uvs_++, current_uv_);
+            config_.on_uv_parsed(this, num_uvs_, current_uv_);
           break;
         }
         case Token::kNormal: {
@@ -40,8 +42,9 @@ namespace mcc {
             LOG(ERROR) << "failed to parse normal.";
             return false;
           }
+          num_normals_++;
           if(config_.on_normal_parsed)
-            config_.on_normal_parsed(this, num_normals_++, current_normal_);
+            config_.on_normal_parsed(this, num_normals_, current_normal_);
           break;
         }
         case Token::kFace: {
@@ -191,10 +194,10 @@ namespace mcc {
           return false;
       }
     } while(true);
-
   finish_face:
+    num_faces_++;
     if(config_.on_face_parsed)
-      config_.on_face_parsed(this, num_faces_++, &face_vertices[0], face_vertices.size());
+      config_.on_face_parsed(this, num_faces_, &face_vertices[0], face_vertices.size());
     return true;
   }
 

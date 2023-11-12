@@ -194,6 +194,18 @@ namespace mcc {
       OnNormalParsed on_normal_parsed;
       OnUvParsed on_uv_parsed;
     };
+
+    struct Stats {
+      uint64_t vertices;
+      uint64_t normals;
+      uint64_t uvs;
+      uint64_t faces;
+
+      Stats() = default;
+      Stats(const Stats& rhs) = default;
+      ~Stats() = default;
+      Stats& operator=(const Stats& rhs) = default;
+    };
   private:
     Config config_;
     void* data_;
@@ -201,12 +213,16 @@ namespace mcc {
     Token peek_;
     uint64_t row_;
     uint64_t column_;
+    
     glm::vec3 current_vertex_;
     uint64_t num_vertices_;
+    
     glm::vec3 current_normal_;
     uint64_t num_normals_;
+    
     glm::vec2 current_uv_;
     uint64_t num_uvs_;
+
     FaceVertex current_fv_;
     uint64_t num_faces_;
 
@@ -281,6 +297,9 @@ namespace mcc {
       current_fv_(),
       num_faces_(0) {
     }
+    explicit ObjParser(FILE* file, void* data = nullptr):
+      ObjParser(Config{}, file, data) {  
+    }
     ~ObjParser() = default;
 
     void* data() const {
@@ -288,6 +307,15 @@ namespace mcc {
     }
 
     bool ParseFile();
+
+    Stats stats() const {
+      return Stats {
+        .vertices = num_vertices_,
+        .normals = num_normals_,
+        .uvs = num_uvs_,
+        .faces = num_faces_,
+      };
+    }
   };
 }
 
