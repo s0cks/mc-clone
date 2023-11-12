@@ -6,6 +6,7 @@
 #include "mcc/input/mouse.h"
 #include "mcc/engine/engine.h"
 #include "mcc/component/component.h"
+#include "mcc/component/component_state_table.h"
 
 namespace mcc::camera {
   class PerspectiveCameraBehavior;

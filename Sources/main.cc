@@ -16,7 +16,6 @@
 #include "mcc/settings.h"
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/engine/engine.h"
-#include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/physics/physics.h"
 #include "mcc/terrain/terrain.h"

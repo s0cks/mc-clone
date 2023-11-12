@@ -89,7 +89,6 @@ add_library(${PROJECT_NAME}
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
-  mcc/ecs/coordinator.h
   mcc/ecs/entity.h mcc/ecs/entity.cc
   mcc/gui/gui.h mcc/gui/gui.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc

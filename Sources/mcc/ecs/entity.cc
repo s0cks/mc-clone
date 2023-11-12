@@ -10,6 +10,12 @@ namespace mcc {
   FOR_EACH_ENTITY_EVENT(DEFINE_EVENT_SUBJECT)
 #undef DEFINE_EVENT_SUBJECT
 
+  void Entity::UpdateSignature(const ComponentId id, const bool value) const {
+    auto sig = Entities::GetSignature(*this);
+    sig.set(id, value);
+    Entities::SetSignature((*this), sig);
+  }
+
   void Entities::Initialize() {
     for(auto e = 0; e < kMaxNumberOfEntities; e++)
         available_.push(e);

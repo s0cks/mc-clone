@@ -14,6 +14,8 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
+#include "mcc/component/component_id.h"
+#include "mcc/component/component_state.h"
 
 namespace mcc {
   typedef uint64_t EntityId;
@@ -39,6 +41,18 @@ namespace mcc {
     };
   private:
     EntityId id_;
+
+    void UpdateSignature(const ComponentId id, const bool value) const;
+
+    inline void
+    AddToSignature(const ComponentId id) const {
+      return UpdateSignature(id, true);
+    }
+
+    inline void
+    RemoveFromSignature(const ComponentId id) const {
+      return UpdateSignature(id, false);
+    }
   public:
     constexpr Entity(const EntityId id = kInvalidEntityId):
       id_(id) {
@@ -77,6 +91,23 @@ namespace mcc {
       stream << "id=" << rhs.id_;
       stream << ")";
       return stream;
+    }
+
+    template<typename T>
+    ComponentState<T> AddComponent(const T& component) const {
+      auto state = ComponentState<T>(component);
+      if(!T::PutState((*this), state)) {
+        LOG(ERROR) << "failed to put " << state << " for " << (*this);
+        return state;
+      }
+      AddToSignature(T::GetComponentId());
+      return state;
+    }
+
+    template<typename T>
+    void RemoveComponent() const {
+      LOG_IF(ERROR, !T::RemoveState(*this)) << "failed to remove state for " << *this;
+      return RemoveFromSignature(T::GetComponentId());
     }
   public:
 #define DECLARE_GET_EVENT_OBSERVABLE(Name) \

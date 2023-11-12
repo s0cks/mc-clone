@@ -19,7 +19,6 @@
 #include "mcc/input/mouse.h"
 #include "mcc/input/keyboard.h"
 
-#include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/camera/perspective_camera.h"
@@ -134,17 +133,17 @@ namespace mcc {
 
   void Window::OnPostInit() {
     const auto e3 = Entities::CreateEntity();
-    Coordinator::AddComponent(e3, renderer::Renderable {
+    e3.AddComponent<renderer::Renderable>({
       .shader = shader::Shader::Get("light_sphere"),
       .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
       .material = GetDefaultMaterial(),
     });
-    Coordinator::AddComponent(e3, physics::Transform {
+    e3.AddComponent<physics::Transform>({
       .position = glm::vec3(0.0f, 3.0f, 0.0f),
       .rotation = glm::vec3(0.0f),
       .scale = glm::vec3(1.0f),
     });
-    Coordinator::AddComponent(e3, AmbientLight {
+    e3.AddComponent<AmbientLight>({
       .color = glm::vec3(1.0f, 0.0f, 0.0f),
       .intensity = 0.8f,
     });

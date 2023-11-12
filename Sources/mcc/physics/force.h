@@ -3,6 +3,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/component/component.h"
+#include "mcc/component/component_state_table.h"
 
 namespace mcc::physics {
   struct Force {

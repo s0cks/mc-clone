@@ -4,7 +4,6 @@
 #include "mcc/physics/force.h"
 #include "mcc/physics/transform.h"
 #include "mcc/physics/rigid_body.h"
-#include "mcc/ecs/coordinator.h"
 
 namespace mcc::physics {
   static constexpr const auto kGravityForce = glm::vec3(0.0f, -9.81f, 0.0f);

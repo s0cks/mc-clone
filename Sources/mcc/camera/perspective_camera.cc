@@ -1,6 +1,5 @@
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/renderer/renderer.h"
-#include "mcc/ecs/coordinator.h"
 #include "mcc/camera/camera.h"
 #include "mcc/engine/engine.h"
 
@@ -96,7 +95,7 @@ namespace mcc::camera {
 
   Entity PerspectiveCameraBehavior::CreateCameraEntity(const glm::vec3 pos) {
     const auto e = Entities::CreateEntity();
-    auto camera = Coordinator::AddComponent(e, PerspectiveCamera {
+    auto camera =e.AddComponent<PerspectiveCamera>({
       .pos = pos,
       .up = glm::vec3(0.0f, 1.0f, 0.0f),
       .world_up = glm::vec3(0.0f, 1.0f, 0.0f),

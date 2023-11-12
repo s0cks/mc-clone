@@ -1,5 +1,4 @@
 #include "mcc/renderer/renderer.h"
-#include "mcc/ecs/coordinator.h"
 #include "mcc/engine/engine.h"
 
 #include "mcc/thread_local.h"

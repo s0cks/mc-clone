@@ -1,5 +1,4 @@
 #include "mcc/renderer/stage.h"
-#include "mcc/ecs/coordinator.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/lighting/ambient_light.h"
 #include "mcc/physics/transform.h"

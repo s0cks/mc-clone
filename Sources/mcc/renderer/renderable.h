@@ -5,6 +5,7 @@
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
 #include "mcc/component/component.h"
+#include "mcc/component/component_state_table.h"
 
 #include "mcc/material.h"
 

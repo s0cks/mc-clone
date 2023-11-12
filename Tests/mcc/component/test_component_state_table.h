@@ -2,7 +2,7 @@
 #define MCC_TEST_COMPONENT_STATE_TABLE_H
 
 #include <gtest/gtest.h>
-#include "mcc/component/component_state.h"
+#include "mcc/component/component_state_table.h"
 
 namespace mcc {
   class ComponentStateTableTest : public ::testing::Test {
