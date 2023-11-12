@@ -41,6 +41,7 @@ namespace mcc::renderer {
   static RelaxedAtomic<uint64_t> frames_;
   static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<uint64_t> entities_;
+  static RelaxedAtomic<uint64_t> vertices_;
 
   static mesh::Mesh* mesh_;
   static shader::Shader shader_;
@@ -185,6 +186,22 @@ namespace mcc::renderer {
 
   void Renderer::SetEntityCounter(const uint64_t value) {
     entities_ = value;
+  }
+
+  void Renderer::IncrementVertexCounter(const uint64_t value) {
+    vertices_ += value;
+  }
+
+  void Renderer::DecrementVertexCounter(const uint64_t value) {
+    vertices_ -= value;
+  }
+
+  void Renderer::SetVertexCounter(const uint64_t value) {
+    vertices_ = value;
+  }
+
+  uint64_t Renderer::GetVertexCounter() {
+    return (uint64_t) vertices_;
   }
 
   uint64_t Renderer::GetEntityCounter() {

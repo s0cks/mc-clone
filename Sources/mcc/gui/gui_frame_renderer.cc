@@ -24,6 +24,7 @@ namespace mcc::gui {
       Renderer::SetMode(Renderer::kWireframeMode);
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
     nk_labelf(ctx, NK_TEXT_LEFT, "Shaders: %" PRIu64, shader::Shader::GetCacheSize());
+    nk_labelf(ctx, NK_TEXT_LEFT, "Vertices: %" PRIu64, renderer::Renderer::GetVertexCounter());
 
     {
       nk_layout_row_dynamic(ctx, size.y - (size.y - 4), 5);

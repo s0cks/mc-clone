@@ -47,6 +47,7 @@ namespace mcc::renderer {
     const auto& mesh = (*renderable)->mesh;
     mesh->Render();
     Renderer::IncrementEntityCounter();
+    Renderer::IncrementVertexCounter(mesh->vbo().length());
   }
 
   void RenderEntitiesStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {

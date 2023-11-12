@@ -1,7 +1,9 @@
 #include <unordered_map>
 
+#include "mcc/flags.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/engine/engine.h"
+#include "mcc/mesh/mesh_loader.h"
 
 namespace mcc::mesh {
 #define FOR_EACH_BUILTIN_MESH(V) \
@@ -77,15 +79,7 @@ namespace mcc::mesh {
     glEnableVertexAttribArray(3);
     CHECK_GL(FATAL);
 
-    glEnable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
-    glFrontFace(GL_CCW);
-    CHECK_GL(FATAL);
-    glCullFace(GL_BACK);
-    CHECK_GL(FATAL);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
-    CHECK_GL(FATAL);
-    glDisable(GL_CULL_FACE);
     CHECK_GL(FATAL);
     
     vbo_.Unbind();
@@ -537,5 +531,11 @@ namespace mcc::mesh {
 
   Mesh* NewCube() {
     return NewMesh(BUILTIN_VAO(Cube), kCubeVertices, kCubeIndices);
+  }
+
+  Mesh* LoadFrom(const std::string& filename) {
+    VertexArrayObject vao;
+    ObjMeshLoader loader(vao, FLAGS_resources + "/meshes" + filename);
+    return loader.LoadMesh();
   }
 }

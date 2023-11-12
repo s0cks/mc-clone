@@ -136,7 +136,7 @@ namespace mcc {
     const auto e3 = Entities::CreateEntity();
     Coordinator::AddComponent(e3, renderer::Renderable {
       .shader = shader::Shader::Get("light_sphere"),
-      .mesh = mesh::NewUVSphere(10, 10),
+      .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
       .material = GetDefaultMaterial(),
     });
     Coordinator::AddComponent(e3, physics::Transform {

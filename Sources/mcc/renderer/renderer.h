@@ -27,6 +27,7 @@ namespace mcc::renderer {
     friend class PreRenderStage;
     friend class RenderStage;
     friend class PostRenderStage;
+    friend class RenderTerrainStage;
     friend class RenderEntitiesStage;
     DECLARE_STATE_MACHINE(Renderer);
   public:
@@ -57,12 +58,22 @@ namespace mcc::renderer {
     ResetEntityCounter() {
       return SetEntityCounter(0);
     }
+
+    static void IncrementVertexCounter(const uint64_t value = 1);
+    static void DecrementVertexCounter(const uint64_t value = 1);
+    static void SetVertexCounter(const uint64_t value);
+
+    static inline void
+    ResetVertexCounter() {
+      return SetVertexCounter(0);
+    }
   public:
     static void Init();
     static void Run(const uv_run_mode = UV_RUN_NOWAIT); //TODO: make private
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
     static uint64_t GetEntityCounter();
+    static uint64_t GetVertexCounter();
     static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
     static uv_loop_t* GetLoop();

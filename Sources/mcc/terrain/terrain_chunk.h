@@ -27,6 +27,14 @@ namespace mcc::terrain {
     }
 
     void Render();
+
+    TerrainVertexBuffer vbo() const {
+      return vbo_;
+    }
+
+    IndexBuffer ibo() const {
+      return ibo_;
+    }
   public:
     static void Init();
     static TerrainChunk* New(const VertexList& vertices, const IndexList& indices);

@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mesh/test_mesh.h mcc/mesh/test_mesh.cc
   mcc/mock_gl.h mcc/mock_gl.cc
   mcc/mock_glfw.h mcc/mock_glfw.cc
+  mcc/mesh/test_obj_parser.h mcc/mesh/test_obj_parser.cc
   mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}

@@ -8,6 +8,7 @@ namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
     glDisable(GL_CULL_FACE);
     CHECK_GL(FATAL);
     terrain::Terrain::Render(projection, view);
+    Renderer::IncrementVertexCounter(terrain::Terrain::GetChunk()->vbo().length());
     glEnable(GL_CULL_FACE);
     CHECK_GL(FATAL);
   }

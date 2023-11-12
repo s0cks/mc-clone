@@ -15,5 +15,6 @@ namespace mcc::renderer {
     CHECK_GL(FATAL);
 
     Renderer::ResetEntityCounter();
+    Renderer::ResetVertexCounter();
   }
 }

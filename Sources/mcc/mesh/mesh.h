@@ -73,6 +73,8 @@ namespace mcc::mesh {
   Mesh* NewCube();
   Mesh* NewPlaneXY(const uint64_t xSize, const uint64_t ySize);
   Mesh* NewPlaneXZ(const uint64_t xSize, const uint64_t zSize);
+
+  Mesh* LoadFrom(const std::string& filename);
 }
 
 #endif //MCC_MESH_H

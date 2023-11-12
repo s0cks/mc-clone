@@ -52,6 +52,8 @@ add_library(${PROJECT_NAME}
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/index.h
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
+  mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
+  mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
   mcc/buffer.h mcc/buffer.cc
   mcc/uv_utils.h
   mcc/os_thread.h mcc/os_thread.cc
