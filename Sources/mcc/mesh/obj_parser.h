@@ -52,6 +52,7 @@ namespace mcc {
 
   struct Token {
   public:
+    static constexpr const uint64_t kMaxLength = 1024;
     enum Kind {
       kUnknown,
       // keywords
@@ -98,60 +99,46 @@ namespace mcc {
   public:
     Kind kind;
     Position pos;
-
-    const char* text;
+    uint8_t* data;
+    uint64_t length;
 
     Token():
       kind(Token::kUnknown),
       pos(0, 0),
-      text(nullptr) {
+      data(nullptr),
+      length(0) {
     }
     Token(const Kind k, const Position p):
       kind(k),
-      pos(p) {  
+      pos(p),
+      data(nullptr),
+      length(0) {
     }
     Token(const Kind k,
           const uint64_t r,
           const uint64_t c):
       kind(k),
       pos(r, c),
-      text(nullptr) { 
+      data(nullptr),
+      length(0) { 
     }
     Token(const Kind k,
           const uint64_t r,
           const uint64_t c,
-          const char* t,
+          uint8_t* t,
           const uint64_t l):
       kind(k),
       pos(r, c),
-      text(strndup(t, l)) { 
-    }
-    Token(const Kind k,
-          const uint64_t r,
-          const uint64_t c,
-          const uint8_t* t,
-          const uint64_t l):
-      kind(k),
-      pos(r, c),
-      text(strndup((const char*) t, l)) {
-    }
-    Token(const Kind k,
-          const uint64_t r,
-          const uint64_t c,
-          const char s):
-      kind(k),
-      pos(r, c),
-      text(strndup(&s, 1)) {  //TODO: this is dumb af
+      data(t),
+      length(l) {
     }
     Token(const Token& rhs):
       kind(rhs.kind),
       pos(rhs.pos),
-      text(rhs.text ? strdup(rhs.text) : nullptr) {
+      data(rhs.data),
+      length(rhs.length) {
     }
-    ~Token() {
-      if(text)
-        free((void*) text);
-    }
+    ~Token() {}
 
     bool valid() const {
       return kind != Token::kUnknown;
@@ -161,27 +148,20 @@ namespace mcc {
       return kind == Token::kUnknown;
     }
 
-    bool has_text() const {
-      return text != nullptr;
-    }
-
     void operator=(const Token& rhs) {
       kind = rhs.kind;
       pos = rhs.pos;
-      if(text)
-        free((void*) text);
-      text = nullptr;
-      if(rhs.text)
-        text = strdup(rhs.text);
+      data = rhs.data;
+      length = rhs.length;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Token& rhs) {
       stream << "Token(";
       stream << "kind=" << rhs.kind << ", ";
       stream << "pos=" << rhs.pos;
-      if(rhs.text) {
+      if(rhs.length > 0) {
         stream << ", ";
-        stream << "text=" << rhs.text;
+        stream << "text=" << std::string((const char*) rhs.data, rhs.length);
       }
       stream << ")";
       return stream;
@@ -204,6 +184,15 @@ namespace mcc {
       OnVertexParsed on_vertex_parsed;
       OnNormalParsed on_normal_parsed;
       OnUvParsed on_uv_parsed;
+      uint64_t num_face_vertices;
+
+      Config():
+        on_face_parsed(nullptr),
+        on_vertex_parsed(nullptr),
+        on_normal_parsed(nullptr),
+        on_uv_parsed(nullptr),
+        num_face_vertices(3) {
+      }
     };
 
     struct Stats {
@@ -224,26 +213,19 @@ namespace mcc {
     Token peek_;
     uint64_t row_;
     uint64_t column_;
-    
-    uint8_t buffer_[kDefaultObjParserBufferSize];
-
-    uint8_t token_buffer_[kDefaultObjParserTokenBufferSize];
-    uint64_t token_length_;
-
     uint64_t nread_;
     uint64_t rpos_;
-    
-    glm::vec3 current_vertex_;
+    uint8_t buffer_[kDefaultObjParserBufferSize];
+    uint64_t token_start_;
+    uint64_t token_end_;
+    uint64_t token_length_;
+    glm::vec3 current_vec_;
     uint64_t num_vertices_;
-    
-    glm::vec3 current_normal_;
     uint64_t num_normals_;
-    
-    glm::vec2 current_uv_;
     uint64_t num_uvs_;
-
-    FaceVertex current_fv_;
+    uint64_t num_fvs_;
     uint64_t num_faces_;
+    FaceVertex* face_vertices_;
 
     static inline bool IsWhitespace(const char c) {
       switch(c) {
@@ -281,8 +263,7 @@ namespace mcc {
         rpos_ = 0;
       }
 
-      const auto c = (char)buffer_[rpos_];
-      rpos_ += 1;
+      const auto c = (char)buffer_[rpos_++];
       switch(c) {
         case '\n':
           row_ += 1;
@@ -323,24 +304,33 @@ namespace mcc {
       peek_(),
       row_(1),
       column_(1),
-      current_vertex_(),
+      current_vec_(),
       num_vertices_(0),
-      current_normal_(),
       num_normals_(0),
-      current_uv_(),
       num_uvs_(0),
-      current_fv_(),
       num_faces_(0),
       rpos_(0),
       nread_(0),
       buffer_(),
-      token_buffer_(),
-      token_length_(0) {
+      token_start_(0),
+      token_end_(0),
+      face_vertices_(nullptr) {
+      if(config.num_face_vertices > 0) {
+        face_vertices_ = (FaceVertex*)malloc(sizeof(FaceVertex) * config.num_face_vertices);
+        FaceVertex fv;
+        memset(face_vertices_, 0, sizeof(FaceVertex) * config.num_face_vertices);
+        for(auto idx = 0; idx < config.num_face_vertices; idx++) {
+          memcpy(&face_vertices_[idx], &fv, sizeof(FaceVertex));
+        }
+      }
     }
     explicit ObjParser(FILE* file, void* data = nullptr):
       ObjParser(Config{}, file, data) {  
     }
-    ~ObjParser() = default;
+    ~ObjParser() {
+      if(face_vertices_ && config_.num_face_vertices > 0)
+        free(face_vertices_);
+    }
 
     void* data() const {
       return data_;
