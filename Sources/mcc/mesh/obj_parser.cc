@@ -1,6 +1,9 @@
 #include "mcc/mesh/obj_parser.h"
 
 namespace mcc {
+#define UNEXPECTED_TOKEN(Level, Next) \
+  LOG(Level) << "unexpected token: " << (Next);
+
 #define EXPECT_NEXT(Name) ({                                    \
   const auto next = PeekToken(false);                           \
   switch(next.kind) {                                           \
@@ -8,7 +11,7 @@ namespace mcc {
       NextToken(false);                                         \
       break;                                                    \
     default:                                                    \
-      LOG(ERROR) << "unexpected: " << next;                     \
+      UNEXPECTED_TOKEN(ERROR, next);                            \
       return false;                                             \
   }                                                             \
 })
@@ -57,7 +60,7 @@ namespace mcc {
         case Token::kEOF:
           return true;
         default:
-          LOG(ERROR) << "unexpected: " << next;
+          UNEXPECTED_TOKEN(ERROR, next);
           return false;
       }
     } while(true);
@@ -72,7 +75,7 @@ namespace mcc {
         (*result) = static_cast<uint64_t>(atoll(next.text));
         return true;
       default:
-        LOG(ERROR) << "unexpected " << next;
+        UNEXPECTED_TOKEN(ERROR, next);
         return false;
     }
   }
@@ -89,7 +92,7 @@ namespace mcc {
         (*result) = static_cast<float>(atoll(next.text));
         return true;
       default:
-        LOG(ERROR) << "unexpected " << next;
+        UNEXPECTED_TOKEN(ERROR, next);
         return false;
     }
   }
@@ -102,7 +105,7 @@ namespace mcc {
       return false;
     EXPECT_NEXT(Space);
     if(!ParseFloat(&result[2]))
-    return false;
+      return false;
     return true;
   }
 
@@ -158,17 +161,17 @@ namespace mcc {
               case Token::kFace:
                 return true;
               default:
-                LOG(ERROR) << "expected: " << next;
+                UNEXPECTED_TOKEN(ERROR, next);
                 return false;
             }
             return true;
           default:
-            LOG(ERROR) << "unexpected: " << next;
+            UNEXPECTED_TOKEN(ERROR, next);
             return false;
         }
         return true;
       default:
-        LOG(ERROR) << "unexpected: " << next;
+        UNEXPECTED_TOKEN(ERROR, next);
         return false;
     }
     return false;
@@ -191,6 +194,7 @@ namespace mcc {
         case Token::kEOF:
           goto finish_face;
         default:
+          UNEXPECTED_TOKEN(ERROR, next);
           return false;
       }
     } while(true);
