@@ -233,8 +233,8 @@ namespace mcc {
     // keyword check
     switch(next) {
       case 'v': {
-        char peek;
-        switch(peek = PeekChar()) {
+        char peek = PeekChar();
+        switch(peek) {
           case 'n':
             NextChar();
             return Token(Token::kNormal, row_, column_);
@@ -254,20 +254,22 @@ namespace mcc {
         break;
     }
 
+    token_length_ = 0;
+    memset(token_buffer_, 0, sizeof(token_buffer_));
     if(IsDigit(next) || next == '-') {
-      std::string data(1, next);
+      token_buffer_[token_length_++] = next;
       bool whole = true;
       bool negative = next == '-';
       while(IsDigit(next = PeekChar()) || next == '.' || next == 'e' || next == '-') {
-        data += next;
+        token_buffer_[token_length_++] = next;
         if(next == '.')
           whole = false;
         next = NextChar();
-      } 
+      }
       if(whole) {
-        return Token(Token::kInteger, row_, column_, data.c_str(), data.length());
+        return Token(Token::kInteger, row_, column_, token_buffer_, token_length_);
       } else {
-        return Token(Token::kFloat, row_, column_, data.c_str(), data.length());
+        return Token(Token::kFloat, row_, column_, token_buffer_, token_length_);
       }
     }
 

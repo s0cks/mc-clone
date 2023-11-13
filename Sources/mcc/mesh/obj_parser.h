@@ -129,6 +129,15 @@ namespace mcc {
     Token(const Kind k,
           const uint64_t r,
           const uint64_t c,
+          const uint8_t* t,
+          const uint64_t l):
+      kind(k),
+      pos(r, c),
+      text(strndup((const char*) t, l)) {
+    }
+    Token(const Kind k,
+          const uint64_t r,
+          const uint64_t c,
           const char s):
       kind(k),
       pos(r, c),
@@ -186,6 +195,8 @@ namespace mcc {
   typedef bool (*OnNormalParsed)(const ObjParser* parser, const uint64_t idx, const glm::vec3& value);
   typedef bool (*OnUvParsed)(const ObjParser* parser, const uint64_t idx, const glm::vec2& value);
 
+  static constexpr const uint64_t kDefaultObjParserBufferSize = 4096;
+  static constexpr const uint64_t kDefaultObjParserTokenBufferSize = 1024;
   class ObjParser {
   public:
     struct Config {
@@ -213,6 +224,14 @@ namespace mcc {
     Token peek_;
     uint64_t row_;
     uint64_t column_;
+    
+    uint8_t buffer_[kDefaultObjParserBufferSize];
+
+    uint8_t token_buffer_[kDefaultObjParserTokenBufferSize];
+    uint64_t token_length_;
+
+    uint64_t nread_;
+    uint64_t rpos_;
     
     glm::vec3 current_vertex_;
     uint64_t num_vertices_;
@@ -243,13 +262,27 @@ namespace mcc {
     }
     
     inline char PeekChar() {
-      int c = getc(file_);
-      ungetc(c, file_);
-      return (char) c;
+      if(rpos_ >= nread_) {
+        memset(buffer_, 0, sizeof(buffer_));
+        nread_ = fread(buffer_, sizeof(uint8_t), kDefaultObjParserBufferSize, file_);
+        if(nread_ == 0)
+          return EOF;
+        rpos_ = 0;
+      }
+      return (char)buffer_[rpos_];
     }
 
     inline char NextChar() {
-      const auto c = (char)getc(file_);
+      if((rpos_ + 1) > nread_) {
+        memset(buffer_, 0, sizeof(buffer_));
+        nread_ = fread(buffer_, sizeof(uint8_t), kDefaultObjParserBufferSize, file_);
+        if(nread_ == 0)
+          return EOF;
+        rpos_ = 0;
+      }
+
+      const auto c = (char)buffer_[rpos_];
+      rpos_ += 1;
       switch(c) {
         case '\n':
           row_ += 1;
@@ -263,7 +296,9 @@ namespace mcc {
 
     inline char NextRealChar() {
       char next;
-      while(IsWhitespace(next = NextChar()));
+      do {
+        next = NextChar();
+      } while(IsWhitespace(next));
       return next;
     }
 
@@ -295,7 +330,12 @@ namespace mcc {
       current_uv_(),
       num_uvs_(0),
       current_fv_(),
-      num_faces_(0) {
+      num_faces_(0),
+      rpos_(0),
+      nread_(0),
+      buffer_(),
+      token_buffer_(),
+      token_length_(0) {
     }
     explicit ObjParser(FILE* file, void* data = nullptr):
       ObjParser(Config{}, file, data) {  
