@@ -46,23 +46,18 @@ namespace mcc::terrain {
       lightPos = (*lt)->position;
       return true;
     });
-    const auto& cameraPos = (*camera::PerspectiveCameraBehavior::GetCameraComponent())->pos;
-
     const auto material = GetMaterial(Terrain::GetTerrainMaterial());
 
     GetSelectedTexture().Bind0();
     shader_.ApplyShader();
-    shader_.SetMat4("projection", projection_);
-    shader_.SetMat4("view", view_);
+    shader_.SetUniformBlock("Camera", 0);
     shader_.SetMat4("model", chunk->GetModelMatrix());
     shader_.SetInt("tex", 0);
-    shader_.SetCamera("camera", cameraPos);
     const auto diffuseColor = lightColor * glm::vec3(0.5f);
     const auto ambientColor = diffuseColor * glm::vec3(0.2f);
     shader_.SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
     shader_.SetVec3("lightColor", lightColor);
     shader_.SetMaterial("material", material);
-
     shader_.ApplyShader();
     chunk->Render();
   }

@@ -2,6 +2,7 @@
 #include "mcc/window.h"
 #include "mcc/gui/gui.h"
 #include "mcc/renderer/renderer.h"
+#include "mcc/camera/perspective_camera.h"
 
 namespace mcc::renderer {
   void PreRenderStage::OnPrepare(uv_idle_t* handle) {
@@ -40,5 +41,11 @@ namespace mcc::renderer {
     CHECK_GL(FATAL);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
+
+    const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
+    LOG_IF(FATAL, !camera) << "no camera component found.";
+    (*camera)->ComputeMatrices();
+    const auto cam_buff = Renderer::GetCameraUniformBuffer();
+    cam_buff->Update((const camera::PerspectiveCameraData*) (*camera).data());
   }
 }

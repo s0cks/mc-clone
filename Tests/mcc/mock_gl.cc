@@ -68,6 +68,10 @@ void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei widt
   __ glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
+void glDeleteTextures(GLsizei n, const GLuint* arrays) {
+  __ glDeleteTextures(n, arrays);
+}
+
 // shaders
 void glAttachShader(GLuint program, GLuint shader) {
   __ glAttachShader(program, shader);
@@ -251,4 +255,20 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
 
 void glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid* indices)  {
   __ glDrawElements(mode, count, type, indices);
+}
+
+void glBindBufferRange(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size) {
+  __ glBindBufferRange(target, index, buffer, offset, size);
+}
+
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data) {
+  __ glBufferSubData(target, offset, size, data);
+}
+
+GLuint glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName) {
+  __ glGetUniformBlockIndex(program, uniformBlockName);
+}
+
+void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding) {
+  __ glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
 }

@@ -176,7 +176,7 @@ namespace mcc {
       (*vaos) = (VertexArrayObject*)malloc(sizeof(VertexArrayObject) * num_vaos);
       for(auto idx = 0; idx < num_vaos; idx++) {
         const auto vao = VertexArrayObject(ids[idx]);
-        memcpy(&(*vaos)[idx], &vao, sizeof(VertexArrayObject));
+        memcpy((void*) &vaos[idx], (void*) &vao, sizeof(VertexArrayObject));
       }
       DLOG(INFO) << "done.";
     }

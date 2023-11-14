@@ -58,7 +58,7 @@ namespace mcc::terrain {
     static void OnPostInit();
 
     static void SetChunk(TerrainChunk* chunk);
-    static void Render(const glm::mat4 projection, const glm::mat4 view);
+    static void Render();
   public:
     static void Init();
     static VertexArrayObject GetVao();

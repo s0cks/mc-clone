@@ -44,8 +44,8 @@ namespace mcc::terrain {
     
   }
 
-  void Terrain::Render(const glm::mat4 projection, const glm::mat4 view) {
-    TerrainRenderer renderer(projection, view);
+  void Terrain::Render() {
+    TerrainRenderer renderer;
     renderer.Render();
   }
 

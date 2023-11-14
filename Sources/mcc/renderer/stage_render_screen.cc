@@ -4,7 +4,7 @@
 #include "mcc/gui/gui.h"
 
 namespace mcc::renderer {
-  void RenderScreenStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
+  void RenderScreenStage::Render(const Tick& tick) {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
     auto proj = glm::mat4(1.0f);

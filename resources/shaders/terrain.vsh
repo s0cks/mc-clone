@@ -3,9 +3,13 @@ layout (location = 0) in vec3 pos;
 layout (location = 1) in vec2 uv;
 layout (location = 2) in vec3 color;
 
+layout (std140) uniform Camera {
+  vec4 pos;
+  mat4 projection;
+  mat4 view;
+} camera;
+
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 out vec2 vUv;
 out vec3 vColor;
@@ -17,5 +21,5 @@ void main() {
   vNormal = vec3(0.0f, 1.0f, 0.0f);
   vColor = color;
   vUv = uv;
-  gl_Position = projection * view * model * vec4(pos, 1.0f);
+  gl_Position = camera.projection * camera.view * model * vec4(pos, 1.0f);
 }

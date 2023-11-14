@@ -14,14 +14,16 @@ namespace mcc::texture {
     kTexture1 = GL_TEXTURE1,
   };
 
-  class Texture {
+  class Texture : public gfx::Resource {
   protected:
     TextureId id_;
   public:
     constexpr Texture(const TextureId id = kInvalidTextureId):
+      Resource(),
       id_(id) {
     }
     explicit Texture(const bool generate):
+      Resource(),
       id_(kInvalidTextureId) {
       if(generate) {
         glGenTextures(1, &id_);
@@ -29,19 +31,33 @@ namespace mcc::texture {
       }
     }
     Texture(const Texture& rhs):
+      Resource(),
       id_(rhs.id_) {
     }
-    ~Texture() = default;
+    ~Texture() override = default;
 
     TextureId id() const {
       return id_;
     }
 
-    void Bind(const ActiveTexture texture) const {
-      glActiveTexture(texture);
-      CHECK_GL(FATAL);
+    void Bind() const override {
       glBindTexture(GL_TEXTURE_2D, id_);
       CHECK_GL(FATAL);
+    }
+
+    void Unbind() const override {
+      glBindTexture(GL_TEXTURE_2D, kInvalidTextureId);
+    }
+
+    void Delete() override {
+      glDeleteTextures(1, &id_);
+      CHECK_GL(FATAL);
+    }
+
+    void Bind(const ActiveTexture id) const {
+      glActiveTexture(id);
+      CHECK_GL(FATAL);
+      Bind();
     }
 
     void Bind0() const {

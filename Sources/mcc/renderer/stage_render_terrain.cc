@@ -3,11 +3,11 @@
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
-  void RenderTerrainStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
+  void RenderTerrainStage::Render(const Tick& tick) {
     VLOG(3) << "rendering terrain....";
     glDisable(GL_CULL_FACE);
     CHECK_GL(FATAL);
-    terrain::Terrain::Render(projection, view);
+    terrain::Terrain::Render();
     Renderer::IncrementVertexCounter(terrain::Terrain::GetChunk()->vbo().length());
     glEnable(GL_CULL_FACE);
     CHECK_GL(FATAL);

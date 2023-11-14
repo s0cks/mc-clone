@@ -6,7 +6,7 @@
 #include "mcc/camera/perspective_camera.h"
 
 namespace mcc::renderer {
-  void RenderEntitiesStage::RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e) {
+  void RenderEntitiesStage::RenderEntity(const Entity e) {
     const auto renderable = Renderable::GetState(e);
     const auto transform = physics::Transform::GetState(e);
     VLOG(1) << "rendering entity " << e << " w/ " << *(*renderable).data();
@@ -28,20 +28,16 @@ namespace mcc::renderer {
       return true;
     });
 
-    const auto& cameraPos = (*camera::PerspectiveCameraBehavior::GetCameraComponent())->pos;
-
     texture.Bind0();
     shader.ApplyShader();
     shader.SetMat4("model", model);
-    shader.SetMat4("view", view);
-    shader.SetMat4("projection", projection);
-    shader.SetCamera("camera", cameraPos);
     const auto diffuseColor = lightColor * glm::vec3(0.5f);
     const auto ambientColor = diffuseColor * glm::vec3(0.8f);
     shader.SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
     shader.SetMaterial("material", material);
     shader.SetInt("tex0", 0);
     shader.SetVec3("lightColor", lightColor);
+    shader.SetUniformBlock("Camera", 0);
     shader.ApplyShader();
     const auto& mesh = (*renderable)->mesh;
     mesh->Render();
@@ -49,12 +45,12 @@ namespace mcc::renderer {
     Renderer::IncrementVertexCounter(mesh->vbo().length());
   }
 
-  void RenderEntitiesStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
+  void RenderEntitiesStage::Render(const Tick& tick) {
     VLOG(3) << "rendering entities....";
     glDisable(GL_CULL_FACE);
     CHECK_GL(FATAL);
     Renderer::VisitEntities([&](const Entity& e) {
-      RenderEntity(projection, view, e);
+      RenderEntity(e);
       return true;
     });
     glEnable(GL_CULL_FACE);

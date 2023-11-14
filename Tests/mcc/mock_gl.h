@@ -27,6 +27,7 @@ namespace mcc {
     MOCK_METHOD3(glTexParameterIiv, void(GLenum target, GLenum pname, const GLint *params));
     MOCK_METHOD3(glTexParameteri, void(GLenum target, GLenum pname, GLint param));
     MOCK_METHOD9(glTexImage2D, void(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels));
+    MOCK_METHOD2(glDeleteTextures, void(GLsizei n, const GLuint* arrays));
 
     // shaders
     MOCK_METHOD2(glAttachShader, void(GLuint program, GLuint shader));
@@ -78,6 +79,10 @@ namespace mcc {
     MOCK_METHOD1(glCullFace, void(GLenum mode));
     MOCK_METHOD1(glFrontFace, void(GLenum mode));
     MOCK_METHOD1(glDepthFunc, void(GLenum mode));
+    MOCK_METHOD5(glBindBufferRange, void(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size));
+    MOCK_METHOD4(glBufferSubData, void(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data));
+    MOCK_METHOD2(glGetUniformBlockIndex, GLuint(GLuint program, const GLchar *uniformBlockName));
+    MOCK_METHOD3(glUniformBlockBinding, void(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding));
   };
 }
 

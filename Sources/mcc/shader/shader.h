@@ -63,6 +63,10 @@ namespace mcc::shader {
       return glGetUniformLocation(GetShaderId(), name.c_str());
     }
 
+    virtual GLint GetUniformBlockIndex(const std::string& name) const {
+      return glGetUniformBlockIndex(GetShaderId(), name.c_str());
+    }
+
     virtual void SetVec4(const std::string& name, const glm::vec4 value) const {
       glUniform4fv(GetUniformLocation(name), 1, &value[0]);
       CHECK_GL(FATAL);
@@ -88,6 +92,11 @@ namespace mcc::shader {
       CHECK_GL(FATAL);
     }
 
+    virtual void SetUniformBlock(const std::string& name, const GLuint binding) const {
+      glUniformBlockBinding(id_, GetUniformBlockIndex(name), binding);
+      CHECK_GL(FATAL);
+    }
+
     virtual void ApplyShader() const {
       glUseProgram(id_);
       CHECK_GL(FATAL);
@@ -96,13 +105,6 @@ namespace mcc::shader {
     virtual void DeleteShader() const {
       glDeleteShader(id_);
       CHECK_GL(FATAL);
-    }
-
-    virtual void SetMaterial(const std::string& name, const Material& value) const {
-      SetVec3(name + ".ambient", value.ambient);
-      SetVec3(name + ".diffuse", value.diffuse);
-      SetVec3(name + ".specular", value.specular);
-      SetFloat(name + ".shininess", value.shininess);
     }
 
     virtual void SetCamera(const std::string& name, const glm::vec3 pos) const {
@@ -114,6 +116,13 @@ namespace mcc::shader {
       SetVec3(name + ".ambient", ambient);
       SetVec3(name + ".diffuse", diffuse);
       SetVec3(name + ".specular", specular);
+    }
+
+    virtual void SetMaterial(const std::string& name, const Material& value) const {
+      SetVec3(name + ".ambient", value.ambient);
+      SetVec3(name + ".diffuse", value.diffuse);
+      SetVec3(name + ".specular", value.specular);
+      SetFloat(name + ".shininess", value.shininess);
     }
 
     Shader& operator=(const Shader& rhs) {

@@ -146,14 +146,14 @@ namespace mcc::renderer {
       SetHandleStage(&handle_, this);
     }
 
-    virtual void Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) = 0;
+    virtual void Render(const Tick& tick) = 0;
   public:
     ~RenderStage() override = default;
   };
 
 #define DEFINE_RENDER_STAGE(Name)                                                               \
   protected:                                                                                    \
-    void Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) override; \
+    void Render(const Tick& tick) override; \
   DEFINE_STAGE(Render##Name);                                                                           
 
   class RenderTerrainStage : public RenderStage {
@@ -167,7 +167,7 @@ namespace mcc::renderer {
 
   class RenderEntitiesStage : public RenderStage {
   protected:
-    void RenderEntity(const glm::mat4& projection, const glm::mat4& view, const Entity e);
+    void RenderEntity(const Entity e);
   public:
     explicit RenderEntitiesStage(uv_loop_t* loop):
       RenderStage(loop) {

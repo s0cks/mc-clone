@@ -35,7 +35,20 @@ namespace mcc::camera {
   }
 
   glm::mat4 PerspectiveCamera::GetViewMatrix() const {
-    return glm::lookAt(pos, pos + front, up);
+    const auto p = glm::vec3(pos);
+    return glm::lookAt(p, p + front, up);
+  }
+
+  void PerspectiveCamera::ComputeMatrices() {
+    const auto window_size = Window::GetSize();
+    const auto p = glm::vec3(pos);
+    view = glm::lookAt(p, p + front, up);
+    projection = glm::perspective(glm::radians(zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
+  }
+
+  void PerspectiveCameraDataUniformBufferObject::Update(const PerspectiveCameraData* data) {
+    PerspectiveCameraDataUniformBufferObjectScope scope(*this);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PerspectiveCameraData), data);
   }
 
   static RelaxedAtomic<EntityId> entity_;
@@ -95,8 +108,12 @@ namespace mcc::camera {
 
   Entity PerspectiveCameraBehavior::CreateCameraEntity(const glm::vec3 pos) {
     const auto e = Entities::CreateEntity();
-    auto camera =e.AddComponent<PerspectiveCamera>({
-      .pos = pos,
+    auto camera = e.AddComponent<PerspectiveCamera>(PerspectiveCamera {
+      {
+        .pos = glm::vec4(pos, 1.0f),
+        .view = glm::mat4(1.0f),
+        .projection = glm::mat4(1.0f),
+      },
       .up = glm::vec3(0.0f, 1.0f, 0.0f),
       .world_up = glm::vec3(0.0f, 1.0f, 0.0f),
       .yaw = -90.0f,
@@ -168,13 +185,13 @@ namespace mcc::camera {
       auto camera = state.value();
       const auto velocity = (camera->speed * 100.0f) * ((1.0f * tick.dts) / NSEC_PER_SEC);
       if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera->pos += (camera->front * velocity);
+        camera->pos += glm::vec4((camera->front * velocity), 0.0f);
       if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->pos -= (camera->front * velocity);
+        camera->pos -= glm::vec4((camera->front * velocity), 0.0f);
       if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->pos -= (camera->right * velocity);
+        camera->pos -= glm::vec4((camera->right * velocity), 0.0f);
       if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->pos += (camera->right * velocity);
+        camera->pos += glm::vec4((camera->right * velocity), 0.0f);
       return true;
     });
   }

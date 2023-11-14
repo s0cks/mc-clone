@@ -30,6 +30,7 @@ namespace mcc::renderer {
   static ThreadLocal<RenderScreenStage> draw_gui_;
   static ThreadLocal<PostRenderStage> post_render_;
   static ThreadLocal<FrameBuffer> frame_buffer_;
+  static ThreadLocal<camera::PerspectiveCameraDataUniformBufferObject> cam_data_;
 
   static RelaxedAtomic<RendererState> state_;
   static uint64_t frame_start_ns_;
@@ -103,6 +104,7 @@ namespace mcc::renderer {
 
     const auto size = Window::GetSize();
     frame_buffer_.Set(FrameBuffer::New(size[0], size[1]));
+    cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
 
     Entity::OnSignatureChanged()
       .subscribe([](EntitySignatureChangedEvent* e) {
@@ -217,5 +219,9 @@ namespace mcc::renderer {
         return false;
     }
     return true;
+  }
+
+  camera::PerspectiveCameraDataUniformBufferObject* Renderer::GetCameraUniformBuffer() {
+    return cam_data_.Get();
   }
 }

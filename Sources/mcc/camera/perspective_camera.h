@@ -10,8 +10,14 @@
 
 namespace mcc::camera {
   class PerspectiveCameraBehavior;
-  struct PerspectiveCamera {
-    glm::vec3 pos;
+
+  struct PerspectiveCameraData { //TODO: temporary
+    glm::vec4 pos;
+    glm::mat4 projection;
+    glm::mat4 view;
+  };
+
+  struct PerspectiveCamera : public PerspectiveCameraData {
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
@@ -21,11 +27,10 @@ namespace mcc::camera {
     float speed;
     float sensitivity;
     float zoom;
-    glm::mat4 projection;
-    glm::mat4 view;
 
     glm::mat4 GetProjectionMatrix() const;
     glm::mat4 GetViewMatrix() const;
+    void ComputeMatrices();
 
     friend class PerspectiveCameraBehavior;
     DECLARE_COMPONENT(PerspectiveCamera);
@@ -57,6 +62,22 @@ namespace mcc::camera {
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);
   };
+
+  class PerspectiveCameraDataUniformBufferObject : public UniformBufferObjectTemplate<PerspectiveCameraData> {
+  public:
+    explicit PerspectiveCameraDataUniformBufferObject(const BufferObjectId id):
+      UniformBufferObjectTemplate(id) {
+    }
+    PerspectiveCameraDataUniformBufferObject():
+      UniformBufferObjectTemplate((const uint64_t) 1) {
+      glBindBufferRange(GL_UNIFORM_BUFFER, 0, id_, 0, sizeof(PerspectiveCameraData));
+      CHECK_GL(FATAL);
+    }
+    ~PerspectiveCameraDataUniformBufferObject() override = default;
+
+    void Update(const PerspectiveCameraData* data);
+  };
+  DEFINE_RESOURCE_SCOPE(PerspectiveCameraDataUniformBufferObject);
 }
 
 #endif //MCC_PERSPECTIVE_CAMERA_H

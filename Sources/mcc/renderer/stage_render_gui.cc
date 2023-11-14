@@ -20,7 +20,7 @@ namespace mcc::renderer {
     }
   };
 
-  void RenderGuiStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
+  void RenderGuiStage::Render(const Tick& tick) {
     FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
     Window::VisitFrames(&frame_renderer);
     const auto size = Window::GetSize();
@@ -29,7 +29,7 @@ namespace mcc::renderer {
     gui::Screen::RenderScreen(proj);
   }
 
-  void RenderScreenStage::Render(const Tick& tick, const glm::mat4& projection, const glm::mat4& view) {
+  void RenderScreenStage::Render(const Tick& tick) {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
     auto fb = Renderer::GetFrameBuffer();

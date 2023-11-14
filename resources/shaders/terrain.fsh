@@ -1,6 +1,12 @@
 #version 330 core
 out vec4 FragColor;
 
+layout (std140) uniform Camera {
+  vec4 pos;
+  mat4 projection;
+  mat4 view;
+} camera;
+
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -32,12 +38,7 @@ struct PointLight {
   vec3 specular;
 };
 
-struct Camera {
-  vec3 pos;
-};
-
 uniform sampler2D tex;
-uniform Camera camera;
 uniform Material material;
 uniform Light light;
 uniform vec3 lightColor;
@@ -53,7 +54,7 @@ void main() {
   float diff = max(dot(vNormal, lightDir), 0.0f);
   vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
-  vec3 viewDir = normalize(camera.pos - vPos);
+  vec3 viewDir = normalize(camera.pos.xyz - vPos);
   vec3 reflectDir = reflect(-lightDir, vNormal);
   float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess * 10);
   vec3 specular = light.specular * (spec * material.specular);

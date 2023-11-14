@@ -5,15 +5,8 @@
 
 namespace mcc::terrain {
   class TerrainRenderer {
-  private:
-    const glm::mat4& projection_;
-    const glm::mat4& view_;
   public:
-    TerrainRenderer(const glm::mat4& projection,
-                    const glm::mat4& view):
-                    projection_(projection),
-                    view_(view) {
-    } 
+    TerrainRenderer() = default;
     ~TerrainRenderer() = default;
     void Render();
   private:
