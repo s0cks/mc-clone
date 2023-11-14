@@ -9,6 +9,13 @@ layout (std140) uniform Camera {
   mat4 view;
 } camera;
 
+layout (std140) uniform DirectionalLight {
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+  vec4 direction;
+} dir_light;
+
 uniform mat4 model;
 
 out vec2 vUv;

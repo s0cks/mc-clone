@@ -56,6 +56,7 @@ namespace mcc {
     MOCK_METHOD2(glBindBuffer, void(GLenum target , GLuint buffer));
     MOCK_METHOD4(glBufferData, void(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage));
     MOCK_METHOD2(glDeleteBuffers, void(GLsizei n, const GLuint* buffers));
+    MOCK_METHOD3(glBindBufferBase, void(GLenum target, GLuint index, GLuint buffer));
     
     // framebuffers
     MOCK_METHOD2(glBindFramebuffer, void(GLenum, GLuint));

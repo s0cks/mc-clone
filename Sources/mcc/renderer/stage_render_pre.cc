@@ -4,6 +4,9 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/camera/perspective_camera.h"
 
+#include "mcc/light/point.h"
+#include "mcc/light/directional.h"
+
 namespace mcc::renderer {
   void PreRenderStage::OnPrepare(uv_idle_t* handle) {
     const auto stage = GetHandleStage<PreRenderStage>(handle);
@@ -47,5 +50,13 @@ namespace mcc::renderer {
     (*camera)->ComputeMatrices();
     const auto cam_buff = Renderer::GetCameraUniformBuffer();
     cam_buff->Update((const camera::PerspectiveCameraData*) (*camera).data());
+    light::DirectionalLight::Visit([](const Entity& e, const ComponentState<light::DirectionalLight>& state) {
+      light::DirectionalLight::GetBufferObject()->Update(state.data());
+      return true;
+    });
+    light::PointLight::Visit([](const Entity& e, const ComponentState<light::PointLight>& state) {
+      light::PointLight::GetUniformBufferObject()->Update(state.data());
+      return true;
+    });
   }
 }

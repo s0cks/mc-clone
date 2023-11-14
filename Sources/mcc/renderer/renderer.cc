@@ -11,6 +11,9 @@
 
 #include "mcc/terrain/terrain.h"
 
+#include "mcc/light/point.h"
+#include "mcc/light/directional.h"
+
 #include "mcc/gui/gui.h"
 #include "mcc/gui/gui_frame.h"
 #include "mcc/gui/gui_frame_settings.h"
@@ -77,6 +80,8 @@ namespace mcc::renderer {
     AmbientLight::Init();
     physics::Transform::Init();
     physics::RigidBody::Init();
+    light::DirectionalLight::Init();
+    light::PointLight::Init();
   }
 
   void Renderer::OnPreInit() {

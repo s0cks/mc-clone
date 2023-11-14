@@ -35,28 +35,15 @@ namespace mcc::terrain {
   void TerrainRenderer::Render() {
     glm::mat4 model(1.0f);
     const auto chunk = Terrain::GetChunk();
-
-    glm::vec3 lightColor = glm::vec3(1.0f, 0.0f, 0.0f);
-    glm::vec3 lightPos = glm::vec3(0.0f);
-    AmbientLight::Visit([&lightColor,&lightPos](const Entity& l, const ComponentState<AmbientLight>& light) {
-      lightColor = light->color;
-
-      const auto lt = physics::Transform::GetState(l);
-      LOG_IF(FATAL, !lt) << "no transform found for AmbientLight component of entity " << l;
-      lightPos = (*lt)->position;
-      return true;
-    });
     const auto material = GetMaterial(Terrain::GetTerrainMaterial());
 
     GetSelectedTexture().Bind0();
     shader_.ApplyShader();
     shader_.SetUniformBlock("Camera", 0);
+    shader_.SetUniformBlock("DirectionalLight", 1);
+    shader_.SetUniformBlock("PointLight", 2);
     shader_.SetMat4("model", chunk->GetModelMatrix());
     shader_.SetInt("tex", 0);
-    const auto diffuseColor = lightColor * glm::vec3(0.5f);
-    const auto ambientColor = diffuseColor * glm::vec3(0.2f);
-    shader_.SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
-    shader_.SetVec3("lightColor", lightColor);
     shader_.SetMaterial("material", material);
     shader_.ApplyShader();
     chunk->Render();

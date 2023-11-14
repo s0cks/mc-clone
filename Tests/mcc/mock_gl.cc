@@ -272,3 +272,8 @@ GLuint glGetUniformBlockIndex(GLuint program, const GLchar* uniformBlockName) {
 void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding) {
   __ glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
 }
+
+void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {
+  __ glBindBufferBase(target, index, buffer);
+
+}
