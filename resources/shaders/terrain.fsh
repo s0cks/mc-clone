@@ -53,9 +53,10 @@ vec3 calculateDirectionalLight(vec3 normal, vec3 viewDir) {
 
 vec3 calculatePointLight(vec3 normal, vec3 fragPos, vec3 viewDir) {
   vec3 lightDir = normalize(point_light.position.xyz - fragPos);
+  vec3 halfDir = normalize(lightDir + viewDir);
   float diff = max(dot(normal, lightDir), 0.0f);
   vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+  float spec = pow(max(dot(normal, halfDir), 0.0f), material.shininess);
   float distance = length(point_light.position.xyz - fragPos);
   float atten = 1.0f / (point_light.constant + point_light.linear + distance + point_light.quadratic * (distance * distance));
   vec3 ambient = (dir_light.ambient.xyz * vec3(texture(tex, vUv))) * atten;
@@ -69,6 +70,6 @@ void main() {
   vec3 viewDir = normalize(camera.pos.xyz - vPos);
 
   vec3 result = calculateDirectionalLight(normal, viewDir);
-  //result += calculatePointLight(normal, vPos, viewDir);
+  result += calculatePointLight(normal, vPos, viewDir);
   FragColor = vec4(result, 1.0f);
 }
