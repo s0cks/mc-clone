@@ -18,7 +18,10 @@ namespace mcc {
   V(Object, o)                              \
   V(Group, g)                               \
   V(MaterialLib, mtllib)                    \
-  V(UseMaterial, usemtl)
+  V(UseMaterial, usemtl)                    \
+  V(Line, l)                                \
+  V(SmoothShading, s)                       \
+  V(ParameterVertex, vp)
 
 #define FOR_EACH_OBJ_FILE_TOKEN_SYMBOL(V) \
   V(LParen, '(')                          \
@@ -28,7 +31,8 @@ namespace mcc {
 
 #define FOR_EACH_OBJ_FILE_TOKEN_LITERAL(V) \
   V(Integer)                               \
-  V(Float)                
+  V(Float)                                 \
+  V(Identifier)           
 
   struct Position {
     uint64_t row;
@@ -148,6 +152,14 @@ namespace mcc {
       return kind == Token::kUnknown;
     }
 
+    uint64_t as_u64() const {
+      return static_cast<uint64_t>(atoll((const char*) data));
+    }
+
+    float as_float() const {
+      return static_cast<float>(atof((const char*) data));
+    }
+
     void operator=(const Token& rhs) {
       kind = rhs.kind;
       pos = rhs.pos;
@@ -216,8 +228,7 @@ namespace mcc {
     uint64_t nread_;
     uint64_t rpos_;
     uint8_t buffer_[kDefaultObjParserBufferSize];
-    uint64_t token_start_;
-    uint64_t token_end_;
+    uint8_t token_[Token::kMaxLength];
     uint64_t token_length_;
     glm::vec3 current_vec_;
     uint64_t num_vertices_;
@@ -242,28 +253,30 @@ namespace mcc {
     static inline bool IsDigit(const char c) {
       return (c >= '0') && (c <= '9');
     }
+
+    inline bool ReadNextChunk() {
+      memset(buffer_, 0, sizeof(buffer_));
+      nread_ = fread(buffer_, sizeof(uint8_t), kDefaultObjParserBufferSize, file_);
+      rpos_ = 0;
+      return nread_ > 0;
+    }
     
     inline char PeekChar() {
       if(rpos_ >= nread_) {
-        memset(buffer_, 0, sizeof(buffer_));
-        nread_ = fread(buffer_, sizeof(uint8_t), kDefaultObjParserBufferSize, file_);
-        if(nread_ == 0)
+        if(!ReadNextChunk())
           return EOF;
-        rpos_ = 0;
       }
       return (char)buffer_[rpos_];
     }
 
     inline char NextChar() {
       if((rpos_ + 1) > nread_) {
-        memset(buffer_, 0, sizeof(buffer_));
-        nread_ = fread(buffer_, sizeof(uint8_t), kDefaultObjParserBufferSize, file_);
-        if(nread_ == 0)
+        if(!ReadNextChunk())
           return EOF;
-        rpos_ = 0;
       }
 
-      const auto c = (char)buffer_[rpos_++];
+      const auto c = (char)buffer_[rpos_];
+      rpos_ += 1;
       switch(c) {
         case '\n':
           row_ += 1;
@@ -296,6 +309,8 @@ namespace mcc {
     bool ParseFaceVertex(FaceVertex& result);
     bool ParseFloat(float* result);
     bool ParseLong(uint64_t* result);
+    bool ParseUseMaterial();
+    bool ParseMaterialLib();
   public:
     ObjParser(const Config& config, FILE* file, void* data):
       config_(config),
@@ -312,8 +327,8 @@ namespace mcc {
       rpos_(0),
       nread_(0),
       buffer_(),
-      token_start_(0),
-      token_end_(0),
+      token_(),
+      token_length_(0),
       face_vertices_(nullptr) {
       if(config.num_face_vertices > 0) {
         face_vertices_ = (FaceVertex*)malloc(sizeof(FaceVertex) * config.num_face_vertices);

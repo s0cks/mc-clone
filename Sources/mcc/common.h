@@ -25,6 +25,9 @@
     ~Name() = delete;                      \
     DEFINE_NON_COPYABLE_TYPE(Name);
 
+#define NOT_IMPLEMENTED(Level) \
+  LOG(Level) << __FUNCTION__ << " is not implemented!";
+
 namespace mcc {
   static inline uint64_t
   GetFilesize(FILE* file) {

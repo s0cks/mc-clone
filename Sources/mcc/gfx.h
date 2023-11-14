@@ -37,6 +37,8 @@ namespace mcc {
 
 #else
 
+#define CHECK_GL(Severity)
+
 #endif//MCC_DEBUG
 
   enum GlObjectUsage {

@@ -16,7 +16,7 @@ namespace mcc {
       const auto start = uv_hrtime();
       LOG_IF(FATAL, !parser.ParseFile()) << "failed to obj file from: " << filename;
       const auto stop = uv_hrtime();
-      state.SetIterationTime((stop - start) / NSEC_PER_SEC);
+      state.SetIterationTime((stop - start) / NSEC_PER_MSEC);
       state.SetLabel(f);
       const auto stats = parser.stats();
       state.counters["vertices"] = stats.vertices;

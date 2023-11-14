@@ -46,7 +46,7 @@ namespace mcc::mesh {
     }
 
     static inline bool
-    OnFaceParsed(const ObjParser* parser, const uint64_t idx, FaceVertex* vertices, const uint64_t num_vertices) {
+    OnFaceParsed(const ObjParser* parser, const uint64_t face_idx, FaceVertex* vertices, const uint64_t num_vertices) {
       auto loader = (ObjMeshLoader*)parser->data();
       for(auto idx = 0; idx < num_vertices; idx++) {
         const auto& vert = vertices[idx];
@@ -59,7 +59,6 @@ namespace mcc::mesh {
           .uv = uv,
           .color = glm::vec3(1.0f),
         };
-        DLOG(INFO) << "parsed face vert: " << face_vert;
         loader->mesh_verts_.push_back(face_vert);
       }
       return true;
