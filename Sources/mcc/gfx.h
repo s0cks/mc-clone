@@ -60,40 +60,73 @@ namespace mcc {
     }
   }
 
+  namespace gfx {
+    class Resource {
+    public:
+      Resource() = default;
+      virtual ~Resource() = default;
+      virtual void Bind() const = 0;
+      virtual void Unbind() const = 0;
+      virtual void Delete() = 0;
+    };
+
+    template<class R>
+    class BindScope {
+      DEFINE_NON_COPYABLE_TYPE(BindScope);
+    private:
+      const R& resource_;
+    public:
+      BindScope() = delete;
+      explicit BindScope(const R& resource):
+        resource_(resource) {
+        resource_.Bind();
+      }
+      ~BindScope() {
+        resource_.Unbind();
+      }
+    };
+  }
+
+#define DEFINE_RESOURCE_SCOPE(Resource) \
+  typedef gfx::BindScope<Resource> Resource##Scope;
+
   typedef GLuint VertexArrayObjectId;
   static constexpr const VertexArrayObjectId kInvalidVertexArrayObject = 0;
-  class VertexArrayObject {
+  class VertexArrayObject : public gfx::Resource {
   protected:
     VertexArrayObjectId id_;
   public:
-    explicit constexpr VertexArrayObject(const VertexArrayObjectId id):
+    explicit VertexArrayObject(const VertexArrayObjectId id):
+      gfx::Resource(),
       id_(id) {
     }
     VertexArrayObject():
+      gfx::Resource(),
       id_(kInvalidVertexArrayObject) {
       glGenVertexArrays(1, &id_);
       CHECK_GL(FATAL);
     }
     VertexArrayObject(const VertexArrayObject& rhs):
+      gfx::Resource(),
       id_(rhs.id_) {
     }
-    ~VertexArrayObject() = default;
+    ~VertexArrayObject() override = default;
 
     VertexArrayObjectId id() const {
       return id_;
     }
 
-    void Bind() const {
+    void Bind() const override {
       glBindVertexArray(id_);
       CHECK_GL(FATAL);
     }
 
-    void Unbind() const {
+    void Unbind() const override {
       glBindVertexArray(kInvalidVertexArrayObject);
       CHECK_GL(FATAL);
     }
 
-    void Delete() {
+    void Delete() override {
       glDeleteVertexArrays(1, &id_);
       CHECK_GL(FATAL);
     }
@@ -135,8 +168,6 @@ namespace mcc {
   public:
     static inline void
     GenerateBatch(const uint64_t num_vaos, VertexArrayObject** vaos) {
-      static constexpr const auto kInvalidVao = VertexArrayObject(kInvalidVertexArrayObject);
-
       MCC_ASSERT((*vaos) == nullptr);
       DLOG(INFO) << "generating " << num_vaos << " VertexArrayObjects....";
       VertexArrayObjectId ids[num_vaos];
@@ -144,25 +175,13 @@ namespace mcc {
       CHECK_GL(FATAL);
       (*vaos) = (VertexArrayObject*)malloc(sizeof(VertexArrayObject) * num_vaos);
       for(auto idx = 0; idx < num_vaos; idx++) {
-        memcpy(&(*vaos)[idx], &kInvalidVao, sizeof(VertexArrayObject));
-        (*vaos)[idx] = VertexArrayObject(ids[idx]);
+        const auto vao = VertexArrayObject(ids[idx]);
+        memcpy(&(*vaos)[idx], &vao, sizeof(VertexArrayObject));
       }
       DLOG(INFO) << "done.";
     }
   };
-
-  class VertexArrayObjectBindScope {
-  private:
-    const VertexArrayObject& vao_;
-  public:
-    VertexArrayObjectBindScope(const VertexArrayObject& vao):
-      vao_(vao) {
-      vao_.Bind();
-    }
-    ~VertexArrayObjectBindScope() {
-      vao_.Unbind();
-    }
-  };
+  DEFINE_RESOURCE_SCOPE(VertexArrayObject);
 
   typedef GLuint BufferObjectId;
   static constexpr const BufferObjectId kInvalidBufferObject = 0;
@@ -170,6 +189,7 @@ namespace mcc {
   enum BufferObjectTarget {
     kVertex = GL_ARRAY_BUFFER,
     kIndex = GL_ELEMENT_ARRAY_BUFFER,
+    kUniform = GL_UNIFORM_BUFFER,
   };
 
   static inline std::ostream&
@@ -184,7 +204,7 @@ namespace mcc {
     }
   }
 
-  class BufferObject {
+  class BufferObject : public gfx::Resource {
   protected:
     BufferObjectId id_;
 
@@ -195,12 +215,14 @@ namespace mcc {
     }
   public:
     explicit BufferObject(const BufferObjectId id):
+      Resource(),
       id_(id) {
     }
     BufferObject(const BufferObject& rhs):
+      Resource(),
       id_(rhs.id_) {
     }
-    virtual ~BufferObject() = default;
+    ~BufferObject() override = default;
 
     BufferObjectId id() const {
       return id_;
@@ -208,10 +230,10 @@ namespace mcc {
 
     virtual GlObjectUsage usage() const = 0;
     virtual BufferObjectTarget target() const = 0;
-    virtual void Bind() const = 0;
-    virtual void Unbind() const = 0;
+    void Bind() const override = 0;
+    void Unbind() const override = 0;
 
-    void Delete() {
+    void Delete() override {
       glDeleteBuffers(1, &id_);
       CHECK_GL(FATAL);
     }
@@ -355,6 +377,86 @@ namespace mcc {
 
     uint64_t vertex_size() const override {
       return kVertexSize;
+    }
+  };
+
+  class UniformBufferObject : public BufferObjectTemplate<kUniform> {
+  public:
+    explicit UniformBufferObject() = default;
+    UniformBufferObject(const BufferObjectId id):
+      BufferObjectTemplate(id) {
+    }
+    UniformBufferObject(const UniformBufferObject& rhs) = default;
+    ~UniformBufferObject() override = default;
+    virtual uint64_t length() const = 0;
+    virtual uint64_t elem_size() const = 0;
+
+    virtual uint64_t size() const {
+      return length() * elem_size();
+    }
+  };
+
+  template<typename T, const GlObjectUsage Usage = kDefaultUsage>
+  class UniformBufferObjectTemplate : public UniformBufferObject {
+  public:
+    static constexpr const uint64_t kElementSize = sizeof(T);
+  protected:
+    uint64_t length_;
+
+    UniformBufferObjectTemplate() = default;
+    explicit UniformBufferObjectTemplate(const BufferObjectId id):
+      UniformBufferObject(id) {
+    }
+    UniformBufferObjectTemplate(T* values, const uint64_t num_values):
+      UniformBufferObject(),
+      length_(num_values) {
+      BindBufferData(values, num_values);
+    }
+    explicit UniformBufferObjectTemplate(const uint64_t num_values):
+      UniformBufferObject(),
+      length_(num_values) {
+      BindBufferData(num_values);
+    }
+  public:
+    ~UniformBufferObjectTemplate() override = default;
+
+    void BufferData(const T* values, const uint64_t num_values) {
+      DLOG_IF(ERROR, num_values == 0) << "glBufferData called w/ 0 values.";
+      glBufferData(target(), num_values * kElementSize, &values[0], Usage);
+      CHECK_GL(FATAL);
+    }
+
+    void BindBufferData(const T* values, const uint64_t num_values) {
+      Bind();
+      BufferData(values, num_values);
+    }
+
+    void BufferData(const uint64_t size) {
+      DLOG_IF(ERROR, size <= 0) << "glBufferData called w/ " << size << " bytes.";
+      glBufferData(target(), size * kElementSize, NULL, Usage);
+      CHECK_GL(FATAL);
+    }
+
+    void BindBufferData(const uint64_t size) {
+      Bind();
+      BufferData(size);
+    }
+
+    GlObjectUsage usage() const override {
+      return Usage;
+    }
+
+    uint64_t length() const override {
+      return length_;
+    }
+
+    uint64_t elem_size() const override {
+      return kElementSize;
+    }
+
+    void operator=(const UniformBufferObjectTemplate<T, Usage>& rhs) {
+      BufferObject::operator=((const BufferObject&) rhs);
+      length_ = rhs.length_;
     }
   };
 

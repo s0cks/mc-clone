@@ -71,7 +71,7 @@ namespace mcc::gui {
   static inline void
   CreateBufferObjects() {
     vao_ = VertexArrayObject();
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     vbo_ = VertexBuffer();
     const auto attr_pos = glGetAttribLocation(shader_.GetShaderId(), "pos");
     glVertexAttribPointer(attr_pos, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);

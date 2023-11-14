@@ -47,7 +47,7 @@ namespace mcc {
   }
 
   FrameBuffer* FrameBuffer::New(const uint64_t width, const uint64_t height) {
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     return new FrameBuffer(width, height);
   }
 
@@ -56,7 +56,7 @@ namespace mcc {
     shader_.SetInt("tex0", 0);
     fbo_.Unbind();
     shader_.ApplyShader();
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     vbo_.Bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) 0);
     CHECK_GL(FATAL);

@@ -53,7 +53,7 @@ namespace mcc::mesh {
   }
   
   void Mesh::Render() {
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     vbo_.Bind();
     // pos
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
@@ -95,7 +95,7 @@ namespace mcc::mesh {
   }
 
   void IndexedMesh::Render() {
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     vbo_.Bind();
     // pos
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
@@ -138,12 +138,12 @@ namespace mcc::mesh {
   }
 
   Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices) {
-    VertexArrayObjectBindScope scope(vao);
+    VertexArrayObjectScope scope(vao);
     return new Mesh(vao, vertices);
   }
 
   Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const IndexList& indices) {
-    VertexArrayObjectBindScope scope(vao);
+    VertexArrayObjectScope scope(vao);
     return new IndexedMesh(vao, vertices, indices);
   }
 

@@ -7,7 +7,7 @@ namespace mcc::terrain {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
 
   TerrainChunk* TerrainChunk::New(const VertexList& vertices, const IndexList& indices) {
-    VertexArrayObjectBindScope scope(vao_);
+    VertexArrayObjectScope scope(vao_);
     return new TerrainChunk(vertices, indices);
   }
 
@@ -85,7 +85,7 @@ namespace mcc::terrain {
   }
 
   void TerrainChunk::Render() {
-    VertexArrayObjectBindScope vao(vao_);
+    VertexArrayObjectScope vao(vao_);
     vbo_.Bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
     CHECK_GL(FATAL);

@@ -18,6 +18,7 @@ namespace mcc {
     MOCK_METHOD2(glGenVertexArrays, void(GLsizei, GLuint*));
     MOCK_METHOD1(glEnableVertexAttribArray, void(GLuint index));
     MOCK_METHOD2(glGetAttribLocation, GLint(GLuint program, const GLchar* name));
+    MOCK_METHOD2(glDeleteVertexArrays, void((GLsizei n, const GLuint* arrays)));
 
     // textures
     MOCK_METHOD1(glActiveTexture, void(GLenum target));
@@ -53,6 +54,7 @@ namespace mcc {
     MOCK_METHOD2(glGenBuffers, void(GLsizei n, GLuint* buffers));
     MOCK_METHOD2(glBindBuffer, void(GLenum target , GLuint buffer));
     MOCK_METHOD4(glBufferData, void(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage));
+    MOCK_METHOD2(glDeleteBuffers, void(GLsizei n, const GLuint* buffers));
     
     // framebuffers
     MOCK_METHOD2(glBindFramebuffer, void(GLenum, GLuint));

@@ -39,6 +39,10 @@ GLint glGetAttribLocation(GLuint program, const GLchar* name) {
   __ glGetAttribLocation(program, name);
 }
 
+void glDeleteVertexArrays(GLsizei n, const GLuint *arrays) {
+  __ glDeleteVertexArrays(n, arrays);
+}
+
 // textures
 void glGenTextures(GLsizei n, GLuint* textures) {
   __ glGenTextures(n, textures);
@@ -156,6 +160,10 @@ void glBufferData(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usa
 
 void glGenBuffers(GLsizei n, GLuint* buffers) {
   __ glGenBuffers(n, buffers);
+}
+
+void glDeleteBuffers(GLsizei n, const GLuint* buffers) {
+  __ glDeleteBuffers(n, buffers);
 }
 
 // framebuffers
