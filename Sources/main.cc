@@ -44,7 +44,6 @@ int main(int argc, char** argv) {
   using namespace mcc;
   settings::Init();
   font::Initialize();
-  InitializeMaterials();
   Entities::Initialize();
   const auto loop = uv_loop_new();
   Engine::Init(loop);
@@ -55,7 +54,7 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   Window::Init();
   terrain::Terrain::Init();
-  ResourceRegistry::Init();
+  resource::Registry::Init();
 
   Engine::Run();
   return EXIT_SUCCESS;

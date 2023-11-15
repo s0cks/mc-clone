@@ -14,7 +14,7 @@ namespace mcc::renderer {
     shader::Shader shader;
     mesh::Mesh* mesh;
     texture::Texture texture;
-    Material material;
+    MaterialPtr material;
 
     friend std::ostream& operator<<(std::ostream& stream, const Renderable& rhs) {
       stream << "Renderable(";

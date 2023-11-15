@@ -26,6 +26,9 @@ add_library(${PROJECT_NAME}
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h
+  mcc/resource_type.h
+  mcc/resource_tag.h
+  mcc/resource_reference.h
   mcc/resource.h mcc/resource.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc

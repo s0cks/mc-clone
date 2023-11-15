@@ -1,11 +1,5 @@
 #include "mcc/resource.h"
 
-#include "mcc/flags.h"
-#include "mcc/thread_local.h"
-#include "mcc/engine/engine.h"
-
-#include "mcc/material.h"
-
 namespace mcc::resource {
   static RelaxedAtomic<Registry::State> state_(Registry::kUninitialized);
   static ThreadLocal<leveldb::DB> index_;

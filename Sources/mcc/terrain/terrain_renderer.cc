@@ -34,7 +34,7 @@ namespace mcc::terrain {
     FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
 #undef LOAD_TERRAIN_TEXTURE
     shader_ = shader::Shader::Get("terrain");
-    material_ = ResourceRegistry::Get<material::Material>(Resource::Material("floors/laminate_brown"))->Load();
+    material_ = GetResource<material::Material>(resource::Tag::Material("floors/laminate_brown"))->Load();
   }
 
   void TerrainRenderer::Render() {

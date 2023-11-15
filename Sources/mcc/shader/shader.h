@@ -118,14 +118,7 @@ namespace mcc::shader {
       SetVec3(name + ".specular", specular);
     }
 
-    virtual void SetMaterial(const std::string& name, const Material& value) const {
-      SetVec3(name + ".ambient", value.ambient);
-      SetVec3(name + ".diffuse", value.diffuse);
-      SetVec3(name + ".specular", value.specular);
-      SetFloat(name + ".shininess", value.shininess);
-    }
-
-    virtual void SetMaterial(const std::string& name, material::MaterialPtr value) const {
+    virtual void SetMaterial(const std::string& name, MaterialPtr value) const {
       SetInt(name + ".albedo", 0);
       SetInt(name + ".ao", 1);
       SetInt(name + ".height", 2);

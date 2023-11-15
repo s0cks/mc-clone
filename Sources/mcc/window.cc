@@ -35,6 +35,8 @@
 
 #include "mcc/shader/shader.h"
 
+#include "mcc/resource.h"
+
 namespace mcc {
   typedef struct nk_context NuklearContext;
 
@@ -137,7 +139,6 @@ namespace mcc {
     e3.AddComponent<renderer::Renderable>({
       .shader = shader::Shader::Get("light_sphere"),
       .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
-      .material = GetDefaultMaterial(),
     });
     e3.AddComponent<physics::Transform>({
       .position = glm::vec3(0.0f, 3.0f, 0.0f),
