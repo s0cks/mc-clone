@@ -9,9 +9,13 @@ namespace mcc::texture {
 
   static constexpr const TextureId kInvalidTextureId = 0;
 
-  enum ActiveTexture : GLenum {
+  enum ActiveTexture : GLuint {
     kTexture0 = GL_TEXTURE0,
     kTexture1 = GL_TEXTURE1,
+    kTexture2 = GL_TEXTURE2,
+    kTexture3 = GL_TEXTURE3,
+    kTexture4 = GL_TEXTURE4,
+    kTexture5 = GL_TEXTURE5,
     kCubeMap = GL_TEXTURE_CUBE_MAP,
   };
 
@@ -61,6 +65,12 @@ namespace mcc::texture {
       Bind();
     }
 
+    void Bind(const uint32_t slot) const {
+      glActiveTexture(GL_TEXTURE0 + slot);
+      CHECK_GL(FATAL);
+      Bind();
+    }
+
     void Bind0() const {
       return Bind(kTexture0);
     }
@@ -91,6 +101,11 @@ namespace mcc::texture {
     static Texture LoadFrom(std::string filename);
     static Texture LoadCubeMapFrom(const std::string& filename);
   };
+}
+
+namespace mcc {
+  using texture::Texture;
+  using texture::kInvalidTextureId;
 }
 
 #endif //MCC_TEXTURE_H

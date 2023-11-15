@@ -5,7 +5,9 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/Tests/minecraft-tests",
-      "args": [],
+      "args": [
+
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
@@ -20,6 +22,21 @@
       "args": [
         "--resources", "${workspaceFolder}/resources",
         "--gtest_filter=*ObjParserTest.Test_Parse_Cube"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "name": "Material tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*MaterialTest.*"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

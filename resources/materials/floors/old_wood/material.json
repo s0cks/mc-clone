@@ -1,0 +1,9 @@
+{
+  "name": "old_wood",
+  "albedo": true,
+  "ao": true,
+  "height": true,
+  "metallic": true,
+  "normal": true,
+  "roughness": true
+}

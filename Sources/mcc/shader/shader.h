@@ -125,6 +125,15 @@ namespace mcc::shader {
       SetFloat(name + ".shininess", value.shininess);
     }
 
+    virtual void SetMaterial(const std::string& name, material::MaterialPtr value) const {
+      SetInt(name + ".albedo", 0);
+      SetInt(name + ".ao", 1);
+      SetInt(name + ".height", 2);
+      SetInt(name + ".metallic", 3);
+      SetInt(name + ".normal", 4);
+      SetInt(name + ".roughness", 5);
+    }
+
     Shader& operator=(const Shader& rhs) {
       if(id_ == rhs.id_)
         return *this;

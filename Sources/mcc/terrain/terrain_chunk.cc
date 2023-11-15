@@ -46,10 +46,10 @@ namespace mcc::terrain {
   static inline void 
   GenerateVertices(VertexList& vertices, const glm::vec2 size) {
     DLOG(INFO) << "generating " << VERTICES << "....";
-    for(auto z = -HALF_DEPTH; z < +HALF_DEPTH; z++) {
-      for(auto x = -HALF_WIDTH; x < +HALF_WIDTH; x++) {
-        const auto uvZ = static_cast<float>(x) / DEPTH; 
-        const auto uvX = static_cast<float>(z) / WIDTH;
+    for(auto z = -HALF_DEPTH; z < HALF_DEPTH; z++) {
+      for(auto x = -HALF_WIDTH; x < HALF_WIDTH; x++) {
+        const auto uvZ = static_cast<float>(x + HALF_DEPTH) / DEPTH; 
+        const auto uvX = static_cast<float>(z + HALF_WIDTH) / WIDTH;
         vertices.push_back(Vertex {
           .pos = glm::vec3(x, 0.0f, z),
           .uv = glm::vec2(abs(uvX), abs(uvZ)),

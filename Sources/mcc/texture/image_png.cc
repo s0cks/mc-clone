@@ -38,16 +38,16 @@ namespace mcc::png {
     png_uint_32 width, height;
     int bit_depth, color_type;
     png_get_IHDR(png, info, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
-
-    switch(png_get_color_type(png, info)) {
+    switch(color_type) {
       case PNG_COLOR_TYPE_RGBA:
         result.type = Image::kRGBA;
         break;
       case PNG_COLOR_TYPE_RGB:
+      case PNG_COLOR_TYPE_GRAY:
         result.type = Image::kRGB;
         break;
       default:
-        LOG(ERROR) << "unknown color type.";
+        LOG(ERROR) << "unknown color type: " << color_type;
     }
 
     // if(bit_depth == 16)

@@ -16,6 +16,7 @@ build_flatbuffers("${FB_SCHEMAS}"
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   mcc/window.h mcc/window.cc
+  mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/compiler_result.h
   mcc/shader/compiler.h mcc/shader/compiler.cc

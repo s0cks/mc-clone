@@ -16,8 +16,8 @@ namespace mcc::texture {
   }
 
   Texture Texture::LoadFrom(std::string filename) {
-    if(!BeginsWith(filename, FLAGS_resources + "/textures/"))
-      filename = FLAGS_resources + "/textures/";
+    if(!BeginsWith(filename, FLAGS_resources))
+      filename = FLAGS_resources;
 
     if(std::regex_match(filename, kPngPattern)) {
       PngTextureLoader loader(filename);

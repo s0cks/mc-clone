@@ -14,6 +14,17 @@ namespace mcc {
       kRGBA = GL_RGBA,
     };
 
+    friend std::ostream& operator<<(std::ostream& stream, const Type& rhs) {
+      switch(rhs) {
+        case kRGB:
+          return stream << "RGB";
+        case kRGBA:
+          return stream << "RGBA";
+        default:
+          return stream << "<unknown Image::Type: " << static_cast<uint32_t>(rhs) << ">";
+      }
+    }
+
     Type type;
     Dimension size;
     BufferPtr data;

@@ -12,6 +12,8 @@ namespace mcc::texture {
       return kInvalidTextureId;
     }
 
+    DLOG(INFO) << "type: " << image.type;
+
     Texture texture(true);
     texture.Bind0();
     CHECK_GL(FATAL);
@@ -19,13 +21,15 @@ namespace mcc::texture {
     CHECK_GL(FATAL);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.size[0], image.size[1], 0, image.type, GL_UNSIGNED_BYTE, (GLvoid*) image.data->data());
     CHECK_GL(FATAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     CHECK_GL(FATAL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     CHECK_GL(FATAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     CHECK_GL(FATAL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     CHECK_GL(FATAL);
     return texture;
   }
