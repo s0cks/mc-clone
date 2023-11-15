@@ -1,4 +1,9 @@
+#include <filesystem>
+
 #include "mcc/resource.h"
+#include "mcc/thread_local.h"
+#include "mcc/engine/engine.h"
+#include "mcc/relaxed_atomic.h"
 
 namespace mcc::resource {
   static RelaxedAtomic<Registry::State> state_(Registry::kUninitialized);
@@ -37,13 +42,16 @@ namespace mcc::resource {
     }
     index_.Set(db);
 
-    if(generated) {
-      //TODO: auto generate index
-      Registry::Put(Tag::Material("fabrics/leather_black"), "/materials/fabrics/leather_black");
-      Registry::Put(Tag::Material("fabrics/soft_blanket"), "/materials/fabrics/soft_blanket");
-      Registry::Put(Tag::Material("floors/laminate_brown"), "/materials/floors/laminate_brown");
-      Registry::Put(Tag::Material("floors/old_wood"), "/materials/floors/old_wood");
-      Registry::Put(Tag::Material("stones/broken_concrete1"), "/materials/stones/broken_concrete_1");
+    {
+      DLOG(INFO) << "indexing materials....";
+      MaterialIndexer indexer;
+      indexer.Index();
+    }
+
+    {
+      DLOG(INFO) << "indexing shaders....";
+      ShaderIndexer indexer;
+      indexer.Index();
     }
   }
 
@@ -141,5 +149,45 @@ namespace mcc::resource {
       return std::nullopt;
     }
     return std::optional<std::string>{filename};
+  }
+
+  void MaterialIndexer::Index() {
+    DLOG(INFO) << "indexing directory " << current_ << "....";
+    for(const auto& entry : std::filesystem::directory_iterator(current_)) {
+      const auto path = std::string(entry.path());
+      const auto relative = path.substr(root_.length() + 1);
+      const auto name = relative.substr(0, relative.find_last_of("."));
+      if(entry.is_directory()) {
+        if(FileExists(path + "/material.json")) {
+          Registry::Put(Tag::Material(name), path);
+          continue;
+        }
+
+        MaterialIndexer indexer(root_, path);
+        indexer.Index();
+      }
+    }
+  }
+
+  void ShaderIndexer::Index() {
+    DLOG(INFO) << "indexing directory " << current_ << "....";
+    for(const auto& entry : std::filesystem::directory_iterator(current_)) {
+      const auto path = std::string(entry.path());
+      const auto relative = path.substr(root_.length() + 1);
+      const auto name = relative.substr(0, relative.find_last_of("."));
+      if(entry.is_directory()) {
+        if(FileExists(path + "/shader.json")) {
+          Registry::Put(Tag::Shader(name), path);
+          continue;
+        }
+
+        ShaderIndexer indexer(root_, path);
+        indexer.Index();
+      } else if(EndsWith(relative, ".vs") || EndsWith(relative, ".vsh")) {
+        //TODO: elegantly determine fragment shader location
+        Registry::Put(Tag::Shader(name), path);
+        continue;
+      }
+    }
   }
 }

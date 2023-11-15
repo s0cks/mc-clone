@@ -5,11 +5,13 @@
 #include <cstdint>
 #include <cassert>
 #include <string>
+#include <glog/logging.h>
 
 #include "mcc/platform.h"
 
 #if defined(OS_IS_LINUX) || defined(OS_IS_OSX)
 #include <unistd.h>
+#include <sys/stat.h>
 #else
 #error "unsupported operating system"
 #endif
@@ -59,6 +61,21 @@ namespace mcc {
 #else
 #error "unsupported operating system"
 #endif
+  }
+
+  static inline bool
+  IsDirectory(const std::string& filename) {
+#if defined(OS_IS_OSX) || defined(OS_IS_LINUX) 
+  struct stat s;
+  if(stat(filename.c_str(), &s) != 0) {
+    DLOG(ERROR) << "error stat'ing: " << filename;
+    return false;
+  }
+  return s.st_mode == S_IFDIR;
+#else
+#error "unsupported operating system"
+#endif
+
   }
 
   static inline bool

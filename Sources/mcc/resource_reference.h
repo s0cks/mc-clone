@@ -32,7 +32,7 @@ namespace mcc::resource {
 
     std::shared_ptr<T> Load() {
       //TODO: do type checking
-      return T::LoadFrom(FLAGS_resources + location);
+      return T::LoadFrom(location);
     }
 
     Reference& operator=(const Reference& rhs) = default;

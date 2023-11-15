@@ -22,6 +22,8 @@ namespace mcc {
 
   namespace resource {
     class Registry {
+      friend class MaterialIndexer;
+      friend class ShaderIndexer;
       DEFINE_NON_INSTANTIABLE_TYPE(Registry);
     public:
       enum State : uint8_t {
@@ -89,6 +91,56 @@ namespace mcc {
       static inline bool Is##Name() { return GetState() == State::k##Name; }
       FOR_EACH_RESOURCE_REGISTRY_STATE(DEFINE_STATE_CHECK)
   #undef DEFINE_STATE_CHECK
+    };
+
+    template<const Type T>
+    class Indexer {
+    protected:
+      std::string root_;
+      std::string current_;
+
+      Indexer(const std::string& root,
+              const std::string& current):
+        root_(root),
+        current_(current) {
+      }
+      explicit Indexer(const std::string& root):
+        root_(root),
+        current_(root) {
+      }
+    public:
+      virtual ~Indexer() = default;
+      virtual void Index() = 0;
+    };
+
+    class MaterialIndexer : public Indexer<kMaterialType> {
+      DEFINE_NON_COPYABLE_TYPE(MaterialIndexer);
+    public:
+      MaterialIndexer(const std::string& root,
+                      const std::string& current):
+                      Indexer(root, current) {
+      }
+      MaterialIndexer():
+        Indexer(FLAGS_resources + "/materials") {
+      }
+      ~MaterialIndexer() override = default;
+
+      void Index() override;
+    };
+
+    class ShaderIndexer : public Indexer<kShaderType> {
+      DEFINE_NON_COPYABLE_TYPE(ShaderIndexer);
+    public:
+      ShaderIndexer(const std::string& root,
+                    const std::string& current):
+                    Indexer(root, current) {
+      }
+      ShaderIndexer():
+        Indexer(FLAGS_resources + "/shaders") {
+      }
+      ~ShaderIndexer() override = default;
+
+      void Index() override;
     };
   }
 }

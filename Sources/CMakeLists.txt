@@ -18,6 +18,7 @@ add_library(${PROJECT_NAME}
   mcc/window.h mcc/window.cc
   mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
   mcc/shader/compiler_result.h
   mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/shader/builder.h mcc/shader/builder.cc
@@ -30,6 +31,7 @@ add_library(${PROJECT_NAME}
   mcc/resource_tag.h
   mcc/resource_reference.h
   mcc/resource.h mcc/resource.cc
+  mcc/resource_registry.h mcc/resource_registry.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
   mcc/engine/engine_stage_preinit.h

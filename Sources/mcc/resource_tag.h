@@ -156,6 +156,11 @@ namespace mcc {
       Material(const std::string& name) {
         return Tag(Type::kMaterialType, name);
       }
+
+      static inline Tag
+      Shader(const std::string& name) {
+        return Tag(Type::kShaderType, name);
+      }
     };
   }
 }
