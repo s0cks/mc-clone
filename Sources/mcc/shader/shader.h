@@ -10,6 +10,7 @@
 
 #include "mcc/cache.h"
 #include "mcc/material.h"
+#include "mcc/resource.h"
 
 namespace mcc::shader {
   static constexpr const char* kDefaultShaderCacheDir = "";
@@ -118,7 +119,7 @@ namespace mcc::shader {
       SetVec3(name + ".specular", specular);
     }
 
-    virtual void SetMaterial(const std::string& name, MaterialPtr value) const {
+    virtual void SetMaterial(const std::string& name) const {
       SetInt(name + ".albedo", 0);
       SetInt(name + ".ao", 1);
       SetInt(name + ".height", 2);
@@ -140,38 +141,32 @@ namespace mcc::shader {
       stream << ")";
       return stream;
     }
-  private:
-    static const std::function<Shader(const std::string&)> kDefaultShaderCacheLoader;
-  public:
-    static inline std::string
-    GetCacheDirectory() {
-      if(FLAGS_shader_cache_dir.empty())
-        return FLAGS_resources + "/shaders";
-      return FLAGS_shader_cache_dir;
-    }
-
-    static inline uint64_t
-    GetCacheCapacity() {
-      return FLAGS_shader_cache_size;
-    }
-
-    static uint64_t GetCacheSize();
-    static Shader Get(const std::string& k, std::function<Shader(const std::string&)> loader);
-    
-    static inline Shader
-    Get(const std::string& name) {
-      return Get(name, kDefaultShaderCacheLoader);
-    }
-
-    static inline Shader
-    GetOrDefault(const std::string& name, const Shader& defaultShader) {
-      return Get(name, [&defaultShader](const std::string& name) {
-        return defaultShader;
-      });
-    }
   };
+}
 
-  typedef Cache<std::string, Shader> ShaderCache;
+namespace mcc {
+  using shader::Shader;
+  using shader::ShaderId;
+  using shader::kUnknownShaderId;
+
+  namespace resource {
+    typedef Reference<Shader> ShaderRef;
+    
+    static inline Tag
+    NewShaderTag(const std::string& name) {
+      return Tag::Shader(name);
+    }
+  }
+
+  using resource::ShaderRef;
+
+  ShaderRef GetShader(const resource::Token& name);
+
+  static inline ShaderRef
+  GetShader(const std::string& name) {
+    const auto token = resource::Registry::Get(resource::NewShaderTag(name));
+    return GetShader(token);
+  }
 }
 
 #endif //MCC_SHADER_H

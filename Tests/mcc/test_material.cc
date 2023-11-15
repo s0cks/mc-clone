@@ -7,7 +7,7 @@ namespace mcc {
     ASSERT_TRUE(ParseJson(root + "/material.json", doc));
     material::JsonMaterialLoader loader(root, doc);
     const auto material = loader.LoadMaterial();
-    ASSERT_NE(material.get(), nullptr);
+    ASSERT_NE(material, nullptr);
     ASSERT_EQ(material->name, "broken_concrete");
     ASSERT_EQ(material->location, root);
   }

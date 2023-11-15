@@ -14,9 +14,9 @@
 #include "mcc/resource.h"
 
 namespace mcc::terrain {
-  static shader::Shader shader_;
+  static ShaderRef shader_;
   static texture::Texture textures_[kNumberOfTerrainTextures];
-  static material::MaterialPtr material_;
+  static MaterialRef material_;
 
   static inline texture::Texture
   GetSelectedTexture() {
@@ -33,21 +33,21 @@ namespace mcc::terrain {
 
     FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
 #undef LOAD_TERRAIN_TEXTURE
-    shader_ = shader::Shader::Get("terrain");
-    material_ = GetResource<material::Material>(resource::Tag::Material("floors/laminate_brown")).Load();
+    shader_ = GetShader("terrain");
+    material_ = GetMaterial("floors/old_wood");
   }
 
   void TerrainRenderer::Render() {
     glm::mat4 model(1.0f);
     const auto chunk = Terrain::GetChunk();
     material_->Bind();
-    shader_.ApplyShader();
-    shader_.SetUniformBlock("Camera", 0);
-    shader_.SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
-    shader_.SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
-    shader_.SetMat4("model", chunk->GetModelMatrix());
-    shader_.SetMaterial("material", material_);
-    shader_.ApplyShader();
+    shader_->ApplyShader();
+    shader_->SetUniformBlock("Camera", 0);
+    shader_->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
+    shader_->SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
+    shader_->SetMat4("model", chunk->GetModelMatrix());
+    shader_->SetMaterial("material");
+    shader_->ApplyShader();
     chunk->Render();
   }
 }

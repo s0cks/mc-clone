@@ -12,6 +12,7 @@
 #include <leveldb/options.h>
 #include <leveldb/comparator.h>
 #include "mcc/common.h"
+#include "mcc/resource_token.h"
 #include "mcc/resource_reference.h"
 
 namespace mcc {
@@ -79,12 +80,11 @@ namespace mcc {
       static State GetState();
       static bool Has(const Tag k);
 
-      template<typename T>
-      static Reference<T> Get(const Tag k) {
+      static Token Get(const Tag k) {
         std::string filename;
         if(!GetFilename(k, &filename))
-          return Reference<T>();
-        return Reference<T>{ Reference<T>(k, filename) };
+          return Token();
+        return Token{ Token(k, filename) };
       }
       
   #define DEFINE_STATE_CHECK(Name) \

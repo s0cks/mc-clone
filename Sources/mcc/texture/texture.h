@@ -3,6 +3,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/platform.h"
+#include "mcc/resource.h"
 
 namespace mcc::texture {
   typedef GLuint TextureId;
@@ -106,6 +107,25 @@ namespace mcc::texture {
 namespace mcc {
   using texture::Texture;
   using texture::kInvalidTextureId;
+
+  namespace resource {
+    typedef Reference<Texture> TextureRef;
+
+    static inline Tag
+    NewTextureTag(const std::string& name) {
+      return Tag::Texture(name);
+    }
+  }
+
+  using resource::TextureRef;
+
+  TextureRef GetTexture(const resource::Token& token);
+
+  static inline TextureRef
+  GetTexture(const std::string& name) {
+    const auto token = resource::Registry::Get(resource::NewTextureTag(name));
+    return GetTexture(token);
+  }
 }
 
 #endif //MCC_TEXTURE_H

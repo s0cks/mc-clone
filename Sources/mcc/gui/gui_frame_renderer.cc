@@ -23,7 +23,6 @@ namespace mcc::gui {
     if(nk_option_label(ctx, "Wireframe", Renderer::GetMode() == Renderer::kWireframeMode))
       Renderer::SetMode(Renderer::kWireframeMode);
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
-    nk_labelf(ctx, NK_TEXT_LEFT, "Shaders: %" PRIu64, shader::Shader::GetCacheSize());
     nk_labelf(ctx, NK_TEXT_LEFT, "Vertices: %" PRIu64, renderer::Renderer::GetVertexCounter());
 
     {

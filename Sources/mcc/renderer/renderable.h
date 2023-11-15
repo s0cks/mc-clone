@@ -11,7 +11,7 @@
 
 namespace mcc::renderer {
   struct Renderable {
-    shader::Shader shader;
+    ShaderRef shader;
     mesh::Mesh* mesh;
     texture::Texture texture;
     MaterialPtr material;

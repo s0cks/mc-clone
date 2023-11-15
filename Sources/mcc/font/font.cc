@@ -45,11 +45,11 @@ namespace mcc::font {
   }
 
   Font::Font(const std::string& name, const FontSize size):
-    shader_(shader::Shader::Get(name)),
+    shader_(GetShader(name)),
     chars_(),
     mesh_() {
-      shader_.ApplyShader();
-      shader_.SetMat4("projection", glm::mat4(1.0f));
+      shader_->ApplyShader();
+      shader_->SetMat4("projection", glm::mat4(1.0f));
       GlyphMapGenerator::Generate(name, chars_, size);
   }
 }

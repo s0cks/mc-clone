@@ -13,7 +13,7 @@ namespace mcc {
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static shader::Shader shader_;
+  static ShaderRef shader_;
 
   FrameBuffer::FrameBuffer(const uint64_t width, 
                            const uint64_t height):
@@ -29,7 +29,7 @@ namespace mcc {
   }
 
   void FrameBuffer::OnInit() {
-    shader_ = shader::Shader::Get("framebuffer");
+    shader_ = GetShader("framebuffer");
     vao_ = VertexArrayObject();
   }
 
@@ -52,10 +52,10 @@ namespace mcc {
   }
 
   void FrameBuffer::Draw() {
-    shader_.ApplyShader();
-    shader_.SetInt("tex0", 0);
+    shader_->ApplyShader();
+    shader_->SetInt("tex0", 0);
     fbo_.Unbind();
-    shader_.ApplyShader();
+    shader_->ApplyShader();
     VertexArrayObjectScope vao(vao_);
     vbo_.Bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) 0);

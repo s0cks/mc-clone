@@ -6,8 +6,8 @@ namespace mcc::font {
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    shader().ApplyShader();
-    shader().SetVec3("textColor", color_);
+    shader()->ApplyShader();
+    shader()->SetVec3("textColor", color_);
     glActiveTexture(GL_TEXTURE0);
 
     float startX = pos[0];

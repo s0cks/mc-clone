@@ -18,7 +18,6 @@ add_library(${PROJECT_NAME}
   mcc/window.h mcc/window.cc
   mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
-  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
   mcc/shader/compiler_result.h
   mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/shader/builder.h mcc/shader/builder.cc
@@ -28,7 +27,9 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h
   mcc/resource_type.h
+  mcc/resource_token.h
   mcc/resource_tag.h
+  mcc/resource_ptr.h
   mcc/resource_reference.h
   mcc/resource.h mcc/resource.cc
   mcc/resource_registry.h mcc/resource_registry.cc
@@ -81,6 +82,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/image_png.h mcc/texture/image_png.cc
   mcc/texture/image_jpeg.h mcc/texture/image_jpeg.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+  mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
   mcc/terrain/terrain_renderer.h mcc/terrain/terrain_renderer.cc

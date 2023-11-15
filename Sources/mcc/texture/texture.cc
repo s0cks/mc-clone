@@ -5,10 +5,29 @@
 #include "mcc/texture/image.h"
 #include "mcc/texture/texture_loader.h"
 
-namespace mcc::texture {
+namespace mcc {
   static const std::regex kPngPattern(".*\\.png$");
   static const std::regex kJpegPattern(".*\\.(jpeg|jpg)$");
 
+  TextureRef GetTexture(const resource::Token& token) {
+    MCC_ASSERT(token.tag.type() == resource::kTextureType);
+    const auto& filename = token.location;
+    if(std::regex_match(filename, kPngPattern)) {
+      texture::PngTextureLoader loader(filename);
+      const auto texture = new Texture(loader.Load());
+      const auto ptr = resource::Pointer(token.tag, (uword) texture);
+      return TextureRef(ptr);
+    } else if(std::regex_match(filename, kJpegPattern)) {
+      texture::JpegTextureLoader loader(filename);
+      const auto texture = new Texture(loader.Load());
+      const auto ptr = resource::Pointer(token.tag, (uword) texture);
+      return TextureRef(ptr);
+    }
+    return TextureRef();
+  }
+}
+
+namespace mcc::texture {
   static inline bool
   BeginsWith(const std::string& str, const std::string& prefix) {
     return str.size() >= prefix.size() 
@@ -128,4 +147,6 @@ namespace mcc::texture {
     CHECK_GL(FATAL);
     return texture;
   }
+
+
 }

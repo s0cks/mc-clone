@@ -14,7 +14,7 @@ namespace mcc::gui {
   static nk::FontAtlas fonts_;
   static nk::DrawNullTexture draw_null;
 
-  static shader::Shader shader_;
+  static ShaderRef shader_;
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
   static VertexBuffer vbo_(kInvalidBufferObject);
   static IndexBuffer ibo_(kInvalidBufferObject);
@@ -65,7 +65,7 @@ namespace mcc::gui {
 
   static inline void
   CreateShader() {
-    shader_ = shader::Shader::Get("gui");
+    shader_ = GetShader("gui");
   }
 
   static inline void
@@ -73,19 +73,19 @@ namespace mcc::gui {
     vao_ = VertexArrayObject();
     VertexArrayObjectScope vao(vao_);
     vbo_ = VertexBuffer();
-    const auto attr_pos = glGetAttribLocation(shader_.GetShaderId(), "pos");
+    const auto attr_pos = glGetAttribLocation(shader_->GetShaderId(), "pos");
     glVertexAttribPointer(attr_pos, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(attr_pos);
     CHECK_GL(FATAL);
 
-    const auto attr_uv = glGetAttribLocation(shader_.GetShaderId(), "uv");
+    const auto attr_uv = glGetAttribLocation(shader_->GetShaderId(), "uv");
     glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(attr_uv);
     CHECK_GL(FATAL);
 
-    const auto attr_color = glGetAttribLocation(shader_.GetShaderId(), "color");
+    const auto attr_color = glGetAttribLocation(shader_->GetShaderId(), "color");
     glVertexAttribPointer(attr_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(attr_color);
@@ -162,10 +162,10 @@ namespace mcc::gui {
     glActiveTexture(GL_TEXTURE0);
     CHECK_GL(FATAL);
 
-    shader_.ApplyShader();
-    shader_.SetInt("tex", 0);
-    shader_.SetMat4("projection", projection);
-    shader_.ApplyShader();
+    shader_->ApplyShader();
+    shader_->SetInt("tex", 0);
+    shader_->SetMat4("projection", projection);
+    shader_->ApplyShader();
     glViewport(0,0, (GLsizei) display_width_, (GLsizei) display_height_);
     CHECK_GL(FATAL);
     {

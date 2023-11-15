@@ -6,12 +6,12 @@
 
 namespace mcc::skybox {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static shader::Shader shader_;
+  static ShaderRef shader_;
   static ThreadLocal<Skybox> skybox_;
 
   void Skybox::OnPostInit() {
     vao_ = VertexArrayObject();
-    shader_ = shader::Shader::Get("skybox");
+    shader_ = GetShader("skybox");
     skybox_.Set(Skybox::New(FLAGS_resources + "/textures/cubemaps/graycloud"));
   }
 
@@ -84,10 +84,10 @@ namespace mcc::skybox {
     CHECK_GL(FATAL);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture_.id());
     CHECK_GL(FATAL);
-    shader_.ApplyShader();
-    shader_.SetUniformBlock("Camera", 0);
-    shader_.SetInt("tex", 0);
-    shader_.ApplyShader();
+    shader_->ApplyShader();
+    shader_->SetUniformBlock("Camera", 0);
+    shader_->SetInt("tex", 0);
+    shader_->ApplyShader();
     VertexArrayObjectScope scope(vao_);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);

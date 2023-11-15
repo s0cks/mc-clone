@@ -71,10 +71,6 @@ namespace mcc::resource {
   }
 
   void Registry::OnPostInit() {
-    {
-      const auto ref = Get<Material>(Tag::Material("floors/laminate_brown"));
-      DLOG(INFO) << ref;
-    }
   }
 
   void Registry::OnTerminating() {
@@ -174,6 +170,7 @@ namespace mcc::resource {
       const auto path = std::string(entry.path());
       const auto relative = path.substr(root_.length() + 1);
       const auto name = relative.substr(0, relative.find_last_of("."));
+      DLOG(INFO) << path << " name: " << name;
       if(entry.is_directory()) {
         if(FileExists(path + "/shader.json")) {
           Registry::Put(Tag::Shader(name), path);
@@ -184,7 +181,7 @@ namespace mcc::resource {
         indexer.Index();
       } else if(EndsWith(relative, ".vs") || EndsWith(relative, ".vsh")) {
         //TODO: elegantly determine fragment shader location
-        Registry::Put(Tag::Shader(name), path);
+        Registry::Put(Tag::Shader(name), root_ + "/" + name);
         continue;
       }
     }

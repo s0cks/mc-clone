@@ -35,7 +35,7 @@ namespace mcc {
         roughness.Bind(5);
       }
     public:
-      static MaterialPtr LoadFrom(const std::string& filename);
+      static Material* LoadFrom(const std::string& filename);
     };
 
     class MaterialLoader {
@@ -43,7 +43,7 @@ namespace mcc {
       MaterialLoader() = default;
     public:
       virtual ~MaterialLoader() = default;
-      virtual MaterialPtr LoadMaterial() = 0;
+      virtual Material* LoadMaterial() = 0;
     };
 
     class JsonMaterialLoader : public MaterialLoader {
@@ -77,9 +77,9 @@ namespace mcc {
         doc_(doc) {
       }
       ~JsonMaterialLoader() override = default;
-      MaterialPtr LoadMaterial() override;
+      Material* LoadMaterial() override;
     public:
-      static inline MaterialPtr
+      static inline Material*
       Load(const std::string& root) {
         json::Document doc;
         if(!ParseJson(root + "/material.json", doc))
@@ -92,6 +92,25 @@ namespace mcc {
 
   using material::Material;
   using material::MaterialPtr;
+
+  namespace resource {
+    typedef Reference<Material> MaterialRef;
+
+    static inline Tag
+    NewMaterialTag(const std::string& name) {
+      return Tag::Material(name);
+    }
+  }
+
+  using resource::MaterialRef;
+
+  MaterialRef GetMaterial(const resource::Token& token);
+
+  static inline MaterialRef
+  GetMaterial(const std::string& name) {
+    const auto token = resource::Registry::Get(resource::NewMaterialTag(name));
+    return GetMaterial(token);
+  }
 }
 
 #endif //MCC_MATERIAL_H

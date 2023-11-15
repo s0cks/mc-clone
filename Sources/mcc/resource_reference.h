@@ -6,41 +6,35 @@
 #define MCC_RESOURCE_REFERENCE_H
 
 #include "mcc/flags.h"
+#include "mcc/resource_ptr.h"
 #include "mcc/resource_tag.h"
 
 namespace mcc::resource {
   template<typename T>
-  struct Reference {
-    Tag resource; //TODO: maybe inherit from Resource
-    std::string location;
-
-    Reference():
-      resource(),
-      location() {
-    }
-    Reference(const Tag& r, const std::string& l):
-      resource(r),
-      location(l) {
+  class Reference {
+  private:
+    Pointer ptr_;
+  public:
+    Reference() = default;
+    explicit Reference(const Pointer ptr):
+      ptr_(ptr) {
     }
     Reference(const Reference& rhs) = default;
     ~Reference() = default;
 
-    bool valid() const {
-      return resource.type() != Type::kUnknownType
-          && FileExists(FLAGS_resources + location);
+    Pointer ptr() const {
+      return ptr_;
     }
 
-    std::shared_ptr<T> Load() {
-      //TODO: do type checking
-      return T::LoadFrom(location);
+    T* operator->() const {
+      return reinterpret_cast<T*>(ptr_.GetAddress());
     }
 
     Reference& operator=(const Reference& rhs) = default;
 
     friend std::ostream& operator<<(std::ostream& stream, const Reference& rhs) {
       stream << "resource::Reference(";
-      stream << "resource=" << rhs.resource << ", ";
-      stream << "location=" << rhs.location;
+      stream << "ptr=" << rhs.ptr_;
       stream << ")";
       return stream;
     }

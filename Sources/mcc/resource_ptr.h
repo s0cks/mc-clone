@@ -4,18 +4,40 @@
 #include "mcc/platform.h"
 #include "mcc/relaxed_atomic.h"
 
+#include "mcc/resource_tag.h"
+
 namespace mcc::resource {
   class Pointer {
   private:
-    RelaxedAtomic<uword> tag_;
+    Tag tag_;
+    RelaxedAtomic<uword> address_;
+    RelaxedAtomic<uword> forwarding_;
   public:
-    Pointer(const uword address):
-      address_(address) {
+    Pointer() = default;
+    Pointer(const Tag tag, const uword address):
+      tag_(tag),
+      address_(address),
+      forwarding_(0) {
     }
     ~Pointer() = default;
 
-    uword address() const {
-      return address_;
+    Tag GetTag() const {
+      return (Tag)tag_;
+    }
+
+    uword GetAddress() const {
+      return (uword)address_;
+    }
+
+    uword GetForwardingAddress() const {
+      return (uword)forwarding_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Pointer& rhs) {
+      stream << "Pointer(";
+      stream << "address=" << rhs.GetAddress();
+      stream << ")";
+      return stream;
     }
   };
 }

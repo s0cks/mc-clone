@@ -29,16 +29,16 @@ namespace mcc::renderer {
     });
 
     texture.Bind0();
-    shader.ApplyShader();
-    shader.SetMat4("model", model);
+    shader->ApplyShader();
+    shader->SetMat4("model", model);
     const auto diffuseColor = lightColor * glm::vec3(0.5f);
     const auto ambientColor = diffuseColor * glm::vec3(0.8f);
-    shader.SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
-    shader.SetMaterial("material", material);
-    shader.SetInt("tex0", 0);
-    shader.SetVec3("lightColor", lightColor);
-    shader.SetUniformBlock("Camera", 0);
-    shader.ApplyShader();
+    shader->SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
+    shader->SetMaterial("material");
+    shader->SetInt("tex0", 0);
+    shader->SetVec3("lightColor", lightColor);
+    shader->SetUniformBlock("Camera", 0);
+    shader->ApplyShader();
     const auto& mesh = (*renderable)->mesh;
     mesh->Render();
     Renderer::IncrementEntityCounter();
