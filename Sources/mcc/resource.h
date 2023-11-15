@@ -12,17 +12,17 @@ namespace mcc {
   }
 
   template<typename T>
-  static inline std::optional<resource::Reference<T>>
+  static inline resource::Reference<T>
   GetResource(const resource::Tag& tag) {
     return resource::Registry::Get<T>(tag);
   }
 
-  static inline std::optional<resource::MaterialRef>
+  static inline resource::MaterialRef
   GetMaterial(const std::string& name) {
     return GetResource<material::Material>(resource::Tag::Material(name));
   }
 
-  static inline std::optional<resource::ShaderRef>
+  static inline resource::ShaderRef
   GetShader(const std::string& name) {
     return GetResource<shader::Shader>(resource::Tag::Shader(name));
   }

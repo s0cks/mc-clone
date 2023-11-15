@@ -13,10 +13,6 @@
 
 namespace mcc {
   namespace resource {
-    static constexpr const auto kResourceIdLength = 128;
-
-#define ResourceId uint8_t[kResourceIdLength]
-
     class Tag {
     public:
       static constexpr const auto kMaxKeyLength = 128;
@@ -32,7 +28,6 @@ namespace mcc {
 
         kTotalSize = kTypeSize + kHashSize + kDataSize,
       };
-
     private:
       uint8_t data[kTotalSize];
 

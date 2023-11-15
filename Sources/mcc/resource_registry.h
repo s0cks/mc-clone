@@ -72,7 +72,7 @@ namespace mcc {
       static void SetState(const State state);
       static bool Put(const Tag k, const std::string& value);
       static bool Delete(const Tag k);
-      static std::optional<std::string> GetFilename(const Tag k);
+      static bool GetFilename(const Tag k, std::string* result);
     public:
       static void Init();
 
@@ -80,11 +80,11 @@ namespace mcc {
       static bool Has(const Tag k);
 
       template<typename T>
-      static std::optional<Reference<T>> Get(const Tag k) {
-        auto filename = GetFilename(k);
-        if(!filename)
-          return std::nullopt;
-        return std::optional<Reference<T>>{ Reference<T>(k, (*filename)) };
+      static Reference<T> Get(const Tag k) {
+        std::string filename;
+        if(!GetFilename(k, &filename))
+          return Reference<T>();
+        return Reference<T>{ Reference<T>(k, filename) };
       }
       
   #define DEFINE_STATE_CHECK(Name) \

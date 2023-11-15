@@ -2,11 +2,12 @@
 #define MCC_RESOURCE_PTR_H
 
 #include "mcc/platform.h"
+#include "mcc/relaxed_atomic.h"
 
 namespace mcc::resource {
   class Pointer {
   private:
-    uword address_;
+    RelaxedAtomic<uword> tag_;
   public:
     Pointer(const uword address):
       address_(address) {

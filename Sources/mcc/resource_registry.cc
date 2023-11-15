@@ -73,7 +73,7 @@ namespace mcc::resource {
   void Registry::OnPostInit() {
     {
       const auto ref = Get<Material>(Tag::Material("floors/laminate_brown"));
-      DLOG(INFO) << (*ref);
+      DLOG(INFO) << ref;
     }
   }
 
@@ -138,17 +138,16 @@ namespace mcc::resource {
     return true;
   }
 
-  std::optional<std::string> Registry::GetFilename(const Tag k) {
-    std::string filename;
+  bool Registry::GetFilename(const Tag k, std::string* result) {
     READ_OPTIONS;
     leveldb::Status status;
-    if(!(status = GetIndex()->Get(readOpts, (const leveldb::Slice&) k, &filename)).ok()) {
+    if(!(status = GetIndex()->Get(readOpts, (const leveldb::Slice&) k, result)).ok()) {
       if(status.IsNotFound())
-        return std::nullopt;
+        return false;
       DLOG(ERROR) << "couldn't get " << k << ": " << status.ToString();
-      return std::nullopt;
+      return false;
     }
-    return std::optional<std::string>{filename};
+    return true;
   }
 
   void MaterialIndexer::Index() {
