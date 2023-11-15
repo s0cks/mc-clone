@@ -277,3 +277,7 @@ void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {
   __ glBindBufferBase(target, index, buffer);
 
 }
+
+void glGenerateMipmap(GLenum target) {
+  __ glGenerateMipmap(target);
+}

@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <png.h>
+#include <jerror.h>
+#include <jpeglib.h>
 
 namespace mcc::texture {
   Texture PngTextureLoader::Load() {
@@ -103,5 +105,81 @@ namespace mcc::texture {
     free(data);
     fclose(file);
     return texture;
+  }
+
+  Texture JpegTextureLoader::Load() {
+    DLOG(INFO) << "loading " << filename_ << "....";
+    unsigned long x, y;
+    unsigned long data_size;     // length of the file
+    int channels;               //  3 =>RGB   4 =>RGBA 
+    unsigned int type;  
+    unsigned char * rowptr[1];    // pointer to an array
+    unsigned char * jdata;        // data for the image
+    struct jpeg_decompress_struct info; //for our jpeg info
+    struct jpeg_error_mgr err;          //the error handler
+
+    FILE* file = fopen(filename_.c_str(), "rb");  //open the file
+
+    info.err = jpeg_std_error(& err);     
+    jpeg_create_decompress(& info);   //fills info structure
+
+    //if the jpeg file doesn't load
+    if(!file) {
+      fprintf(stderr, "Error reading JPEG file %s!", filename_.c_str());
+      return 0;
+    }
+
+    jpeg_stdio_src(&info, file);    
+    jpeg_read_header(&info, TRUE);   // read jpeg file header
+
+    jpeg_start_decompress(&info);    // decompress the file
+
+    //set width and height
+    x = info.output_width;
+    y = info.output_height;
+    channels = info.num_components;
+    type = GL_COMPRESSED_RGB;
+    if(channels == 4) type = GL_COMPRESSED_RGBA;
+
+    data_size = x * y * 3;
+
+    //--------------------------------------------
+    // read scanlines one at a time & put bytes 
+    //    in jdata[] array. Assumes an RGB image
+    //--------------------------------------------
+    jdata = (unsigned char *)malloc(data_size);
+    while (info.output_scanline < info.output_height) // loop
+    {
+      // Enable jpeg_read_scanlines() to fill our jdata array
+      rowptr[0] = (unsigned char *)jdata +  // secret to method
+              3* info.output_width * info.output_scanline; 
+
+      jpeg_read_scanlines(&info, rowptr, 1);
+    }
+    //---------------------------------------------------
+
+    jpeg_finish_decompress(&info);   //finish decompressing
+
+    //----- create OpenGL tex map (omit if not needed) --------
+    Texture texture(true);
+    texture.Bind0();
+    CHECK_GL(FATAL);
+    glTexImage2D(GL_TEXTURE_2D, 0, type, x, y, 0, channels == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) jdata);
+    CHECK_GL(FATAL);
+    // glGenerateMipmap(GL_TEXTURE_2D);
+    // CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+
+    jpeg_destroy_decompress(&info);
+    fclose(file);                    //close the file
+    free(jdata);
+    return texture;    // for OpenGL tex maps
   }
 }

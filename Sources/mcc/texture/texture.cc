@@ -6,6 +6,7 @@
 
 namespace mcc::texture {
   static const std::regex kPngPattern(".*\\.png$");
+  static const std::regex kJpegPattern(".*\\.(jpeg|jpg)$");
 
   static inline bool
   BeginsWith(const std::string& str, const std::string& prefix) {
@@ -19,6 +20,9 @@ namespace mcc::texture {
 
     if(std::regex_match(filename, kPngPattern)) {
       PngTextureLoader loader(filename);
+      return loader.Load();
+    } else if(std::regex_match(filename, kJpegPattern)) {
+      JpegTextureLoader loader(filename);
       return loader.Load();
     }
 

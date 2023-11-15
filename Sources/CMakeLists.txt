@@ -114,6 +114,7 @@ target_link_libraries(${PROJECT_NAME}
   glog::glog
   ${GFLAGS_LIBRARIES}
   PNG::PNG
+  JPEG::JPEG
   ${LEVELDB_LIBRARIES}
   flatbuffers::flatbuffers
   Freetype::Freetype

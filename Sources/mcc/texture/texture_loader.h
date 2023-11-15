@@ -32,6 +32,15 @@ namespace mcc::texture {
     ~PngTextureLoader() override = default;
     Texture Load() override;
   };
+
+  class JpegTextureLoader : public TextureFileLoader {
+  public:
+    explicit JpegTextureLoader(const std::string& filename):
+      TextureFileLoader(filename) {
+    }
+    ~JpegTextureLoader() override = default;
+    Texture Load() override;
+  };
 }
 
 #endif //MCC_TEXTURE_LOADER_H

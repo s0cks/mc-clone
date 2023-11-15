@@ -84,6 +84,7 @@ namespace mcc {
     MOCK_METHOD4(glBufferSubData, void(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data));
     MOCK_METHOD2(glGetUniformBlockIndex, GLuint(GLuint program, const GLchar *uniformBlockName));
     MOCK_METHOD3(glUniformBlockBinding, void(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding));
+    MOCK_METHOD1(glGenerateMipmap, void(GLenum target));
   };
 }
 

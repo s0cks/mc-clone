@@ -67,7 +67,7 @@ namespace mcc::terrain {
     VLOG(1) << "generating terrain vertices....";
     GenerateVertices(vertices, size);
     VLOG(1) << "generated " << vertices.size() << " vertices.";
-    VLOG(10) << "terrain vertices: " << vertices;
+    DLOG(INFO) << "terrain vertices: " << vertices;
 
     IndexList indices;
     VLOG(1) << "generating terrain indices....";
