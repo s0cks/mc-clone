@@ -15,7 +15,7 @@ namespace mcc::terrain {
 
   }
 
-  #define WIDTH (size[0])
+#define WIDTH (size[0])
 #define HALF_WIDTH (WIDTH / 2.0f)
 #define DEPTH (size[1])
 #define HALF_DEPTH (DEPTH / 2.0f)

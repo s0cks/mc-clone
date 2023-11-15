@@ -66,6 +66,7 @@ add_library(${PROJECT_NAME}
   mcc/series.h
   mcc/framebuffer.h mcc/framebuffer.cc
   mcc/subscription_trie.h
+  mcc/skybox.h mcc/skybox.cc
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc

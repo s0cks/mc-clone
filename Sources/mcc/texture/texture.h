@@ -12,6 +12,7 @@ namespace mcc::texture {
   enum ActiveTexture : GLenum {
     kTexture0 = GL_TEXTURE0,
     kTexture1 = GL_TEXTURE1,
+    kCubeMap = GL_TEXTURE_CUBE_MAP,
   };
 
   class Texture : public gfx::Resource {
@@ -88,6 +89,7 @@ namespace mcc::texture {
     }
   public:
     static Texture LoadFrom(std::string filename);
+    static Texture LoadCubeMapFrom(const std::string& filename);
   };
 }
 

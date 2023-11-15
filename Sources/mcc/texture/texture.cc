@@ -2,6 +2,7 @@
 #include <regex>
 
 #include "mcc/flags.h"
+#include "mcc/texture/image.h"
 #include "mcc/texture/texture_loader.h"
 
 namespace mcc::texture {
@@ -27,5 +28,104 @@ namespace mcc::texture {
     }
 
     return Texture(kInvalidTextureId);
+  }
+
+  enum CubeMapFace {
+    kRightFace  = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    kLeftFace   = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    kTopFace    = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    kBottomFace = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    kBackFace   = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+    kFrontFace  = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    kNumberOfCubeMapFaces,
+  };
+
+  static inline std::string
+  GetCubeMapFaceImageFilename(const std::string& filename, const CubeMapFace face) {
+    switch(face) {
+      case kRightFace:
+        return filename + "/right.jpg";
+      case kLeftFace:
+        return filename + "/left.jpg";
+      case kTopFace:
+        return filename + "/top.jpg";
+      case kBottomFace:
+        return filename + "/bottom.jpg";
+      case kBackFace:
+        return filename + "/back.jpg";
+      case kFrontFace:
+        return filename + "/front.jpg";
+      default:
+        return filename;
+    }
+  }
+
+  static inline bool
+  LoadCubeMapFaceFrom(const CubeMapFace face, const std::string& filename) {
+    Image image;
+    if(!jpeg::Decode(filename, image))
+      return false;
+    glTexImage2D(face, 0, image.type, image.size[0], image.size[1], 0, image.type, GL_UNSIGNED_BYTE, (const GLvoid*) image.data->data());
+    CHECK_GL(FATAL);
+    return true;
+  }
+
+  Texture Texture::LoadCubeMapFrom(const std::string& filename) {
+    Texture texture(true);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id());
+    CHECK_GL(FATAL);
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kRightFace);
+      if(!LoadCubeMapFaceFrom(kRightFace, face_filename)) {
+        LOG(ERROR) << "failed to load right cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kLeftFace);
+      if(!LoadCubeMapFaceFrom(kLeftFace, face_filename)) {
+        LOG(ERROR) << "failed to load left cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kTopFace);
+      if(!LoadCubeMapFaceFrom(kTopFace, face_filename)) {
+        LOG(ERROR) << "failed to load top cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kBottomFace);
+      if(!LoadCubeMapFaceFrom(kBottomFace, face_filename)) {
+        LOG(ERROR) << "failed to load bottom cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kBackFace);
+      if(!LoadCubeMapFaceFrom(kBackFace, face_filename)) {
+        LOG(ERROR) << "failed to load back cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    {
+      const auto face_filename = GetCubeMapFaceImageFilename(filename, kFrontFace);
+      if(!LoadCubeMapFaceFrom(kFrontFace, face_filename)) {
+        LOG(ERROR) << "failed to load front cube map face from: " << face_filename;
+        return kInvalidTextureId;
+      }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    CHECK_GL(FATAL);
+    return texture;
   }
 }

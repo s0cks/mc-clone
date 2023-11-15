@@ -24,6 +24,8 @@
 #include "mcc/physics/rigid_body.h"
 #include "mcc/lighting/ambient_light.h"
 
+#include "mcc/skybox.h"
+
 namespace mcc::renderer {
   static ThreadLocal<uv_loop_t> loop_;
   static ThreadLocal<PreRenderStage> pre_render_;
@@ -82,6 +84,7 @@ namespace mcc::renderer {
     physics::RigidBody::Init();
     light::DirectionalLight::Init();
     light::PointLight::Init();
+    skybox::Skybox::Init();
   }
 
   void Renderer::OnPreInit() {

@@ -51,6 +51,11 @@ namespace mcc::camera {
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(PerspectiveCameraData), data);
   }
 
+  void PerspectiveCameraDataUniformBufferObject::UpdateView(const glm::mat4& data) {
+    PerspectiveCameraDataUniformBufferObjectScope scope(*this);
+    glBufferSubData(GL_UNIFORM_BUFFER, offsetof(PerspectiveCameraData, view), sizeof(glm::mat4), &data[0]);
+  }
+
   static RelaxedAtomic<EntityId> entity_;
   static EntitySet tracked_;
   static Signature signature_;

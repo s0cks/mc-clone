@@ -76,6 +76,7 @@ namespace mcc::camera {
     ~PerspectiveCameraDataUniformBufferObject() override = default;
 
     void Update(const PerspectiveCameraData* data);
+    void UpdateView(const glm::mat4& view);
   };
   DEFINE_RESOURCE_SCOPE(PerspectiveCameraDataUniformBufferObject);
 }

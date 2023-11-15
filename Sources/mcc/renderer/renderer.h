@@ -11,6 +11,7 @@
 #include "mcc/ecs/entity.h"
 #include "mcc/framebuffer.h"
 
+#include "mcc/skybox.h"
 #include "mcc/camera/perspective_camera.h"
 
 namespace mcc::gui {
@@ -84,6 +85,7 @@ namespace mcc::renderer {
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);
     static camera::PerspectiveCameraDataUniformBufferObject* GetCameraUniformBuffer();
+    static skybox::Skybox* GetSkybox();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }
