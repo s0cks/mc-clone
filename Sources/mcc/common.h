@@ -62,6 +62,15 @@ namespace mcc {
   }
 
   static inline bool
+  DeleteDirectory(const std::string& name){
+#if defined(OS_IS_OSX) || defined(OS_IS_LINUX)
+    return access(name.data(), F_OK) == 0;
+#else
+#error "unsupported operating system"
+#endif
+  }
+
+  static inline bool
   StartsWith(const std::string& str, const std::string& prefix) {
      return str.size() >= prefix.size() 
          && str.compare(0, prefix.size(), prefix) == 0;

@@ -132,5 +132,9 @@ namespace mcc {
         .roughness = ParseMaterialComponent("roughness"),
       });
     }
+
+    MaterialPtr Material::LoadFrom(const std::string& filename) {
+      return JsonMaterialLoader::Load(filename);
+    }
   }
 }

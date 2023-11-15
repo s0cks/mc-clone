@@ -21,6 +21,8 @@
 #include "mcc/terrain/terrain.h"
 #include "mcc/shader/shader.h"
 
+#include "mcc/resource.h"
+
 int main(int argc, char** argv) {
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
@@ -53,6 +55,7 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   Window::Init();
   terrain::Terrain::Init();
+  ResourceRegistry::Init();
 
   Engine::Run();
   return EXIT_SUCCESS;

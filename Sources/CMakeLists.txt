@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h
+  mcc/resource.h mcc/resource.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
   mcc/engine/engine_stage_preinit.h
@@ -127,7 +128,7 @@ target_link_libraries(${PROJECT_NAME}
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  target_compile_options(${PROJECT_NAME} PRIVATE -Wno-deprecated)
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wno-deprecated -frtti)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/Sources ${PROJECT_BINARY_DIR})

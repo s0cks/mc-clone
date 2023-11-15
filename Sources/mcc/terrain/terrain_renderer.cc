@@ -9,7 +9,9 @@
 
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/shader/shader.h"
+
 #include "mcc/material.h"
+#include "mcc/resource.h"
 
 namespace mcc::terrain {
   static shader::Shader shader_;
@@ -32,7 +34,7 @@ namespace mcc::terrain {
     FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
 #undef LOAD_TERRAIN_TEXTURE
     shader_ = shader::Shader::Get("terrain");
-    material_ = material::JsonMaterialLoader::Load(FLAGS_resources + "/materials/floors/laminate_brown");
+    material_ = ResourceRegistry::Get<material::Material>(Resource::Material("floors/laminate_brown"))->Load();
   }
 
   void TerrainRenderer::Render() {

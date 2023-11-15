@@ -81,6 +81,8 @@ namespace mcc {
   Material GetMaterial(const std::string& name);
 
   namespace material {
+    struct Material;
+    typedef std::shared_ptr<Material> MaterialPtr;
     struct Material {
       std::string name;
       std::string location;
@@ -99,9 +101,9 @@ namespace mcc {
         normal.Bind(4);
         roughness.Bind(5);
       }
+    public:
+      static MaterialPtr LoadFrom(const std::string& filename);
     };
-
-    typedef std::shared_ptr<Material> MaterialPtr;
 
     class MaterialLoader {
     protected:
