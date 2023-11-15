@@ -85,6 +85,14 @@ namespace mcc {
         resource_.Unbind();
       }
     };
+
+    class Renderable {
+    protected:
+      Renderable() = default;
+      virtual void Render();
+    public:
+      virtual ~Renderable() = default;
+    };
   }
 
 #define DEFINE_RESOURCE_SCOPE(Resource) \

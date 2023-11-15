@@ -101,6 +101,7 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
   mcc/state_machine.h
+  mcc/pipeline/pipeline.h mcc/pipeline/pipeline.cc
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h
   mcc/renderer/stage.h mcc/renderer/stage.cc
