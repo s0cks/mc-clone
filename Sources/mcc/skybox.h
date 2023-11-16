@@ -74,15 +74,15 @@ namespace mcc {
       VertexBuffer vbo;
       TextureRef texture;
       ShaderRef shader;
-    private:
-      explicit Skybox(TextureRef texture, ShaderRef shader);
-      static void OnPostInit();
-    public:
-      Skybox() = delete;
+
+      Skybox() = default;
       Skybox(const Skybox& rhs) = default;
       ~Skybox() = default;
       void Render();
       Skybox& operator=(const Skybox& rhs) = default;
+    private:
+      explicit Skybox(TextureRef texture, ShaderRef shader);
+      static void OnPostInit();
     public:
       static void Init();
       static Skybox* Get();
