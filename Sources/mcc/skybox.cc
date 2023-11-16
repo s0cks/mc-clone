@@ -10,7 +10,7 @@ namespace mcc::skybox {
 
   void Skybox::OnPostInit() {
     vao_ = VertexArrayObject();
-    skybox_.Set(Skybox::New(GetTexture("graycloud"), GetShader("skybox")));
+    skybox_.Set(Skybox::New(GetTexture("space_nebulas"), GetShader("skybox")));
   }
 
   void Skybox::Init() {

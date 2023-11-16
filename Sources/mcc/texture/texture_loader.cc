@@ -106,17 +106,26 @@ namespace mcc::texture {
     }
 
     const auto dir = FLAGS_resources + "/textures/" + dirname;
-    auto filename = (*tex);
-    if(!StartsWith(filename, dir))
-      filename = dir + "/" + filename;
+    const auto filename = (*tex);
+    auto full_filename = filename;
+    if(!StartsWith(full_filename, dir))
+      full_filename = dir + "/" + full_filename;
 
     DLOG(INFO) << "loading cubemap " << face << " face from: " << filename;
     Image image;
-    if(!jpeg::Decode(filename, image)) {
-      DLOG(ERROR) << "failed to load cube map face " << face << ", couldn't decode image from: " << filename;
-      return false;
+    if(std::regex_match(filename, kJpegPattern)) {
+      if(!jpeg::Decode(full_filename, image)) {
+        DLOG(ERROR) << "failed to load cube map face " << face << ", couldn't decode image from: " << filename;
+        return false;
+      }
+      glTexImage2D(face, 0, image.type, image.size[0], image.size[1], 0, image.type, GL_UNSIGNED_BYTE, (const GLvoid*) image.data->data());
+    } else if(std::regex_match(filename, kPngPattern)) {
+      if(!png::Decode(full_filename, image)) {
+        DLOG(ERROR) << "failed to load cube map face " << face << ", couldn't decode image from: " << filename;
+        return false;
+      }
+      glTexImage2D(face, 0, GL_RGB, image.size[0], image.size[1], 0, image.type, GL_UNSIGNED_BYTE, (const GLvoid*) image.data->data());
     }
-    glTexImage2D(face, 0, image.type, image.size[0], image.size[1], 0, image.type, GL_UNSIGNED_BYTE, (const GLvoid*) image.data->data());
     CHECK_GL(FATAL);
     return true;
   }

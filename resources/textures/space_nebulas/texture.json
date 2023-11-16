@@ -1,0 +1,9 @@
+{
+  "type": "cubemap",
+  "left": "left.png",
+  "right": "right.png",
+  "top": "top.png",
+  "bottom": "bottom.png",
+  "front": "front.png",
+  "back": "back.png"
+}
