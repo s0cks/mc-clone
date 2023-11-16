@@ -151,9 +151,7 @@ namespace mcc::texture {
       return TextureRef(ptr);
     } else if((*type) == "texture") {
       const auto target = map<std::string, TextureTarget>(GetDocumentTarget(), kParseTextureTarget).value_or(kDefaultTarget);
-      DLOG(INFO) << "target: " << target;
       const auto texture = GetDocumentTexture().value_or("");
-      DLOG(INFO) << "texture: " << texture;
       if(std::regex_match(texture, kPngPattern)) {
         PngFileLoader loader(tag_, texture);
         return loader.Load();
