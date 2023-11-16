@@ -13,8 +13,9 @@ namespace mcc::renderer {
     Renderer::SetState(stage->GetState());
     VLOG(3) << "pre-render.";
 
-    auto fb = Renderer::GetFrameBuffer();
-    fb->Bind();
+    //TODO:
+    // auto fb = Renderer::GetFrameBuffer();
+    // fb->Bind();
 
     const auto window = Window::GetHandle();
     int width;
@@ -30,9 +31,9 @@ namespace mcc::renderer {
 
     glPolygonMode(GL_FRONT_AND_BACK, Renderer::GetMode());
     CHECK_GL(FATAL);
-    glClearColor(0.4, 0.3, 0.4, 1.0f);
-    CHECK_GL(FATAL);
     glEnable(GL_DEPTH_TEST);
+    CHECK_GL(FATAL);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
     glDepthFunc(GL_LEQUAL);
     CHECK_GL(FATAL);
@@ -42,7 +43,7 @@ namespace mcc::renderer {
     CHECK_GL(FATAL);
     glCullFace(GL_BACK);
     CHECK_GL(FATAL);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.4, 0.3, 0.4, 1.0f);
     CHECK_GL(FATAL);
 
     const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();

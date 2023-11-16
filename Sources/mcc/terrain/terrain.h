@@ -15,34 +15,6 @@ namespace mcc::renderer {
 }
 
 namespace mcc::terrain {
-
-#define FOR_EACH_TERRAIN_TEXTURE(V) \
-  V(Concrete, "concrete.png")       \
-  V(Wood, "wood.png")               \
-  V(Planks, "planks.png")           \
-  V(Bricks, "bricks.jpg")
-
-  enum TerrainTexture {
-#define DEFINE_TERRAIN_TEXTURE(Name, file) k##Name##Texture,
-    FOR_EACH_TERRAIN_TEXTURE(DEFINE_TERRAIN_TEXTURE)
-#undef DEFINE_TERRAIN_TEXTURE
-
-    kNumberOfTerrainTextures,
-    kDefaultTerrainTexture = kConcreteTexture,
-  };
-
-  static inline const char*
-  GetTerrainTextureName(const TerrainTexture texture) {
-    switch(texture) {
-#define DEFINE_TOSTRING(Name, File) \
-      case k##Name##Texture: return #Name;
-      FOR_EACH_TERRAIN_TEXTURE(DEFINE_TOSTRING)
-#undef DEFINE_TOSTRING
-      default:
-        return "unknown";
-    }
-  }
-
   class Terrain {
     friend class TerrainChunk;
     friend class mcc::renderer::RenderTerrainStage;
@@ -68,8 +40,6 @@ namespace mcc::terrain {
     static TerrainChunk* GetChunk();
     static std::string GetTerrainMaterial();
     static void SetTerrainMaterial(const std::string& material);
-    static TerrainTexture GetTexture(); //TODO: remove
-    static void SetTexture(const TerrainTexture texture); //TODO: remove
   };
 }
 

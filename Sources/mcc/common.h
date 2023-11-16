@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cassert>
 #include <string>
+#include <optional>
 #include <glog/logging.h>
 
 #include "mcc/platform.h"
@@ -31,6 +32,13 @@
   LOG(Level) << __FUNCTION__ << " is not implemented!";
 
 namespace mcc {
+  template<typename A, typename B>
+  std::optional<B> map(std::optional<A> a, std::function<std::optional<B>(const A&)> f) {
+    if(a.has_value())
+      return f(a.value());
+    return std::optional<B>{};
+  }
+
   static inline uint64_t
   GetFilesize(FILE* file) {
     const auto pos = ftell(file);
@@ -66,12 +74,12 @@ namespace mcc {
   static inline bool
   IsDirectory(const std::string& filename) {
 #if defined(OS_IS_OSX) || defined(OS_IS_LINUX) 
-  struct stat s;
-  if(stat(filename.c_str(), &s) != 0) {
-    DLOG(ERROR) << "error stat'ing: " << filename;
-    return false;
-  }
-  return s.st_mode == S_IFDIR;
+    struct stat s;
+    if(stat(filename.c_str(), &s) != 0) {
+      DLOG(ERROR) << "error stat'ing: " << filename;
+      return false;
+    }
+    return S_ISDIR(s.st_mode);
 #else
 #error "unsupported operating system"
 #endif

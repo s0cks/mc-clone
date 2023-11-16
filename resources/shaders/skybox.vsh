@@ -8,9 +8,9 @@ layout (std140) uniform Camera {
 } camera;
 
 uniform mat4 model;
-out vec3 uv;
+out vec3 vUv;
 
 void main() {
-  uv = pos;
+  vUv = pos;
   gl_Position = camera.projection * camera.view * vec4(pos, 1.0f);
 }

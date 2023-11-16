@@ -32,8 +32,8 @@ namespace mcc::renderer {
   void RenderScreenStage::Render(const Tick& tick) {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
-    auto fb = Renderer::GetFrameBuffer();
-    fb->Draw();
-    fb->Unbind();
+    // auto fb = Renderer::GetFrameBuffer();
+    // fb->Draw();
+    // fb->Unbind();
   }
 }

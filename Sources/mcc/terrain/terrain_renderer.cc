@@ -15,24 +15,13 @@
 
 namespace mcc::terrain {
   static ShaderRef shader_;
-  static texture::Texture textures_[kNumberOfTerrainTextures];
   static MaterialRef material_;
-
-  static inline texture::Texture
-  GetSelectedTexture() {
-    return textures_[Terrain::GetTexture()];
-  }
 
   void TerrainRenderer::Init() {
     Engine::OnPostInit(&OnPostInit);
   }
 
   void TerrainRenderer::OnPostInit() {
-#define LOAD_TERRAIN_TEXTURE(Name, File) \
-    textures_[k##Name##Texture] = texture::Texture::LoadFrom(FLAGS_resources + "/textures/" + (File));
-
-    FOR_EACH_TERRAIN_TEXTURE(LOAD_TERRAIN_TEXTURE)
-#undef LOAD_TERRAIN_TEXTURE
     shader_ = GetShader("terrain");
     material_ = GetMaterial("floors/old_wood");
   }

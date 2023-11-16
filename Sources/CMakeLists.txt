@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME}
   mcc/resource_token.h
   mcc/resource_tag.h
   mcc/resource_ptr.h
+  mcc/resource_loader.h
   mcc/resource_reference.h
   mcc/resource.h mcc/resource.cc
   mcc/resource_registry.h mcc/resource_registry.cc

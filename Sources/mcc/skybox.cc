@@ -74,16 +74,9 @@ namespace mcc::skybox {
   }
 
   void Skybox::Render() {
-    glDisable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
-    glEnable(GL_DEPTH_TEST);
-    CHECK_GL(FATAL);
-    glDepthFunc(GL_LEQUAL);
-    CHECK_GL(FATAL);
-    glActiveTexture(GL_TEXTURE0);
-    CHECK_GL(FATAL);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_.id());
-    CHECK_GL(FATAL);
+    InvertedCullFaceScope cull_face;
+    DepthTestScope depth_test(gfx::kLequal);
+    texture_->Bind0();
     shader_->ApplyShader();
     shader_->SetUniformBlock("Camera", 0);
     shader_->SetInt("tex", 0);
@@ -91,11 +84,6 @@ namespace mcc::skybox {
     VertexArrayObjectScope scope(vao_);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
-    glDepthFunc(GL_LESS);
-    CHECK_GL(FATAL);
-    glDisable(GL_DEPTH_TEST);
-    CHECK_GL(FATAL);
-    glEnable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
+    texture_->Unbind();
   }
 }

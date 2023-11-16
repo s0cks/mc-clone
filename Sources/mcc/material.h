@@ -19,20 +19,20 @@ namespace mcc {
     struct Material {
       std::string name;
       std::string location;
-      Texture albedo;
-      Texture ao;
-      Texture height;
-      Texture metallic;
-      Texture normal;
-      Texture roughness;
+      TextureRef albedo;
+      TextureRef ao;
+      TextureRef height;
+      TextureRef metallic;
+      TextureRef normal;
+      TextureRef roughness;
 
       void Bind() const {
-        albedo.Bind(0);
-        ao.Bind(1);
-        height.Bind(2);
-        metallic.Bind(3);
-        normal.Bind(4);
-        roughness.Bind(5);
+        albedo->Bind(0);
+        ao->Bind(1);
+        height->Bind(2);
+        metallic->Bind(3);
+        normal->Bind(4);
+        roughness->Bind(5);
       }
     public:
       static Material* LoadFrom(const std::string& filename);
@@ -51,23 +51,23 @@ namespace mcc {
       std::string root_;
       json::Document& doc_;
 
-      inline Texture ParseMaterialComponent(const char* name) {
+      inline TextureRef ParseMaterialComponent(const char* name) {
         if(!doc_.HasMember(name))
-          return kInvalidTextureId;
+          return TextureRef();
         const auto& value = doc_[name];
         if(value.IsBool()) {
           if(!value.GetBool()) // not enabled
-            return kInvalidTextureId;
+            return TextureRef();
           const auto filename = root_ + "/" + name + ".png";
           DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-          return Texture::LoadFrom(filename);
+          return GetTextureFromFile(filename);
         } else if(value.IsString()) {
           const auto filename = root_ + "/" + value.GetString() + ".png";
           DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-          return Texture::LoadFrom(filename);
+          return GetTextureFromFile(filename);
         }
         DLOG(INFO) << "cannot determine material component '" << name << "' from json value";
-        return kInvalidTextureId;
+        return TextureRef();
       }
     public:
       explicit JsonMaterialLoader(const std::string& root,

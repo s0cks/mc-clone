@@ -85,6 +85,11 @@ namespace mcc {
     MOCK_METHOD2(glGetUniformBlockIndex, GLuint(GLuint program, const GLchar *uniformBlockName));
     MOCK_METHOD3(glUniformBlockBinding, void(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding));
     MOCK_METHOD1(glGenerateMipmap, void(GLenum target));
+    MOCK_METHOD2(glBindRenderbuffer, void(GLenum target, GLuint renderbuffer));
+    MOCK_METHOD2(glGenRenderbuffers, void(GLsizei n, GLuint* renderbuffers));
+    MOCK_METHOD2(glDeleteRenderbuffers, void(GLsizei n, const GLuint* renderbuffers));
+    MOCK_METHOD2(glGetIntegerv, void(GLenum pname, GLint *params));
+    MOCK_METHOD4(glRenderbufferStorage, void(GLenum target, GLenum internalformat, GLsizei width, GLsizei height));
   };
 }
 

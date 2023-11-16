@@ -13,10 +13,17 @@ namespace mcc::pipeline {
   protected:
     Pipeline* parent_;
     std::vector<Pipeline*> children_;
+    glm::mat4 model_;
+    ShaderRef shader_;
+    MaterialRef material_;
 
-    explicit Pipeline(Pipeline* parent = nullptr):
+    explicit Pipeline(Pipeline* parent = nullptr,
+                      const glm::mat4 model = glm::mat4(1.0f)):
       parent_(nullptr),
-      children_() {
+      children_(),
+      model_(model),
+      shader_(),
+      material_() {
     }
   public:
     virtual ~Pipeline() = default;
@@ -52,6 +59,30 @@ namespace mcc::pipeline {
 
     void SetChildAt(const uint64_t idx, Pipeline* pipeline) {
       children_[idx] = pipeline;
+    }
+
+    void SetMaterial(const MaterialRef& material) {
+      material_ = material;
+    }
+
+    MaterialRef GetMaterial() const {
+      return material_;
+    }
+
+    void SetShader(const ShaderRef& shader) {
+      shader_ = shader;
+    }
+
+    ShaderRef GetShader() const {
+      return shader_;
+    }
+
+    glm::mat4 GetModelMatrix() const {
+      return model_;
+    }
+
+    void SetModelMatrix(const glm::mat4 model) {
+      model_ = model;
     }
   };
 

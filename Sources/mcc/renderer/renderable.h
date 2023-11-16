@@ -13,7 +13,7 @@ namespace mcc::renderer {
   struct Renderable {
     ShaderRef shader;
     mesh::Mesh* mesh;
-    texture::Texture texture;
+    TextureRef texture;
     MaterialPtr material;
 
     friend std::ostream& operator<<(std::ostream& stream, const Renderable& rhs) {

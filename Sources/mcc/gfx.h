@@ -61,14 +61,81 @@ namespace mcc {
   }
 
   namespace gfx {
-    class Resource {
-    public:
+    struct Resource {
       Resource() = default;
       virtual ~Resource() = default;
       virtual void Bind() const = 0;
       virtual void Unbind() const = 0;
       virtual void Delete() = 0;
     };
+
+    template<const GLenum Capability, const bool Inverted = false>
+    class CapabilityScope {
+    public:
+      CapabilityScope() {
+        if(Inverted) {
+          glDisable(Capability);
+        } else {
+          glEnable(Capability);
+        }
+        CHECK_GL(FATAL);
+      }
+      virtual ~CapabilityScope() {
+        if(Inverted) {
+          glEnable(Capability);
+        } else {
+          glDisable(Capability);
+        }
+        CHECK_GL(FATAL);
+      }
+    };
+    
+    template<const bool Inverted = false>
+    class CullFaceCapabilityScope : public CapabilityScope<GL_CULL_FACE, Inverted>{};
+    typedef CullFaceCapabilityScope<false> CullFaceScope;
+    typedef CullFaceCapabilityScope<true> InvertedCullFaceScope;
+
+    enum GlFunction : GLenum {
+      kNever = GL_NEVER,
+      kLess = GL_LESS,
+      kEqual = GL_EQUAL,
+      kLequal = GL_LEQUAL,
+      kGreater = GL_GREATER,
+      kNotEqual = GL_NOTEQUAL,
+      kGequal = GL_GEQUAL,
+      kAlways = GL_ALWAYS,
+    };
+    typedef GlFunction DepthFunction;
+
+    static inline DepthFunction GetCurrentDepthFunction() {
+      GLint value;
+      glGetIntegerv(GL_DEPTH_FUNC, &value);
+      CHECK_GL(FATAL);
+      return static_cast<DepthFunction>(value);
+    }
+
+    template<const bool Inverted = false>
+    class DepthTestCapabilityScope : public CapabilityScope<GL_DEPTH_TEST, Inverted> {
+    private:
+      DepthFunction previous_;
+      bool restore_;
+    public:
+      DepthTestCapabilityScope(const DepthFunction func, const bool restore = true):
+        CapabilityScope<GL_DEPTH_TEST, Inverted>(),
+        previous_(GetCurrentDepthFunction()),
+        restore_(restore) {
+        glDepthFunc(func);
+        CHECK_GL(FATAL);
+      }
+      ~DepthTestCapabilityScope() override {
+        if(restore_) {
+          glDepthFunc(previous_);
+          CHECK_GL(FATAL);
+        }
+      }
+    };
+    typedef DepthTestCapabilityScope<false> DepthTestScope;
+    typedef DepthTestCapabilityScope<true> InvertedDepthTestScope;
 
     template<class R>
     class BindScope {
@@ -94,6 +161,11 @@ namespace mcc {
       virtual ~Renderable() = default;
     };
   }
+  using gfx::CullFaceScope;
+  using gfx::InvertedCullFaceScope;
+
+  using gfx::DepthTestScope;
+  using gfx::InvertedDepthTestScope;
 
 #define DEFINE_RESOURCE_SCOPE(Resource) \
   typedef gfx::BindScope<Resource> Resource##Scope;

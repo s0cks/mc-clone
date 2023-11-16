@@ -70,13 +70,13 @@ namespace mcc {
     class Skybox {
       DEFINE_NON_COPYABLE_TYPE(Skybox);
     private:
-      texture::Texture texture_;
+      TextureRef texture_;
       VertexBuffer vbo_;
 
       Skybox(const std::string& cube_map_filename,
              const VertexList& vertices):
         vbo_(vertices),
-        texture_(texture::Texture::LoadCubeMapFrom(cube_map_filename)) {
+        texture_(GetTexture("graycloud")) {
       }
 
       static void OnPostInit();

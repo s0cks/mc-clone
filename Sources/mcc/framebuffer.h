@@ -5,82 +5,7 @@
 #include "mcc/texture/texture.h"
 
 namespace mcc {
-  class FrameBufferTexture {
-  private:
-    texture::TextureId id_;
-  public:
-    explicit FrameBufferTexture(const texture::TextureId id = texture::kInvalidTextureId):
-      id_() {
-    }
-    FrameBufferTexture(const uint64_t w, const uint64_t h):
-      id_(texture::kInvalidTextureId) {
-      glGenTextures(1, &id_);
-      CHECK_GL(FATAL);
-      glBindTexture(GL_TEXTURE_2D, id_);
-      CHECK_GL(FATAL);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-      CHECK_GL(FATAL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      CHECK_GL(FATAL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      CHECK_GL(FATAL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      CHECK_GL(FATAL);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      CHECK_GL(FATAL);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id_, 0);
-      CHECK_GL(FATAL);
-    }
-    FrameBufferTexture(const FrameBufferTexture& rhs):
-      id_(rhs.id_) {
-    }
-    virtual ~FrameBufferTexture() = default;
-
-    texture::TextureId id() const {
-      return id_;
-    }
-
-    void Bind() {
-      glBindTexture(GL_TEXTURE_2D, id_);
-      CHECK_GL(FATAL);
-    }
-
-    void Unbind() {
-      glBindTexture(GL_TEXTURE_2D, 0);
-      CHECK_GL(FATAL);
-    }
-
-    void operator=(const FrameBufferTexture& rhs) {
-      id_ = rhs.id_;
-    }
-
-    void operator=(const texture::TextureId& rhs) {
-      id_ = rhs;
-    }
-
-    bool operator==(const FrameBufferTexture& rhs) const {
-      return id_ == rhs.id_;
-    }
-
-    bool operator==(const texture::TextureId& rhs) const {
-      return id_ == rhs;
-    }
-
-    bool operator!=(const FrameBufferTexture& rhs) const {
-      return id_ != rhs.id_;
-    }
-
-    bool operator!=(const texture::TextureId& rhs) const {
-      return id_ != rhs;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const FrameBufferTexture& rhs) {
-      stream << "FrameBufferTexture(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
-    }
-  };
+  // typedef FrameBufferTexture<GL_RGBA16F, GL_RGBA, GL_FLOAT> ColorBufferTexture;
 
   class FrameBufferObject { //TODO: extend BufferObject somehow
   private:
@@ -92,19 +17,21 @@ namespace mcc {
     FrameBufferObject():
       id_(kInvalidBufferObject) {
       glGenFramebuffers(1, &id_);
-      glBindFramebuffer(GL_FRAMEBUFFER, id_);
+      CHECK_GL(FATAL);
     }
     FrameBufferObject(const FrameBufferObject& rhs):
       id_(rhs.id_) {  
     }
     virtual ~FrameBufferObject() = default;
 
-    void Bind() {
+    void Bind() const {
       glBindFramebuffer(GL_FRAMEBUFFER, id_);
+      CHECK_GL(FATAL);
     }
 
-    void Unbind() {
+    void Unbind() const {
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      CHECK_GL(FATAL);
     }
 
     void Delete() {
@@ -149,6 +76,7 @@ namespace mcc {
       return stream;
     }
   };
+  DEFINE_RESOURCE_SCOPE(FrameBufferObject);
 
   class RenderBufferObject {
   private:
@@ -215,7 +143,6 @@ namespace mcc {
   };
 
   typedef std::vector<FrameBufferVertex> FrameBufferVertexList;
-
   class FrameBufferVertexBuffer : public VertexBufferTemplate<FrameBufferVertex, kStaticUsage> {
   public:
     explicit FrameBufferVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
@@ -250,12 +177,47 @@ namespace mcc {
     }
   };
 
+  class DepthBuffer : public gfx::Resource {
+  private:
+    BufferObjectId id_;
+  public:
+    DepthBuffer(const uint64_t width, const uint64_t height):
+      Resource() {
+      glGenRenderbuffers(1, &id_);
+      CHECK_GL(FATAL);
+      glBindRenderbuffer(GL_RENDERBUFFER, id_);
+      CHECK_GL(FATAL);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+      CHECK_GL(FATAL);
+    }
+    ~DepthBuffer() override = default;
+
+    BufferObjectId id() const {
+      return id_;
+    }
+
+    void Bind() const override {
+      glBindRenderbuffer(GL_RENDERBUFFER, id_);
+      CHECK_GL(FATAL);
+    }
+
+    void Unbind() const override {
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      CHECK_GL(FATAL);
+    }
+
+    void Delete() override {
+      glDeleteRenderbuffers(1, &id_);
+      CHECK_GL(FATAL);
+    }
+  };
+
   class FrameBuffer {
   private:
     uint64_t width_;
     uint64_t height_;
     FrameBufferObject fbo_;
-    FrameBufferTexture tex_;
+    TextureRef cbuff_;
     FrameBufferVertexBuffer vbo_;
 
     FrameBuffer(const uint64_t width, const uint64_t height);
@@ -265,7 +227,7 @@ namespace mcc {
       width_(rhs.width_),
       height_(rhs.height_),
       fbo_(rhs.fbo_),
-      tex_(rhs.tex_),
+      cbuff_(rhs.cbuff_),
       vbo_(rhs.vbo_) {
     }
     virtual ~FrameBuffer() = default;
@@ -282,8 +244,8 @@ namespace mcc {
       return fbo_;
     }
 
-    FrameBufferTexture tex() const {
-      return tex_;
+    TextureRef tex() const {
+      return cbuff_;
     }
 
     void Bind() {
@@ -292,7 +254,7 @@ namespace mcc {
 
     void Unbind() {
       fbo_.Unbind();
-      tex_.Unbind();
+      cbuff_->Unbind();
       vbo_.Unbind();
     }
 
@@ -302,7 +264,7 @@ namespace mcc {
       width_ = rhs.width_;
       height_ = rhs.height_;
       fbo_ = rhs.fbo_;
-      tex_ = rhs.tex_;
+      cbuff_ = rhs.cbuff_;
     }
     
     friend std::ostream& operator<<(std::ostream& stream, const FrameBuffer& rhs) {
@@ -310,7 +272,7 @@ namespace mcc {
       stream << "width=" << rhs.width_ << ", ";
       stream << "height=" << rhs.height_ << ", ";
       stream << "fbo=" << rhs.fbo_ << ", ";
-      stream << "tex=" << rhs.tex_;
+      stream << "tex=" << rhs.cbuff_;
       stream << ")";
       return stream;
     }

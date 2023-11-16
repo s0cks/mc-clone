@@ -20,7 +20,7 @@ namespace mcc {
     width_(width),
     height_(height),
     fbo_(),
-    tex_(width, height),
+    cbuff_(),
     vbo_(kFrameBufferVertices) {
   }
 
@@ -69,11 +69,12 @@ namespace mcc {
     CHECK_GL(FATAL);
     glDisable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);
-    tex_.Bind();
+    cbuff_->Bind(0);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
     vbo_.Unbind();
-    tex_.Unbind();
+    cbuff_->Unbind();
     glEnable(GL_DEPTH_TEST);
+    CHECK_GL(FATAL);
   }
 }

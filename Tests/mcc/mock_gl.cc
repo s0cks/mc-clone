@@ -281,3 +281,23 @@ void glBindBufferBase(GLenum target, GLuint index, GLuint buffer) {
 void glGenerateMipmap(GLenum target) {
   __ glGenerateMipmap(target);
 }
+
+void glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
+  __ glBindRenderbuffer(target, renderbuffer);
+}
+
+void glGenRenderbuffers(GLsizei n, GLuint *renderbuffers) {
+  __ glGenRenderbuffers(n, renderbuffers);
+}
+
+void glDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers) {
+  __ glDeleteRenderbuffers(n, renderbuffers);
+}
+
+void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height) {
+  __ glRenderbufferStorage(target, internalformat, width, height);
+}
+
+void glGetIntegerv(GLenum pname, GLint *params) {
+  __ glGetIntegerv(pname, params);
+}

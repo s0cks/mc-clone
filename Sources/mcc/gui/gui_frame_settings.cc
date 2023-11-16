@@ -16,14 +16,6 @@ namespace mcc::gui {
   void SettingsFrame::Render(nk::Context* ctx) {
     struct nk_vec2 size = nk_widget_size(ctx);
 
-    nk_layout_row_dynamic(ctx, size.y / 3, terrain::kNumberOfTerrainTextures + 1);
-    nk_label(ctx, "Terrain: ", NK_TEXT_LEFT);
-    for(auto idx = 0; idx < terrain::kNumberOfTerrainTextures; idx++) {
-      const auto tex = static_cast<terrain::TerrainTexture>(idx);
-      if(nk_option_label(ctx, terrain::GetTerrainTextureName(tex), terrain::Terrain::GetTexture() == tex))
-        terrain::Terrain::SetTexture(tex);
-    }
-
     static const std::vector<std::string> materials = {
       "emerald",
       "jade",

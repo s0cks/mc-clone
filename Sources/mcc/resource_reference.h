@@ -15,12 +15,18 @@ namespace mcc::resource {
   private:
     Pointer ptr_;
   public:
-    Reference() = default;
+    Reference():
+      ptr_() {
+    }
     explicit Reference(const Pointer ptr):
       ptr_(ptr) {
     }
     Reference(const Reference& rhs) = default;
     ~Reference() = default;
+
+    bool valid() const {
+      return ptr_.GetAddress() != 0;
+    }
 
     Pointer ptr() const {
       return ptr_;

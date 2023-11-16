@@ -202,7 +202,7 @@ namespace mcc::resource {
       DLOG(INFO) << path << " name: " << name;
       if(entry.is_directory()) {
         if(FileExists(path + "/texture.json")) {
-          Registry::Put(Tag::Shader(name), path);
+          Registry::Put(Tag::Texture(name), path);
           continue;
         }
 
@@ -210,7 +210,7 @@ namespace mcc::resource {
         indexer.Index();
       } else if(EndsWith(relative, ".jpeg") || EndsWith(relative, ".jpg") || EndsWith(relative, ".png")) {
         //TODO: elegantly determine fragment shader location
-        Registry::Put(Tag::Shader(name), root_ + "/" + name);
+        Registry::Put(Tag::Texture(name), root_ + "/" + name);
         continue;
       }
     }

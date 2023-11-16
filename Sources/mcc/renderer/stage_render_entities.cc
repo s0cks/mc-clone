@@ -28,7 +28,9 @@ namespace mcc::renderer {
       return true;
     });
 
-    texture.Bind0();
+    if(texture.valid()) 
+      texture->Bind(0);
+
     shader->ApplyShader();
     shader->SetMat4("model", model);
     const auto diffuseColor = lightColor * glm::vec3(0.5f);

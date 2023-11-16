@@ -1,9 +1,9 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 uv;
+in vec3 vUv;
 uniform samplerCube tex;
 
 void main() {
-  FragColor = texture(tex, uv);
+  FragColor = texture(tex, vUv);
 }
