@@ -81,6 +81,7 @@ namespace mcc::texture {
 
   static inline bool
   LoadCubeMapFaceFrom(const CubeMapFace face, const std::string& filename) {
+    DLOG(INFO) << "loading cubemap " << face << " from: " << filename;
     Image image;
     if(!jpeg::Decode(filename, image))
       return false;
@@ -90,6 +91,7 @@ namespace mcc::texture {
   }
 
   Texture Texture::LoadCubeMapFrom(const std::string& filename) {
+    DLOG(INFO) << "loading cubemap from: " << filename;
     Texture texture(true);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture.id());
     CHECK_GL(FATAL);
@@ -147,6 +149,4 @@ namespace mcc::texture {
     CHECK_GL(FATAL);
     return texture;
   }
-
-
 }

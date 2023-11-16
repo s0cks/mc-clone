@@ -12,7 +12,7 @@ namespace mcc::skybox {
   void Skybox::OnPostInit() {
     vao_ = VertexArrayObject();
     shader_ = GetShader("skybox");
-    skybox_.Set(Skybox::New(FLAGS_resources + "/textures/cubemaps/graycloud"));
+    skybox_.Set(Skybox::New(FLAGS_resources + "/textures/skybox/graycloud"));
   }
 
   void Skybox::Init() {

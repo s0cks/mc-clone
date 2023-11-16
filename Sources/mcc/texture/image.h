@@ -16,10 +16,10 @@ namespace mcc {
 
     friend std::ostream& operator<<(std::ostream& stream, const Type& rhs) {
       switch(rhs) {
-        case kRGB:
-          return stream << "RGB";
         case kRGBA:
           return stream << "RGBA";
+        case kRGB:
+          return stream << "RGB";
         default:
           return stream << "<unknown Image::Type: " << static_cast<uint32_t>(rhs) << ">";
       }
