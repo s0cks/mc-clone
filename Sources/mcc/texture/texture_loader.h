@@ -59,18 +59,6 @@ namespace mcc::texture {
     GetDocumentTexture() {
       return GetDocumentString("texture");
     }
-
-    inline std::optional<std::string>
-    GetDefaultFaceTexture() {
-      return GetDocumentString("default");
-    }
-
-    inline std::optional<std::string>
-    GetFaceTexture(const CubeMapFace& face) {
-      return GetDocumentString(ToString(face));
-    }
-
-    bool LoadCubeMapFace(const std::string& dirname, const CubeMapFace& face);
   public:
     explicit JsonTextureLoader(const res::Tag& tag, const std::string& filename):
       JsonFileLoader<Texture>(tag, filename) {

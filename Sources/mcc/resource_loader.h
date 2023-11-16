@@ -60,6 +60,35 @@ namespace mcc {
     };
 
     template<typename R>
+    class JsonLoader : public Loader<R> {
+    protected:
+      json::Document& doc_;
+
+      explicit JsonLoader(const Tag& tag, json::Document& doc):
+        Loader<R>(tag),
+        doc_(doc) {
+      }
+
+      inline std::optional<std::string> GetDocumentString(const char* name) const {
+        if(!doc_.HasMember(name))
+          return std::nullopt;
+        const auto& value = doc_[name];
+        if(!value.IsString()) {
+          return std::nullopt;
+        }
+        return std::optional<std::string>{
+          std::string(value.GetString(), value.GetStringLength()),
+        };
+      }
+
+      inline std::optional<std::string> GetDocumentType() const {
+        return GetDocumentString("type");
+      }
+    public:
+      ~JsonLoader() override = default;
+    };
+
+    template<typename R>
     class JsonFileLoader : public FileLoader<R> {
     protected:
       json::Document doc_;
