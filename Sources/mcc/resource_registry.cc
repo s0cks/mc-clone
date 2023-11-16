@@ -185,7 +185,7 @@ namespace mcc::resource {
 
         ShaderIndexer indexer(root_, path);
         indexer.Index();
-      } else if(EndsWith(relative, ".png") || EndsWith(relative, ".jpeg")) {
+      } else if(EndsWith(relative, ".vs") || EndsWith(relative, ".vsh")) {
         //TODO: elegantly determine fragment shader location
         Registry::Put(Tag::Shader(name), root_ + "/" + name);
         continue;
@@ -208,7 +208,7 @@ namespace mcc::resource {
 
         ShaderIndexer indexer(root_, path);
         indexer.Index();
-      } else if(EndsWith(relative, ".vs") || EndsWith(relative, ".vsh")) {
+      } else if(EndsWith(relative, ".jpeg") || EndsWith(relative, ".jpg") || EndsWith(relative, ".png")) {
         //TODO: elegantly determine fragment shader location
         Registry::Put(Tag::Shader(name), root_ + "/" + name);
         continue;
