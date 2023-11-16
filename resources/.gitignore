@@ -1,0 +1,30 @@
+# Ignore Everything
+/*
+/*/
+
+# Except These
+!/.gitignore
+!/.gitkeep
+
+!/fonts/**/*.ttf
+!/fonts/**/*.json
+
+!/materials/**/*.png
+!/materials/**/*.jpeg
+!/materials/**/*.jpg
+!/materials/**/*.json
+
+!/meshes/**/*.obj
+!/meshes/**/*.json
+!/meshes/**/*.dat
+
+!/shaders/**/*.vs
+!/shaders/**/*.vsh
+!/shaders/**/*.fs
+!/shaders/**/*.fsh
+!/shaders/**/*.json
+
+!/textures/**/*.png
+!/textures/**/*.json
+!/textures/**/*.jpeg
+!/textures/**/*.jpg
