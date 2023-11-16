@@ -3,6 +3,8 @@
 
 #include <vector>
 #include "mcc/gfx.h"
+
+#include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
 
 namespace mcc {
@@ -67,28 +69,29 @@ namespace mcc {
     };
     DEFINE_RESOURCE_SCOPE(VertexBuffer);
 
-    class Skybox {
-      DEFINE_NON_COPYABLE_TYPE(Skybox);
+    struct Skybox {
+      VertexArrayObject vao;
+      VertexBuffer vbo;
+      TextureRef texture;
+      ShaderRef shader;
     private:
-      TextureRef texture_;
-      VertexBuffer vbo_;
-
-      Skybox(const std::string& cube_map_filename,
-             const VertexList& vertices):
-        vbo_(vertices),
-        texture_(GetTexture("graycloud")) {
-      }
-
+      explicit Skybox(TextureRef texture, ShaderRef shader);
       static void OnPostInit();
     public:
       Skybox() = delete;
+      Skybox(const Skybox& rhs) = default;
       ~Skybox() = default;
-
       void Render();
+      Skybox& operator=(const Skybox& rhs) = default;
     public:
       static void Init();
       static Skybox* Get();
-      static Skybox* New(const std::string& cube_map_filename);
+      static Skybox* New(TextureRef texture, ShaderRef shader);
+
+      static inline Skybox*
+      New(TextureRef texture) {
+        return New(texture, GetShader("skybox"));
+      }
     };
   }
 }

@@ -6,13 +6,11 @@
 
 namespace mcc::skybox {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static ShaderRef shader_;
   static ThreadLocal<Skybox> skybox_;
 
   void Skybox::OnPostInit() {
     vao_ = VertexArrayObject();
-    shader_ = GetShader("skybox");
-    skybox_.Set(Skybox::New(FLAGS_resources + "/textures/skybox/graycloud"));
+    skybox_.Set(Skybox::New(GetTexture("graycloud"), GetShader("skybox")));
   }
 
   void Skybox::Init() {
@@ -68,22 +66,29 @@ namespace mcc::skybox {
     { .pos = glm::vec3(1.0f, -1.0f,  1.0f), },
   };
 
-  Skybox* Skybox::New(const std::string& cube_map_filename) {
+  Skybox::Skybox(TextureRef t, ShaderRef s):
+    vao(vao_),
+    vbo(kSkyboxVertices),
+    texture(t),
+    shader(s) {
+  }
+
+  Skybox* Skybox::New(TextureRef texture, ShaderRef shader) {
     VertexArrayObjectScope scope(vao_);
-    return new Skybox(cube_map_filename, kSkyboxVertices);
+    return new Skybox(texture, shader);
   }
 
   void Skybox::Render() {
     InvertedCullFaceScope cull_face;
     DepthTestScope depth_test(gfx::kLequal);
-    texture_->Bind0();
-    shader_->ApplyShader();
-    shader_->SetUniformBlock("Camera", 0);
-    shader_->SetInt("tex", 0);
-    shader_->ApplyShader();
+    texture->Bind0();
+    shader->ApplyShader();
+    shader->SetUniformBlock("Camera", 0);
+    shader->SetInt("tex", 0);
+    shader->ApplyShader();
     VertexArrayObjectScope scope(vao_);
-    glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
+    glDrawArrays(GL_TRIANGLES, 0, vbo.length());
     CHECK_GL(FATAL);
-    texture_->Unbind();
+    texture->Unbind();
   }
 }
