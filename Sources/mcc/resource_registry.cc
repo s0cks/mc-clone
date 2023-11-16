@@ -53,6 +53,12 @@ namespace mcc::resource {
       ShaderIndexer indexer;
       indexer.Index();
     }
+
+    {
+      DLOG(INFO) << "indexing textures....";
+      TextureIndexer indexer;
+      indexer.Index();
+    }
   }
 
   void Registry::Init() {
@@ -173,6 +179,29 @@ namespace mcc::resource {
       DLOG(INFO) << path << " name: " << name;
       if(entry.is_directory()) {
         if(FileExists(path + "/shader.json")) {
+          Registry::Put(Tag::Shader(name), path);
+          continue;
+        }
+
+        ShaderIndexer indexer(root_, path);
+        indexer.Index();
+      } else if(EndsWith(relative, ".png") || EndsWith(relative, ".jpeg")) {
+        //TODO: elegantly determine fragment shader location
+        Registry::Put(Tag::Shader(name), root_ + "/" + name);
+        continue;
+      }
+    }
+  }
+
+  void TextureIndexer::Index() {
+    DLOG(INFO) << "indexing directory " << current_ << "....";
+    for(const auto& entry : std::filesystem::directory_iterator(current_)) {
+      const auto path = std::string(entry.path());
+      const auto relative = path.substr(root_.length() + 1);
+      const auto name = relative.substr(0, relative.find_last_of("."));
+      DLOG(INFO) << path << " name: " << name;
+      if(entry.is_directory()) {
+        if(FileExists(path + "/texture.json")) {
           Registry::Put(Tag::Shader(name), path);
           continue;
         }

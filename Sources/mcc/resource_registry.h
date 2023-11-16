@@ -23,8 +23,9 @@ namespace mcc {
 
   namespace resource {
     class Registry {
-      friend class MaterialIndexer;
       friend class ShaderIndexer;
+      friend class TextureIndexer;
+      friend class MaterialIndexer;
       DEFINE_NON_INSTANTIABLE_TYPE(Registry);
     public:
       enum State : uint8_t {
@@ -139,6 +140,21 @@ namespace mcc {
         Indexer(FLAGS_resources + "/shaders") {
       }
       ~ShaderIndexer() override = default;
+
+      void Index() override;
+    };
+
+    class TextureIndexer : public Indexer<kTextureType> {
+      DEFINE_NON_COPYABLE_TYPE(TextureIndexer);
+    public:
+      TextureIndexer(const std::string& root,
+                    const std::string& current):
+                    Indexer(root, current) {
+      }
+      TextureIndexer():
+        Indexer(FLAGS_resources + "/textures") {
+      }
+      ~TextureIndexer() override = default;
 
       void Index() override;
     };
