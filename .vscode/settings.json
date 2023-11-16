@@ -81,6 +81,7 @@
     "future": "cpp",
     "regex": "cpp",
     "thread": "cpp",
-    "span": "cpp"
+    "span": "cpp",
+    "iterator": "cpp"
   }
 }
