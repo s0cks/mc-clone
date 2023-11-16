@@ -127,29 +127,17 @@ namespace mcc::texture {
       return TextureRef();
     if((*type) == "cubemap") {
       const auto root = GetDocumentString("root");
-
       const auto filter = TextureFilter(TextureFilterComponent::kLinear);
       const auto texture = new Texture((const TextureTarget) kCubeMap, true, true, false, filter);
-
       auto dirname = filename_.substr(0, filename_.find_last_of('/'));
       dirname = dirname.substr(dirname.find_last_of('/') + 1);
-      DLOG(INFO) << "dirname: " << dirname;
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kRightFace)) << "failed to load cube map right face.";
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kLeftFace)) << "failed to load cube map left face.";
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kTopFace)) << "failed to load cube map top face.";
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kBottomFace)) << "failed to load cube map bottom face.";
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kFrontFace)) << "failed to load cube map front face.";
       LOG_IF(FATAL, !LoadCubeMapFace(root.value_or(dirname), kBackFace)) << "failed to load cube map back face.";
-      // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      // CHECK_GL(FATAL);
-      // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      // CHECK_GL(FATAL);
-      // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      // CHECK_GL(FATAL);
-      // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      // CHECK_GL(FATAL);
-      // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-      // CHECK_GL(FATAL);
+      texture->Unbind();
       const auto ptr = resource::Pointer(tag_, (uword) texture);
       return TextureRef(ptr);
     } else if((*type) == "texture") {
