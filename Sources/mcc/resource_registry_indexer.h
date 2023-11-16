@@ -1,0 +1,8 @@
+#ifndef MCC_RESOURCE_REGISTRY_INDEXER_H
+#define MCC_RESOURCE_REGISTRY_INDEXER_H
+
+namespace mcc::resource {
+  
+}
+
+#endif //MCC_RESOURCE_REGISTRY_INDEXER_H

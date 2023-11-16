@@ -23,6 +23,7 @@ add_library(${PROJECT_NAME}
   mcc/shader/builder.h mcc/shader/builder.cc
   mcc/shader/source.h
   mcc/atomic_linked_list.h
+  mcc/wsq.h
   mcc/cache.h mcc/cache.cc
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_stats.h
