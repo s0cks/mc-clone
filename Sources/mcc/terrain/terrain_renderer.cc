@@ -10,9 +10,6 @@
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/shader/shader.h"
 
-#include "mcc/material.h"
-#include "mcc/resource.h"
-
 namespace mcc::terrain {
   static ShaderRef shader_;
   static MaterialRef material_;
@@ -24,6 +21,14 @@ namespace mcc::terrain {
   void TerrainRenderer::OnPostInit() {
     shader_ = GetShader("terrain");
     material_ = GetMaterial("floors/old_wood");
+  }
+
+  MaterialRef TerrainRenderer::GetTerrainMaterial() {
+    return material_;
+  }
+
+  void TerrainRenderer::SetTerrainMaterial(MaterialRef material) {
+    material_ = material;
   }
 
   void TerrainRenderer::Render() {

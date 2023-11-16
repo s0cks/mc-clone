@@ -5,6 +5,8 @@
 #include "mcc/engine/engine.h"
 #include "mcc/relaxed_atomic.h"
 
+#include "mcc/material.h"
+
 namespace mcc::resource {
   static RelaxedAtomic<Registry::State> state_(Registry::kUninitialized);
   static ThreadLocal<leveldb::DB> index_;
@@ -158,8 +160,10 @@ namespace mcc::resource {
       const auto path = std::string(entry.path());
       const auto relative = path.substr(root_.length() + 1);
       const auto name = relative.substr(0, relative.find_last_of("."));
+      DLOG(INFO) << path << ": " << name;
       if(entry.is_directory()) {
         if(FileExists(path + "/material.json")) {
+          RegisterMaterial(name);
           Registry::Put(Tag::Material(name), path);
           continue;
         }

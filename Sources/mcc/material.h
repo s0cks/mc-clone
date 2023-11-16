@@ -26,6 +26,8 @@ namespace mcc {
       TextureRef normal;
       TextureRef roughness;
 
+      ~Material();
+
       void Bind() const {
         albedo->Bind(0);
         ao->Bind(1);
@@ -104,6 +106,9 @@ namespace mcc {
 
   using resource::MaterialRef;
 
+  bool RegisterMaterial(const std::string& name);
+  uint64_t GetNumberOfMaterials();
+  bool VisitAllMaterials(std::function<bool(const std::string&)> vis);
   MaterialRef GetMaterial(const resource::Token& token);
 
   static inline MaterialRef

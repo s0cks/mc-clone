@@ -48,14 +48,4 @@ namespace mcc::terrain {
     TerrainRenderer renderer;
     renderer.Render();
   }
-
-  static std::string material = "emerald";
-
-  void Terrain::SetTerrainMaterial(const std::string& mat) {
-    material = mat;
-  }
-
-  std::string Terrain::GetTerrainMaterial() {
-    return material;
-  }
 }
