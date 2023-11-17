@@ -7,6 +7,7 @@
 #include <string>
 #include <optional>
 #include <glog/logging.h>
+#include <algorithm>
 
 #include "mcc/platform.h"
 
@@ -105,6 +106,17 @@ namespace mcc {
   EndsWith(const std::string& str, const std::string& suffix){
     return str.size() >= suffix.size() 
         && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+  }
+
+  static inline bool
+  CharEqualsIgnoreCase(const char& lhs, const char& rhs) {
+    return std::tolower(static_cast<unsigned char>(lhs)) == std::tolower(static_cast<unsigned char>(rhs));
+  }
+
+  static inline bool
+  EqualsIgnoreCase(const std::string& lhs, const std::string& rhs) {
+    return lhs.size() == rhs.size()
+        && std::equal(rhs.begin(), rhs.end(), lhs.begin(), lhs.end(), CharEqualsIgnoreCase);
   }
 }
 

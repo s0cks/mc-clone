@@ -1,5 +1,7 @@
 {
   "type": "cubemap",
+  "minFilter": "linear",
+  "magFilter": "linear",
   "left": "left.jpg",
   "right": "right.jpg",
   "top": "top.jpg",

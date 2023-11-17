@@ -62,16 +62,135 @@ namespace mcc::texture {
     return TextureRef();
   }
 
-  static const auto kParseTextureTarget = [](const std::string& target) {
-    if(target == "1d") {
-      return std::optional<TextureTarget>{ k1D };
-    } else if(target == "2d") {
-      return std::optional<TextureTarget>{ k2D };
-    } else if(target == "3d") {
-      return std::optional<TextureTarget>{ k3D };
+  template<typename T>
+  class JsonPropertyParser {
+  protected:
+    json::Document& doc_;
+    std::string property_name_;
+    T default_;
+  public:
+    JsonPropertyParser(json::Document& doc,
+                       const std::string& property_name,
+                       const T default_value):
+                       doc_(doc),
+                       property_name_(property_name),
+                       default_(default_value) {
     }
-    DLOG(ERROR) << "unknown target: " << target;
-    return std::optional<TextureTarget>{};
+    virtual ~JsonPropertyParser() = default;
+    virtual T Get() const = 0;
+
+    inline const char* GetPropertyName() const {
+      return property_name_.c_str();
+    }
+
+    inline T GetDefaultValue() const {
+      return default_;
+    }
+  };
+
+  class TextureAlignmentJsonParser : public JsonPropertyParser<TextureAlignment> {
+  private:
+    TextureAlignment default_value_;
+  public:
+    TextureAlignmentJsonParser(json::Document& doc,
+                               const std::string& property_name,
+                               const TextureAlignment default_value):
+      JsonPropertyParser(doc, property_name, default_value) {
+    }
+    ~TextureAlignmentJsonParser() = default;
+
+    TextureAlignment Get() const {
+      if(!doc_.HasMember(GetPropertyName()))
+        return GetDefaultValue();
+
+      const auto& property = doc_[GetPropertyName()];
+      if(property.IsString()) {
+        const auto property_value = std::string(property.GetString(), property.GetStringLength());
+        if(EqualsIgnoreCase(property_value, "byte")) {
+          return kByteAlignment;
+        } else if(EqualsIgnoreCase(property_value, "row")) {
+          return kRowAlignment;
+        } else if(EqualsIgnoreCase(property_value, "word")) {
+          return kWordAlignment;
+        } else if(EqualsIgnoreCase(property_value, "dword") || EqualsIgnoreCase(property_value, "doubleword")) {
+          return kDoubleWordAlignment;
+        }
+      } else if(property.IsNumber()) {
+        const auto value = property.GetUint64();
+        switch(value) {
+          case 1: return k1;
+          case 2: return k2;
+          case 4: return k4;
+          case 8: return k8;
+          default:
+            DLOG(ERROR) << "invalid TextureAlignment value '" << value << "'";
+            return GetDefaultValue();
+        }
+      }
+
+      return GetDefaultValue();
+    }
+  };
+
+  class TextureTargetJsonParser : public JsonPropertyParser<TextureTarget> {
+  public:
+    TextureTargetJsonParser(json::Document& doc,
+                            const std::string& property_name,
+                            const TextureTarget default_value):
+      JsonPropertyParser<TextureTarget>(doc, property_name, default_value) {
+    }
+    ~TextureTargetJsonParser() override = default;
+
+    TextureTarget Get() const override {
+      if(!doc_.HasMember(GetPropertyName()))
+        return GetDefaultValue();
+      const auto& target = doc_[GetPropertyName()];
+      if(target.IsString()) {
+        const auto value = std::string(target.GetString(), target.GetStringLength());
+        if(EqualsIgnoreCase(value, "1d")) {
+          return k1D;
+        } else if(EqualsIgnoreCase(value, "2d")) {
+          return k2D;
+        } else if(EqualsIgnoreCase(value, "3d")) {
+          return k3D;
+        }
+      }
+
+      return GetDefaultValue();
+    }
+  };
+
+  class TextureFilterComponentJsonParser : public JsonPropertyParser<TextureFilterComponent> {
+  public:
+    TextureFilterComponentJsonParser(json::Document& doc,
+                                     const std::string& property_name,
+                                     const TextureFilterComponent default_value):
+      JsonPropertyParser<TextureFilterComponent>(doc, property_name, default_value) {
+    }
+    ~TextureFilterComponentJsonParser() override = default;
+
+    TextureFilterComponent Get() const override {
+      if(!doc_.HasMember(GetPropertyName()))
+        return GetDefaultValue();
+      const auto& property = doc_[GetPropertyName()];
+      if(!property.IsString())
+        return GetDefaultValue();
+      const auto component = std::string(property.GetString(), property.GetStringLength());
+      if(EqualsIgnoreCase(component, "NearestMipmapNearest")) {
+        return kNearestMipmapNearest;
+      } else if(EqualsIgnoreCase(component, "NearestMipmapLinear")) {
+        return kNearestMipmapLinear;
+      } else if(EqualsIgnoreCase(component, "LinearMipmapNearest")) {
+        return kLinearMipmapNearest;
+      } else if(EqualsIgnoreCase(component, "LinearMipmapLinear")) {
+        return kLinearMipmapLinear;
+      } else if(EqualsIgnoreCase(component, "linear")) {
+        return kLinear;
+      } else if(EqualsIgnoreCase(component, "nearest")) {
+        return kNearest;
+      }
+      return GetDefaultValue();
+    }
   };
 
   static inline std::string
@@ -103,13 +222,19 @@ namespace mcc::texture {
     ~TextureJsonLoader() override = default;
 
     TextureRef Load() override {
-      const auto target = map<std::string, TextureTarget>(GetDocumentString("target"), kParseTextureTarget).value_or(kDefaultTarget);
+      TextureTargetJsonParser target(doc_, "target", kDefaultTarget);
+      TextureAlignmentJsonParser pack(doc_, "pack", kDefaultPackAlignment);
+      TextureAlignmentJsonParser unpack(doc_, "unpack", kDefaultUnpackAlignment);
+      const auto alignment = PixelStoreAlignment(pack.Get(), unpack.Get());
+      TextureFilterComponentJsonParser minFilter(doc_, "minFilter", kDefaultMinFilter);
+      TextureFilterComponentJsonParser magFilter(doc_, "magFilter", kDefaultMagFilter);
+      const auto filter = TextureFilter(minFilter.Get(), magFilter.Get());
       const auto texture = GetDocumentString("filename").value_or("");
       if(std::regex_match(texture, kPngPattern)) {
-        PngFileLoader loader(tag_, texture);
+        PngFileLoader loader(tag_, texture, filter, alignment);
         return loader.Load();
       } else if(std::regex_match(texture, kJpegPattern)) {
-        JpegFileLoader loader(tag_, texture);
+        JpegFileLoader loader(tag_, texture, filter, alignment);
         return loader.Load();
       }
 
@@ -180,8 +305,13 @@ namespace mcc::texture {
 
     TextureRef Load() override {
       const auto root = GetDocumentString("root");
-      const auto filter = TextureFilter(TextureFilterComponent::kLinear);
-      const auto texture = new Texture((const TextureTarget) kCubeMap, true, true, false, filter);
+      TextureAlignmentJsonParser pack(doc_, "pack", kDefaultPackAlignment);
+      TextureAlignmentJsonParser unpack(doc_, "unpack", kDefaultUnpackAlignment);
+      const auto alignment = PixelStoreAlignment(pack.Get(), unpack.Get());
+      TextureFilterComponentJsonParser minFilter(doc_, "minFilter", kDefaultMinFilter);
+      TextureFilterComponentJsonParser magFilter(doc_, "magFilter", kDefaultMagFilter);
+      const auto filter = TextureFilter(minFilter.Get(), magFilter.Get());
+      const auto texture = new Texture((const TextureTarget) kCubeMap, true, true, false, alignment, filter);
       LOG_IF(FATAL, !LoadCubeMapFace(kRightFace)) << "failed to load cube map right face.";
       LOG_IF(FATAL, !LoadCubeMapFace(kLeftFace)) << "failed to load cube map left face.";
       LOG_IF(FATAL, !LoadCubeMapFace(kTopFace)) << "failed to load cube map top face.";

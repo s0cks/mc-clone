@@ -244,6 +244,7 @@ namespace mcc::texture {
                      const bool generate = true,
                      const bool bind = true,
                      const bool unbind = true,
+                     const PixelStoreAlignment& alignment = {},
                      const TextureFilter& filter = {},
                      const TextureWrap& wrap = {}):
       Resource(),
@@ -254,7 +255,7 @@ namespace mcc::texture {
       format_(),
       type_(),
       mipmap_(false),
-      alignment_(),
+      alignment_(alignment),
       filter_(filter),
       wrap_(wrap) {
       if(generate)
@@ -299,7 +300,7 @@ namespace mcc::texture {
                      const GLenum format,
                      const GLenum type,
                      const bool mipmap,
-                     const PixelStoreAlignment alignment,
+                     const PixelStoreAlignment& alignment,
                      const TextureFilter& filter,
                      const TextureWrap& wrap,
                      const GLvoid* pixels = NULL):

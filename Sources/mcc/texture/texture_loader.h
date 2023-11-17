@@ -8,9 +8,22 @@ namespace mcc::texture {
   class TextureFileLoader : public res::FileLoader<Texture> {
   protected:
     Image image_;
+    TextureFilter filter_;
+    PixelStoreAlignment alignment_;
 
-    explicit TextureFileLoader(const res::Tag& tag, const std::string& filename):
-      FileLoader<Texture>(tag, filename) {
+    explicit TextureFileLoader(const res::Tag& tag, 
+                               const std::string& filename,
+                               const TextureFilter& filter,
+                               const PixelStoreAlignment& alignment):
+      FileLoader<Texture>(tag, filename),
+      filter_(filter),
+      alignment_(alignment) {
+    }
+    explicit TextureFileLoader(const res::Tag& tag, 
+                               const std::string& filename):
+      FileLoader<Texture>(tag, filename),
+      filter_(),
+      alignment_() {
     }
 
     virtual std::optional<Texture*> LoadTexture() = 0;
@@ -32,8 +45,15 @@ namespace mcc::texture {
   protected:
     std::optional<Texture*> LoadTexture() override;
   public:
-    explicit PngFileLoader(const res::Tag& tag, const std::string& filename):
+    explicit PngFileLoader(const res::Tag& tag, 
+                           const std::string& filename):
       TextureFileLoader(tag, filename) {
+    }
+    explicit PngFileLoader(const res::Tag& tag, 
+                           const std::string& filename,
+                           const TextureFilter& filter,
+                           const PixelStoreAlignment& alignment):
+      TextureFileLoader(tag, filename, filter, alignment) {
     }
     ~PngFileLoader() override = default;
   };
@@ -42,7 +62,14 @@ namespace mcc::texture {
   protected:
     std::optional<Texture*> LoadTexture() override;
   public:
-    explicit JpegFileLoader(const res::Tag& tag, const std::string& filename):
+    explicit JpegFileLoader(const res::Tag& tag, 
+                            const std::string& filename,
+                            const TextureFilter& filter,
+                            const PixelStoreAlignment& alignment):
+      TextureFileLoader(tag, filename, filter, alignment) {
+    }
+    explicit JpegFileLoader(const res::Tag& tag, 
+                            const std::string& filename):
       TextureFileLoader(tag, filename) {
     }
     ~JpegFileLoader() override = default;
