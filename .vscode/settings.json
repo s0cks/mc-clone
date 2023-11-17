@@ -82,6 +82,7 @@
     "regex": "cpp",
     "thread": "cpp",
     "span": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "memory_resource": "cpp"
   }
 }

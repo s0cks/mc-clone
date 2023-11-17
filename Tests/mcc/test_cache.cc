@@ -9,6 +9,6 @@ namespace mcc {
     EXPECT_CALL(loader, Call(k1))
       .WillOnce(::testing::Return(v1));
 
-    auto cache = Cache<std::string, uint64_t>::NewLru(10);
+    auto cache = Cache<std::string, uint64_t, DefaultHasher>::NewLru(10);
   }
 }

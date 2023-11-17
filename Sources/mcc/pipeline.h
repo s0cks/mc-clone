@@ -5,6 +5,7 @@
 #include "mcc/gfx.h"
 
 namespace mcc {
+  template<typename I, typename O>
   class Pipeline {
   protected:
     Pipeline* parent_;
@@ -16,7 +17,7 @@ namespace mcc {
     }
   public:
     virtual ~Pipeline() = default;
-    virtual void Render() = 0;
+    virtual O Render(I) = 0;
 
     void SetParent(Pipeline* pipeline) {
       parent_ = pipeline;

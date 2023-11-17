@@ -40,7 +40,7 @@ namespace mcc::shader {
 
   class Shader {
   public:
-    typedef Cache<std::string, Shader> Cache;
+    typedef Cache<std::string, Shader, DefaultHasher> Cache;
   protected:
     ShaderId id_;
   public:

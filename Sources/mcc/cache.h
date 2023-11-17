@@ -33,7 +33,7 @@ namespace mcc {
 
   template<typename K, typename V, typename Hasher = DefaultHasher, const uint64_t NumberOfBuckets = kDefaultNumberOfLruCacheBuckets>
   class LruCache : public Cache<K, V, Hasher> {
-    friend class Cache<K, V>;
+    friend class Cache<K, V, Hasher>;
   private:
     struct Node {
       Node* next;

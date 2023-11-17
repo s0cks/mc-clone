@@ -21,8 +21,7 @@ namespace mcc::skybox {
     return skybox_.Get();
   }
 
-  static const VertexList kSkyboxVertices = {
-    // positions          
+  static const VertexList kSkyboxVertices = {       
     { .pos = glm::vec3(-1.0f,  1.0f, -1.0f), },
     { .pos = glm::vec3(-1.0f, -1.0f, -1.0f), },
     { .pos = glm::vec3(1.0f, -1.0f, -1.0f), },
@@ -81,14 +80,12 @@ namespace mcc::skybox {
   void Skybox::Render() {
     InvertedCullFaceScope cull_face;
     DepthTestScope depth_test(gfx::kLequal);
-    texture->Bind0();
+    TextureBindScope<0> tex(texture);
     shader->ApplyShader();
     shader->SetUniformBlock("Camera", 0);
     shader->SetInt("tex", 0);
-    shader->ApplyShader();
     VertexArrayObjectScope scope(vao_);
     glDrawArrays(GL_TRIANGLES, 0, vbo.length());
     CHECK_GL(FATAL);
-    texture->Unbind();
   }
 }

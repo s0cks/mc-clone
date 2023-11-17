@@ -86,26 +86,12 @@ namespace mcc::terrain {
 
   void TerrainChunk::Render() {
     VertexArrayObjectScope vao(vao_);
-    vbo_.Bind();
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(0);
-    CHECK_GL(FATAL);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(1);
-    CHECK_GL(FATAL);
-
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(2);
-    CHECK_GL(FATAL);
-
-    ibo_.Bind();
+    TerrainVertexBufferScope vbo(vbo_);
+    TerrainVertexBuffer::PositionAttribute::Enable();
+    TerrainVertexBuffer::UvAttribute::Enable();
+    TerrainVertexBuffer::ColorAttribute::Enable();
+    IndexBufferScope ibo(ibo_);
     glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), (const GLvoid*) 0);
     CHECK_GL(FATAL);
-    ibo_.Unbind();
-    vbo_.Unbind();
   }
 }

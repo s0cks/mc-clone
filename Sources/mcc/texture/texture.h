@@ -332,6 +332,28 @@ namespace mcc {
     const auto token = resource::Registry::Get(resource::NewTextureTag(name));
     return GetTexture(token);
   }
+
+  template<const uint32_t Slot>
+  class TextureBindScope { //TODO: move to mcc::texture
+  private:
+    TextureRef texture_;
+  public:
+    TextureBindScope(TextureRef texture):
+      texture_(texture) {
+      texture_->Bind(Slot);
+    }
+    ~TextureBindScope() {
+      texture_->Unbind();
+    }
+
+    TextureRef GetTexture() const {
+      return texture_;
+    }
+
+    uint32_t GetSlot() const {
+      return Slot;
+    }
+  };
 }
 
 #endif //MCC_TEXTURE_H

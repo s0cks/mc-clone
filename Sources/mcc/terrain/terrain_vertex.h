@@ -35,25 +35,18 @@ namespace mcc::terrain {
 
   class TerrainVertexBuffer : public VertexBufferTemplate<Vertex, kStaticUsage> {
   public:
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(0, sizeof(Vertex), Position);
+    DEFINE_VEC2F_VERTEX_BUFFER_ATTR(1, sizeof(Vertex), Uv);
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(2, sizeof(Vertex), Color); //TODO: remove
+  public:
     explicit TerrainVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
       VertexBufferTemplate(id) {  
     }
     explicit TerrainVertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
       VertexBufferTemplate(vertices, num_vertices) {
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(0);
-      CHECK_GL(FATAL);
-
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(1);
-      CHECK_GL(FATAL);
-
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(2);
-      CHECK_GL(FATAL);
+      PositionAttribute::Bind((const GLvoid*) 0);
+      UvAttribute::Bind((const GLvoid*) offsetof(Vertex, uv));
+      ColorAttribute::Bind((const GLvoid*) offsetof(Vertex, color));
     }
     explicit TerrainVertexBuffer(const VertexList& vertices):
       TerrainVertexBuffer(&vertices[0], vertices.size()) {  
@@ -71,6 +64,7 @@ namespace mcc::terrain {
       BufferObject::operator=(rhs);
     }
   };
+  DEFINE_RESOURCE_SCOPE(TerrainVertexBuffer);
 
   typedef GLuint Index;
   typedef std::vector<Index> IndexList;
@@ -109,6 +103,7 @@ namespace mcc::terrain {
       BufferObject::operator=(rhs);
     }
   };
+  DEFINE_RESOURCE_SCOPE(IndexBuffer);
 }
 
 #endif //MCC_TERRAIN_VERTEX_H

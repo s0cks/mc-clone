@@ -9,7 +9,8 @@ namespace mcc::particle {
 
   struct Particle {
     glm::vec3 position;
-    glm::vec3 velocity;
+    glm::vec3 direction;
+    float speed;
     glm::vec3 color;
     ParticleDuration age;
     ParticleDuration max_age;

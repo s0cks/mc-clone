@@ -402,6 +402,82 @@ namespace mcc {
     }
   };
 
+  template<const GLuint Index, 
+           const GLint Size,
+           const GLenum Type,
+           const GLboolean Normalized,
+           const GLsizei Stride>
+  class VertexBufferAttribute {
+  public:
+    static inline GLuint GetIndex() {
+      return Index;
+    }
+
+    static inline GLint GetSize() {
+      return Size;
+    }
+
+    static inline GLenum GetType() {
+      return Type;
+    }
+
+    static inline GLboolean IsNormalized() {
+      return Normalized;
+    }
+
+    static inline GLsizei GetStride() {
+      return Stride;
+    }
+
+    static inline void
+    Enable() {
+      glEnableVertexAttribArray(GetIndex());
+      CHECK_GL(FATAL);
+    }
+
+    static inline void
+    Bind(const GLvoid* ptr) {
+      glVertexAttribPointer(GetIndex(), GetSize(), GetType(), IsNormalized(), GetStride(), ptr);
+      CHECK_GL(FATAL);
+      Enable();
+    }
+
+    template<typename T>
+    static inline void
+    Bind(T ptr) {
+      return Bind((const GLvoid*) ptr);
+    }
+  };
+
+
+  template<const GLuint Index, const GLsizei Stride>
+  class Vec2fVertexBufferAttribute : public VertexBufferAttribute<Index, 2, GL_FLOAT, GL_FALSE, Stride>{};
+
+#define DEFINE_VEC2F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
+  class Name##Attribute : public Vec2fVertexBufferAttribute<Index, Stride> {      \
+  public:                                                                         \
+    static inline const char* GetName() { return #Name; }                         \
+  };
+
+  template<const GLuint Index, 
+           const GLsizei Stride>
+  class Vec3fVertexBufferAttribute : public VertexBufferAttribute<Index, 3, GL_FLOAT, GL_FALSE, Stride>{};
+
+#define DEFINE_VEC3F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
+  class Name##Attribute : public Vec3fVertexBufferAttribute<Index, Stride> {      \
+  public:                                                                         \
+    static inline const char* GetName() { return #Name; }                         \
+  };
+
+  template<const GLuint Index, const GLsizei Stride>
+  class Vec4fVertexBufferAttribute : public VertexBufferAttribute<Index, 4, GL_FLOAT, GL_FALSE, Stride>{};
+
+#define DEFINE_VEC4F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
+  class Name##Attribute : public Vec4fVertexBufferAttribute<Index, Stride> {      \
+  public:                                                                         \
+    static inline const char* GetName() { return #Name; }                         \
+  };
+
   template<typename Vertex, const GlObjectUsage Usage = kDefaultUsage>
   class VertexBufferTemplate : public VertexBufferObject {
   public:
