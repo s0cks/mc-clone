@@ -35,18 +35,29 @@ namespace mcc::terrain {
 
   class TerrainVertexBuffer : public VertexBufferTemplate<Vertex, kStaticUsage> {
   public:
-    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(0, sizeof(Vertex), Position);
-    DEFINE_VEC2F_VERTEX_BUFFER_ATTR(1, sizeof(Vertex), Uv);
-    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(2, sizeof(Vertex), Color); //TODO: remove
+    enum Attributes {
+      kPositionIndex = 0,
+      kPositionOffset = offsetof(Vertex, pos),
+
+      kUvIndex = 1,
+      kUvOffset = offsetof(Vertex, uv),
+
+      kColorIndex = 3,
+      kColorOffset = offsetof(Vertex, color),
+    };
+
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kPositionIndex, kPositionOffset, sizeof(Vertex), Position);
+    DEFINE_VEC2F_VERTEX_BUFFER_ATTR(kUvIndex, kUvOffset, sizeof(Vertex), Uv);
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kColorIndex, kColorOffset, sizeof(Vertex), Color); //TODO: remove
   public:
     explicit TerrainVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
       VertexBufferTemplate(id) {  
     }
     explicit TerrainVertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
       VertexBufferTemplate(vertices, num_vertices) {
-      PositionAttribute::Bind((const GLvoid*) 0);
-      UvAttribute::Bind((const GLvoid*) offsetof(Vertex, uv));
-      ColorAttribute::Bind((const GLvoid*) offsetof(Vertex, color));
+      PositionAttribute::Bind();
+      UvAttribute::Bind();
+      ColorAttribute::Bind();
     }
     explicit TerrainVertexBuffer(const VertexList& vertices):
       TerrainVertexBuffer(&vertices[0], vertices.size()) {  

@@ -22,6 +22,7 @@ namespace mcc {
     MOCK_METHOD2(glfwSetWindowCloseCallback, GLFWwindowclosefun(GLFWwindow* window, GLFWwindowclosefun callback));
     MOCK_METHOD1(glfwMakeContextCurrent, void(GLFWwindow* window));
     MOCK_METHOD3(glfwGetWindowSize, void(GLFWwindow* window, int* width, int* height));
+    MOCK_METHOD3(glfwSetInputMode, void(GLFWwindow* window, int mode, int value));
   };
 }
 

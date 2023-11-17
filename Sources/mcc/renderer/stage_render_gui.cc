@@ -3,6 +3,8 @@
 #include "mcc/window.h"
 #include "mcc/gui/gui.h"
 
+#include "mcc/framebuffer_pipeline.h"
+
 namespace mcc::renderer {
   class FrameRenderer : public gui::FrameVisitor {
   private:
@@ -33,7 +35,8 @@ namespace mcc::renderer {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
     auto fb = Renderer::GetFrameBuffer();
-    fb->Unbind();
-    fb->Draw();
+
+    RenderFrameBufferPipeline pipeline(fb, FrameBufferObject((const BufferObjectId)0), shader_, kColorAndDepthClearMask);
+    pipeline.Render();
   }
 }

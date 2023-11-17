@@ -1,7 +1,7 @@
 #ifndef MCC_FRAMEBUFFER_H
 #define MCC_FRAMEBUFFER_H
 
-#include "mcc/gfx.h"
+#include "mcc/vertex.h"
 #include "mcc/pipeline.h"
 #include "mcc/renderbuffer.h"
 #include "mcc/shader/shader.h"
@@ -126,59 +126,12 @@ namespace mcc {
   };
   DEFINE_RESOURCE_SCOPE(FrameBufferObject);
 
-  struct FrameBufferVertex {
-    glm::vec2 pos;
-    glm::vec2 uv;
-  };
-
-  typedef std::vector<FrameBufferVertex> FrameBufferVertexList;
-  class FrameBufferVertexBuffer : public VertexBufferTemplate<FrameBufferVertex, kStaticUsage> {
-  public:
-    enum Attributes {
-      kPositionIndex = 0,
-      kPositionOffset = offsetof(FrameBufferVertex, pos),
-
-      kUvIndex = 1,
-      kUvOffset = offsetof(FrameBufferVertex, uv),
-    };
-
-    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kPositionIndex, sizeof(FrameBufferVertex), Position);
-    DEFINE_VEC2F_VERTEX_BUFFER_ATTR(kUvIndex, sizeof(FrameBufferVertex), Uv);
-  public:
-    explicit FrameBufferVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
-      VertexBufferTemplate(id) {  
-    }
-    explicit FrameBufferVertexBuffer(const FrameBufferVertex* vertices, const uint64_t num_vertices):
-      VertexBufferTemplate(vertices, num_vertices) {
-      PositionAttribute::Bind(kPositionOffset);
-      UvAttribute::Bind(kUvOffset);
-    }
-    explicit FrameBufferVertexBuffer(const VertexList& vertices):
-      FrameBufferVertexBuffer(&vertices[0], vertices.size()) {  
-    }
-    FrameBufferVertexBuffer(const FrameBufferVertexBuffer& rhs):
-      VertexBufferTemplate(rhs) {
-    }
-    ~FrameBufferVertexBuffer() override = default;
-    
-    void operator=(const FrameBufferVertexBuffer& rhs) {
-      VertexBufferTemplate::operator=(rhs);
-    }
-
-    void operator=(const BufferObjectId& rhs) {
-      BufferObject::operator=(rhs);
-    }
-  };
-  DEFINE_RESOURCE_SCOPE(FrameBufferVertexBuffer);
-
   class FrameBuffer {
   private:
-    VertexArrayObject vao_;
-    FrameBufferVertexBuffer vbo_;
     FrameBufferObject fbo_;
+    d2::Mesh* mesh_;
     TextureRef cbuff_;
     DepthBuffer dbuff_;
-    ShaderRef shader_;
     Dimension size_;
 
     FrameBuffer(const Dimension& size);
@@ -191,14 +144,6 @@ namespace mcc {
       return size_;
     }
 
-    VertexArrayObject vao() const {
-      return vao_;
-    }
-    
-    FrameBufferVertexBuffer vbo() const {
-      return vbo_;
-    }
-
     FrameBufferObject fbo() const {
       return fbo_;
     }
@@ -207,11 +152,13 @@ namespace mcc {
       return cbuff_;
     }
 
+    d2::Mesh* mesh() const {
+      return mesh_;
+    }
+
     void Bind() const {
       return fbo_.Bind();
     }
-
-    void Draw();
 
     void Unbind() {
       return fbo_.Unbind();

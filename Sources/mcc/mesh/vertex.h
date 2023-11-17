@@ -1,5 +1,5 @@
-#ifndef MCC_VERTEX_H
-#define MCC_VERTEX_H
+#ifndef MCC_MESH_VERTEX_H
+#define MCC_MESH_VERTEX_H
 
 #include <vector>
 #include <cstdint>
@@ -102,4 +102,4 @@ namespace mcc::mesh {
   };
 }
 
-#endif //MCC_VERTEX_H
+#endif //MCC_MESH_VERTEX_H

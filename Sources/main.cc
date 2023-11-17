@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
 
   using namespace mcc;
   settings::Init();
+  d2::Mesh::Init();
   font::Initialize();
   Entities::Initialize();
   const auto loop = uv_loop_new();

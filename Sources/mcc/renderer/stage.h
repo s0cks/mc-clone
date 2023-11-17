@@ -6,7 +6,7 @@
 #include "mcc/engine/tick.h"
 #include "mcc/uv_utils.h"
 #include "mcc/renderer/renderer_state.h"
-
+#include "mcc/shader/shader.h"
 #include "mcc/ecs/entity.h"
 
 namespace mcc::renderer {
@@ -186,9 +186,12 @@ namespace mcc::renderer {
   };
 
   class RenderScreenStage : public RenderStage {
+  private:
+    ShaderRef shader_;
   public:
     explicit RenderScreenStage(uv_loop_t* loop):
-      RenderStage(loop) {
+      RenderStage(loop),
+      shader_(GetShader("framebuffer")) {
     }
     ~RenderScreenStage() override = default;
     DEFINE_RENDER_STAGE(Screen);

@@ -126,6 +126,7 @@ namespace mcc {
     glfwSwapInterval(0);
     glfwSetWindowCloseCallback(handle, &OnWindowClosed);
     //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
+    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     SetHandle(handle);
   }

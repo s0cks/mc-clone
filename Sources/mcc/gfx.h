@@ -115,7 +115,7 @@ namespace mcc {
       CHECK_GL(FATAL);
       return static_cast<DepthFunction>(value);
     }
-
+    
     template<const bool Inverted = false>
     class DepthTestCapabilityScope : public CapabilityScope<GL_DEPTH_TEST, Inverted> {
     private:
@@ -402,13 +402,26 @@ namespace mcc {
     virtual uint64_t size() const {
       return length() * vertex_size();
     }
+
+    //TODO:
+    // - type protect mode
+    virtual void Draw(const GLenum mode,  GLint first, GLsizei count) { 
+      glDrawArrays(mode, 0, count);
+      CHECK_GL(FATAL);
+    }
+
+    virtual void Draw(const GLenum mode,  GLint first = 0) { 
+      glDrawArrays(mode, 0, length());
+      CHECK_GL(FATAL);
+    }
   };
 
   template<const GLuint Index, 
            const GLint Size,
            const GLenum Type,
            const GLboolean Normalized,
-           const GLsizei Stride>
+           const GLsizei Stride,
+           const uword Offset>
   class VertexBufferAttribute {
   public:
     static inline GLuint GetIndex() {
@@ -431,6 +444,10 @@ namespace mcc {
       return Stride;
     }
 
+    static inline uword GetOffset() {
+      return Offset;
+    }
+
     static inline void
     Enable() {
       glEnableVertexAttribArray(GetIndex());
@@ -444,40 +461,40 @@ namespace mcc {
       Enable();
     }
 
-    template<typename T>
     static inline void
-    Bind(T ptr) {
-      return Bind((const GLvoid*) ptr);
+    Bind() {
+      return Bind((const GLvoid*) GetOffset());
     }
   };
 
 
-  template<const GLuint Index, const GLsizei Stride>
-  class Vec2fVertexBufferAttribute : public VertexBufferAttribute<Index, 2, GL_FLOAT, GL_FALSE, Stride>{};
+  template<const GLuint Index, const uword Offset, const GLsizei Stride>
+  class Vec2fVertexBufferAttribute : public VertexBufferAttribute<Index, 2, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
-#define DEFINE_VEC2F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
-  class Name##Attribute : public Vec2fVertexBufferAttribute<Index, Stride> {      \
-  public:                                                                         \
-    static inline const char* GetName() { return #Name; }                         \
+#define DEFINE_VEC2F_VERTEX_BUFFER_ATTR(Index, Offset, Stride, Name)                      \
+  class Name##Attribute : public Vec2fVertexBufferAttribute<Index, Offset, Stride> {      \
+  public:                                                                                 \
+    static inline const char* GetName() { return #Name; }                                 \
   };
 
   template<const GLuint Index, 
-           const GLsizei Stride>
-  class Vec3fVertexBufferAttribute : public VertexBufferAttribute<Index, 3, GL_FLOAT, GL_FALSE, Stride>{};
+           const GLsizei Stride,
+           const uword Offset>
+  class Vec3fVertexBufferAttribute : public VertexBufferAttribute<Index, 3, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
-#define DEFINE_VEC3F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
-  class Name##Attribute : public Vec3fVertexBufferAttribute<Index, Stride> {      \
-  public:                                                                         \
-    static inline const char* GetName() { return #Name; }                         \
+#define DEFINE_VEC3F_VERTEX_BUFFER_ATTR(Index, Offset, Stride, Name)                      \
+  class Name##Attribute : public Vec3fVertexBufferAttribute<Index, Stride, Offset> {      \
+  public:                                                                                 \
+    static inline const char* GetName() { return #Name; }                                 \
   };
 
-  template<const GLuint Index, const GLsizei Stride>
-  class Vec4fVertexBufferAttribute : public VertexBufferAttribute<Index, 4, GL_FLOAT, GL_FALSE, Stride>{};
+  template<const GLuint Index, const GLsizei Stride, const uword Offset>
+  class Vec4fVertexBufferAttribute : public VertexBufferAttribute<Index, 4, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
-#define DEFINE_VEC4F_VERTEX_BUFFER_ATTR(Index, Stride, Name)                      \
-  class Name##Attribute : public Vec4fVertexBufferAttribute<Index, Stride> {      \
-  public:                                                                         \
-    static inline const char* GetName() { return #Name; }                         \
+#define DEFINE_VEC4F_VERTEX_BUFFER_ATTR(Index, Offset, Stride, Name)                      \
+  class Name##Attribute : public Vec4fVertexBufferAttribute<Index, Stride, Offset> {      \
+  public:                                                                                 \
+    static inline const char* GetName() { return #Name; }                                 \
   };
 
   template<typename Vertex, const GlObjectUsage Usage = kDefaultUsage>

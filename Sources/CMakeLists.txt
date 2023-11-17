@@ -18,6 +18,7 @@ add_library(${PROJECT_NAME}
   mcc/window.h mcc/window.cc
   mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/shader_pipeline.h
   mcc/shader/compiler_result.h
   mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/shader/builder.h mcc/shader/builder.cc
@@ -58,6 +59,8 @@ add_library(${PROJECT_NAME}
   mcc/material.h mcc/material.cc
   mcc/gfx.h
   mcc/renderbuffer.h
+  mcc/vertex.h mcc/vertex.cc
+  mcc/bloom.h mcc/bloom.cc
   mcc/rx.h
   mcc/common.h
   mcc/flags.h mcc/flags.cc
@@ -78,6 +81,7 @@ add_library(${PROJECT_NAME}
   mcc/circular_buffer.h
   mcc/series.h
   mcc/framebuffer.h mcc/framebuffer.cc
+  mcc/framebuffer_pipeline.h mcc/framebuffer_pipeline.cc
   mcc/subscription_trie.h
   mcc/skybox.h mcc/skybox.cc
   mcc/input/constants.h

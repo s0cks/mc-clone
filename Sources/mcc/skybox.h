@@ -35,14 +35,18 @@ namespace mcc {
     }
 
     class VertexBuffer : public VertexBufferTemplate<Vertex, kStaticUsage> {
-      DEFINE_VEC3F_VERTEX_BUFFER_ATTR(0, sizeof(Vertex), Position);
+      enum Layout {
+        kPositionOffset = offsetof(Vertex, pos),
+      };
+
+      DEFINE_VEC3F_VERTEX_BUFFER_ATTR(0, kPositionOffset, sizeof(Vertex), Position);
     public:
       explicit VertexBuffer(const BufferObjectId id = kInvalidBufferObject):
         VertexBufferTemplate(id) {  
       }
       explicit VertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
         VertexBufferTemplate(vertices, num_vertices) {
-        PositionAttribute::Bind((const GLvoid*) offsetof(Vertex, pos));
+        PositionAttribute::Bind();
       }
       explicit VertexBuffer(const VertexList& vertices):
         VertexBuffer(&vertices[0], vertices.size()) {  

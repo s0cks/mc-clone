@@ -73,3 +73,7 @@ void glfwMakeContextCurrent(GLFWwindow* window) {
 void glfwGetWindowSize(GLFWwindow* window, int* width, int* height) {
   __ glfwGetWindowSize(window, width, height);
 }
+
+void glfwSetInputMode(GLFWwindow* window, int mode, int value) {
+  __ glfwSetInputMode(window, mode, value);
+}
