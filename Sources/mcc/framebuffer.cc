@@ -12,16 +12,20 @@ namespace mcc {
     { .pos = glm::vec2(1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f) },
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
-  static VertexArrayObject vao_(kInvalidVertexArrayObject);
-  static ShaderRef shader_;
+  static VertexArrayObject kFrameBufferVao(kInvalidVertexArrayObject);
+  static ShaderRef kFrameBufferShader;
 
-  FrameBuffer::FrameBuffer(const uint64_t width, 
+  FrameBuffer::FrameBuffer(VertexArrayObject vao,
+                           ShaderRef shader,
+                           const uint64_t width, 
                            const uint64_t height):
+    vao_(vao),
+    fbo_(),
+    vbo_(kFrameBufferVertices),
     width_(width),
     height_(height),
-    fbo_(),
     cbuff_(),
-    vbo_(kFrameBufferVertices) {
+    shader_(shader) {
   }
 
   void FrameBuffer::OnPreInit() {
@@ -29,8 +33,8 @@ namespace mcc {
   }
 
   void FrameBuffer::OnInit() {
-    shader_ = GetShader("framebuffer");
-    vao_ = VertexArrayObject();
+    kFrameBufferShader = GetShader("framebuffer");
+    kFrameBufferVao = VertexArrayObject();
   }
 
   void FrameBuffer::OnPostInit() {
@@ -42,13 +46,9 @@ namespace mcc {
     Engine::OnPostInit(&OnPostInit);
   }
 
-  VertexArrayObject FrameBuffer::GetVao() {
-    return vao_;
-  }
-
   FrameBuffer* FrameBuffer::New(const uint64_t width, const uint64_t height) {
-    VertexArrayObjectScope vao(vao_);
-    return new FrameBuffer(width, height);
+    VertexArrayObjectScope vao_scope(kFrameBufferVao);
+    return new FrameBuffer(kFrameBufferVao, kFrameBufferShader, width, height);
   }
 
   void FrameBuffer::Draw() {

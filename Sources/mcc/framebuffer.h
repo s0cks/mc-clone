@@ -2,11 +2,11 @@
 #define MCC_FRAMEBUFFER_H
 
 #include "mcc/gfx.h"
+#include "mcc/pipeline.h"
+#include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
 
 namespace mcc {
-  // typedef FrameBufferTexture<GL_RGBA16F, GL_RGBA, GL_FLOAT> ColorBufferTexture;
-
   class FrameBufferObject { //TODO: extend BufferObject somehow
   private:
     BufferObjectId id_;
@@ -176,7 +176,6 @@ namespace mcc {
       BufferObject::operator=(rhs);
     }
   };
-
   class DepthBuffer : public gfx::Resource {
   private:
     BufferObjectId id_;
@@ -214,13 +213,15 @@ namespace mcc {
 
   class FrameBuffer {
   private:
+    VertexArrayObject vao_;
+    FrameBufferObject fbo_;
+    FrameBufferVertexBuffer vbo_;
+    TextureRef cbuff_;
+    ShaderRef shader_;
     uint64_t width_;
     uint64_t height_;
-    FrameBufferObject fbo_;
-    TextureRef cbuff_;
-    FrameBufferVertexBuffer vbo_;
 
-    FrameBuffer(const uint64_t width, const uint64_t height);
+    FrameBuffer(VertexArrayObject vao, ShaderRef shader, uint64_t width, const uint64_t height);
   public:
     FrameBuffer() = delete;
     FrameBuffer(const FrameBuffer& rhs):
@@ -240,8 +241,16 @@ namespace mcc {
       return height_;
     }
 
+    VertexArrayObject vao() const {
+      return vao_;
+    }
+
     FrameBufferObject fbo() const {
       return fbo_;
+    }
+    
+    FrameBufferVertexBuffer vbo() const {
+      return vbo_;
     }
 
     TextureRef tex() const {
@@ -283,7 +292,6 @@ namespace mcc {
   public:
     static void Init();
     static FrameBuffer* New(const uint64_t width, const uint64_t size);
-    static VertexArrayObject GetVao();
   };
 }
 
