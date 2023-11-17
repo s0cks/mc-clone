@@ -85,6 +85,10 @@ add_library(${PROJECT_NAME}
   mcc/texture/image.h mcc/texture/image.cc
   mcc/texture/image_png.h mcc/texture/image_png.cc
   mcc/texture/image_jpeg.h mcc/texture/image_jpeg.cc
+  mcc/texture/texture_wrap.h
+  mcc/texture/texture_target.h
+  mcc/texture/texture_filter.h
+  mcc/texture/texture_alignment.h
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
@@ -112,6 +116,9 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
   mcc/state_machine.h
+  mcc/bitset.h
+  mcc/particle/particle.h mcc/particle/particle.cc
+  mcc/particle/particles.h mcc/particle/particles.cc
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h
   mcc/renderer/stage.h mcc/renderer/stage.cc

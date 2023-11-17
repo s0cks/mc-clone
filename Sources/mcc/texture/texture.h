@@ -5,62 +5,17 @@
 #include "mcc/platform.h"
 #include "mcc/resource.h"
 
+#include "mcc/texture/texture_wrap.h"
+#include "mcc/texture/texture_target.h"
+#include "mcc/texture/texture_filter.h"
+#include "mcc/texture/texture_alignment.h"
+
 namespace mcc::texture {
   typedef glm::u64vec2 TextureSize;
 
   typedef GLuint TextureId;
 
   static constexpr const TextureId kInvalidTextureId = 0;
-
-  enum TextureTarget : GLenum {
-    k1D = GL_TEXTURE_1D,
-    k2D = GL_TEXTURE_2D,
-    k3D = GL_TEXTURE_3D,
-    kCubeMap = GL_TEXTURE_CUBE_MAP,
-
-    kDefaultTarget = k2D,
-  };
-
-  static inline std::ostream& operator<<(std::ostream& stream, const TextureTarget& rhs) {
-    switch(rhs) {
-      case k1D: return stream << "1D";
-      case k2D: return stream << "2D";
-      case k3D: return stream << "3D";
-      case kCubeMap: return stream << "CubeMap";
-      default:
-        return stream << "Unknown";
-    }
-  }
-
-
-  enum TextureFilterComponent : GLenum {
-    kNearestMipmapNearest = GL_NEAREST_MIPMAP_NEAREST,
-    kNearestMipmapLinear = GL_NEAREST_MIPMAP_LINEAR,
-    kLinearMipmapNearest = GL_LINEAR_MIPMAP_NEAREST,
-    kLinearMipmapLinear = GL_LINEAR_MIPMAP_LINEAR,
-    kLinear = GL_LINEAR,
-    kNearest = GL_NEAREST,
-
-    kDefaultMinFilter = kLinearMipmapLinear,
-    kDefaultMagFilter = kLinear,
-  };
-
-  enum TextureAlignment : GLint {
-    kNone = 0,
-    k1 = 1,
-    k2 = 2,
-    k4 = 4,
-    k8 = 8,
-
-    kByteAlignment = k1,
-    kRowAlignment = k2,
-    kWordAlignment = k4,
-    kDoubleWordAlignment = k8,
-
-
-    kDefaultPackAlignment = k4,
-    kDefaultUnpackAlignment = k4,
-  };
 
   enum CubeMapFace {
     kRightFace  = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -103,98 +58,6 @@ namespace mcc::texture {
       default: return stream << "Unknown";
     }
   }
-
-  struct PixelStoreAlignment {
-    TextureAlignment pack;
-    TextureAlignment unpack;
-
-    PixelStoreAlignment(const TextureAlignment pack_alignment,
-                        const TextureAlignment unpack_alignment):
-                        pack(pack_alignment),
-                        unpack(unpack_alignment) {
-    }
-    PixelStoreAlignment():
-      PixelStoreAlignment(kDefaultPackAlignment, kDefaultUnpackAlignment) {
-    }
-    PixelStoreAlignment(const PixelStoreAlignment& rhs) = default;
-    ~PixelStoreAlignment() = default;
-
-    PixelStoreAlignment& operator=(const PixelStoreAlignment& rhs) = default;
-
-    void Apply() {
-      glPixelStorei(GL_PACK_ALIGNMENT, pack);
-      CHECK_GL(FATAL);
-      glPixelStorei(GL_UNPACK_ALIGNMENT, unpack);
-      CHECK_GL(FATAL);
-    }
-  };
-
-  struct TextureFilter {
-    TextureFilterComponent min;
-    TextureFilterComponent mag;
-
-    TextureFilter(const TextureFilterComponent min_filter,
-                  const TextureFilterComponent mag_filter):
-                  min(min_filter),
-                  mag(mag_filter) {
-    }
-    TextureFilter():
-      TextureFilter(kDefaultMinFilter, kDefaultMagFilter) {
-    }
-    explicit TextureFilter(const TextureFilterComponent component):
-      TextureFilter(component, component) {
-    }
-    TextureFilter(const TextureFilter& rhs) = default;
-    ~TextureFilter() = default;
-    TextureFilter& operator=(const TextureFilter& rhs) = default;
-
-    void ApplyTo(const TextureTarget target) {
-      glTexParameteri(target, GL_TEXTURE_MIN_FILTER, min);
-      CHECK_GL(FATAL);
-      glTexParameteri(target, GL_TEXTURE_MAG_FILTER, mag);
-      CHECK_GL(FATAL);
-    }
-  };
-
-  enum TextureWrapMode : GLenum {
-    kRepeat = GL_REPEAT,
-    kClampToEdge = GL_CLAMP_TO_EDGE,
-    kClampToBorder = GL_CLAMP_TO_BORDER,
-
-    kDefaultWrapMode = kClampToEdge,
-  };
-
-  struct TextureWrap {
-    TextureWrapMode r;
-    TextureWrapMode s;
-    TextureWrapMode t;
-
-    TextureWrap(const TextureWrapMode R,
-                const TextureWrapMode S,
-                const TextureWrapMode T):
-      r(R),
-      s(S),
-      t(T) {
-    }
-    TextureWrap(const TextureWrapMode mode):
-      TextureWrap(mode, mode, mode) {
-    }
-    TextureWrap():
-      TextureWrap(kDefaultWrapMode) {
-    }
-    TextureWrap(const TextureWrap& rhs) = default;
-    ~TextureWrap() = default;
-    TextureWrap& operator=(const TextureWrap& rhs) = default;
-
-    void ApplyTo(const TextureTarget target) {
-      glTexParameteri(target, GL_TEXTURE_WRAP_R, r);
-      CHECK_GL(FATAL);
-      glTexParameteri(target, GL_TEXTURE_WRAP_S, s);
-      CHECK_GL(FATAL);
-      glTexParameteri(target, GL_TEXTURE_WRAP_T, t);
-      CHECK_GL(FATAL);
-    }
-  };
 
   class Texture : public gfx::Resource {
   protected:

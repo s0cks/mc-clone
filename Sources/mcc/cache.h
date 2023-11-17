@@ -14,7 +14,7 @@ namespace mcc {
   };
 
   static constexpr const uint64_t kDefaultNumberOfLruCacheBuckets = 10;
-  template<typename K, typename V, typename Hasher = DefaultHasher>
+  template<typename K, typename V, typename Hasher>
   class Cache {
   protected:
     Cache() = default;
