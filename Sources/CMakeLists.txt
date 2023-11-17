@@ -85,6 +85,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/image_png.h mcc/texture/image_png.cc
   mcc/texture/image_jpeg.h mcc/texture/image_jpeg.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+  mcc/texture/texture_json.h mcc/texture/texture_json.cc
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
