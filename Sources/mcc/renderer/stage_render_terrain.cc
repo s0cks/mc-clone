@@ -12,11 +12,8 @@ namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
     Renderer::GetCameraUniformBuffer()->UpdateView((*camera)->GetViewMatrix());
 
     VLOG(3) << "rendering terrain....";
-    glDisable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
+    InvertedCullFaceScope cull_face;
     terrain::Terrain::Render();
     Renderer::IncrementVertexCounter(terrain::Terrain::GetChunk()->vbo().length());
-    glEnable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
   }
 }

@@ -3,21 +3,55 @@
 
 #include "mcc/gfx.h"
 #include "mcc/pipeline.h"
+#include "mcc/renderbuffer.h"
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
 
 namespace mcc {
+  enum FrameBufferTarget {
+    kFrameBuffer = GL_FRAMEBUFFER,
+
+    kDefaultFrameBufferTarget = kFrameBuffer,
+  };
+
+  enum FrameBufferTextureAttachment : GLenum {
+    kColorAttachment0 = GL_COLOR_ATTACHMENT0,
+  };
+
+  enum FrameBufferDepthAttachment : GLenum {
+    kDepthAttachment = GL_DEPTH_ATTACHMENT,
+    kDepthStencilAttachment = GL_DEPTH_STENCIL_ATTACHMENT,
+  };
+
   class FrameBufferObject { //TODO: extend BufferObject somehow
   private:
     BufferObjectId id_;
+
+    inline void Initialize(const bool generate = true,
+                           const bool bind = true,
+                           const bool unbind = true) {
+      if(!generate)
+        return;
+      glGenFramebuffers(1, &id_);
+      CHECK_GL(FATAL);
+      if(!bind)
+        return;
+      glBindFramebuffer(GL_FRAMEBUFFER, id_);
+      CHECK_GL(FATAL);
+      if(!unbind)
+        return;
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      CHECK_GL(FATAL);
+    }
   public:
     explicit FrameBufferObject(const BufferObjectId id):
       id_(id) {
     }
-    FrameBufferObject():
+    FrameBufferObject(const bool generate = true,
+                      const bool bind = true,
+                      const bool unbind = true):
       id_(kInvalidBufferObject) {
-      glGenFramebuffers(1, &id_);
-      CHECK_GL(FATAL);
+      Initialize(generate, bind, unbind);
     }
     FrameBufferObject(const FrameBufferObject& rhs):
       id_(rhs.id_) {  
@@ -36,7 +70,21 @@ namespace mcc {
 
     void Delete() {
       glDeleteFramebuffers(1, &id_);
+      CHECK_GL(FATAL);
     }
+
+    void Attach(const FrameBufferTextureAttachment attachment, TextureRef texture, const int level = 0) {
+      glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture->target(), texture->id(), level);
+      CHECK_GL(FATAL);
+    }
+
+#define DEFINE_ATTACH_DEPTH_BUFFER(Name, _)                                                           \
+    void Attach(const Name##Buffer& value) {                                                          \
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, value.target(), value.id());     \
+      CHECK_GL(FATAL);                                                                                \
+    }
+    FOR_EACH_DEPTH_BUFFER_FORMAT(DEFINE_ATTACH_DEPTH_BUFFER)
+#undef DEFINE_ATTACH_DEPTH_BUFFER
 
     template<const google::LogSeverity Severity>
     void CheckStatus() {
@@ -78,65 +126,6 @@ namespace mcc {
   };
   DEFINE_RESOURCE_SCOPE(FrameBufferObject);
 
-  class RenderBufferObject {
-  private:
-    BufferObjectId id_;
-  public:
-    RenderBufferObject(const uint64_t width, const uint64_t height):
-      id_(kInvalidBufferObject) {
-      glGenRenderbuffers(1, &id_);
-      CHECK_GL(FATAL);
-      glBindRenderbuffer(GL_RENDERBUFFER, id_);
-      CHECK_GL(FATAL);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-      CHECK_GL(FATAL);
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id_);
-      CHECK_GL(FATAL);
-    }
-    explicit RenderBufferObject(const BufferObjectId id = kInvalidBufferObject):
-      id_(id) {
-    }
-    RenderBufferObject(const RenderBufferObject& rhs):
-      id_(rhs.id_) {
-    }
-    virtual ~RenderBufferObject() = default;
-
-    BufferObjectId id() const {
-      return id_;
-    }
-
-    void operator=(const RenderBufferObject& rhs) {
-      id_ = rhs.id_;
-    }
-
-    void operator=(const BufferObjectId& rhs) {
-      id_ = rhs; //TODO: creates a memory leak
-    }
-
-    bool operator==(const RenderBufferObject& rhs) const {
-      return id_ == rhs.id_;
-    }
-
-    bool operator==(const BufferObjectId& rhs) const {
-      return id_ == rhs;
-    }
-
-    bool operator!=(const RenderBufferObject& rhs) const {
-      return id_ != rhs.id_;
-    }
-
-    bool operator!=(const BufferObjectId& rhs) const {
-      return id_ != rhs;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const RenderBufferObject& rhs) {
-      stream << "RenderBufferObject(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
-    }
-  };
-
   struct FrameBufferVertex {
     glm::vec2 pos;
     glm::vec2 uv;
@@ -145,20 +134,24 @@ namespace mcc {
   typedef std::vector<FrameBufferVertex> FrameBufferVertexList;
   class FrameBufferVertexBuffer : public VertexBufferTemplate<FrameBufferVertex, kStaticUsage> {
   public:
+    enum Attributes {
+      kPositionIndex = 0,
+      kPositionOffset = offsetof(FrameBufferVertex, pos),
+
+      kUvIndex = 1,
+      kUvOffset = offsetof(FrameBufferVertex, uv),
+    };
+
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kPositionIndex, sizeof(FrameBufferVertex), Position);
+    DEFINE_VEC2F_VERTEX_BUFFER_ATTR(kUvIndex, sizeof(FrameBufferVertex), Uv);
+  public:
     explicit FrameBufferVertexBuffer(const BufferObjectId id = kInvalidBufferObject):
       VertexBufferTemplate(id) {  
     }
     explicit FrameBufferVertexBuffer(const FrameBufferVertex* vertices, const uint64_t num_vertices):
       VertexBufferTemplate(vertices, num_vertices) {
-      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) 0);
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(0);
-      CHECK_GL(FATAL);
-
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) offsetof(FrameBufferVertex, uv));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(1);
-      CHECK_GL(FATAL);
+      PositionAttribute::Bind(kPositionOffset);
+      UvAttribute::Bind(kUvOffset);
     }
     explicit FrameBufferVertexBuffer(const VertexList& vertices):
       FrameBufferVertexBuffer(&vertices[0], vertices.size()) {  
@@ -176,111 +169,59 @@ namespace mcc {
       BufferObject::operator=(rhs);
     }
   };
-  class DepthBuffer : public gfx::Resource {
-  private:
-    BufferObjectId id_;
-  public:
-    DepthBuffer(const uint64_t width, const uint64_t height):
-      Resource() {
-      glGenRenderbuffers(1, &id_);
-      CHECK_GL(FATAL);
-      glBindRenderbuffer(GL_RENDERBUFFER, id_);
-      CHECK_GL(FATAL);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-      CHECK_GL(FATAL);
-    }
-    ~DepthBuffer() override = default;
-
-    BufferObjectId id() const {
-      return id_;
-    }
-
-    void Bind() const override {
-      glBindRenderbuffer(GL_RENDERBUFFER, id_);
-      CHECK_GL(FATAL);
-    }
-
-    void Unbind() const override {
-      glBindRenderbuffer(GL_RENDERBUFFER, 0);
-      CHECK_GL(FATAL);
-    }
-
-    void Delete() override {
-      glDeleteRenderbuffers(1, &id_);
-      CHECK_GL(FATAL);
-    }
-  };
+  DEFINE_RESOURCE_SCOPE(FrameBufferVertexBuffer);
 
   class FrameBuffer {
   private:
     VertexArrayObject vao_;
-    FrameBufferObject fbo_;
     FrameBufferVertexBuffer vbo_;
+    FrameBufferObject fbo_;
     TextureRef cbuff_;
+    DepthBuffer dbuff_;
     ShaderRef shader_;
-    uint64_t width_;
-    uint64_t height_;
+    Dimension size_;
 
-    FrameBuffer(VertexArrayObject vao, ShaderRef shader, uint64_t width, const uint64_t height);
+    FrameBuffer(VertexArrayObject vao,
+                ShaderRef shader,
+                const Dimension& size);
   public:
     FrameBuffer() = delete;
-    FrameBuffer(const FrameBuffer& rhs):
-      width_(rhs.width_),
-      height_(rhs.height_),
-      fbo_(rhs.fbo_),
-      cbuff_(rhs.cbuff_),
-      vbo_(rhs.vbo_) {
-    }
+    FrameBuffer(const FrameBuffer& rhs) = delete;
     virtual ~FrameBuffer() = default;
 
-    uint64_t width() const {
-      return width_;
-    }
-
-    uint64_t height() const {
-      return height_;
+    Dimension size() const {
+      return size_;
     }
 
     VertexArrayObject vao() const {
       return vao_;
-    }
-
-    FrameBufferObject fbo() const {
-      return fbo_;
     }
     
     FrameBufferVertexBuffer vbo() const {
       return vbo_;
     }
 
+    FrameBufferObject fbo() const {
+      return fbo_;
+    }
+
     TextureRef tex() const {
       return cbuff_;
     }
 
-    void Bind() {
-      fbo_.Bind();
-    }
-
-    void Unbind() {
-      fbo_.Unbind();
-      cbuff_->Unbind();
-      vbo_.Unbind();
+    void Bind() const {
+      return fbo_.Bind();
     }
 
     void Draw();
 
-    void operator=(const FrameBuffer& rhs) {
-      width_ = rhs.width_;
-      height_ = rhs.height_;
-      fbo_ = rhs.fbo_;
-      cbuff_ = rhs.cbuff_;
+    void Unbind() {
+      return fbo_.Unbind();
     }
-    
+
     friend std::ostream& operator<<(std::ostream& stream, const FrameBuffer& rhs) {
       stream << "FrameBuffer(";
-      stream << "width=" << rhs.width_ << ", ";
-      stream << "height=" << rhs.height_ << ", ";
-      stream << "fbo=" << rhs.fbo_ << ", ";
+      stream << "size=" << glm::to_string(rhs.size_) << ", ";
       stream << "tex=" << rhs.cbuff_;
       stream << ")";
       return stream;
@@ -291,7 +232,12 @@ namespace mcc {
     static void OnPostInit();
   public:
     static void Init();
-    static FrameBuffer* New(const uint64_t width, const uint64_t size);
+    static FrameBuffer* New(const Dimension& size);
+
+    static inline FrameBuffer*
+    New(const uint64_t width, const uint64_t height) {
+      return New(Dimension(width, height));
+    }
   };
 }
 

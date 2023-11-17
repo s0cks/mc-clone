@@ -49,6 +49,11 @@ namespace mcc {
         SetType(t);
         SetValue(v);
       }
+      explicit Tag(const Type t):
+        data() {
+        Clear();
+        SetType(t);
+      }
       Tag(const leveldb::Slice& slice):
         data() {
         Clear();

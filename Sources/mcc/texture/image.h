@@ -6,8 +6,6 @@
 #include "mcc/buffer.h"
 
 namespace mcc {
-  typedef glm::u64vec2 Dimension;
-
   struct Image {
     enum Type : GLenum {
       kRGB = GL_RGB,

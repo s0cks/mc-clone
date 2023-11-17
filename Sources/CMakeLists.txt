@@ -57,6 +57,7 @@ add_library(${PROJECT_NAME}
   mcc/physics/physics.h mcc/physics/physics.cc
   mcc/material.h mcc/material.cc
   mcc/gfx.h
+  mcc/renderbuffer.h
   mcc/rx.h
   mcc/common.h
   mcc/flags.h mcc/flags.cc

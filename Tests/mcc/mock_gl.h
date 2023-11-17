@@ -90,6 +90,8 @@ namespace mcc {
     MOCK_METHOD2(glDeleteRenderbuffers, void(GLsizei n, const GLuint* renderbuffers));
     MOCK_METHOD2(glGetIntegerv, void(GLenum pname, GLint *params));
     MOCK_METHOD4(glRenderbufferStorage, void(GLenum target, GLenum internalformat, GLsizei width, GLsizei height));
+    MOCK_METHOD1(glCheckFramebufferStatus, GLenum(GLenum target));
+    MOCK_METHOD4(glFramebufferRenderbuffer, void(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer));
   };
 }
 

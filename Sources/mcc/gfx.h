@@ -103,9 +103,11 @@ namespace mcc {
       kGreater = GL_GREATER,
       kNotEqual = GL_NOTEQUAL,
       kGequal = GL_GEQUAL,
-      kAlways = GL_ALWAYS,
+      kAlways = GL_ALWAYS
     };
     typedef GlFunction DepthFunction;
+
+    static constexpr const DepthFunction kDefaultDepthFunction = kLess;
 
     static inline DepthFunction GetCurrentDepthFunction() {
       GLint value;
@@ -120,7 +122,7 @@ namespace mcc {
       DepthFunction previous_;
       bool restore_;
     public:
-      DepthTestCapabilityScope(const DepthFunction func, const bool restore = true):
+      DepthTestCapabilityScope(const DepthFunction func = kDefaultDepthFunction, const bool restore = true):
         CapabilityScope<GL_DEPTH_TEST, Inverted>(),
         previous_(GetCurrentDepthFunction()),
         restore_(restore) {
@@ -698,6 +700,8 @@ namespace mcc {
       length_ = rhs.length_;
     }
   };
+
+  typedef glm::u64vec2 Dimension;
 }
 
 #ifdef M_PI

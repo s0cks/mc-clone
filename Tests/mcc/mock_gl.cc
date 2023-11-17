@@ -301,3 +301,11 @@ void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, 
 void glGetIntegerv(GLenum pname, GLint *params) {
   __ glGetIntegerv(pname, params);
 }
+
+void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer) {
+  __ glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+}
+
+GLenum glCheckFramebufferStatus(GLenum target) {
+  __ glCheckFramebufferStatus(target);
+}

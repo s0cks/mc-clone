@@ -15,17 +15,31 @@ namespace mcc {
   static VertexArrayObject kFrameBufferVao(kInvalidVertexArrayObject);
   static ShaderRef kFrameBufferShader;
 
+  static inline TextureRef
+  CreateColorBuffer(const Dimension& size) {
+    const auto alignment = texture::PixelStoreAlignment{};
+    const auto filter = texture::TextureFilter(texture::kLinear);
+    const auto texture = new texture::Texture(texture::k2D, true, true, false, alignment, filter);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, size[0], size[1], 0, GL_RGBA, GL_FLOAT, NULL);
+    CHECK_GL(FATAL);
+    const auto ptr = res::Pointer(res::Tag(res::kTextureType), (uword) texture);
+    return TextureRef(ptr);
+  }
+
   FrameBuffer::FrameBuffer(VertexArrayObject vao,
                            ShaderRef shader,
-                           const uint64_t width, 
-                           const uint64_t height):
+                           const Dimension& size):
     vao_(vao),
-    fbo_(),
     vbo_(kFrameBufferVertices),
-    width_(width),
-    height_(height),
-    cbuff_(),
-    shader_(shader) {
+    fbo_(true, true, false),
+    cbuff_(CreateColorBuffer(size)),
+    dbuff_(size),
+    shader_(kFrameBufferShader),
+    size_(size) {
+    fbo_.Attach(kColorAttachment0, cbuff_);
+    fbo_.Attach(dbuff_);
+    fbo_.CheckStatus<google::FATAL>();
+    fbo_.Unbind();
   }
 
   void FrameBuffer::OnPreInit() {
@@ -46,35 +60,19 @@ namespace mcc {
     Engine::OnPostInit(&OnPostInit);
   }
 
-  FrameBuffer* FrameBuffer::New(const uint64_t width, const uint64_t height) {
+  FrameBuffer* FrameBuffer::New(const Dimension& size) {
     VertexArrayObjectScope vao_scope(kFrameBufferVao);
-    return new FrameBuffer(kFrameBufferVao, kFrameBufferShader, width, height);
+    return new FrameBuffer(kFrameBufferVao, kFrameBufferShader, size);
   }
 
   void FrameBuffer::Draw() {
+    TextureBindScope<0> tex(cbuff_);
+    InvertedDepthTestScope depth_test;
     shader_->ApplyShader();
-    shader_->SetInt("tex0", 0);
-    fbo_.Unbind();
-    shader_->ApplyShader();
+    shader_->SetInt("tex", 0);
     VertexArrayObjectScope vao(vao_);
-    vbo_.Bind();
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) 0);
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(0);
-    CHECK_GL(FATAL);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FrameBufferVertex), (const GLvoid*) offsetof(FrameBufferVertex, uv));
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(1);
-    CHECK_GL(FATAL);
-    glDisable(GL_DEPTH_TEST);
-    CHECK_GL(FATAL);
-    cbuff_->Bind(0);
+    FrameBufferVertexBufferScope vbo(vbo_);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
-    CHECK_GL(FATAL);
-    vbo_.Unbind();
-    cbuff_->Unbind();
-    glEnable(GL_DEPTH_TEST);
     CHECK_GL(FATAL);
   }
 }
