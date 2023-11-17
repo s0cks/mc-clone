@@ -5,7 +5,10 @@
 #include "mcc/gfx.h"
 
 #include "mcc/shader/shader.h"
+#include "mcc/shader/shader_pipeline.h"
 #include "mcc/texture/texture.h"
+
+#include "mcc/pipeline.h"
 
 namespace mcc {
   namespace skybox {
@@ -75,7 +78,6 @@ namespace mcc {
       Skybox() = default;
       Skybox(const Skybox& rhs) = default;
       ~Skybox() = default;
-      void Render();
       Skybox& operator=(const Skybox& rhs) = default;
     private:
       explicit Skybox(TextureRef texture, ShaderRef shader);
@@ -88,6 +90,36 @@ namespace mcc {
       static inline Skybox*
       New(TextureRef texture) {
         return New(texture, GetShader("skybox"));
+      }
+    };
+
+    class RenderSkyboxPipeline : public Pipeline {
+    private:
+      Skybox* skybox_;
+    public:
+      explicit RenderSkyboxPipeline(Skybox* skybox):
+        Pipeline(),
+        skybox_(skybox) {
+        AddChild(new ApplyShaderPipeline(skybox->shader, [](const ShaderRef& shader) {
+          shader->ApplyShader();
+          shader->SetUniformBlock("Camera", 0);
+          shader->SetInt("tex", 0);
+        }));
+        AddChild(new ApplyPipeline([skybox]() {
+          VertexArrayObjectScope scope(skybox->vao);
+          glDrawArrays(GL_TRIANGLES, 0, skybox->vbo.length());
+          CHECK_GL(FATAL);
+        }));
+      }
+      ~RenderSkyboxPipeline() override = default;
+
+      void Render() override {
+        const auto& texture = skybox_->texture;
+        const auto& vao = skybox_->vao;
+        InvertedCullFaceScope cull_face;
+        DepthTestScope depth_test(gfx::kLequal);
+        TextureBindScope<0> tex(texture);
+        RenderChildren();
       }
     };
   }

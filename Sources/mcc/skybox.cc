@@ -77,15 +77,14 @@ namespace mcc::skybox {
     return new Skybox(texture, shader);
   }
 
-  void Skybox::Render() {
-    InvertedCullFaceScope cull_face;
-    DepthTestScope depth_test(gfx::kLequal);
-    TextureBindScope<0> tex(texture);
-    shader->ApplyShader();
-    shader->SetUniformBlock("Camera", 0);
-    shader->SetInt("tex", 0);
-    VertexArrayObjectScope scope(vao_);
-    glDrawArrays(GL_TRIANGLES, 0, vbo.length());
-    CHECK_GL(FATAL);
-  }
+//Render
+// InvertedCullFaceScope cull_face;
+// DepthTestScope depth_test(gfx::kLequal);
+// TextureBindScope<0> tex(texture);
+// shader->ApplyShader();
+// shader->SetUniformBlock("Camera", 0);
+// shader->SetInt("tex", 0);
+// VertexArrayObjectScope scope(vao_);
+// glDrawArrays(GL_TRIANGLES, 0, vbo.length());
+// CHECK_GL(FATAL);
 }

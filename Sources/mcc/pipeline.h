@@ -14,6 +14,11 @@ namespace mcc {
       parent_(nullptr),
       children_() {
     }
+
+    void RenderChildren() {
+      for(const auto& child : children_)
+        child->Render();
+    }
   public:
     virtual ~Pipeline() {
       for(const auto& child : children_)
@@ -54,6 +59,22 @@ namespace mcc {
 
     void SetChildAt(const uint64_t idx, Pipeline* pipeline) {
       children_[idx] = pipeline;
+    }
+  };
+
+
+  class ApplyPipeline : public Pipeline {
+  protected:
+    std::function<void()> apply_;
+  public:
+    ApplyPipeline(std::function<void()> apply):
+      Pipeline(),
+      apply_(apply) {
+    }
+    ~ApplyPipeline() override = default;
+
+    void Render() override {
+      apply_();
     }
   };
 }
