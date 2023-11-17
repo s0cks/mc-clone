@@ -4,7 +4,7 @@ namespace mcc {
   TEST_F(MaterialTest, Test_ParsePbrMaterial) {
     const std::string root = FLAGS_resources + "/materials/stones/broken_concrete_1";
     json::Document doc;
-    ASSERT_TRUE(ParseJson(root + "/material.json", doc));
+    ASSERT_TRUE(json::ParseJson(root + "/material.json", doc));
     material::JsonMaterialLoader loader(root, doc);
     const auto material = loader.LoadMaterial();
     ASSERT_NE(material, nullptr);

@@ -1,0 +1,4 @@
+#ifndef MCC_TEXTURE_JSON_H
+#define MCC_TEXTURE_JSON_H
+
+#endif //MCC_TEXTURE_JSON_H

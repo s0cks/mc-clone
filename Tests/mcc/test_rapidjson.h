@@ -2,7 +2,7 @@
 #define MCC_TEST_RAPIDJSON_H
 
 #include <gtest/gtest.h>
-#include <rapidjson/rapidjson.h>
+#include "mcc/json.h"
 
 namespace mcc {
   class RapidJsonTest : public ::testing::Test {

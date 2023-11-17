@@ -96,7 +96,7 @@ namespace mcc {
       explicit JsonFileLoader(const Tag& tag,
                               const std::string& filename):
         FileLoader<R>(tag, filename) {
-        if(!ParseJson(FileLoader<R>::file_, doc_)) {
+        if(!json::ParseJson(FileLoader<R>::file_, doc_)) {
           DLOG(ERROR) << "failed to parse json document from: " << FileLoader<R>::filename_;
           FileLoader<R>::Close();
         }

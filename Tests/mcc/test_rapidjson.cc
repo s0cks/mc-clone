@@ -1,13 +1,9 @@
 #include <glog/logging.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/document.h>
-#include <rapidjson/stringbuffer.h>
 
+#include "mcc/flags.h"
 #include "mcc/test_rapidjson.h"
 
 namespace mcc {
-  namespace json=rapidjson;
-
   static constexpr const char* kMessage = "Hello World";
   static constexpr const char* kJson = "{\"message\":\"Hello World\"}";
 
@@ -32,5 +28,13 @@ namespace mcc {
     doc.ParseStream(ss);
     ASSERT_TRUE(doc["message"].IsString());
     ASSERT_TRUE(strncmp(doc["message"].GetString(), kMessage, strlen(kMessage)) == 0);
+  }
+
+  TEST_F(RapidJsonTest, Test_SchemaValidation_WillFail) {
+    ASSERT_FALSE(json::Validate(FLAGS_resources + "/test-invalid.json", FLAGS_resources + "/test.schema.json"));
+  }
+
+  TEST_F(RapidJsonTest, Test_SchemaValidation_WillPass) {
+    ASSERT_TRUE(json::Validate(FLAGS_resources + "/test-valid.json", FLAGS_resources + "/test.schema.json"));
   }
 }

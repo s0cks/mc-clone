@@ -84,7 +84,7 @@ namespace mcc {
       static inline Material*
       Load(const std::string& root) {
         json::Document doc;
-        if(!ParseJson(root + "/material.json", doc))
+        if(!json::ParseJson(root + "/material.json", doc))
           return nullptr;
         material::JsonMaterialLoader loader(root, doc);
         return loader.LoadMaterial();
