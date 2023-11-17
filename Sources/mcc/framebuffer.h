@@ -181,9 +181,7 @@ namespace mcc {
     ShaderRef shader_;
     Dimension size_;
 
-    FrameBuffer(VertexArrayObject vao,
-                ShaderRef shader,
-                const Dimension& size);
+    FrameBuffer(const Dimension& size);
   public:
     FrameBuffer() = delete;
     FrameBuffer(const FrameBuffer& rhs) = delete;

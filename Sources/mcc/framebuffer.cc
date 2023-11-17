@@ -26,10 +26,8 @@ namespace mcc {
     return TextureRef(ptr);
   }
 
-  FrameBuffer::FrameBuffer(VertexArrayObject vao,
-                           ShaderRef shader,
-                           const Dimension& size):
-    vao_(vao),
+  FrameBuffer::FrameBuffer(const Dimension& size):
+    vao_(kFrameBufferVao),
     vbo_(kFrameBufferVertices),
     fbo_(true, true, false),
     cbuff_(CreateColorBuffer(size)),
@@ -62,16 +60,20 @@ namespace mcc {
 
   FrameBuffer* FrameBuffer::New(const Dimension& size) {
     VertexArrayObjectScope vao_scope(kFrameBufferVao);
-    return new FrameBuffer(kFrameBufferVao, kFrameBufferShader, size);
+    return new FrameBuffer(size);
   }
 
   void FrameBuffer::Draw() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    CHECK_GL(FATAL);
     TextureBindScope<0> tex(cbuff_);
     InvertedDepthTestScope depth_test;
     shader_->ApplyShader();
     shader_->SetInt("tex", 0);
+    shader_->SetBool("hdr", true);
+    shader_->SetFloat("gamma", 2.2f);
+    shader_->SetFloat("exposure", 1.0f);
     VertexArrayObjectScope vao(vao_);
-    FrameBufferVertexBufferScope vbo(vbo_);
     glDrawArrays(GL_TRIANGLES, 0, vbo_.length());
     CHECK_GL(FATAL);
   }

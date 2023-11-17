@@ -93,6 +93,10 @@ namespace mcc::shader {
       CHECK_GL(FATAL);
     }
 
+    virtual inline void SetBool(const std::string& name, const bool value = true) const {
+      return SetInt(name, value ? 1 : 0);
+    }
+
     virtual void SetUniformBlock(const std::string& name, const GLuint binding) const {
       glUniformBlockBinding(id_, GetUniformBlockIndex(name), binding);
       CHECK_GL(FATAL);
