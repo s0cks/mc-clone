@@ -39,8 +39,6 @@ namespace mcc::shader {
   };
 
   class Shader {
-  public:
-    typedef Cache<std::string, Shader, DefaultHasher> Cache;
   protected:
     ShaderId id_;
   public:
@@ -164,13 +162,8 @@ namespace mcc {
 
   using resource::ShaderRef;
 
-  ShaderRef GetShader(const resource::Token& name);
-
-  static inline ShaderRef
-  GetShader(const std::string& name) {
-    const auto token = resource::Registry::Get(resource::NewShaderTag(name));
-    return GetShader(token);
-  }
+  ShaderRef GetShader(const res::Token& token);
+  ShaderRef GetShader(const std::string& name);
 }
 
 #endif //MCC_SHADER_H

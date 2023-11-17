@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include "mcc/flags.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/compiler.h"
@@ -5,6 +7,8 @@
 
 namespace mcc {
   using namespace shader;
+
+  static std::unordered_map<std::string, Shader*> all_shaders_;
 
   static inline std::string
   GetShaderFilename(const std::string& name, const std::string& extension) {
@@ -26,7 +30,24 @@ namespace mcc {
     return GetShaderFilename(name, kFragmentShaderExtension);
   }
 
-  ShaderRef GetShader(const resource::Token& token) {
+  static inline ShaderRef
+  CreateReferenceTo(const Shader* value, const res::Tag& tag = res::Tag::Shader()) {
+    const auto ptr = resource::Pointer(tag, (uword) value);
+    return ShaderRef(ptr);
+  }
+
+  ShaderRef GetShader(const std::string& name) {
+    const auto& pos = all_shaders_.find(name);
+    if(pos != all_shaders_.end())
+      return CreateReferenceTo(pos->second, res::Tag::Shader(name));
+    return GetShader(res::Registry::Get(res::Tag::Shader(name)));
+  }
+
+  ShaderRef GetShader(const res::Token& token) {
+    const auto pos = all_shaders_.find(token.tag.value());
+    if(pos != all_shaders_.end())
+      return CreateReferenceTo(pos->second, token.tag);
+
     DLOG(INFO) << "getting shader from: " << token;
     ProgramBuilder builder;
     {
@@ -41,10 +62,10 @@ namespace mcc {
       LOG_IF(FATAL, !result.success()) << "failed to compile fragment shader: " << result;
     }
 
-    Shader shader;
-    auto result = builder.Build(&shader);
+    auto shader = new Shader();
+    auto result = builder.Build(shader);
     LOG_IF(ERROR, !result.success()) << "failed to compile shader: " << result;
-    const auto ptr = resource::Pointer(token.tag,(uword) (new Shader(shader)));
-    return ShaderRef(ptr);
+    all_shaders_.insert({ token.tag.value(), shader });
+    return CreateReferenceTo(shader, token.tag);
   }
 }

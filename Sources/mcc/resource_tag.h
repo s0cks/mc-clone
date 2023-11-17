@@ -163,6 +163,11 @@ namespace mcc {
       }
 
       static inline Tag
+      Shader() {
+        return Tag(Type::kShaderType);
+      }
+
+      static inline Tag
       Texture(const std::string& name) {
         return Tag(Type::kTextureType, name);
       }
