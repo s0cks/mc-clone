@@ -16,8 +16,8 @@ namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
     const auto chunk = terrain::Terrain::GetChunk();
     if(chunk) {
       VLOG(3) << "rendering terrain....";
-      terrain::RenderTerrainChunkPipeline pipeline(chunk);
-      pipeline.Render();
+      terrain::RenderTerrainChunkPipeline pipe(chunk);
+      pipe.Render();
       Renderer::IncrementVertexCounter(chunk->vbo().length());
     }    
   }

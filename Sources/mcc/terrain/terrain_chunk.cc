@@ -3,7 +3,6 @@
 #include "mcc/terrain/terrain.h"
 #include "mcc/terrain/terrain_flags.h"
 #include "mcc/shader/shader_pipeline.h"
-#include "mcc/terrain/terrain_renderer.h"
 
 namespace mcc::terrain {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
@@ -103,10 +102,7 @@ namespace mcc::terrain {
     Pipeline(),
     chunk_(chunk),
     model_(model) {
-    AddChild(new ApplyPipeline([]() {
-      const auto material = TerrainRenderer::GetTerrainMaterial();
-      material->Bind();
-    }));
+    AddChild(new ApplyMaterialPipeline(Terrain::GetTerrainMaterial()));
     AddChild(new ApplyShaderPipeline(GetShader("terrain"), [chunk](const ShaderRef& shader) {
       shader->ApplyShader();
       shader->SetUniformBlock("Camera", 0);

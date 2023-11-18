@@ -62,7 +62,6 @@ namespace mcc {
     }
   };
 
-
   class ApplyPipeline : public Pipeline {
   protected:
     std::function<void()> apply_;
@@ -75,6 +74,35 @@ namespace mcc {
 
     void Render() override {
       apply_();
+    }
+  };
+
+  template<typename Mesh>
+  class RenderMeshPipeline : public Pipeline {
+  private:
+    Mesh* mesh_;
+    bool children_first_;
+  public:
+    explicit RenderMeshPipeline(Mesh* mesh,
+                                const bool children_first = true):
+      Pipeline(),
+      mesh_(mesh),
+      children_first_(children_first) {
+    }
+    ~RenderMeshPipeline() override = default;
+
+    inline Mesh* mesh() const {
+      return mesh_;
+    }
+
+    void Render() override {
+      if(children_first_) {
+        RenderChildren();
+        mesh()->Render();
+      } else {
+        mesh()->Render();
+        RenderChildren();
+      }
     }
   };
 }

@@ -31,15 +31,20 @@ namespace mcc::terrain {
     static void OnPostInit();
 
     static void SetChunk(TerrainChunk* chunk);
-    static void Render();
   public:
     static void Init();
     static VertexArrayObject GetVao();
     static TerrainVertexBuffer GetVbo();
     static IndexBuffer GetIbo();
     static TerrainChunk* GetChunk();
-    static std::string GetTerrainMaterial();
-    static void SetTerrainMaterial(const std::string& material);
+    static MaterialRef GetTerrainMaterial();
+    static std::string GetTerrainMaterialName();
+    static void SetTerrainMaterial(MaterialRef material);
+    
+    static inline void
+    SetTerrainMaterial(const std::string& name) {
+      return SetTerrainMaterial(GetMaterial(name));
+    }
   };
 }
 

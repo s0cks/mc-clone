@@ -11,6 +11,7 @@
 
 #include "mcc/json.h"
 #include "mcc/texture/texture.h"
+#include "mcc/pipeline.h"
 
 namespace mcc {
   namespace material {
@@ -116,6 +117,26 @@ namespace mcc {
     const auto token = resource::Registry::Get(resource::NewMaterialTag(name));
     return GetMaterial(token);
   }
+
+  class ApplyMaterialPipeline : public Pipeline {
+  protected:
+    MaterialRef material_;
+  public:
+   explicit ApplyMaterialPipeline(MaterialRef material):
+      Pipeline(),
+      material_(material) {
+    }
+    ~ApplyMaterialPipeline() override = default;
+
+    inline MaterialRef material() const {
+      return material_;
+    }
+
+    void Render() override {
+      RenderChildren();
+      material_->Bind();
+    }
+  };
 }
 
 #endif //MCC_MATERIAL_H
