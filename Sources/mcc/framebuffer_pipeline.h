@@ -113,9 +113,14 @@ namespace mcc {
     }
     RenderFrameBufferPipeline(FrameBuffer* src,
                               FrameBuffer* dst,
-                              ApplyShaderPipeline* shader,
+                              ApplyShaderPipeline* shader = nullptr,
                               const ClearMask clear_mask = kNoClearMask):
       RenderFrameBufferPipeline(src, dst->fbo(), shader, clear_mask) {
+    }
+    RenderFrameBufferPipeline(FrameBuffer* src,
+                              ApplyShaderPipeline* shader = nullptr,
+                              const ClearMask clear_mask = kNoClearMask):
+      RenderFrameBufferPipeline(src, FrameBufferObject(kDefaultFrameBufferObjectId), shader, clear_mask) {
     }
     
     ~RenderFrameBufferPipeline() override = default;

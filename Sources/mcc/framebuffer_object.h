@@ -28,7 +28,7 @@ namespace mcc {
       CHECK_GL(FATAL);
     }
   public:
-    explicit FrameBufferObject(const BufferObjectId id = kInvalidBufferObject):
+    explicit constexpr FrameBufferObject(const BufferObjectId id = kInvalidBufferObject):
       id_(id) {
     }
     FrameBufferObject(const bool generate = true,
@@ -37,7 +37,7 @@ namespace mcc {
       id_(kInvalidBufferObject) {
       Initialize(generate, bind, unbind);
     }
-    FrameBufferObject(const FrameBufferObject& rhs):
+    constexpr FrameBufferObject(const FrameBufferObject& rhs):
       id_(rhs.id_) {  
     }
     virtual ~FrameBufferObject() = default;
@@ -127,6 +127,8 @@ namespace mcc {
     }
   };
   DEFINE_RESOURCE_SCOPE(FrameBufferObject);
+
+  static constexpr const BufferObjectId kDefaultFrameBufferObjectId = 0;
 }
 
 #endif //MCC_FRAMEBUFFER_OBJECT_H
