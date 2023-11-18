@@ -43,8 +43,8 @@ namespace mcc::renderer {
     
     RenderFrameBufferPipeline pipeline(fb, FrameBufferObject((const BufferObjectId)0), nullptr, kColorAndDepthClearMask);
     pipeline.AddChild(new ApplyPipeline([&]() {
-      fb->GetColorBuffer(0)->Bind(0);
-      bloom.GetFrameBuffer(0)->GetColorBuffer(0)->Bind(1);
+      fb->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
+      bloom.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
     }));
     pipeline.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
       shader->SetInt("tex", 0);

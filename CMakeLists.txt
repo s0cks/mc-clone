@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 project(minecraft)
 
+
+# option(BUILD_STATIC_LIBS "Build the static library" ON)
+# option(BUILD_SHARED_LIBS "Build the shared library" ON)
+# option(BUILD_TESTS "Build test programs" OFF)
+option(VMEMORY_PROFILING "Enable video memory profiling" ON)
+
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
@@ -21,10 +28,15 @@ find_package(leveldb REQUIRED)
 find_package(Flatbuffers REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    message(STATUS "Compiling with debug mode.")
+    message(STATUS "Compiling w/ debug mode.")
     add_compile_definitions(MCC_DEBUG)
 else()
-    message(STATUS "Compiling without debug mode.")
+    message(STATUS "Compiling w/o debug mode.")
+endif()
+
+if(VMEMORY_PROFILING)
+    message(STATUS "Compiling w/ video memory profiling.")
+    add_compile_definitions(MCC_VMEMPROF)
 endif()
 
 set(PROJECT_VERSION_MAJOR 0)

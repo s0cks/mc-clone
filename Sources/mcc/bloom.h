@@ -71,7 +71,7 @@ namespace mcc {
       bool first = true;
       bool flipped = true;
       for(auto idx = 0; idx < NumberOfHorizontalPasses + NumberOfVerticalPasses; idx++) {
-        auto src = first ? src_->GetColorBuffer(1) : frame_buffers_[!flipped]->GetColorBuffer(0);
+        auto src = first ? src_->GetColorBufferAttachment(1)->GetTexture() : frame_buffers_[!flipped]->GetColorBufferAttachment(0)->GetTexture();
         auto dst = frame_buffers_[flipped];
         BlurPipeline pipe(src, dst, flipped, GetShader("blur"));
         pipe.Render();

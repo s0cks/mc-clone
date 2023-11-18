@@ -13,54 +13,35 @@ namespace mcc {
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
   static d2::Mesh* kFrameBufferMesh;
-  
-  static inline TextureRef
-  CreateColorBuffer(const Dimension& size, ColorAttachment attachment) {
-    DLOG(INFO) << "creating color buffer #" << attachment.slot;
-    const auto texture = new texture::Texture(texture::k2D, true, true, false, attachment.alignment, attachment.filter, attachment.wrap);
-    glTexImage2D(GL_TEXTURE_2D, 0, attachment.internalFormat, size[0], size[1], 0, attachment.format, attachment.type, NULL);
-    CHECK_GL(FATAL);
-    const auto ptr = res::Pointer(res::Tag(res::kTextureType), (uword) texture);
-    return TextureRef(ptr);
-  }
 
-  FrameBuffer::FrameBuffer(const Dimension& size, const std::vector<ColorAttachment>& color_attachments):
+  FrameBuffer::FrameBuffer(const Dimension& size, const FrameBufferAttachmentList& attachments):
     fbo_(true, true, false),
     mesh_(kFrameBufferMesh),
-    color_buffers_(),
+    attachments_(attachments),
     dbuff_(size),
     size_(size) {
-    const auto num_attachments = color_attachments.empty() ? 1 : color_attachments.size();
-    DLOG(INFO) << "creating FrameBuffer w/ " << num_attachments << " color attachments.";
-    unsigned int attachments[num_attachments];
-    if(color_attachments.empty()) {
-      const auto buffer = CreateColorBuffer(size, ColorAttachment {
-        .slot = GL_COLOR_ATTACHMENT0,
-        .internalFormat = GL_RGBA16F,
-        .format = GL_RGBA,
-        .type = GL_FLOAT,
-        .alignment = texture::kDefaultAlignment,
-        .filter = texture::kDefaultFilter,
-        .wrap = texture::kDefaultWrap,
-      });
-      attachments[0] = GL_COLOR_ATTACHMENT0;
-      color_buffers_.push_back(buffer);
-      fbo_.Attach(0, buffer);
-    } else {
-      for(auto idx = 0; idx < color_attachments.size(); idx++) {
-        DLOG(INFO) << "attaching color buffer #" << idx;
-        const auto& attachment = color_attachments[idx];
-        const auto color_buffer = CreateColorBuffer(size, attachment);
-        color_buffers_.push_back(color_buffer);
-        fbo_.Attach(static_cast<FrameBufferTextureAttachment>(attachment.slot), color_buffer);
-        attachments[idx] = attachment.slot;
-      }
+    if(attachments_.empty())
+      attachments_.push_back(ColorBufferAttachment::NewDefault(0, size));
+
+    const auto num_attachments = attachments_.size();
+    unsigned int draw_buffers[num_attachments];
+    unsigned int num_draw_bufffers;
+    for(auto idx = 0; idx < num_attachments; idx++) {
+      const auto& attachment = attachments_[idx];
+      fbo_.Attach(attachment);
+      if(attachment->IsDrawBuffer()) //TODO: genericize
+        draw_buffers[((ColorBufferAttachment*) attachment)->slot()] = ((ColorBufferAttachment*) attachment)->id();
     }
-    glDrawBuffers(num_attachments, attachments);
-    CHECK_GL(FATAL);
+    if(num_draw_bufffers > 0) {
+      glDrawBuffers(num_draw_bufffers, draw_buffers);
+      CHECK_GL(FATAL);
+    }
     fbo_.Attach(dbuff_);
     fbo_.CheckStatus<google::FATAL>();
     fbo_.Unbind();
+#ifdef MCC_VMEMPROF
+    DLOG(INFO) << "created: " << (*this);
+#endif //MCC_VMEMPROF
   }
 
   void FrameBuffer::OnPreInit() {
@@ -79,7 +60,7 @@ namespace mcc {
     Engine::OnPostInit(&OnPostInit);
   }
 
-  FrameBuffer* FrameBuffer::New(const Dimension& size, const std::vector<ColorAttachment>& color_attachments) {
-    return new FrameBuffer(size, color_attachments);
+  FrameBuffer* FrameBuffer::New(const Dimension& size, const FrameBufferAttachmentList& attachments) {
+    return new FrameBuffer(size, attachments);
   }
 }

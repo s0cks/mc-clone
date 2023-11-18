@@ -80,6 +80,9 @@ add_library(${PROJECT_NAME}
   mcc/trie.h
   mcc/circular_buffer.h
   mcc/series.h
+  mcc/framebuffer_constants.h
+  mcc/framebuffer_object.h
+  mcc/framebuffer_attachment.h
   mcc/framebuffer.h mcc/framebuffer.cc
   mcc/framebuffer_pipeline.h mcc/framebuffer_pipeline.cc
   mcc/subscription_trie.h

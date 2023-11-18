@@ -121,8 +121,7 @@ namespace mcc::texture {
       alignment_(alignment),
       filter_(filter),
       wrap_(wrap) {
-      if(generate)
-        InitializeTexture(generate, bind, unbind, NULL);
+      InitializeTexture(generate, bind, unbind, NULL);
     }
     explicit Texture(const TextureTarget target,
                      const bool generate,
