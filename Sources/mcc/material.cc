@@ -47,7 +47,6 @@ namespace mcc {
 
   MaterialRef GetMaterial(const resource::Token& token) {
     const auto material = material::JsonMaterialLoader::Load(token.location);
-    const auto ptr = resource::Pointer(token.tag, (uword) material);
-    return MaterialRef(ptr);
+    return MaterialRef(token.tag, material);
   }
 }

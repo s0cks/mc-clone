@@ -13,27 +13,44 @@ namespace mcc::resource {
   template<typename T>
   class Reference {
   private:
-    Pointer ptr_;
+    uword ptr_;
+
+    inline void IncrementReferenceCounter() {
+      if(!valid())
+        return;
+      ptr()->IncrementReferenceCounter();
+    }
+
+    inline void DecrementReferenceCounter() {
+      if(!valid())
+        return;
+      ptr()->DecrementReferenceCounter();
+    }
   public:
     Reference():
-      ptr_() {
+      ptr_(0) {
     }
-    explicit Reference(const Pointer ptr):
+    explicit Reference(const uword ptr):
       ptr_(ptr) {
+      IncrementReferenceCounter();
+    }
+    explicit Reference(const Tag& tag, T* data):
+      ptr_(Pointer::New(tag, (uword) data)) {
+      DecrementReferenceCounter();
     }
     Reference(const Reference& rhs) = default;
     ~Reference() = default;
 
-    bool valid() const {
-      return ptr_.GetAddress() != 0;
+    inline bool valid() const {
+      return ptr_ != 0;
     }
 
-    Pointer ptr() const {
-      return ptr_;
+    inline Pointer* ptr() const {
+      return (Pointer*) ptr_;
     }
 
     T* operator->() const {
-      return reinterpret_cast<T*>(ptr_.GetAddress());
+      return reinterpret_cast<T*>(ptr()->GetDataAddress());
     }
 
     Reference& operator=(const Reference& rhs) = default;

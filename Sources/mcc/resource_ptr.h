@@ -8,36 +8,48 @@
 
 namespace mcc::resource {
   class Pointer {
+    template<typename T>
+    friend class Reference;
   private:
     Tag tag_;
-    RelaxedAtomic<uword> address_;
-    RelaxedAtomic<uword> forwarding_;
-  public:
+    RelaxedAtomic<uword> references_;
+    RelaxedAtomic<uword> data_;
+
     Pointer() = default;
-    Pointer(const Tag tag, const uword address):
+    Pointer(const Tag tag, const uword data):
       tag_(tag),
-      address_(address),
-      forwarding_(0) {
+      data_(data) {
     }
+
+    inline void IncrementReferenceCounter() {
+      references_ += 1;
+    }
+
+    inline void DecrementReferenceCounter() {
+      references_ -= 1;
+    }
+  public:
     ~Pointer() = default;
 
     Tag GetTag() const {
       return (Tag)tag_;
     }
 
-    uword GetAddress() const {
-      return (uword)address_;
-    }
-
-    uword GetForwardingAddress() const {
-      return (uword)forwarding_;
+    uword GetDataAddress() const {
+      return (uword)data_;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Pointer& rhs) {
       stream << "Pointer(";
-      stream << "address=" << rhs.GetAddress();
+      stream << "tag=" << rhs.GetTag() << ", ";
+      stream << "address=" << rhs.GetDataAddress();
       stream << ")";
       return stream;
+    }
+  public:
+    static inline uword
+    New(const Tag& tag, const uword data) {
+      return (uword) new Pointer(tag, data);
     }
   };
 }

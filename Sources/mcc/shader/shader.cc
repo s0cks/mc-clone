@@ -32,8 +32,7 @@ namespace mcc {
 
   static inline ShaderRef
   CreateReferenceTo(const Shader* value, const res::Tag& tag = res::Tag::Shader()) {
-    const auto ptr = resource::Pointer(tag, (uword) value);
-    return ShaderRef(ptr);
+    return ShaderRef(tag, (Shader*) value);
   }
 
   ShaderRef GetShader(const std::string& name) {

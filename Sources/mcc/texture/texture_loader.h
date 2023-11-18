@@ -36,8 +36,7 @@ namespace mcc::texture {
         DLOG(ERROR) << "failed to load texture from: " << filename_;
         return TextureRef();
       }
-      const auto ptr = resource::Pointer(tag_, (uword) texture.value());
-      return TextureRef(ptr);
+      return TextureRef(tag_, texture.value());
     }
   };
 
