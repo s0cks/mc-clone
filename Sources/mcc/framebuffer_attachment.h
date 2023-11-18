@@ -5,29 +5,62 @@
 #include "mcc/texture/texture.h"
 
 namespace mcc {
-  class FrameBufferAttachment {
-  public:
-    enum Type {
-      kColorBuffer,
-      kDepthBuffer,
-    };
-  protected:
-    GLuint id_;
+#define FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(V) \
+  V(ColorBuffer)                                \
+  V(RenderBuffer)
 
-    FrameBufferAttachment(const GLuint id):
-      id_(id) {
+#define FORWARD_DECLARE(Name) class Name##Attachment;
+  FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(FORWARD_DECLARE)
+#undef FORWARD_DECLARE
+
+  enum FrameBufferAttachmentType {
+#define DEFINE_TYPE(Name) k##Name##Attachment,
+    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE)
+#undef DEFINE_TYPE
+    kNumberOfFrameBufferAttachmentTypes,
+  };
+
+  typedef GLuint FrameBufferAttachmentTarget;
+
+  class FrameBufferAttachment {
+  protected:
+    FrameBufferAttachmentTarget target_;
+
+    explicit FrameBufferAttachment(const FrameBufferAttachmentTarget target):
+      target_(target) {
     }
   public:
     virtual ~FrameBufferAttachment() = default;
-    virtual bool IsDrawBuffer() const { return false; }
-    virtual Type GetType() const = 0;
+    virtual const char* name() const = 0;
+    virtual bool IsDrawBuffer() const = 0;
+    virtual FrameBufferAttachmentType type() const = 0;
 
-    GLuint id() const {
-      return id_;
+    FrameBufferAttachmentTarget target() const {
+      return target_;
     }
+
+#define DEFINE_TYPE_CAST(Name) \
+    virtual Name##Attachment* As##Name##Attachment() { return nullptr; }
+    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE_CAST)
+#undef DEFINE_TYPE_CAST
+
+#define DEFINE_TYPE_CHECK(Name) \
+    inline bool Is##Name##Attachment() const { return type() == k##Name##Attachment; }
+    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE_CHECK)
+#undef DEFINE_TYPE_CHECK
   };
 
   typedef std::vector<FrameBufferAttachment*> FrameBufferAttachmentList;
+
+#define DEFINE_FRAMEBUFFER_ATTACHMENT(Name)                                                                     \
+  public:                                                                                                       \
+    const char* name() const override { return #Name; }                                                         \
+    FrameBufferAttachmentType type() const override { return FrameBufferAttachmentType::k##Name##Attachment; }  \
+    Name##Attachment* As##Name##Attachment() override { return this; }
+
+  class DrawBufferAttachment : public FrameBufferAttachment {
+
+  };
 
   class ColorBufferAttachment : public FrameBufferAttachment {
   protected:
@@ -39,10 +72,7 @@ namespace mcc {
     }
   public:
     ~ColorBufferAttachment() override = default;
-
-    Type GetType() const override {
-      return Type::kColorBuffer;
-    }
+    DEFINE_FRAMEBUFFER_ATTACHMENT(ColorBuffer);
 
     bool IsDrawBuffer() const override {
       return true;
@@ -53,7 +83,7 @@ namespace mcc {
     }
 
     GLuint slot() const {
-      return id_ - GL_COLOR_ATTACHMENT0;
+      return target_ - GL_COLOR_ATTACHMENT0;
     }
 
     static inline ColorBufferAttachment*

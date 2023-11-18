@@ -30,7 +30,7 @@ namespace mcc {
       const auto& attachment = attachments_[idx];
       fbo_.Attach(attachment);
       if(attachment->IsDrawBuffer()) //TODO: genericize
-        draw_buffers[((ColorBufferAttachment*) attachment)->slot()] = ((ColorBufferAttachment*) attachment)->id();
+        draw_buffers[((ColorBufferAttachment*) attachment)->slot()] = ((ColorBufferAttachment*) attachment)->target();
     }
     if(num_draw_bufffers > 0) {
       glDrawBuffers(num_draw_bufffers, draw_buffers);

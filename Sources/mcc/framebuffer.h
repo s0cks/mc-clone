@@ -42,8 +42,8 @@ namespace mcc {
 
     ColorBufferAttachment* GetColorBufferAttachment(const uint64_t idx) const {
       for(const auto& attachment : attachments_) {
-        if(attachment->GetType() == FrameBufferAttachment::kColorBuffer && ((ColorBufferAttachment*) attachment)->slot() == idx)
-          return (ColorBufferAttachment*)attachment;
+        if(attachment->IsColorBufferAttachment() && attachment->AsColorBufferAttachment()->slot() == idx)
+          return attachment->AsColorBufferAttachment();
       }
       return nullptr;
     }
@@ -56,7 +56,7 @@ namespace mcc {
       return fbo_.Bind();
     }
 
-    void Unbind() {
+    void Unbind() const {
       return fbo_.Unbind();
     }
 

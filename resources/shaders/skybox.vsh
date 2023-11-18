@@ -12,5 +12,6 @@ out vec3 vUv;
 
 void main() {
   vUv = pos;
-  gl_Position = camera.projection * camera.view * vec4(pos, 1.0f);
+  mat4 view = mat4(mat3(camera.view));
+  gl_Position = camera.projection * view * vec4(pos, 1.0f);
 }
