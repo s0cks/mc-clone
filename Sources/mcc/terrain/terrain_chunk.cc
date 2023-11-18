@@ -3,6 +3,7 @@
 #include "mcc/terrain/terrain.h"
 #include "mcc/terrain/terrain_flags.h"
 #include "mcc/shader/shader_pipeline.h"
+#include "mcc/renderer/renderer.h"
 
 namespace mcc::terrain {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
@@ -96,23 +97,48 @@ namespace mcc::terrain {
     CHECK_GL(FATAL);
   }
 
+  class ApplyTerrainMaterialPipeline : public ApplyMaterialPipeline {
+  public:
+    explicit ApplyTerrainMaterialPipeline():
+      ApplyMaterialPipeline(MaterialRef(0)) {
+      Terrain::GetMaterialObservable()
+        .subscribe([this](MaterialRef material) {
+          material_ = material;
+        });
+    }
+    ~ApplyTerrainMaterialPipeline() override = default;
+  };
+
 
   RenderTerrainChunkPipeline::RenderTerrainChunkPipeline(TerrainChunk* chunk,
                                                          const glm::mat4& model):
     Pipeline(),
     chunk_(chunk),
     model_(model) {
-    AddChild(new ApplyMaterialPipeline(Terrain::GetTerrainMaterial()));
-    AddChild(new ApplyShaderPipeline(GetShader("terrain"), [chunk](const ShaderRef& shader) {
+    Terrain::GetChunkObservable()
+      .subscribe([this](TerrainChunk* chunk) {
+        chunk_ = chunk;
+      });
+    AddChild(new ApplyTerrainMaterialPipeline());
+    AddChild(new ApplyShaderPipeline(GetShader("terrain"), [this](const ShaderRef& shader) {
       shader->ApplyShader();
       shader->SetUniformBlock("Camera", 0);
       shader->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
       shader->SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
-      shader->SetMat4("model", chunk->GetModelMatrix());
+      shader->SetMat4("model", model_);
       shader->SetMaterial("material");
     }));
-    AddChild(new ApplyPipeline([chunk]() {
-      chunk->Render();
+    AddChild(new ApplyPipeline([this]() {
+      chunk_->Render();
     }));
+  }
+
+  void RenderTerrainChunkPipeline::Render() {
+    if(!chunk_)
+      return;
+
+    InvertedCullFaceScope cull_face;
+    RenderChildren();
+    renderer::Renderer::IncrementVertexCounter(chunk_->vbo().length());
   }
 }

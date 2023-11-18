@@ -12,9 +12,11 @@
 namespace mcc::terrain {
   DEFINE_uint64(terrain_size, 128, "The size of the terrain.");
 
+  static rxsub::subject<TerrainChunk*> chunk_subject_;
   static ThreadLocal<TerrainChunk> chunk_;
   static ShaderRef shader_;
   static MaterialRef material_;
+  static rxsub::subject<MaterialRef> material_subject_;
 
   MaterialRef Terrain::GetTerrainMaterial() {
     return material_;
@@ -26,10 +28,12 @@ namespace mcc::terrain {
 
   void Terrain::SetTerrainMaterial(MaterialRef material) {
     material_ = material;
+    material_subject_.get_subscriber().on_next(material);
   }
   
   void Terrain::SetChunk(TerrainChunk* chunk) {
     chunk_.Set(chunk);
+    chunk_subject_.get_subscriber().on_next(chunk);
   }
 
   TerrainChunk* Terrain::GetChunk() {
@@ -48,11 +52,17 @@ namespace mcc::terrain {
   }
 
   void Terrain::OnInit() {
-
   }
 
   void Terrain::OnPostInit() {
-    shader_ = GetShader("terrain");
-    material_ = GetMaterial("floors/old_wood");
+    SetTerrainMaterial(GetMaterial("floors/old_wood"));
+  }
+
+  rx::observable<TerrainChunk*> Terrain::GetChunkObservable() {
+    return chunk_subject_.get_observable();
+  }
+
+  rx::observable<MaterialRef> Terrain::GetMaterialObservable() {
+    return material_subject_.get_observable();
   }
 }

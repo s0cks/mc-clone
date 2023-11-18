@@ -14,11 +14,17 @@
 #include "mcc/skybox.h"
 #include "mcc/camera/perspective_camera.h"
 
-namespace mcc::gui {
-  class Screen;
-  class Frame;
-  class SettingsFrame;
-  class RendererFrame;
+namespace mcc {
+  namespace gui {
+    class Screen;
+    class Frame;
+    class SettingsFrame;
+    class RendererFrame;
+  }
+
+  namespace terrain {
+    class RenderTerrainChunkPipeline;
+  }
 }
 
 namespace mcc::renderer {
@@ -32,6 +38,9 @@ namespace mcc::renderer {
     friend class PostRenderStage;
     friend class RenderTerrainStage;
     friend class RenderEntitiesStage;
+    friend class RenderEntityPipeline;
+    friend class RendererPipeline;
+    friend class mcc::terrain::RenderTerrainChunkPipeline;
     DECLARE_STATE_MACHINE(Renderer);
   public:
     enum Mode {

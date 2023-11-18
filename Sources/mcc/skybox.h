@@ -2,6 +2,8 @@
 #define MCC_SKYBOX_H
 
 #include <vector>
+
+#include "mcc/rx.h"
 #include "mcc/gfx.h"
 
 #include "mcc/shader/shader.h"
@@ -82,10 +84,12 @@ namespace mcc {
     private:
       explicit Skybox(TextureRef texture, ShaderRef shader);
       static void OnPostInit();
+      static void SetSkybox(Skybox* skybox);
     public:
       static void Init();
       static Skybox* Get();
       static Skybox* New(TextureRef texture, ShaderRef shader);
+      static rx::observable<Skybox*> GetObservable();
 
       static inline Skybox*
       New(TextureRef texture) {
@@ -97,23 +101,31 @@ namespace mcc {
     private:
       Skybox* skybox_;
     public:
-      explicit RenderSkyboxPipeline(Skybox* skybox):
+      explicit RenderSkyboxPipeline(Skybox* skybox = Skybox::Get()):
         Pipeline(),
         skybox_(skybox) {
-        AddChild(new ApplyShaderPipeline(skybox->shader, [](const ShaderRef& shader) {
+        Skybox::GetObservable()
+          .subscribe([this](Skybox* skybox) {
+            skybox_ = skybox;
+          });
+        AddChild(new ApplyPipeline([this]() {
+          const auto& shader = skybox_->shader;
           shader->ApplyShader();
           shader->SetUniformBlock("Camera", 0);
           shader->SetInt("tex", 0);
         }));
-        AddChild(new ApplyPipeline([skybox]() {
-          VertexArrayObjectScope scope(skybox->vao);
-          glDrawArrays(GL_TRIANGLES, 0, skybox->vbo.length());
+        AddChild(new ApplyPipeline([this]() {
+          VertexArrayObjectScope scope(skybox_->vao);
+          glDrawArrays(GL_TRIANGLES, 0, skybox_->vbo.length());
           CHECK_GL(FATAL);
         }));
       }
       ~RenderSkyboxPipeline() override = default;
 
       void Render() override {
+        if(!skybox_)
+          return;
+
         const auto& texture = skybox_->texture;
         const auto& vao = skybox_->vao;
         InvertedCullFaceScope cull_face;

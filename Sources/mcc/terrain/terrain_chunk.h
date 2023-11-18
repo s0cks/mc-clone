@@ -46,14 +46,11 @@ namespace mcc::terrain {
     TerrainChunk* chunk_;
     glm::mat4 model_;
   public:
-    RenderTerrainChunkPipeline(TerrainChunk* chunk,
+    RenderTerrainChunkPipeline(TerrainChunk* chunk = nullptr,
                                const glm::mat4& model = glm::mat4(1.0f));
     ~RenderTerrainChunkPipeline() override = default;
 
-    void Render() override {
-      InvertedCullFaceScope cull_face;
-      RenderChildren();
-    }
+    void Render() override;
   };
 }
 

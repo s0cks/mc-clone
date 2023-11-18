@@ -15,33 +15,115 @@ namespace mcc {
     kDefaultClearMask = kColorAndDepthClearMask,
   };
 
+  struct PolygonMode {
+    enum Face {
+      kFront = GL_FRONT,
+      kBack = GL_BACK,
+      kFrontAndBack = GL_FRONT_AND_BACK,
+      kDefaultFace = kFrontAndBack,
+    };
+
+    enum Mode {
+      kFill = GL_FILL,
+      kLine = GL_LINE,
+      kWireframe = kLine,
+      kDefaultMode = kFill,
+    };
+
+    Face face;
+    Mode mode;
+  };
+  static constexpr const auto kDefaultPolygonMode = PolygonMode {
+    .face = PolygonMode::kDefaultFace,
+    .mode = PolygonMode::kDefaultMode,
+  };
+  static constexpr const auto kDefaultClearColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+
   class FrameBufferPipeline : public Pipeline {
+  public:
+    static constexpr const auto kDefaultDepthFunction = GL_LEQUAL;
+    static constexpr const auto kDefaultFrontFace = GL_CW;
+    static constexpr const auto kDefaultCullFace = GL_BACK;
   private:
     FrameBufferObject dst_;
+    PolygonMode polygon_mode_;
     ClearMask clear_mask_;
     glm::vec4 clear_color_;
+    GLenum caps_;
+    GLenum depth_func_;
+    GLenum cull_face_;
+    GLenum front_face_;
   public:
-    FrameBufferPipeline(FrameBufferObject dst,
-                        const ClearMask clear_mask = kDefaultClearMask,
-                        const glm::vec4& clear_color = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)):
+    FrameBufferPipeline(FrameBufferObject dst):
       Pipeline(),
       dst_(dst),
-      clear_mask_(clear_mask),
-      clear_color_(clear_color) {
+      caps_(GL_DEPTH_TEST|GL_CULL_FACE),
+      depth_func_(kDefaultDepthFunction),
+      cull_face_(kDefaultCullFace),
+      front_face_(kDefaultFrontFace),
+      polygon_mode_(kDefaultPolygonMode),
+      clear_mask_(kDefaultClearMask),
+      clear_color_(kDefaultClearColor) {
     }
     ~FrameBufferPipeline() override = default;
+
+    void SetCapabilities(const GLenum caps) {
+      caps_ = caps;
+    }
+
+    GLenum GetCapabilities() const {
+      return caps_;
+    }
+
+    GLenum GetDepthFunction() const {
+      return depth_func_;
+    }
+
+    void SetDepthFunction(const GLenum func) {
+      depth_func_ = func;
+    }
+
+    GLenum GetCullFace() const {
+      return cull_face_;
+    }
+
+    void SetCullFace(const GLenum value) {
+      cull_face_ = value;
+    }
+
+    GLenum GetFrontFace() const {
+      return front_face_;
+    }
+
+    void SetFrontFace(const GLenum value) {
+      front_face_ = value;
+    }
+    
+    bool IsDepthTestEnabled() const {
+      return (caps_ & GL_DEPTH_TEST) == GL_DEPTH_TEST;
+    }
+
+    bool IsCullFaceEnabled() const {
+      return (caps_ & GL_CULL_FACE) == GL_CULL_FACE;
+    }
 
     FrameBufferObject dst() const {
       return dst_;
     }
 
-    void Render() override {
-      dst_.Bind();
-      glClear(clear_mask_);
-      glClearColor(clear_color_[0],clear_color_[1], clear_color_[2], clear_color_[3]);
-      for(const auto& child : children_)
-        child->Render();
+    ClearMask GetClearMask() const {
+      return clear_mask_;
     }
+
+    PolygonMode GetPolygonMode() const {
+      return polygon_mode_;
+    }
+
+    glm::vec4 GetClearColor() const {
+      return clear_color_;
+    }
+
+    void Render() override;
   };
 
   class RenderFrameBufferPipeline : public Pipeline {

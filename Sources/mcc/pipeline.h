@@ -9,12 +9,12 @@ namespace mcc {
   protected:
     Pipeline* parent_;
     std::vector<Pipeline*> children_;
-
+  public:
     explicit Pipeline(Pipeline* parent = nullptr):
       parent_(nullptr),
       children_() {
     }
-
+  protected:
     void RenderChildren() {
       for(const auto& child : children_)
         child->Render();

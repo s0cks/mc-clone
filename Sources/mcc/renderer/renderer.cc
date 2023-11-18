@@ -19,21 +19,14 @@
 #include "mcc/gui/gui_frame_settings.h"
 #include "mcc/gui/gui_frame_renderer.h"
 
-#include "mcc/renderer/stage.h"
 #include "mcc/physics/transform.h"
 #include "mcc/physics/rigid_body.h"
 #include "mcc/lighting/ambient_light.h"
 
 #include "mcc/skybox.h"
+#include "mcc/bloom.h"
 
 namespace mcc::renderer {
-  static ThreadLocal<uv_loop_t> loop_;
-  static ThreadLocal<PreRenderStage> pre_render_;
-  static ThreadLocal<RenderTerrainStage> render_terrain_;
-  static ThreadLocal<RenderEntitiesStage> render_entities_;
-  static ThreadLocal<RenderGuiStage> render_gui_;
-  static ThreadLocal<RenderScreenStage> draw_gui_;
-  static ThreadLocal<PostRenderStage> post_render_;
   static ThreadLocal<FrameBuffer> frame_buffer_;
   static ThreadLocal<camera::PerspectiveCameraDataUniformBufferObject> cam_data_;
 
@@ -47,6 +40,7 @@ namespace mcc::renderer {
   static RelaxedAtomic<uint64_t> fps_;
   static RelaxedAtomic<uint64_t> entities_;
   static RelaxedAtomic<uint64_t> vertices_;
+  static ThreadLocal<Pipeline> pipeline_;
 
   static mesh::Mesh* mesh_;
   static shader::Shader shader_;
@@ -101,16 +95,184 @@ namespace mcc::renderer {
     frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
   }
 
-  void Renderer::OnPostInit() {
-    const auto loop = uv_loop_new();
-    post_render_.Set(new PostRenderStage(loop));
-    render_gui_.Set(new RenderGuiStage(loop));
-    draw_gui_.Set(new RenderScreenStage(loop));
-    render_entities_.Set(new RenderEntitiesStage(loop));
-    render_terrain_.Set(new RenderTerrainStage(loop));
-    pre_render_.Set(new PreRenderStage(loop));
-    SetLoop(loop);
+    class RenderEntityPipeline : public Pipeline {
+  protected:
+    const Entity entity_;
+  public:
+    explicit RenderEntityPipeline(const Entity entity):
+      Pipeline(),
+      entity_(entity) {
+    }
+    ~RenderEntityPipeline() override = default;
 
+    void Render() override {
+      const auto renderable = Renderable::GetState(entity_);
+      const auto transform = physics::Transform::GetState(entity_);
+      VLOG(1) << "rendering entity " << entity_ << " w/ " << *(*renderable).data();
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, (*transform)->position);
+      // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+      const auto& shader = (*renderable)->shader;
+      const auto& texture = (*renderable)->texture;
+      const auto& material = (*renderable)->material;
+
+      glm::vec3 lightColor = glm::vec3(1.0f, 0.0f, 0.0f);
+      glm::vec3 lightPos = glm::vec3(0.0f);
+      AmbientLight::Visit([&lightColor,&lightPos](const Entity& l, const ComponentState<AmbientLight>& light) {
+        lightColor = light->color;
+
+        const auto lt = physics::Transform::GetState(l);
+        LOG_IF(FATAL, !lt) << "no transform found for AmbientLight component of entity " << l;
+        lightPos = (*lt)->position;
+        return true;
+      });
+
+      if(texture.valid()) 
+        texture->Bind(0);
+
+      shader->ApplyShader();
+      shader->SetMat4("model", model);
+      const auto diffuseColor = lightColor * glm::vec3(0.5f);
+      const auto ambientColor = diffuseColor * glm::vec3(0.8f);
+      shader->SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
+      shader->SetMaterial("material");
+      shader->SetInt("tex0", 0);
+      shader->SetVec3("lightColor", lightColor);
+      shader->SetUniformBlock("Camera", 0);
+      shader->ApplyShader();
+      const auto& mesh = (*renderable)->mesh;
+      mesh->Render();
+      Renderer::IncrementEntityCounter();
+      Renderer::IncrementVertexCounter(mesh->vbo().length());
+    }
+  };
+
+  class RenderEntitiesPipeline : public Pipeline {
+  public:
+    RenderEntitiesPipeline() = default;
+    ~RenderEntitiesPipeline() override = default;
+
+    void Render() override {
+      VLOG(3) << "rendering entities....";
+      InvertedCullFaceScope cull_face;
+      Renderer::VisitEntities([&](const Entity& e) {
+        RenderEntityPipeline pipe(e);
+        pipe.Render();
+        return true;
+      });
+    }
+  };
+
+  class RenderFbPipeline : public Pipeline {
+  private:
+    FrameBuffer* fb_;
+    ShaderRef shader_;
+    BloomPipeline<> bloom_;
+    RenderFrameBufferPipeline pipeline_;
+  public:
+    explicit RenderFbPipeline(FrameBuffer* fb):
+      Pipeline(),
+      fb_(fb),
+      shader_(GetShader("framebuffer")),
+      bloom_(fb, Dimension(Window::GetSize()), GetShader("blur")),
+      pipeline_(fb, kColorAndDepthClearMask) {
+      pipeline_.AddChild(new ApplyPipeline([this]() {
+        fb_->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
+        bloom_.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
+      }));
+      pipeline_.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
+        shader->SetInt("tex", 0);
+        shader->SetInt("bloomTex", 1);
+        shader->SetBool("bloom", true);
+        shader->SetBool("hdr", true);
+        shader->SetFloat("gamma", 2.2f);
+        shader->SetFloat("exposure", 1.0f);
+      }));
+    }
+
+    void Render() override {
+      fb_->Unbind();
+      bloom_.Render();
+      pipeline_.Render();
+    }
+  };
+
+
+  class RendererPipeline : public Pipeline {
+  private:
+  public:
+    RendererPipeline():
+      Pipeline() {
+      auto fb = Renderer::GetFrameBuffer();
+      fb->Bind();
+      const auto size = Window::GetSize();
+      AddChild(new skybox::RenderSkyboxPipeline());
+      AddChild(new terrain::RenderTerrainChunkPipeline());
+      AddChild(new RenderEntitiesPipeline());
+      AddChild(new RenderFbPipeline(fb));
+      AddChild(new gui::RenderScreenPipeline(size));
+      AddChild(new ApplyPipeline([]() {
+        gui::FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
+        Window::VisitFrames(&frame_renderer);
+      }));
+    }
+    ~RendererPipeline() override = default;
+
+    void Render() override {
+      gui::Screen::NewFrame();
+      auto fb = Renderer::GetFrameBuffer();
+      fb->Bind();
+      const auto window = Window::GetHandle();
+      int width;
+      int height;
+      glfwGetFramebufferSize(window, &width, &height);
+      CHECK_GL(FATAL);
+      glViewport(0, 0, width, height);
+      CHECK_GL(FATAL);
+      glfwPollEvents();
+      CHECK_GL(FATAL);
+      //TODO: remove chunk
+      glPolygonMode(GL_FRONT_AND_BACK, Renderer::GetMode());
+      CHECK_GL(FATAL);
+      glEnable(GL_DEPTH_TEST);
+      CHECK_GL(FATAL);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      CHECK_GL(FATAL);
+      glDepthFunc(GL_LEQUAL);
+      CHECK_GL(FATAL);
+      glEnable(GL_CULL_FACE);
+      CHECK_GL(FATAL);
+      glFrontFace(GL_CW);
+      CHECK_GL(FATAL);
+      glCullFace(GL_BACK);
+      CHECK_GL(FATAL);
+      glClearColor(0.4, 0.3, 0.4, 1.0f);
+      CHECK_GL(FATAL);
+
+      const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
+      LOG_IF(FATAL, !camera) << "no camera component found.";
+      (*camera)->ComputeMatrices();
+      const auto cam_buff = Renderer::GetCameraUniformBuffer();
+      cam_buff->Update((const camera::PerspectiveCameraData*) (*camera).data());
+      light::DirectionalLight::Visit([](const Entity& e, const ComponentState<light::DirectionalLight>& state) {
+        light::DirectionalLight::GetBufferObject()->Update(state.data());
+        return true;
+      });
+      light::PointLight::Visit([](const Entity& e, const ComponentState<light::PointLight>& state) {
+        light::PointLight::GetUniformBufferObject()->Update(state.data());
+        return true;
+      });
+
+      RenderChildren();
+
+      glfwSwapBuffers(window);
+      CHECK_GL(FATAL);
+      Renderer::ResetEntityCounter();
+      Renderer::ResetVertexCounter();
+    }
+  };
+
+  void Renderer::OnPostInit() {
     signature_.set(Renderable::GetComponentId());
     signature_.set(physics::Transform::GetComponentId());
     DLOG(INFO) << "signature: " << signature_;
@@ -118,6 +280,7 @@ namespace mcc::renderer {
     Window::AddFrame(gui::SettingsFrame::New());
     Window::AddFrame(gui::RendererFrame::New());
 
+    pipeline_.Set(new RendererPipeline());
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
 
     Entity::OnSignatureChanged()
@@ -148,14 +311,6 @@ namespace mcc::renderer {
     return last_frame_ns_;
   }
 
-  void Renderer::SetLoop(uv_loop_t* loop) {
-    loop_.Set(loop);
-  }
-
-  uv_loop_t* Renderer::GetLoop() {
-    return loop_.Get();
-  }
-
   static constexpr const auto kTargetFramesPerSecond = 60.0f;
   static constexpr const float kRate = NSEC_PER_SEC / (kTargetFramesPerSecond * NSEC_PER_SEC);
 
@@ -172,7 +327,9 @@ namespace mcc::renderer {
       frames_ = 0;
       last_second_ = frame_start_ns_;
     }
-    uv_run(GetLoop(), mode);
+
+    pipeline_.Get()->Render();
+
     frame_end_ns_ = uv_hrtime();
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);
     samples_ << RendererSample {

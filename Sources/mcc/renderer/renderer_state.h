@@ -6,7 +6,8 @@ namespace mcc::renderer {
   V(RenderTerrain)                        \
   V(RenderEntities)                       \
   V(RenderScreen)                         \
-  V(RenderGui)
+  V(RenderGui)                            \
+  V(RenderSkybox)
 
 #define FOR_EACH_RENDERER_STATE(V)  \
   V(PreInit)                        \

@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 
+#include "mcc/rx.h"
 #include "mcc/gfx.h"
 #include "mcc/common.h"
 #include "mcc/material.h"
@@ -45,6 +46,9 @@ namespace mcc::terrain {
     SetTerrainMaterial(const std::string& name) {
       return SetTerrainMaterial(GetMaterial(name));
     }
+    
+    static rx::observable<TerrainChunk*> GetChunkObservable();
+    static rx::observable<MaterialRef> GetMaterialObservable();
   };
 }
 

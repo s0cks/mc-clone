@@ -7,14 +7,20 @@
 namespace mcc::skybox {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
   static ThreadLocal<Skybox> skybox_;
+  static rxsub::subject<Skybox*> skybox_subject_;
 
   void Skybox::OnPostInit() {
     vao_ = VertexArrayObject();
-    skybox_.Set(Skybox::New(GetTexture("space_nebulas"), GetShader("skybox")));
+    SetSkybox(Skybox::New(GetTexture("space_nebulas"), GetShader("skybox")));
   }
 
   void Skybox::Init() {
     Engine::OnPostInit(&OnPostInit);
+  }
+
+  void Skybox::SetSkybox(Skybox* skybox) {
+    skybox_.Set(skybox);
+    skybox_subject_.get_subscriber().on_next(skybox);
   }
 
   Skybox* Skybox::Get() {
@@ -75,5 +81,9 @@ namespace mcc::skybox {
   Skybox* Skybox::New(TextureRef texture, ShaderRef shader) {
     VertexArrayObjectScope scope(vao_);
     return new Skybox(texture, shader);
+  }
+
+  rx::observable<Skybox*> Skybox::GetObservable() {
+    return skybox_subject_.get_observable();
   }
 }

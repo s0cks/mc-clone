@@ -14,6 +14,8 @@
 #define NK_KEYSTATE_BASED_INPUT
 #include "nuklear.h"
 
+#include "mcc/pipeline.h"
+
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
 
@@ -192,6 +194,25 @@ namespace mcc::gui {
     static void RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA = NK_ANTI_ALIASING_OFF, int max_vertex_buffer = MAX_VERTEX_BUFFER, int max_element_buffer = MAX_ELEMENT_BUFFER);
 
     static nk::Context* GetNuklearContext();
+  };
+
+  class RenderScreenPipeline : public Pipeline {
+  protected:
+    glm::mat4 projection_;
+  public:
+    explicit RenderScreenPipeline(const glm::mat4& projection):
+      Pipeline(),
+      projection_(projection) {
+    }
+    explicit RenderScreenPipeline(const Dimension& size):
+      RenderScreenPipeline(glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f)) {
+    }
+    ~RenderScreenPipeline() override = default;
+
+    void Render() override {
+      VLOG(3) << "drawing screen....";
+      gui::Screen::RenderScreen(projection_);
+    }
   };
 }
 

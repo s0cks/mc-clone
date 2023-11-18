@@ -9,10 +9,10 @@
 
 namespace mcc::renderer {
   class Renderer;
-  class FrameRenderer;
 }
 
 namespace mcc::gui {
+  class FrameRenderer;
   class Frame;
   typedef std::shared_ptr<Frame> FramePtr;
 
@@ -25,7 +25,7 @@ namespace mcc::gui {
   };
 
   class Frame {
-    friend class mcc::renderer::FrameRenderer;
+    friend class FrameRenderer;
   public:
     enum Position {
       kTopLeft,
@@ -79,6 +79,22 @@ namespace mcc::gui {
       stream << "size=" << glm::to_string(rhs.size_);
       stream << ")";
       return stream;
+    }
+  };
+
+  class FrameRenderer : public gui::FrameVisitor {
+  private:
+    nk::Context* ctx_;
+  public:
+    explicit FrameRenderer(nk::Context* ctx):
+      FrameVisitor(),
+      ctx_(ctx) {
+    }
+    ~FrameRenderer() override = default;
+
+    bool Visit(gui::FramePtr frame) override {
+      frame->RenderFrame(ctx_);
+      return true;
     }
   };
 }

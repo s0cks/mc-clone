@@ -133,6 +133,9 @@ namespace mcc {
     }
 
     void Render() override {
+      if(!material_.valid())
+        return;
+        
       RenderChildren();
       material_->Bind();
     }
