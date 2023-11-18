@@ -37,7 +37,7 @@ namespace mcc::renderer {
     };
   };
 
-  static constexpr const uint64_t kNumberOfRendererSamples = 10;
+  static constexpr const uint64_t kNumberOfRendererSamples = 60;
   class RendererSampleSeries : public Series<RendererSample, kNumberOfRendererSamples> {  public:
     RendererSampleSeries():
       Series() {
