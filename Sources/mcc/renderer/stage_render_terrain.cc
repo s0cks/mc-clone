@@ -6,9 +6,9 @@
 
 namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
   void RenderTerrainStage::Render(const Tick& tick) {
-    const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
     const auto skybox = skybox::Skybox::Get();
     if(skybox) {
+      const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
       const auto view = glm::mat4(glm::mat3((*camera)->GetViewMatrix()));
       Renderer::GetCameraUniformBuffer()->UpdateView(view);
       skybox::RenderSkyboxPipeline skybox_pipe(skybox);
@@ -16,9 +16,12 @@ namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
       Renderer::GetCameraUniformBuffer()->UpdateView((*camera)->GetViewMatrix());
     }
 
-    VLOG(3) << "rendering terrain....";
-    InvertedCullFaceScope cull_face;
-    terrain::Terrain::Render();
-    Renderer::IncrementVertexCounter(terrain::Terrain::GetChunk()->vbo().length());
+    const auto chunk = terrain::Terrain::GetChunk();
+    if(chunk) {
+      VLOG(3) << "rendering terrain....";
+      terrain::RenderTerrainChunkPipeline pipeline(chunk);
+      pipeline.Render();
+      Renderer::IncrementVertexCounter(chunk->vbo().length());
+    }    
   }
 }

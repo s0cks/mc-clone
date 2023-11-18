@@ -2,6 +2,8 @@
 #include "mcc/engine/engine.h"
 #include "mcc/terrain/terrain.h"
 #include "mcc/terrain/terrain_flags.h"
+#include "mcc/shader/shader_pipeline.h"
+#include "mcc/terrain/terrain_renderer.h"
 
 namespace mcc::terrain {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
@@ -93,5 +95,28 @@ namespace mcc::terrain {
     IndexBufferScope ibo(ibo_);
     glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), (const GLvoid*) 0);
     CHECK_GL(FATAL);
+  }
+
+
+  RenderTerrainChunkPipeline::RenderTerrainChunkPipeline(TerrainChunk* chunk,
+                                                         const glm::mat4& model):
+    Pipeline(),
+    chunk_(chunk),
+    model_(model) {
+    AddChild(new ApplyPipeline([]() {
+      const auto material = TerrainRenderer::GetTerrainMaterial();
+      material->Bind();
+    }));
+    AddChild(new ApplyShaderPipeline(GetShader("terrain"), [chunk](const ShaderRef& shader) {
+      shader->ApplyShader();
+      shader->SetUniformBlock("Camera", 0);
+      shader->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
+      shader->SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
+      shader->SetMat4("model", chunk->GetModelMatrix());
+      shader->SetMaterial("material");
+    }));
+    AddChild(new ApplyPipeline([chunk]() {
+      chunk->Render();
+    }));
   }
 }
