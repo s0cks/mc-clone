@@ -3,6 +3,7 @@
 #include "mcc/window.h"
 #include "mcc/gui/gui.h"
 
+#include "mcc/bloom.h"
 #include "mcc/framebuffer_pipeline.h"
 
 namespace mcc::renderer {
@@ -35,8 +36,24 @@ namespace mcc::renderer {
     VLOG(3) << "drawing screen....";
     const auto size = Window::GetSize();
     auto fb = Renderer::GetFrameBuffer();
+    fb->Unbind();
 
-    RenderFrameBufferPipeline pipeline(fb, FrameBufferObject((const BufferObjectId)0), shader_, kColorAndDepthClearMask);
+    BloomPipeline<> bloom(fb, Dimension(size[0], size[1]), GetShader("blur"));
+    bloom.Render();
+    
+    RenderFrameBufferPipeline pipeline(fb, FrameBufferObject((const BufferObjectId)0), nullptr, kColorAndDepthClearMask);
+    pipeline.AddChild(new ApplyPipeline([&]() {
+      fb->GetColorBuffer(0)->Bind(0);
+      bloom.GetFrameBuffer(0)->GetColorBuffer(0)->Bind(1);
+    }));
+    pipeline.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
+      shader->SetInt("tex", 0);
+      shader->SetInt("bloomTex", 1);
+      shader->SetBool("bloom", true);
+      shader->SetBool("hdr", true);
+      shader->SetFloat("gamma", 2.2f);
+      shader->SetFloat("exposure", 1.0f);
+    }));
     pipeline.Render();
   }
 }

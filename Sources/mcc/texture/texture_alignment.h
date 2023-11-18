@@ -25,12 +25,12 @@ namespace mcc::texture {
     TextureAlignment pack;
     TextureAlignment unpack;
 
-    PixelStoreAlignment(const TextureAlignment pack_alignment,
-                        const TextureAlignment unpack_alignment):
+    constexpr PixelStoreAlignment(const TextureAlignment pack_alignment,
+                                  const TextureAlignment unpack_alignment):
                         pack(pack_alignment),
                         unpack(unpack_alignment) {
     }
-    PixelStoreAlignment():
+    constexpr PixelStoreAlignment():
       PixelStoreAlignment(kDefaultPackAlignment, kDefaultUnpackAlignment) {
     }
     PixelStoreAlignment(const PixelStoreAlignment& rhs) = default;
@@ -45,6 +45,8 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
   };
+
+  static constexpr const auto kDefaultAlignment = PixelStoreAlignment();
 }
 
 #endif //MCC_TEXTURE_ALIGNMENT_H

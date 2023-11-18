@@ -111,7 +111,36 @@ namespace mcc::renderer {
     Window::AddFrame(gui::RendererFrame::New());
 
     const auto size = Window::GetSize();
-    frame_buffer_.Set(FrameBuffer::New(size[0], size[1]));
+    std::vector<ColorAttachment> color_attachments = {
+      { // default
+        .slot = GL_COLOR_ATTACHMENT0,
+        .internalFormat = GL_RGBA16F,
+        .format = GL_RGBA,
+        .type = GL_FLOAT,
+        .alignment = texture::kDefaultAlignment,
+        .filter = texture::kLinearFilter,
+        .wrap = texture::kDefaultWrap,
+      },
+      { // brightness
+        .slot = GL_COLOR_ATTACHMENT1,
+        .internalFormat = GL_RGBA16F,
+        .format = GL_RGBA,
+        .type = GL_FLOAT,
+        .alignment = texture::kDefaultAlignment,
+        .filter = texture::kLinearFilter,
+        .wrap = texture::kDefaultWrap,
+      },
+      { // picking
+        .slot = GL_COLOR_ATTACHMENT2,
+        .internalFormat = GL_RGB32UI,
+        .format = GL_RGB_INTEGER,
+        .type = GL_UNSIGNED_INT,
+        .alignment = texture::kDefaultAlignment,
+        .filter = texture::kLinearFilter,
+        .wrap = texture::kDefaultWrap,
+      }
+    };
+    frame_buffer_.Set(FrameBuffer::New(Dimension(size), color_attachments));
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
 
     Entity::OnSignatureChanged()

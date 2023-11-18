@@ -2,15 +2,84 @@
 #define MCC_BLOOM_H
 
 #include "mcc/framebuffer.h"
+#include "mcc/framebuffer_pipeline.h"
 
 namespace mcc {
-  class Bloom {
+  class BlurPipeline : public Pipeline {
   private:
-    FrameBuffer* a;
-    FrameBuffer* b;
+    TextureRef src_;
+    FrameBuffer* dst_;
+    bool horizontal_;
+    ShaderRef shader_;
+  public:
+    BlurPipeline(TextureRef src,
+                 FrameBuffer* dst,
+                 const bool horizontal,
+                 ShaderRef shader):
+      Pipeline(),
+      src_(src),
+      dst_(dst),
+      horizontal_(horizontal),
+      shader_(shader) {
+      AddChild(new ApplyPipeline([&]() {
+        src_->Bind(0);
+      }));
+      AddChild(new ApplyShaderPipeline(shader, [&](const ShaderRef& s) {
+        s->SetInt("tex", 0);
+        s->SetBool("horizontal", horizontal_);
+      }));
+    }
+    ~BlurPipeline() override = default;
 
-    Bloom();
-    ~Bloom() = default;
+    void Render() override {
+      dst_->Bind();
+      InvertedDepthTestScope depth_test;
+      RenderChildren();
+      dst_->mesh()->Draw();
+    }
+  };
+
+  template<const int NumberOfHorizontalPasses = 5,
+           const int NumberOfVerticalPasses = 5,
+           const int NumberOfFrameBuffers = 2>
+  class BloomPipeline : public Pipeline {
+  private:
+    FrameBuffer* src_;
+    Dimension size_;
+    ShaderRef blur_;
+    ShaderRef bloom_;
+    FrameBuffer* frame_buffers_[NumberOfFrameBuffers];
+  public:
+    BloomPipeline(FrameBuffer* src, const Dimension& size, ShaderRef blur):
+      Pipeline(),
+      src_(src),
+      size_(size),
+      blur_(blur) {
+      for(auto idx = 0; idx < NumberOfFrameBuffers; idx++)
+        frame_buffers_[idx] = FrameBuffer::New(size);
+    }
+    ~BloomPipeline() override {
+      for(const auto& fb : frame_buffers_)
+        delete fb;
+    }
+
+    FrameBuffer* GetFrameBuffer(int idx) const {
+      return frame_buffers_[idx];
+    }
+
+    void Render() override {
+      bool first = true;
+      bool flipped = true;
+      for(auto idx = 0; idx < NumberOfHorizontalPasses + NumberOfVerticalPasses; idx++) {
+        auto src = first ? src_->GetColorBuffer(1) : frame_buffers_[!flipped]->GetColorBuffer(0);
+        auto dst = frame_buffers_[flipped];
+        BlurPipeline pipe(src, dst, flipped, GetShader("blur"));
+        pipe.Render();
+        if(first) 
+          first = false;
+        flipped = !flipped;
+      }
+    }
   };
 }
 

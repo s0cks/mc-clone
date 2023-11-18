@@ -43,7 +43,6 @@ int main(int argc, char** argv) {
 
   using namespace mcc;
   settings::Init();
-  d2::Mesh::Init();
   font::Initialize();
   Entities::Initialize();
   const auto loop = uv_loop_new();
@@ -56,6 +55,8 @@ int main(int argc, char** argv) {
   Window::Init();
   terrain::Terrain::Init();
   resource::Registry::Init();
+  FrameBuffer::Init();
+  d2::Mesh::Init();
 
   Engine::Run();
   return EXIT_SUCCESS;

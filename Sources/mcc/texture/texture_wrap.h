@@ -18,18 +18,15 @@ namespace mcc::texture {
     TextureWrapMode s;
     TextureWrapMode t;
 
-    TextureWrap(const TextureWrapMode R,
-                const TextureWrapMode S,
-                const TextureWrapMode T):
+    constexpr TextureWrap(const TextureWrapMode R,
+                          const TextureWrapMode S,
+                          const TextureWrapMode T):
       r(R),
       s(S),
       t(T) {
     }
-    TextureWrap(const TextureWrapMode mode):
+    explicit constexpr TextureWrap(const TextureWrapMode mode = kDefaultWrapMode):
       TextureWrap(mode, mode, mode) {
-    }
-    TextureWrap():
-      TextureWrap(kDefaultWrapMode) {
     }
     TextureWrap(const TextureWrap& rhs) = default;
     ~TextureWrap() = default;
@@ -44,6 +41,10 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
   };
+
+  static constexpr const auto kDefaultWrap = TextureWrap(kDefaultWrapMode);
+  static constexpr const auto kClampToEdgeWrap = TextureWrap(kClampToEdge);
+  static constexpr const auto kClampToBorderWrap = TextureWrap(kClampToBorder);
 }
 
 #endif //MCC_TEXTURE_WRAP_H

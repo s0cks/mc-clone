@@ -20,6 +20,10 @@ namespace mcc {
       }
       ~ApplyShaderPipeline() override = default;
 
+      ShaderRef shader() const {
+        return shader_;
+      }
+
       void Render() override {
         shader_->ApplyShader();
         apply_(shader_);

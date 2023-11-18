@@ -309,3 +309,7 @@ void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbu
 GLenum glCheckFramebufferStatus(GLenum target) {
   __ glCheckFramebufferStatus(target);
 }
+
+void glDrawBuffers(GLsizei n, const GLenum *bufs) {
+  __ glDrawBuffers(n, bufs);
+}

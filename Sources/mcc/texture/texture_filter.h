@@ -19,15 +19,15 @@ namespace mcc::texture {
     TextureFilterComponent min;
     TextureFilterComponent mag;
 
-    TextureFilter(const TextureFilterComponent min_filter,
-                  const TextureFilterComponent mag_filter):
-                  min(min_filter),
-                  mag(mag_filter) {
+    constexpr TextureFilter(const TextureFilterComponent min_filter,
+                            const TextureFilterComponent mag_filter):
+      min(min_filter),
+      mag(mag_filter) {
     }
-    TextureFilter():
+    constexpr TextureFilter():
       TextureFilter(kDefaultMinFilter, kDefaultMagFilter) {
     }
-    explicit TextureFilter(const TextureFilterComponent component):
+    explicit constexpr TextureFilter(const TextureFilterComponent component):
       TextureFilter(component, component) {
     }
     TextureFilter(const TextureFilter& rhs) = default;
@@ -41,6 +41,10 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
   };
+
+  static constexpr const auto kDefaultFilter = TextureFilter();
+  static constexpr const auto kLinearFilter = TextureFilter(kLinear);
+  static constexpr const auto kNearestFilter = TextureFilter(kNearest);
 }
 
 #endif //MCC_TEXTURE_FILTER_H

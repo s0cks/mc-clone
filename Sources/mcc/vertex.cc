@@ -10,7 +10,7 @@ namespace mcc {
     }
 
     void Mesh::Init() {
-      Engine::OnInit(&OnPostInit);
+      Engine::OnPreInit(&OnPostInit);
     }
 
     Mesh::Mesh(const Vertex* vertices, const uint64_t num_vertices):
@@ -20,7 +20,6 @@ namespace mcc {
 
     void Mesh::Draw() {
       VertexArrayObjectScope vao_scope(vao);
-      VertexBufferScope vbo_scope(vbo);
       VertexBuffer::PositionAttribute::Enable();
       VertexBuffer::UvAttribute::Enable();
       vbo.Draw(GL_TRIANGLES);

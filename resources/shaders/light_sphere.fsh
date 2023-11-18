@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 layout (std140) uniform Camera {
   vec4 pos;
@@ -21,15 +22,26 @@ in vec3 vPos;
 in vec3 vNormal;
 
 void main() {
+  vec3 normal = normalize(vNormal);
   vec3 ambient = light.ambient;
-  vec3 lightDir = normalize(light.pos - vPos);
-  float diff = max(dot(vNormal, lightDir), 0.0f);
-  vec3 diffuse = light.diffuse * diff;
+  vec3 lighting = vec3(0.0f);
 
-  vec3 viewDir = normalize(camera.pos.xyz - vPos);
-  vec3 reflectionDirection = reflect(-lightDir, vNormal);
-  float specAmount = pow(max(dot(viewDir, reflectionDirection), 0.0f), 8);
-  vec3 specular = light.specular * specAmount;
-  
-  FragColor = vec4(lightColor, 1.0f) * vec4(ambient + diffuse + specular, 1.0f);
+  // diffuse
+  vec3 lightDir = normalize(light.pos - vPos);
+  float diff = max(dot(lightDir, vNormal), 0.0);
+  vec3 atten = lightColor * diff * (light.diffuse * diff);      
+  // attenuation (use quadratic as we have gamma correction)
+  float distance = length(vPos - light.pos);
+  atten *= 1.0 / (distance * distance);
+  lighting += atten;
+
+  vec3 result = ambient + lighting;
+  // check whether result is higher than some threshold, if so, output as bloom threshold color
+  float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
+  if(brightness > 1.0) {
+    BrightColor = vec4(result, 1.0);
+  } else {
+    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+  }
+  FragColor = vec4(result, 1.0);
 }

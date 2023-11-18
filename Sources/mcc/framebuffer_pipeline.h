@@ -65,6 +65,30 @@ namespace mcc {
   public:
     RenderFrameBufferPipeline(FrameBuffer* src,
                               FrameBufferObject dst,
+                              ApplyShaderPipeline* shader = nullptr,
+                              const ClearMask clear_mask = kNoClearMask):
+      Pipeline(),
+      src_(src),
+      dst_(dst),
+      shader_(shader ? shader->shader() : ShaderRef()),
+      clear_mask_(clear_mask) {
+      if(shader)
+        AddChild(shader);
+    }
+    RenderFrameBufferPipeline(FrameBuffer* src,
+                              const BufferObjectId dst,
+                              ApplyShaderPipeline* shader,
+                              const ClearMask clear_mask = kNoClearMask):
+      Pipeline(),
+      src_(src),
+      dst_(dst),
+      shader_(shader->shader()),
+      clear_mask_(clear_mask) {
+      if(shader)
+        AddChild(shader);
+    }
+    RenderFrameBufferPipeline(FrameBuffer* src,
+                              FrameBufferObject dst,
                               ShaderRef shader,
                               const ClearMask clear_mask = kNoClearMask):
       Pipeline(),
@@ -74,6 +98,8 @@ namespace mcc {
       clear_mask_(clear_mask) {
       AddChild(new ApplyShaderPipeline(shader, [](const ShaderRef& s) {
         s->SetInt("tex", 0);
+        s->SetInt("bloomTex", 1);
+        s->SetBool("bloom", true);
         s->SetBool("hdr", true);
         s->SetFloat("gamma", 2.2f);
         s->SetFloat("exposure", 1.0f);
@@ -85,6 +111,13 @@ namespace mcc {
                               const ClearMask clear_mask = kNoClearMask):
       RenderFrameBufferPipeline(src, dst->fbo(), shader, clear_mask) {
     }
+    RenderFrameBufferPipeline(FrameBuffer* src,
+                              FrameBuffer* dst,
+                              ApplyShaderPipeline* shader,
+                              const ClearMask clear_mask = kNoClearMask):
+      RenderFrameBufferPipeline(src, dst->fbo(), shader, clear_mask) {
+    }
+    
     ~RenderFrameBufferPipeline() override = default;
 
     void Render() override;

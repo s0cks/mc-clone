@@ -107,9 +107,9 @@ namespace mcc::texture {
                      const bool generate = true,
                      const bool bind = true,
                      const bool unbind = true,
-                     const PixelStoreAlignment& alignment = {},
-                     const TextureFilter& filter = {},
-                     const TextureWrap& wrap = {}):
+                     const PixelStoreAlignment& alignment = kDefaultAlignment,
+                     const TextureFilter& filter = kDefaultFilter,
+                     const TextureWrap& wrap = kDefaultWrap):
       Resource(),
       id_(kInvalidTextureId),
       target_(target),

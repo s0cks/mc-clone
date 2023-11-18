@@ -406,12 +406,12 @@ namespace mcc {
     //TODO:
     // - type protect mode
     virtual void Draw(const GLenum mode,  GLint first, GLsizei count) { 
-      glDrawArrays(mode, 0, count);
+      glDrawArrays(mode, first, count);
       CHECK_GL(FATAL);
     }
 
     virtual void Draw(const GLenum mode,  GLint first = 0) { 
-      glDrawArrays(mode, 0, length());
+      glDrawArrays(mode, first, length());
       CHECK_GL(FATAL);
     }
   };
