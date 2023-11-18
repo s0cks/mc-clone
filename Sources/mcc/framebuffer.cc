@@ -14,9 +14,12 @@ namespace mcc {
   };
   static d2::Mesh* kFrameBufferMesh;
 
+  d2::Mesh* FrameBuffer::GetMesh() {
+    return kFrameBufferMesh;
+  }
+
   FrameBuffer::FrameBuffer(const Dimension& size, const FrameBufferAttachmentList& attachments):
     fbo_(true, true, false),
-    mesh_(kFrameBufferMesh),
     attachments_(attachments),
     dbuff_(size),
     size_(size) {

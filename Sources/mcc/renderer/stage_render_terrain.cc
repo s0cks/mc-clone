@@ -8,7 +8,7 @@ namespace mcc::renderer { //TODO: merge w/ TerrainRenderer
   void RenderTerrainStage::Render(const Tick& tick) {
     const auto skybox = skybox::Skybox::Get();
     if(skybox) {
-      DLOG(INFO) << "rendering skybox....";
+      VLOG(3) << "rendering skybox....";
       skybox::RenderSkyboxPipeline skybox_pipe(skybox);
       skybox_pipe.Render();
     }

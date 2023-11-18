@@ -13,7 +13,6 @@ namespace mcc {
   class FrameBuffer {
   private:
     FrameBufferObject fbo_;
-    d2::Mesh* mesh_;
     FrameBufferAttachmentList attachments_;
     DepthBuffer dbuff_;
     Dimension size_;
@@ -48,10 +47,6 @@ namespace mcc {
       return nullptr;
     }
 
-    d2::Mesh* mesh() const {
-      return mesh_;
-    }
-
     void Bind() const {
       return fbo_.Bind();
     }
@@ -73,6 +68,7 @@ namespace mcc {
     static void OnPostInit();
   public:
     static void Init();
+    static d2::Mesh* GetMesh();
     static FrameBuffer* New(const Dimension& size, const FrameBufferAttachmentList& attachments = {});
 
     static inline FrameBuffer*

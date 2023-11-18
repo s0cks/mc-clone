@@ -35,7 +35,7 @@ namespace mcc {
       dst_->Bind();
       InvertedDepthTestScope depth_test;
       RenderChildren();
-      dst_->mesh()->Draw();
+      FrameBuffer::GetMesh()->Draw();
     }
   };
 

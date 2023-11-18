@@ -3,9 +3,6 @@
 #include "mcc/window.h"
 #include "mcc/gui/gui.h"
 
-#include "mcc/bloom.h"
-#include "mcc/framebuffer_pipeline.h"
-
 namespace mcc::renderer {
   class FrameRenderer : public gui::FrameVisitor {
   private:
@@ -23,6 +20,17 @@ namespace mcc::renderer {
     }
   };
 
+  RenderScreenStage::RenderScreenStage(uv_loop_t* loop, FrameBuffer* fb):
+    RenderStage(loop),
+    shader_(GetShader("framebuffer")),
+    bloom_(fb, Dimension(Window::GetSize()), GetShader("blur")),
+    pipeline_(fb, FrameBufferObject((const BufferObjectId)0), nullptr, kColorAndDepthClearMask) {
+  }
+
+  RenderScreenStage::RenderScreenStage(uv_loop_t* loop):
+    RenderScreenStage(loop, Renderer::GetFrameBuffer()) {
+  }
+
   void RenderGuiStage::Render(const Tick& tick) {
     FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
     Window::VisitFrames(&frame_renderer);
@@ -37,16 +45,12 @@ namespace mcc::renderer {
     const auto size = Window::GetSize();
     auto fb = Renderer::GetFrameBuffer();
     fb->Unbind();
-
-    BloomPipeline<> bloom(fb, Dimension(size[0], size[1]), GetShader("blur"));
-    bloom.Render();
-    
-    RenderFrameBufferPipeline pipeline(fb, FrameBufferObject((const BufferObjectId)0), nullptr, kColorAndDepthClearMask);
-    pipeline.AddChild(new ApplyPipeline([&]() {
+    bloom_.Render();
+    pipeline_.AddChild(new ApplyPipeline([&]() {
       fb->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
-      bloom.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
+      bloom_.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
     }));
-    pipeline.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
+    pipeline_.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
       shader->SetInt("tex", 0);
       shader->SetInt("bloomTex", 1);
       shader->SetBool("bloom", true);
@@ -54,6 +58,6 @@ namespace mcc::renderer {
       shader->SetFloat("gamma", 2.2f);
       shader->SetFloat("exposure", 1.0f);
     }));
-    pipeline.Render();
+    pipeline_.Render();
   }
 }

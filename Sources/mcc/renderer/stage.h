@@ -9,6 +9,9 @@
 #include "mcc/shader/shader.h"
 #include "mcc/ecs/entity.h"
 
+#include "mcc/bloom.h"
+#include "mcc/framebuffer_pipeline.h"
+
 namespace mcc::renderer {
 #define FORWARD_DECLARE_STAGE(Name) class Name##Stage;
   FOR_EACH_RENDERER_STATE(FORWARD_DECLARE_STAGE);
@@ -188,11 +191,11 @@ namespace mcc::renderer {
   class RenderScreenStage : public RenderStage {
   private:
     ShaderRef shader_;
+    BloomPipeline<> bloom_;
+    RenderFrameBufferPipeline pipeline_;
   public:
-    explicit RenderScreenStage(uv_loop_t* loop):
-      RenderStage(loop),
-      shader_(GetShader("framebuffer")) {
-    }
+    explicit RenderScreenStage(uv_loop_t* loop, FrameBuffer* fb);
+    RenderScreenStage(uv_loop_t* loop);
     ~RenderScreenStage() override = default;
     DEFINE_RENDER_STAGE(Screen);
   };

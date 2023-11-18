@@ -92,6 +92,16 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnInit() {
+    const auto size = Window::GetSize();
+    FrameBufferAttachmentList attachments = {
+      ColorBufferAttachment::NewDefault(0, size), // default
+      ColorBufferAttachment::NewHdr(1, size), // brightness
+      ColorBufferAttachment::NewPicking(2, size), // picking
+    };
+    frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
+  }
+
+  void Renderer::OnPostInit() {
     const auto loop = uv_loop_new();
     post_render_.Set(new PostRenderStage(loop));
     render_gui_.Set(new RenderGuiStage(loop));
@@ -100,9 +110,7 @@ namespace mcc::renderer {
     render_terrain_.Set(new RenderTerrainStage(loop));
     pre_render_.Set(new PreRenderStage(loop));
     SetLoop(loop);
-  }
 
-  void Renderer::OnPostInit() {
     signature_.set(Renderable::GetComponentId());
     signature_.set(physics::Transform::GetComponentId());
     DLOG(INFO) << "signature: " << signature_;
@@ -110,13 +118,6 @@ namespace mcc::renderer {
     Window::AddFrame(gui::SettingsFrame::New());
     Window::AddFrame(gui::RendererFrame::New());
 
-    const auto size = Window::GetSize();
-    FrameBufferAttachmentList attachments = {
-      ColorBufferAttachment::NewDefault(0, size), // default
-      ColorBufferAttachment::NewHdr(1, size), // brightness
-      ColorBufferAttachment::NewPicking(2, size), // picking
-    };
-    frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
 
     Entity::OnSignatureChanged()

@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
   Window::Init();
   terrain::Terrain::Init();
   resource::Registry::Init();
+  
   FrameBuffer::Init();
   d2::Mesh::Init();
 
