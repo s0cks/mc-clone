@@ -5,12 +5,12 @@ namespace mcc {
   namespace d2 {
     static VertexArrayObject k2dMeshVao(kInvalidVertexArrayObject);
 
-    void Mesh::OnPostInit() {
+    void Mesh::OnInit() {
       k2dMeshVao = VertexArrayObject();
     }
 
     void Mesh::Init() {
-      Engine::OnPreInit(&OnPostInit);
+      Engine::OnInit(&OnInit);
     }
 
     Mesh::Mesh(const Vertex* vertices, const uint64_t num_vertices):

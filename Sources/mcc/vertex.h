@@ -80,7 +80,7 @@ namespace mcc {
 
       static void Init();
     private:
-      static void OnPostInit();
+      static void OnInit();
     };
 
     Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices);

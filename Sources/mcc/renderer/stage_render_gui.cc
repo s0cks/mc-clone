@@ -24,7 +24,20 @@ namespace mcc::renderer {
     RenderStage(loop),
     shader_(GetShader("framebuffer")),
     bloom_(fb, Dimension(Window::GetSize()), GetShader("blur")),
-    pipeline_(fb, FrameBufferObject((const BufferObjectId)0), nullptr, kColorAndDepthClearMask) {
+    pipeline_(fb, kColorAndDepthClearMask) {
+    pipeline_.AddChild(new ApplyPipeline([this]() {
+      auto fb = Renderer::GetFrameBuffer();
+      fb->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
+      bloom_.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
+    }));
+    pipeline_.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
+      shader->SetInt("tex", 0);
+      shader->SetInt("bloomTex", 1);
+      shader->SetBool("bloom", true);
+      shader->SetBool("hdr", true);
+      shader->SetFloat("gamma", 2.2f);
+      shader->SetFloat("exposure", 1.0f);
+    }));
   }
 
   RenderScreenStage::RenderScreenStage(uv_loop_t* loop):
@@ -46,18 +59,6 @@ namespace mcc::renderer {
     auto fb = Renderer::GetFrameBuffer();
     fb->Unbind();
     bloom_.Render();
-    pipeline_.AddChild(new ApplyPipeline([&]() {
-      fb->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
-      bloom_.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);
-    }));
-    pipeline_.AddChild(new ApplyShaderPipeline(shader_, [](const ShaderRef& shader) {
-      shader->SetInt("tex", 0);
-      shader->SetInt("bloomTex", 1);
-      shader->SetBool("bloom", true);
-      shader->SetBool("hdr", true);
-      shader->SetFloat("gamma", 2.2f);
-      shader->SetFloat("exposure", 1.0f);
-    }));
     pipeline_.Render();
   }
 }

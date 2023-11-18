@@ -11,6 +11,6 @@ namespace mcc {
     InvertedDepthTestScope depth_test;
     for(const auto& child : children_)
       child->Render();
-    FrameBuffer::GetMesh()->Draw(); //TODO: move to child
+    FrameBuffer::GetMesh()->Draw();
   }
 }

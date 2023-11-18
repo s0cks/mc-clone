@@ -12,10 +12,12 @@ namespace mcc {
     { .pos = glm::vec2(1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f) },
     { .pos = glm::vec2(-1.0f, 1.0f), .uv = glm::vec2(0.0f, 1.0f) },
   };
-  static d2::Mesh* kFrameBufferMesh;
+  static d2::Mesh* kFrameBufferMesh = nullptr;
 
   d2::Mesh* FrameBuffer::GetMesh() {
-    return kFrameBufferMesh;
+    if(kFrameBufferMesh != nullptr)
+      return kFrameBufferMesh;
+    return kFrameBufferMesh = d2::NewMesh(kFrameBufferVertices);
   }
 
   FrameBuffer::FrameBuffer(const Dimension& size, const FrameBufferAttachmentList& attachments):
@@ -51,7 +53,6 @@ namespace mcc {
   }
 
   void FrameBuffer::OnInit() {
-    kFrameBufferMesh = d2::NewMesh(kFrameBufferVertices);
   }
 
   void FrameBuffer::OnPostInit() {

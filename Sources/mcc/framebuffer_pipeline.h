@@ -17,26 +17,19 @@ namespace mcc {
 
   class FrameBufferPipeline : public Pipeline {
   private:
-    FrameBufferObject src_;
     FrameBufferObject dst_;
     ClearMask clear_mask_;
     glm::vec4 clear_color_;
   public:
-    FrameBufferPipeline(FrameBufferObject src,
-                        FrameBufferObject dst,
+    FrameBufferPipeline(FrameBufferObject dst,
                         const ClearMask clear_mask = kDefaultClearMask,
                         const glm::vec4& clear_color = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)):
       Pipeline(),
-      src_(src),
       dst_(dst),
       clear_mask_(clear_mask),
       clear_color_(clear_color) {
     }
     ~FrameBufferPipeline() override = default;
-
-    FrameBufferObject src() const {
-      return src_;
-    }
 
     FrameBufferObject dst() const {
       return dst_;
@@ -48,7 +41,6 @@ namespace mcc {
       glClearColor(clear_color_[0],clear_color_[1], clear_color_[2], clear_color_[3]);
       for(const auto& child : children_)
         child->Render();
-      src_.Bind();
     }
   };
 
@@ -121,6 +113,10 @@ namespace mcc {
                               ApplyShaderPipeline* shader = nullptr,
                               const ClearMask clear_mask = kNoClearMask):
       RenderFrameBufferPipeline(src, FrameBufferObject(kDefaultFrameBufferObjectId), shader, clear_mask) {
+    }
+    RenderFrameBufferPipeline(FrameBuffer* src,
+                              const ClearMask clear_mask = kNoClearMask):
+      RenderFrameBufferPipeline(src, nullptr, clear_mask) {
     }
     
     ~RenderFrameBufferPipeline() override = default;
