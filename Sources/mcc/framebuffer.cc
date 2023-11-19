@@ -33,9 +33,14 @@ namespace mcc {
     unsigned int num_draw_bufffers;
     for(auto idx = 0; idx < num_attachments; idx++) {
       const auto& attachment = attachments_[idx];
+      if(!attachment->IsEnabled())
+        continue;
       fbo_.Attach(attachment);
-      if(attachment->IsDrawBuffer()) //TODO: genericize
-        draw_buffers[((ColorBufferAttachment*) attachment)->slot()] = ((ColorBufferAttachment*) attachment)->target();
+      if(attachment->IsColorBufferAttachment()) {
+        draw_buffers[num_draw_bufffers++] = attachment->AsColorBufferAttachment()->target();
+      } else if(attachment->IsPickingAttachment()) {
+        draw_buffers[num_draw_bufffers++] = attachment->AsPickingAttachment()->target();
+      }
     }
     if(num_draw_bufffers > 0) {
       glDrawBuffers(num_draw_bufffers, draw_buffers);

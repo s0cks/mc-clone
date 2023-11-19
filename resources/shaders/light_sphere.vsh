@@ -10,13 +10,16 @@ layout (std140) uniform Camera {
   mat4 view;
 } camera;
 
+uniform int entity;
 uniform mat4 model;
 out vec3 vPos;
 out vec3 vNormal;
 out vec2 vUv;
 out vec3 vColor;
+flat out int vEntity;
 
 void main() {
+  vEntity = entity;
   vPos = pos;
   vNormal = normal;
   gl_Position = camera.projection * camera.view * model * vec4(pos, 1.0);

@@ -66,12 +66,18 @@ namespace mcc {
       switch(attachment->type()) {
         case kColorBufferAttachment:
           return Attach((ColorBufferAttachment*) attachment, level);
+        case kPickingAttachment:
+          return Attach(attachment->AsPickingAttachment(), level);
         default:
           DLOG(ERROR) << "unknown FrameBufferAttachment @" << attachment->name();
       }
     }
 
     void Attach(ColorBufferAttachment* attachment, const int level = 0) {
+      return Attach(attachment->slot(), attachment->GetTexture(), level);
+    }
+
+    void Attach(PickingAttachment* attachment, const int level = 0) {
       return Attach(attachment->slot(), attachment->GetTexture(), level);
     }
 

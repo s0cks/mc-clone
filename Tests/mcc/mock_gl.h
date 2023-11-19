@@ -93,6 +93,8 @@ namespace mcc {
     MOCK_METHOD1(glCheckFramebufferStatus, GLenum(GLenum target));
     MOCK_METHOD4(glFramebufferRenderbuffer, void(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer));
     MOCK_METHOD2(glDrawBuffers, void(GLsizei n, const GLenum *bufs));
+    MOCK_METHOD7(glReadPixels, void(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels));
+    MOCK_METHOD1(glReadBuffer, void(GLenum mode));
   };
 }
 

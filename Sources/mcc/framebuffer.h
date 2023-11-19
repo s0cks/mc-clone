@@ -47,8 +47,19 @@ namespace mcc {
       return nullptr;
     }
 
+    PickingAttachment* GetPickingAttachment(const uint64_t idx) const {
+      for(const auto& attachment : attachments_) {
+        if(attachment->IsPickingAttachment() && attachment->AsPickingAttachment()->slot() == idx)
+          return attachment->AsPickingAttachment();
+      }
+      return nullptr;
+    }
+
     void Bind() const {
-      return fbo_.Bind();
+      fbo_.Bind();
+      // glViewport(0, 0, size_[0], size_[1]);
+      // CHECK_GL(FATAL);
+      //TODO Need to reset image buffer
     }
 
     void Unbind() const {

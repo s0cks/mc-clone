@@ -43,34 +43,34 @@ namespace mcc::mesh {
 
   class VertexBuffer : public VertexBufferTemplate<Vertex> {
   public:
+    enum VertexLayout {
+      kPosIndex = 0,
+      kPosOffset = offsetof(Vertex, pos),
+
+      kNormalIndex = 1,
+      kNormalOffset = offsetof(Vertex, normal),
+
+      kColorIndex = 2,
+      kColorOffset = offsetof(Vertex, color),
+
+      kUvIndex = 3,
+      kUvOffset = offsetof(Vertex, uv),
+    };
+
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kPosIndex, kPosOffset, sizeof(Vertex), Position);
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kNormalIndex, kNormalOffset, sizeof(Vertex), Normal);
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kColorIndex, kColorOffset, sizeof(Vertex), Color);
+    DEFINE_VEC3F_VERTEX_BUFFER_ATTR(kUvIndex, kUvOffset, sizeof(Vertex), Uv);
+  public:
     explicit VertexBuffer(const BufferObjectId id = kInvalidBufferObject):
       VertexBufferTemplate(id) {
     }
     explicit VertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
       VertexBufferTemplate(vertices, num_vertices) {
-      // pos
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(0);
-      CHECK_GL(FATAL);
-
-      // normal
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, normal));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(1);
-      CHECK_GL(FATAL);
-
-      // color
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color)); 
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(2);
-      CHECK_GL(FATAL);
-
-      // uv
-      glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(3);
-      CHECK_GL(FATAL);
+      PositionAttribute::Bind();
+      NormalAttribute::Bind();
+      ColorAttribute::Bind();
+      UvAttribute::Bind();
     }
     explicit VertexBuffer(const VertexList& vertices):
       VertexBuffer(&vertices[0], vertices.size()) {

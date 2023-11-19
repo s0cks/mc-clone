@@ -90,7 +90,7 @@ namespace mcc::renderer {
     FrameBufferAttachmentList attachments = {
       ColorBufferAttachment::NewDefault(0, size), // default
       ColorBufferAttachment::NewHdr(1, size), // brightness
-      ColorBufferAttachment::NewPicking(2, size), // picking
+      PickingAttachment::New(2, size), // picking
     };
     frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
   }
@@ -135,6 +135,7 @@ namespace mcc::renderer {
       const auto diffuseColor = lightColor * glm::vec3(0.5f);
       const auto ambientColor = diffuseColor * glm::vec3(0.8f);
       shader->SetLight("light", lightPos, ambientColor, diffuseColor, glm::vec3(1.0f));
+      shader->SetInt("entity", entity_.id());
       shader->SetMaterial("material");
       shader->SetInt("tex0", 0);
       shader->SetVec3("lightColor", lightColor);
@@ -214,6 +215,15 @@ namespace mcc::renderer {
       AddChild(new ApplyPipeline([]() {
         gui::FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
         Window::VisitFrames(&frame_renderer);
+      }));
+      AddChild(new ApplyPipeline([this,fb]() {
+        fb->Bind();
+        const auto picker = fb->GetPickingAttachment(2);
+        if(!picker)
+          return;
+        const auto mPos = Mouse::GetPosition();
+        DLOG(INFO) << "pixel: " << picker->GetPixel(mPos[0], mPos[1]);
+        fb->Unbind();
       }));
     }
     ~RendererPipeline() override = default;

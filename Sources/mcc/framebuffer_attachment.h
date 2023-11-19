@@ -7,7 +7,8 @@
 namespace mcc {
 #define FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(V) \
   V(ColorBuffer)                                \
-  V(RenderBuffer)
+  V(RenderBuffer)                               \
+  V(Picking)
 
 #define FORWARD_DECLARE(Name) class Name##Attachment;
   FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(FORWARD_DECLARE)
@@ -24,16 +25,24 @@ namespace mcc {
 
   class FrameBufferAttachment {
   protected:
+    bool enabled_;
     FrameBufferAttachmentTarget target_;
 
-    explicit FrameBufferAttachment(const FrameBufferAttachmentTarget target):
+    FrameBufferAttachment(const bool enabled, const FrameBufferAttachmentTarget target):
+      enabled_(enabled),
       target_(target) {
+    }
+    explicit FrameBufferAttachment(const FrameBufferAttachmentTarget target):
+      FrameBufferAttachment(true, target) {
     }
   public:
     virtual ~FrameBufferAttachment() = default;
     virtual const char* name() const = 0;
-    virtual bool IsDrawBuffer() const = 0;
     virtual FrameBufferAttachmentType type() const = 0;
+
+    virtual bool IsEnabled() const {
+      return enabled_;
+    }
 
     FrameBufferAttachmentTarget target() const {
       return target_;
@@ -58,10 +67,6 @@ namespace mcc {
     FrameBufferAttachmentType type() const override { return FrameBufferAttachmentType::k##Name##Attachment; }  \
     Name##Attachment* As##Name##Attachment() override { return this; }
 
-  class DrawBufferAttachment : public FrameBufferAttachment {
-
-  };
-
   class ColorBufferAttachment : public FrameBufferAttachment {
   protected:
     TextureRef texture_;
@@ -73,10 +78,6 @@ namespace mcc {
   public:
     ~ColorBufferAttachment() override = default;
     DEFINE_FRAMEBUFFER_ATTACHMENT(ColorBuffer);
-
-    bool IsDrawBuffer() const override {
-      return true;
-    }
 
     TextureRef GetTexture() const {
       return texture_;
@@ -111,21 +112,64 @@ namespace mcc {
     }
 
     static inline ColorBufferAttachment*
-    NewPicking(const uint32_t slot,
-               const Dimension& size,
-               const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
-               const texture::TextureFilter& filter = texture::kLinearFilter,
-               const texture::TextureWrap& wrap = texture::kDefaultWrap) {
-      return New(slot, size, GL_RGB32UI, GL_RGB_INTEGER, GL_UNSIGNED_INT, alignment, filter, wrap);
-    }
-
-    static inline ColorBufferAttachment*
     NewDefault(const uint32_t slot,
            const Dimension& size,
            const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
            const texture::TextureFilter& filter = texture::kLinearFilter,
            const texture::TextureWrap& wrap = texture::kDefaultWrap) {
       return NewHdr(slot, size, alignment, filter, wrap);
+    }
+  };
+
+  class PickingAttachment : public FrameBufferAttachment {
+  protected:
+    TextureRef texture_;
+
+    PickingAttachment(const bool enabled, const GLuint slot, TextureRef texture):
+      FrameBufferAttachment(GL_COLOR_ATTACHMENT0 + slot),
+      texture_(texture) {
+    }
+  public:
+    ~PickingAttachment() override = default;
+    DEFINE_FRAMEBUFFER_ATTACHMENT(Picking);
+
+    TextureRef GetTexture() const {
+      return texture_;
+    }
+
+    GLuint slot() const {
+      return target_ - GL_COLOR_ATTACHMENT0;
+    }
+
+    uint32_t GetPixel(const uint64_t x, const uint64_t y) {
+      glReadBuffer(target());
+      CHECK_GL(FATAL);
+      uint32_t pixel;
+      glReadPixels(x, y, 1, 1, texture_->format(), texture_->type(), &pixel);
+      CHECK_GL(FATAL);
+      return pixel;
+    }
+  public:
+    static inline PickingAttachment*
+    New(const bool enabled,
+        const uint32_t slot,
+        const Dimension& size,
+        const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
+        const texture::TextureFilter& filter = texture::kNearestFilter,
+        const texture::TextureWrap& wrap = texture::kDefaultWrap) {
+      const auto texture = new texture::Texture(texture::k2D, true, true, false, GL_RGB32I, size, GL_RED_INTEGER , GL_UNSIGNED_INT, false, alignment, filter, wrap, NULL);
+      glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
+      CHECK_GL(FATAL);
+      return new PickingAttachment(enabled, slot, TextureRef(res::Tag(res::kTextureType), texture));
+    }
+
+    static inline PickingAttachment*
+    New(const uint32_t slot,
+        const Dimension& size,
+        const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
+        const texture::TextureFilter& filter = texture::kLinearFilter,
+        const texture::TextureWrap& wrap = texture::kDefaultWrap) {
+      return New(true, slot, size, alignment, filter, wrap);
     }
   };
 }

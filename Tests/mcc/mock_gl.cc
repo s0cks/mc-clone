@@ -313,3 +313,11 @@ GLenum glCheckFramebufferStatus(GLenum target) {
 void glDrawBuffers(GLsizei n, const GLenum *bufs) {
   __ glDrawBuffers(n, bufs);
 }
+
+void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels) {
+  __ glReadPixels(x, y, width, height, format, type, pixels);
+}
+
+void glReadBuffer(GLenum mode) {
+  __ glReadBuffer(mode);
+}
