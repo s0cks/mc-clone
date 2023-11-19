@@ -95,7 +95,7 @@ namespace mcc::renderer {
     frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
   }
 
-    class RenderEntityPipeline : public Pipeline {
+  class RenderEntityPipeline : public Pipeline {
   protected:
     const Entity entity_;
   public:

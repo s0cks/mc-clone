@@ -137,12 +137,10 @@ namespace mcc::gui {
     shader_->ApplyShader();
     shader_->SetInt("tex", 0);
     shader_->SetMat4("projection", projection);
-    shader_->ApplyShader();
     glViewport(0,0, (GLsizei) display_width_, (GLsizei) display_height_);
     CHECK_GL(FATAL);
     {
       const nk::DrawCommand* cmd;
-
       const nk_draw_index* offset = NULL;
 
       vao_.Bind();
@@ -152,12 +150,9 @@ namespace mcc::gui {
       vbo_.BufferData(max_vertex_buffer);
       ibo_.BufferData(max_element_buffer);
 
-      void* vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-      CHECK_GL(FATAL);
-      void* elements = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-      CHECK_GL(FATAL);
       {
-          /* fill convert configuration */
+        WriteOnlyMappedBufferScope<GL_ARRAY_BUFFER> vertices;
+        WriteOnlyMappedBufferScope<GL_ELEMENT_ARRAY_BUFFER> elements;
         struct nk_convert_config config;
         static const struct nk_draw_vertex_layout_element vertex_layout[] = {
             {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, offsetof(Vertex, pos)},
@@ -178,18 +173,13 @@ namespace mcc::gui {
         config.line_AA = AA;
 
         /* setup buffers to load vertices and elements */
-        nk_buffer_init_fixed(&vbuf, vertices, (size_t)max_vertex_buffer);
-        nk_buffer_init_fixed(&ebuf, elements, (size_t)max_element_buffer);
+        nk_buffer_init_fixed(&vbuf, vertices.raw_ptr(), (size_t)max_vertex_buffer);
+        nk_buffer_init_fixed(&ebuf, elements.raw_ptr(), (size_t)max_element_buffer);
         nk_convert(&ctx_, &cmds_, &vbuf, &ebuf, &config);
       }
-      glUnmapBuffer(GL_ARRAY_BUFFER);
-      CHECK_GL(FATAL);
-      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-      CHECK_GL(FATAL);
 
       /* iterate over and execute each draw command */
-      nk_draw_foreach(cmd, &ctx_, &cmds_)
-      {
+      nk_draw_foreach(cmd, &ctx_, &cmds_) {
         if (!cmd->elem_count) continue;
         glBindTexture(GL_TEXTURE_2D, (GLuint)cmd->texture.id);
         CHECK_GL(FATAL);

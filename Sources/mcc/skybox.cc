@@ -4,6 +4,8 @@
 #include "mcc/shader/shader.h"
 #include "mcc/thread_local.h"
 
+#include "mcc/renderer/renderer.h"
+
 namespace mcc::skybox {
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
   static ThreadLocal<Skybox> skybox_;
@@ -85,5 +87,18 @@ namespace mcc::skybox {
 
   rx::observable<Skybox*> Skybox::GetObservable() {
     return skybox_subject_.get_observable();
+  }
+
+  void RenderSkyboxPipeline::Render() {
+    if(!skybox_)
+      return;
+
+    const auto& texture = skybox_->texture;
+    const auto& vao = skybox_->vao;
+    InvertedCullFaceScope cull_face;
+    DepthTestScope depth_test(gfx::kLequal);
+    TextureBindScope<0> tex(texture);
+    RenderChildren();
+    renderer::Renderer::IncrementVertexCounter(skybox_->vbo.length());
   }
 }

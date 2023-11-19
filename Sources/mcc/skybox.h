@@ -122,17 +122,7 @@ namespace mcc {
       }
       ~RenderSkyboxPipeline() override = default;
 
-      void Render() override {
-        if(!skybox_)
-          return;
-
-        const auto& texture = skybox_->texture;
-        const auto& vao = skybox_->vao;
-        InvertedCullFaceScope cull_face;
-        DepthTestScope depth_test(gfx::kLequal);
-        TextureBindScope<0> tex(texture);
-        RenderChildren();
-      }
+      void Render() override;
     };
   }
 }

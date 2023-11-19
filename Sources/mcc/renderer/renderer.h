@@ -22,6 +22,10 @@ namespace mcc {
     class RendererFrame;
   }
 
+  namespace skybox {
+    class RenderSkyboxPipeline;
+  }
+
   namespace terrain {
     class RenderTerrainChunkPipeline;
   }
@@ -40,6 +44,7 @@ namespace mcc::renderer {
     friend class RenderEntitiesStage;
     friend class RenderEntityPipeline;
     friend class RendererPipeline;
+    friend class mcc::skybox::RenderSkyboxPipeline;
     friend class mcc::terrain::RenderTerrainChunkPipeline;
     DECLARE_STATE_MACHINE(Renderer);
   public:
