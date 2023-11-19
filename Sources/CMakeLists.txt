@@ -60,6 +60,8 @@ add_library(${PROJECT_NAME}
   mcc/gfx.h
   mcc/renderbuffer.h
   mcc/vertex.h mcc/vertex.cc
+  mcc/vertex_2d.h mcc/vertex_2d.cc
+  mcc/vertex_3d.h mcc/vertex_3d.cc
   mcc/bloom.h mcc/bloom.cc
   mcc/rx.h
   mcc/common.h
@@ -119,6 +121,7 @@ add_library(${PROJECT_NAME}
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/entity.h mcc/ecs/entity.cc
   mcc/gui/gui.h mcc/gui/gui.cc
+  mcc/gui/gui_viewport.h mcc/gui/gui_viewport.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
