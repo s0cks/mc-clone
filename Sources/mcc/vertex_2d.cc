@@ -19,9 +19,10 @@ namespace mcc::d2 {
 
   void Mesh::Draw() {
     VertexArrayObjectScope vao_scope(vao);
-    VertexBuffer::PositionAttribute::Enable();
-    VertexBuffer::UvAttribute::Enable();
-    vbo.Draw(GL_TRIANGLES);
+    VertexBufferObjectDrawScope<VertexBuffer::PositionAttribute,
+                                VertexBuffer::ColorAttribute,
+                                VertexBuffer::UvAttribute> vbo_scope(vbo);
+    vbo_scope.Draw(GL_TRIANGLES);
   }
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices) {

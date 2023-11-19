@@ -39,89 +39,6 @@ namespace nk {
 }
 
 namespace mcc::gui {
-  struct Vertex {
-    glm::vec2 position;
-    glm::vec2 uv;
-    glm::u8vec4 color;
-
-    friend std::ostream& operator<<(std::ostream& stream, const Vertex& rhs) {
-      stream << "gui::Vertex(";
-      stream << "pos=" << glm::to_string(rhs.position) << ", ";
-      stream << "uv=" << glm::to_string(rhs.uv) << ", ";
-      stream << "color=" << glm::to_string(rhs.color);
-      stream << ")";
-      return stream;
-    }
-  };
-
-  typedef std::vector<Vertex> VertexList;
-
-  static inline std::ostream&
-  operator<<(std::ostream& stream, const VertexList& rhs) {
-    stream << "[";
-    for(auto idx = 0; idx < rhs.size(); idx++) {
-      stream << rhs[idx];
-      if((idx + 1) < rhs.size())
-        stream << ", ";
-    }
-    stream << "]";
-    return stream;
-  }
-
-  class VertexBuffer : public VertexBufferTemplate<Vertex, kStreamUsage> {
-  public:
-    explicit VertexBuffer(const BufferObjectId id):
-      VertexBufferTemplate(id) {
-    }
-    VertexBuffer():
-      VertexBufferTemplate() {
-    }
-    VertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
-      VertexBufferTemplate(vertices, num_vertices) {
-      glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(0);
-      CHECK_GL(FATAL);
-
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(1);
-      CHECK_GL(FATAL);
-
-      glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
-      CHECK_GL(FATAL);
-      glEnableVertexAttribArray(2);
-      CHECK_GL(FATAL);
-    }
-    explicit VertexBuffer(const VertexList& vertices):
-      VertexBuffer(&vertices[0], vertices.size()) {
-    }
-    VertexBuffer(const VertexBuffer& rhs):
-      VertexBufferTemplate(rhs) {
-    }
-    ~VertexBuffer() override = default;
-
-    void operator=(const VertexBuffer& rhs) {
-      VertexBufferTemplate::operator=(rhs);
-    }
-
-    void operator=(const BufferObjectId& rhs) {
-      BufferObject::operator=(rhs);
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const VertexBuffer& rhs) {
-      stream << "gui::VertexBuffer(";
-      stream << "id=" << rhs.id() << ", ";
-      stream << "vertex_size=" << rhs.vertex_size() << ", ";
-      stream << "length=" << rhs.length() << ", ";
-      stream << "size=" << rhs.size();
-      stream << "usage=" << rhs.usage() << ", ";
-      stream << "target=" << rhs.target();
-      stream << ")";
-      return stream;
-    }
-  };
-
   typedef GLushort Index;
   typedef std::vector<Index> IndexList;
 
@@ -190,8 +107,7 @@ namespace mcc::gui {
   public:
     static void Init();
     static void NewFrame();
-    static void TestScreen();
-    static void RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA = NK_ANTI_ALIASING_OFF, int max_vertex_buffer = MAX_VERTEX_BUFFER, int max_element_buffer = MAX_ELEMENT_BUFFER);
+    static void RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA = NK_ANTI_ALIASING_ON, int max_vertex_buffer = MAX_VERTEX_BUFFER, int max_element_buffer = MAX_ELEMENT_BUFFER);
 
     static nk::Context* GetNuklearContext();
   };

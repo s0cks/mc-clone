@@ -139,6 +139,74 @@ namespace mcc {
     typedef DepthTestCapabilityScope<false> DepthTestScope;
     typedef DepthTestCapabilityScope<true> InvertedDepthTestScope;
 
+    template<const bool Inverted = false>
+    class ScissorTestCapabilityScope : public CapabilityScope<GL_SCISSOR_TEST, Inverted> {
+    public:
+      ScissorTestCapabilityScope():
+        CapabilityScope<GL_SCISSOR_TEST, Inverted>() {
+      }
+      ~ScissorTestCapabilityScope() override = default;
+    };
+    typedef ScissorTestCapabilityScope<false> ScissorTestScope;
+    typedef ScissorTestCapabilityScope<true> InvertedScissorTestScope;
+
+    enum BlendSFactor : GLenum {
+      kSrcAlpha = GL_SRC_ALPHA,
+    };
+
+    enum BlendDFactor : GLenum {
+      kOneMinusSrcAlpha = GL_ONE_MINUS_SRC_ALPHA,
+    };
+
+    enum BlendEquation : GLenum {
+      kAddFunc = GL_FUNC_ADD,
+    };
+
+    static inline void
+    GetCurrentBlendFunction(GLint* srgb, GLint* sa, GLint* drgb, GLint* da) {
+      glGetIntegerv(GL_BLEND_SRC_RGB, srgb);
+      CHECK_GL(FATAL);
+      glGetIntegerv(GL_BLEND_SRC_ALPHA, sa);
+      CHECK_GL(FATAL);
+      glGetIntegerv(GL_BLEND_DST_RGB, drgb);
+      CHECK_GL(FATAL);
+      glGetIntegerv(GL_BLEND_DST_ALPHA, da);
+      CHECK_GL(FATAL);
+    }
+
+    template<const bool Inverted = false>
+    class BlendTestCapabilityScope : public CapabilityScope<GL_BLEND, Inverted> {
+    private:
+      bool restore_;
+      GLint srgb_;
+      GLint sa_;
+      GLint drgb_;
+      GLint da_;
+    public:
+      BlendTestCapabilityScope(const BlendSFactor sfactor,
+                               const BlendDFactor dfactor,
+                               const BlendEquation equation,
+                               const bool restore = true):
+        CapabilityScope<GL_BLEND, Inverted>(),
+        restore_(restore) {
+        glBlendFunc(sfactor, dfactor);
+        CHECK_GL(FATAL);
+        glBlendEquation(equation);
+        CHECK_GL(FATAL);
+        if(restore) {
+          GetCurrentBlendFunction(&srgb_, &sa_, &drgb_, &da_);
+        }
+      }
+      ~BlendTestCapabilityScope() override {
+        if(restore_) {
+          glBlendFuncSeparate(srgb_, drgb_, sa_, da_);
+          CHECK_GL(FATAL);
+        }
+      }
+    };
+    typedef BlendTestCapabilityScope<false> BlendTestScope;
+    typedef BlendTestCapabilityScope<true> InvertedBlendTestScope;
+
     template<class R>
     class BindScope {
       DEFINE_NON_COPYABLE_TYPE(BindScope);
@@ -168,6 +236,12 @@ namespace mcc {
 
   using gfx::DepthTestScope;
   using gfx::InvertedDepthTestScope;
+
+  using gfx::ScissorTestScope;
+  using gfx::InvertedScissorTestScope;
+
+  using gfx::BlendTestScope;
+  using gfx::InvertedBlendTestScope;
 
 #define DEFINE_RESOURCE_SCOPE(Resource) \
   typedef gfx::BindScope<Resource> Resource##Scope;
@@ -402,17 +476,43 @@ namespace mcc {
     virtual uint64_t size() const {
       return length() * vertex_size();
     }
+  };
 
-    //TODO:
-    // - type protect mode
-    virtual void Draw(const GLenum mode,  GLint first, GLsizei count) { 
+  template<typename... EnabledAttributes>
+  class VertexBufferObjectDrawScope {
+  private:
+    const VertexBufferObject& vbo_;
+
+    template<typename A>
+    inline void Enable() { }
+
+    template<typename A, typename B, typename... Tail>
+    inline void Enable() {
+      B::Enable();
+      Enable<A, Tail...>();
+    }
+
+    template<typename... Attrs>
+    inline void EnableAll() {
+      Enable<void, Attrs...>();
+    }
+  public:
+    VertexBufferObjectDrawScope(const VertexBufferObject& vbo):
+      vbo_(vbo) {
+      vbo_.Bind();
+      EnableAll<EnabledAttributes...>();
+    }
+    ~VertexBufferObjectDrawScope() {
+      vbo_.Unbind();
+    }
+
+    void Draw(const GLenum mode, GLint first, GLsizei count) const {
       glDrawArrays(mode, first, count);
       CHECK_GL(FATAL);
     }
 
-    virtual void Draw(const GLenum mode,  GLint first = 0) { 
-      glDrawArrays(mode, first, length());
-      CHECK_GL(FATAL);
+    inline void Draw(const GLenum mode, GLint first = 0) const { 
+      return Draw(mode, first, vbo_.length());
     }
   };
 
@@ -518,6 +618,9 @@ namespace mcc {
       BindBufferData(vertices, num_vertices);
     }
   public:
+    VertexBufferTemplate(const VertexBufferTemplate& rhs):
+      VertexBufferObject(rhs) {
+    }
     ~VertexBufferTemplate() override = default;
 
     void BufferData(const Vertex* vertices, const uint64_t num_vertices) {

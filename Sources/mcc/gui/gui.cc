@@ -9,6 +9,9 @@
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::gui {
+  using d2::Vertex;
+  using d2::VertexBuffer;
+
   static nk::Buffer cmds_;
   static nk::Context ctx_;
   static nk::FontAtlas fonts_;
@@ -73,23 +76,6 @@ namespace mcc::gui {
     vao_ = VertexArrayObject();
     VertexArrayObjectScope vao(vao_);
     vbo_ = VertexBuffer();
-    const auto attr_pos = glGetAttribLocation(shader_->GetShaderId(), "pos");
-    glVertexAttribPointer(attr_pos, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(attr_pos);
-    CHECK_GL(FATAL);
-
-    const auto attr_uv = glGetAttribLocation(shader_->GetShaderId(), "uv");
-    glVertexAttribPointer(attr_uv, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, uv));
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(attr_uv);
-    CHECK_GL(FATAL);
-
-    const auto attr_color = glGetAttribLocation(shader_->GetShaderId(), "color");
-    glVertexAttribPointer(attr_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (const GLvoid*) offsetof(Vertex, color));
-    CHECK_GL(FATAL);
-    glEnableVertexAttribArray(attr_color);
-    CHECK_GL(FATAL);
     ibo_ = IndexBuffer();
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -136,29 +122,15 @@ namespace mcc::gui {
     nk_input_end(&ctx_);
   }
 
-  void Screen::TestScreen() {
-    if (nk_begin(&ctx_, "Settings", nk_rect(0, 0, width_ / 4, height_), NK_WINDOW_TITLE)) {
-
-    }
-    nk_end(&ctx_);
-  }
-
   void Screen::RenderScreen(const glm::mat4 projection, enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer) {
     nk::Buffer vbuf, ebuf;
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     CHECK_GL(FATAL);
-    glEnable(GL_BLEND);
-    CHECK_GL(FATAL);
-    glBlendEquation(GL_FUNC_ADD);
-    CHECK_GL(FATAL);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    CHECK_GL(FATAL);
-    glDisable(GL_CULL_FACE);
-    CHECK_GL(FATAL);
-    glDisable(GL_DEPTH_TEST);
-    CHECK_GL(FATAL);
-    glEnable(GL_SCISSOR_TEST);
-    CHECK_GL(FATAL);
+
+    BlendTestScope blend(gfx::kSrcAlpha, gfx::kOneMinusSrcAlpha, gfx::kAddFunc);
+    InvertedCullFaceScope cull_face;
+    InvertedDepthTestScope depth_test;
+    ScissorTestScope scissor_test;
     glActiveTexture(GL_TEXTURE0);
     CHECK_GL(FATAL);
 
@@ -188,7 +160,7 @@ namespace mcc::gui {
           /* fill convert configuration */
         struct nk_convert_config config;
         static const struct nk_draw_vertex_layout_element vertex_layout[] = {
-            {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, offsetof(Vertex, position)},
+            {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, offsetof(Vertex, pos)},
             {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, offsetof(Vertex, uv)},
             {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, offsetof(Vertex, color)},
             {NK_VERTEX_LAYOUT_END}
@@ -239,9 +211,5 @@ namespace mcc::gui {
     vbo_.Unbind();
     ibo_.Unbind();
     vao_.Unbind();
-    glDisable(GL_BLEND);
-    CHECK_GL(FATAL);
-    glDisable(GL_SCISSOR_TEST);
-    CHECK_GL(FATAL);
   }
 }
