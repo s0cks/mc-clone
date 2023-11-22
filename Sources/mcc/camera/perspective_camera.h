@@ -2,6 +2,7 @@
 #define MCC_PERSPECTIVE_CAMERA_H
 
 #include "mcc/gfx.h"
+#include "mcc/uniform_buffer.h"
 #include "mcc/common.h"
 #include "mcc/input/mouse.h"
 #include "mcc/engine/engine.h"

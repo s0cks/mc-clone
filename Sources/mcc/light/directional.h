@@ -2,6 +2,7 @@
 #define MCC_DIRECTIONAL_LIGHT_H
 
 #include "mcc/gfx.h"
+#include "mcc/uniform_buffer.h"
 #include "mcc/light/light.h"
 #include "mcc/component/component.h"
 
