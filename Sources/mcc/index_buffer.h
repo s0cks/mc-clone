@@ -1,7 +1,7 @@
 #ifndef MCC_INDEX_BUFFER_H
 #define MCC_INDEX_BUFFER_H
 
-#include "mcc/gfx.h"
+#include "mcc/buffer_object.h"
 
 namespace mcc {
   class IndexBufferObject : public BufferObjectTemplate<kIndex> {

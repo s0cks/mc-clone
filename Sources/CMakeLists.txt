@@ -59,6 +59,7 @@ add_library(${PROJECT_NAME}
   mcc/material.h mcc/material.cc
   mcc/gfx.h
   mcc/vao.h
+  mcc/buffer_object.h
   mcc/index_buffer.h
   mcc/vertex_buffer.h
   mcc/uniform_buffer.h

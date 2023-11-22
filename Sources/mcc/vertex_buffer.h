@@ -1,7 +1,7 @@
 #ifndef MCC_VERTEX_BUFFER_H
 #define MCC_VERTEX_BUFFER_H
 
-#include "mcc/gfx.h"
+#include "mcc/buffer_object.h"
 
 namespace mcc {
   class VertexBufferObject : public BufferObjectTemplate<kVertex> {
