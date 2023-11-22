@@ -121,7 +121,7 @@ namespace mcc::mesh {
     return new Mesh(vao, vertices);
   }
 
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const IndexList& indices) {
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const u32::IndexList& indices) {
     VertexArrayObjectScope scope(vao);
     return new IndexedMesh(vao, vertices, indices);
   }
@@ -140,7 +140,7 @@ namespace mcc::mesh {
     VertexList vertices;
     vertices.reserve(total_vertices);
 
-    IndexList indices;
+    u32::IndexList indices;
     indices.reserve(total_indices);
 
     uint64_t vertex, index;
@@ -214,7 +214,7 @@ namespace mcc::mesh {
       }
     }
 
-    IndexList indices;
+    u32::IndexList indices;
     for(auto v = 0; v < total_vertices - ySize - 2; v++) {
       if((v + 1) % (ySize + 1) == 0)
         v++;
@@ -250,7 +250,7 @@ namespace mcc::mesh {
       }
     }
 
-    IndexList indices;
+    u32::IndexList indices;
     for(auto v = 0; v < total_vertices - zSize - 2; v++) {
       if((v + 1) % (zSize + 1) == 0)
         v++;
@@ -349,7 +349,7 @@ namespace mcc::mesh {
     VertexList vertices;
     vertices.reserve(total_vertices);
 
-    IndexList indices;
+    u32::IndexList indices;
     indices.reserve(total_indices);
 
     for(auto i = 0; i < kIcoVertexCount; i++) {
@@ -487,7 +487,7 @@ namespace mcc::mesh {
     { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kFrontNormal,   .color = kYellow, },
   };
 
-  static const IndexList kCubeIndices = {
+  static const u32::IndexList kCubeIndices = {
     // Bottom face
     0, 1, 2, 
     3, 4, 5,

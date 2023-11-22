@@ -73,7 +73,6 @@ add_library(${PROJECT_NAME}
   mcc/flags.h mcc/flags.cc
   mcc/platform.h
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
-  mcc/mesh/index.h
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
   mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc

@@ -29,18 +29,25 @@ namespace mcc {
     typedef std::vector<Index> IndexList;
   protected:
     uint64_t length_;
-
+  public:
+    IndexBufferTemplate() = default;
     explicit IndexBufferTemplate(const BufferObjectId id):
       IndexBufferObject(id) {
     }
-    IndexBufferTemplate() = default;
     explicit IndexBufferTemplate(const Index* indices,
                                  const uint64_t num_indices):
       IndexBufferObject(),
       length_(num_indices) {
       BindBufferData(indices, num_indices);
     }
-  public:
+    explicit IndexBufferTemplate(const uint64_t num_indices):
+      IndexBufferObject(),
+      length_(num_indices) {
+      BindBufferData(num_indices);
+    }
+    explicit IndexBufferTemplate(const IndexList& indices):
+      IndexBufferTemplate(&indices[0], indices.size()) {
+    }
     ~IndexBufferTemplate() override = default;
 
     void BufferData(const Index* indices, const uint64_t num_indices) {
@@ -86,6 +93,24 @@ namespace mcc {
       length_ = rhs.length_;
     }
   };
+
+  namespace u8 {
+    typedef GLubyte Index;
+    typedef std::vector<Index> IndexList;
+    typedef IndexBufferTemplate<Index, GL_UNSIGNED_BYTE> IndexBuffer;
+  }
+
+  namespace u16 {
+    typedef GLushort Index;
+    typedef std::vector<Index> IndexList;
+    typedef IndexBufferTemplate<Index, GL_UNSIGNED_SHORT> IndexBuffer;
+  }
+
+  namespace u32 {
+    typedef GLuint Index;
+    typedef std::vector<Index> IndexList;
+    typedef IndexBufferTemplate<Index, GL_UNSIGNED_INT> IndexBuffer;
+  }
 }
 
 #endif //MCC_INDEX_BUFFER_H

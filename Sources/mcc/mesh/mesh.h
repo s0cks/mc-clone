@@ -5,7 +5,7 @@
 #include "mcc/vao.h"
 #include "mcc/common.h"
 #include "mcc/mesh/vertex.h"
-#include "mcc/mesh/index.h"
+#include "mcc/index_buffer.h"
 
 namespace mcc {
   class Renderer;
@@ -46,20 +46,20 @@ namespace mcc::mesh {
   class IndexedMesh : public Mesh {
     friend class Renderer;
   protected:
-    IndexBuffer ibo_;
+    u32::IndexBuffer ibo_;
 
     void Render() override;
   public:
     IndexedMesh() = delete;
     IndexedMesh(const VertexArrayObject& vao,
                 const VertexList& vertices,
-                const IndexList& indices):
+                const u32::IndexList& indices):
       Mesh(vao, vertices),
       ibo_(indices) {
     }
     ~IndexedMesh() override = default;
 
-    IndexBuffer ibo() const {
+    u32::IndexBuffer ibo() const {
       return ibo_;
     }
 
@@ -67,7 +67,7 @@ namespace mcc::mesh {
   };
 
   Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices);
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const IndexList& indices);
+  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const u32::IndexList& indices);
   
   Mesh* NewUVSphere(const uint64_t lat, const uint64_t lon);
   Mesh* NewIcosphere(const uint64_t resolution);
