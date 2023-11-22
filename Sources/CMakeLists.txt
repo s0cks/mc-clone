@@ -60,6 +60,7 @@ add_library(${PROJECT_NAME}
   mcc/gfx.h
   mcc/vao.h
   mcc/index_buffer.h
+  mcc/vertex_buffer.h
   mcc/renderbuffer.h
   mcc/vertex.h mcc/vertex.cc
   mcc/vertex_2d.h mcc/vertex_2d.cc

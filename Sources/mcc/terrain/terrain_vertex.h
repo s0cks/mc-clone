@@ -2,6 +2,7 @@
 #define MCC_TERRAIN_VERTEX_H
 
 #include "mcc/gfx.h"
+#include "mcc/vertex_buffer.h"
 #include "mcc/index_buffer.h"
 
 namespace mcc::terrain {
