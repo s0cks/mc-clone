@@ -6,6 +6,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
+#include "mcc/vao.h"
 #include "mcc/common.h"
 #include "mcc/material.h"
 #include "mcc/terrain/terrain_chunk.h"

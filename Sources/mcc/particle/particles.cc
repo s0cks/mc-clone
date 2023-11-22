@@ -1,5 +1,6 @@
 #include <vector>
 
+#include "mcc/vao.h"
 #include "mcc/particle/particles.h"
 #include "mcc/engine/engine.h"
 #include "mcc/shader/shader.h"

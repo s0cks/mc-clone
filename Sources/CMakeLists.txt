@@ -58,6 +58,7 @@ add_library(${PROJECT_NAME}
   mcc/physics/physics.h mcc/physics/physics.cc
   mcc/material.h mcc/material.cc
   mcc/gfx.h
+  mcc/vao.h
   mcc/renderbuffer.h
   mcc/vertex.h mcc/vertex.cc
   mcc/vertex_2d.h mcc/vertex_2d.cc

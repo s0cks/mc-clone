@@ -2,6 +2,7 @@
 #define MCC_MESH_H
 
 #include "mcc/gfx.h"
+#include "mcc/vao.h"
 #include "mcc/common.h"
 #include "mcc/mesh/vertex.h"
 #include "mcc/mesh/index.h"

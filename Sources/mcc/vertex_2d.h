@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "mcc/gfx.h"
+#include "mcc/vao.h"
 
 namespace mcc::d2 {
   struct Vertex {
