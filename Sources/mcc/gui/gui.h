@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "mcc/gfx.h"
+#include "mcc/index_buffer.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO

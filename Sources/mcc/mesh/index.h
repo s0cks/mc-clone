@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "mcc/gfx.h"
+#include "mcc/index_buffer.h"
 
 namespace mcc {
   typedef GLuint Index;
