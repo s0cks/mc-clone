@@ -125,6 +125,10 @@ add_library(${PROJECT_NAME}
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/entity.h mcc/ecs/entity.cc
+  mcc/gui/constants.h
+  mcc/gui/window.h mcc/gui/window.cc
+  mcc/gui/component.h
+  mcc/gui/container.h
   mcc/gui/gui.h mcc/gui/gui.cc
   mcc/gui/gui_viewport.h mcc/gui/gui_viewport.cc
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
