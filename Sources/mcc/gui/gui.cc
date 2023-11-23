@@ -20,7 +20,7 @@ namespace mcc::gui {
   static ShaderRef shader_;
   static VertexArrayObject vao_(kInvalidVertexArrayObject);
   static VertexBuffer vbo_(kInvalidBufferObject);
-  static IndexBuffer ibo_(kInvalidBufferObject);
+  static u16::IndexBuffer ibo_(kInvalidBufferObject);
   static int width_;
   static int height_;
   static int display_width_;
@@ -76,7 +76,7 @@ namespace mcc::gui {
     vao_ = VertexArrayObject();
     VertexArrayObjectScope vao(vao_);
     vbo_ = VertexBuffer();
-    ibo_ = IndexBuffer();
+    ibo_ = u16::IndexBuffer();
 
     glBindTexture(GL_TEXTURE_2D, 0);
     vbo_.Unbind();
