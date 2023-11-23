@@ -39,7 +39,10 @@
 
 namespace mcc {
   static ThreadLocal<GLFWwindow> handle_;
+  static rxsub::subject<WindowResizedEvent*> on_resized_;
 
+  static glm::vec2 size_;
+  static std::string title_;
   static std::vector<gui::FramePtr> frames_;
 
   void Window::AddFrame(gui::FramePtr frame) {
@@ -53,9 +56,6 @@ namespace mcc {
     }
     return true;
   }
-
-  static glm::vec2 size_;
-  static std::string title_;
 
   void Window::Init() {
     if(!Window::IsFullscreen()) {
@@ -167,5 +167,9 @@ namespace mcc {
 
   void Window::OnTerminated() {
     glfwTerminate();
+  }
+
+  rx::observable<WindowResizedEvent*> Window::OnResized() {
+    return on_resized_.get_observable();
   }
 }
