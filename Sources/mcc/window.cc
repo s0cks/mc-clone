@@ -38,10 +38,7 @@
 #include "mcc/resource.h"
 
 namespace mcc {
-  typedef struct nk_context NuklearContext;
-
   static ThreadLocal<GLFWwindow> handle_;
-  static ThreadLocal<NuklearContext> nk_ctx_;
 
   static std::vector<gui::FramePtr> frames_;
 
@@ -64,10 +61,6 @@ namespace mcc {
     if(!Window::IsFullscreen()) {
       SetSize(Window::GetInitialSize());
     }
-
-    auto ctx = new NuklearContext();
-    nk_init_default(ctx, NULL);
-    nk_ctx_.Set(ctx);
 
     Engine::OnPreInit(&OnPreInit);
     Engine::OnInit(&OnInit);
@@ -125,8 +118,6 @@ namespace mcc {
     glfwMakeContextCurrent(handle);
     glfwSwapInterval(0);
     glfwSetWindowCloseCallback(handle, &OnWindowClosed);
-    //TODO: glfwSetFramebufferSizeCallback(handle_, &OnWindowResized);
-    //glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     SetHandle(handle);
   }
@@ -168,41 +159,6 @@ namespace mcc {
       },
       .direction = glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f),
     });
-
-    // const auto texture = texture::Texture::LoadFrom(FLAGS_resources + "/textures/container.png");
-    // const auto e2 = Entities::CreateEntity();
-    // const auto mesh = mesh::NewCube();
-    // Coordinator::AddComponent(e2, renderer::Renderable {
-    //   .shader = shader::Shader::Get("cube"),
-    //   .mesh = mesh,
-    //   .texture = texture,
-    //   .material = GetMaterial("emerald"),
-    // });
-    // Coordinator::AddComponent(e2, physics::Transform {
-    //   .position = glm::vec3(0.0f, 0.0f, 0.0f),
-    //   .rotation = glm::vec3(0.0f),
-    //   .scale = glm::vec3(1.0f),
-    // });
-    // Coordinator::AddComponent(e2, physics::RigidBody {
-    //   .mass = 1.0f,
-    //   .velocity = glm::vec3(0.0f),
-    // });
-    // DLOG(INFO) << "cube: " << e2;
-
-    Mouse::GetButtonEventSubject()
-      .get_observable()
-      .filter([](const MouseButtonEvent& e) {
-        return e.button == MouseButton::kButton1
-            && e.state == kPressed;
-      })
-      .subscribe([](const MouseButtonEvent& e) {
-        const auto entity = Mouse::CastRayTo(1.0f);
-        if(entity) {
-          DLOG(INFO) << "found entity: " << (*entity);
-        } else {
-          DLOG(INFO) << "couldn't find an entity.";
-        }
-      });
   }
 
   void Window::OnTerminating() {
