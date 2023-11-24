@@ -90,7 +90,7 @@ namespace mcc::d2 {
   DEFINE_RESOURCE_SCOPE(VertexBuffer);
 
   struct Mesh {
-    VertexArrayObject vao;
+    Vao vao;
     VertexBuffer vbo;
 
     Mesh(const Vertex* vertices, const uint64_t num_vertices);

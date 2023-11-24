@@ -66,7 +66,6 @@ namespace mcc {
       virtual ~Resource() = default;
       virtual void Bind() const = 0;
       virtual void Unbind() const = 0;
-      virtual void Delete() = 0;
     };
 
     template<const GLenum Capability, const bool Inverted = false>

@@ -18,7 +18,7 @@ namespace mcc::gui {
   static nk::DrawNullTexture draw_null;
 
   static ShaderRef shader_;
-  static VertexArrayObject vao_(kInvalidVertexArrayObject);
+  static Vao kGuiVao;
   static VertexBuffer vbo_(kInvalidBufferObject);
   static u16::IndexBuffer ibo_(kInvalidBufferObject);
   static int width_;
@@ -73,16 +73,15 @@ namespace mcc::gui {
 
   static inline void
   CreateBufferObjects() {
-    vao_ = VertexArrayObject();
-    VertexArrayObjectScope vao(vao_);
+    kGuiVao = VertexArrayObject::New();
+    VertexArrayObjectScope vao(kGuiVao);
     vbo_ = VertexBuffer();
     ibo_ = u16::IndexBuffer();
 
     glBindTexture(GL_TEXTURE_2D, 0);
     vbo_.Unbind();
     ibo_.Unbind();
-    vao_.Unbind();
-    DLOG(INFO) << "gui vao: " << vao_;
+    kGuiVao->Unbind();
   }
 
   nk::Context* Screen::GetNuklearContext() {
@@ -143,7 +142,7 @@ namespace mcc::gui {
       const nk::DrawCommand* cmd;
       const nk_draw_index* offset = NULL;
 
-      vao_.Bind();
+      kGuiVao->Bind();
       vbo_.Bind();
       ibo_.Bind();
       
@@ -200,6 +199,6 @@ namespace mcc::gui {
     CHECK_GL(FATAL);
     vbo_.Unbind();
     ibo_.Unbind();
-    vao_.Unbind();
+    kGuiVao->Unbind();
   }
 }

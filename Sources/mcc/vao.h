@@ -4,16 +4,15 @@
 #include "mcc/gfx.h"
 
 namespace mcc {
+  class VertexArrayObject;
+  typedef std::shared_ptr<VertexArrayObject> Vao;
+
   typedef GLuint VertexArrayObjectId;
   static constexpr const VertexArrayObjectId kInvalidVertexArrayObject = 0;
   class VertexArrayObject : public gfx::Resource {
   protected:
     VertexArrayObjectId id_;
-  public:
-    explicit VertexArrayObject(const VertexArrayObjectId id):
-      gfx::Resource(),
-      id_(id) {
-    }
+
     VertexArrayObject():
       gfx::Resource(),
       id_(kInvalidVertexArrayObject) {
@@ -24,7 +23,14 @@ namespace mcc {
       gfx::Resource(),
       id_(rhs.id_) {
     }
-    ~VertexArrayObject() override = default;
+  public:
+    ~VertexArrayObject() override {
+      if(id_ == kInvalidVertexArrayObject)
+        return;
+
+      glDeleteVertexArrays(1, &id_);
+      CHECK_GL(FATAL);
+    }
 
     VertexArrayObjectId id() const {
       return id_;
@@ -37,11 +43,6 @@ namespace mcc {
 
     void Unbind() const override {
       glBindVertexArray(kInvalidVertexArrayObject);
-      CHECK_GL(FATAL);
-    }
-
-    void Delete() override {
-      glDeleteVertexArrays(1, &id_);
       CHECK_GL(FATAL);
     }
 
@@ -80,22 +81,25 @@ namespace mcc {
       return stream;
     }
   public:
-    static inline void
-    GenerateBatch(const uint64_t num_vaos, VertexArrayObject** vaos) {
-      MCC_ASSERT((*vaos) == nullptr);
-      DLOG(INFO) << "generating " << num_vaos << " VertexArrayObjects....";
-      VertexArrayObjectId ids[num_vaos];
-      glGenVertexArrays(num_vaos, ids);
-      CHECK_GL(FATAL);
-      (*vaos) = (VertexArrayObject*)malloc(sizeof(VertexArrayObject) * num_vaos);
-      for(auto idx = 0; idx < num_vaos; idx++) {
-        const auto vao = VertexArrayObject(ids[idx]);
-        memcpy((void*) &vaos[idx], (void*) &vao, sizeof(VertexArrayObject));
-      }
-      DLOG(INFO) << "done.";
+    static inline Vao
+    New() {
+      struct VertexArrayObjectEnabler : public VertexArrayObject{};
+      return std::make_shared<VertexArrayObjectEnabler>();
     }
   };
-  DEFINE_RESOURCE_SCOPE(VertexArrayObject);
+  
+  class VertexArrayObjectScope {
+  protected:
+    Vao vao_;
+  public:
+    explicit VertexArrayObjectScope(const Vao& vao):
+      vao_(vao) {
+      vao_->Bind();  
+    }
+    ~VertexArrayObjectScope() {
+      vao_->Unbind();
+    }
+  };
 }
 
 #endif //MCC_VAO_H

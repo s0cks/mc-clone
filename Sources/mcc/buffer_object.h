@@ -54,7 +54,7 @@ namespace mcc {
     void Bind() const override = 0;
     void Unbind() const override = 0;
 
-    void Delete() override {
+    void Delete() {
       glDeleteBuffers(1, &id_);
       CHECK_GL(FATAL);
     }

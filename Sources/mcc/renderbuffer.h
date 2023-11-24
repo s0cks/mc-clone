@@ -97,7 +97,7 @@ namespace mcc {
       CHECK_GL(FATAL);
     }
 
-    void Delete() override {
+    void Delete() {
       glDeleteRenderbuffers(1, &id_);
       CHECK_GL(FATAL);
     }

@@ -16,12 +16,13 @@ namespace mcc::mesh {
     friend class Renderer;
     friend class MeshTest;
   protected:
-    VertexArrayObject vao_;
+    Vao vao_;
     VertexBuffer vbo_;
 
     static void InitializeBuiltinVaos();
   public:
-    Mesh(const VertexArrayObject vao, const VertexList& vertices):
+    Mesh(const Vao& vao, const VertexList& vertices):
+      vao_(vao),
       vbo_(vertices) {
     }
     Mesh() = delete;
@@ -51,7 +52,7 @@ namespace mcc::mesh {
     void Render() override;
   public:
     IndexedMesh() = delete;
-    IndexedMesh(const VertexArrayObject& vao,
+    IndexedMesh(const Vao& vao,
                 const VertexList& vertices,
                 const u32::IndexList& indices):
       Mesh(vao, vertices),
@@ -66,8 +67,8 @@ namespace mcc::mesh {
     std::string ToString() const override;
   };
 
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices);
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const u32::IndexList& indices);
+  Mesh* NewMesh(const Vao& vao, const VertexList& vertices);
+  Mesh* NewMesh(const Vao& vao, const VertexList& vertices, const u32::IndexList& indices);
   
   Mesh* NewUVSphere(const uint64_t lat, const uint64_t lon);
   Mesh* NewIcosphere(const uint64_t resolution);

@@ -260,7 +260,7 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
 
-    void Delete() override {
+    void Delete() {
       glDeleteTextures(1, &id_);
       CHECK_GL(FATAL);
     }

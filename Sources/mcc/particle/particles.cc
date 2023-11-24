@@ -6,7 +6,7 @@
 #include "mcc/shader/shader.h"
 
 namespace mcc::particle {
-  static VertexArrayObject kParticleVao(kInvalidVertexArrayObject);
+  static Vao kParticleVao;
   static ShaderRef kParticleShader;
 
   static constexpr const auto kMaxNumberOfParticles = 500;

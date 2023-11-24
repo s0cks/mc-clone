@@ -6,10 +6,10 @@
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::terrain {
-  static VertexArrayObject vao_(kInvalidVertexArrayObject);
+  static Vao kTerrainVao;
 
   TerrainChunk* TerrainChunk::New(const VertexList& vertices, const IndexList& indices) {
-    VertexArrayObjectScope scope(vao_);
+    VertexArrayObjectScope scope(kTerrainVao);
     return new TerrainChunk(vertices, indices);
   }
 
@@ -77,7 +77,7 @@ namespace mcc::terrain {
     VLOG(1) << "generated " << indices.size() << " indices.";
     VLOG(10) << "terrain indices: " <<  indices;
 
-    vao_ = VertexArrayObject();
+    kTerrainVao = VertexArrayObject::New();
     Terrain::SetChunk(TerrainChunk::New(vertices, indices));
   }
 
@@ -87,7 +87,7 @@ namespace mcc::terrain {
   }
 
   void TerrainChunk::Render() {
-    VertexArrayObjectScope vao(vao_);
+    VertexArrayObjectScope vao(kTerrainVao);
     TerrainVertexBufferScope vbo(vbo_);
     TerrainVertexBuffer::PositionAttribute::Enable();
     TerrainVertexBuffer::UvAttribute::Enable();

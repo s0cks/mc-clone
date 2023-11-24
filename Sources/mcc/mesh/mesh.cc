@@ -32,13 +32,12 @@ namespace mcc::mesh {
     }
   }
 
-  static VertexArrayObject* kBuiltinVaos = nullptr;
+  static Vao kBuiltinVaos[kTotalNumberOfBuiltinVaos];
 
   void Mesh::InitializeBuiltinVaos() {
     DLOG(INFO) << "initializing builtin vaos....";
-    VertexArrayObject::GenerateBatch(kTotalNumberOfBuiltinVaos, &kBuiltinVaos);
     for(auto idx = 0; idx < kTotalNumberOfBuiltinVaos; idx++) {
-      DLOG(INFO) << static_cast<BuiltinVao>(idx) << " := " << kBuiltinVaos[idx];
+      kBuiltinVaos[idx] = VertexArrayObject::New();
     }
   }
 
@@ -116,12 +115,12 @@ namespace mcc::mesh {
     return ss.str();
   }
 
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices) {
+  Mesh* NewMesh(const Vao& vao, const VertexList& vertices) {
     VertexArrayObjectScope scope(vao);
     return new Mesh(vao, vertices);
   }
 
-  Mesh* NewMesh(const VertexArrayObject& vao, const VertexList& vertices, const u32::IndexList& indices) {
+  Mesh* NewMesh(const Vao& vao, const VertexList& vertices, const u32::IndexList& indices) {
     VertexArrayObjectScope scope(vao);
     return new IndexedMesh(vao, vertices, indices);
   }
@@ -513,8 +512,8 @@ namespace mcc::mesh {
   }
 
   Mesh* LoadFrom(const std::string& filename) {
-    VertexArrayObject vao;
-    ObjMeshLoader loader(vao, FLAGS_resources + "/meshes" + filename);
+    //TODO: fix Vao allocation
+    ObjMeshLoader loader(VertexArrayObject::New(), FLAGS_resources + "/meshes" + filename);
     return loader.LoadMesh();
   }
 }

@@ -2,10 +2,10 @@
 #include "mcc/engine/engine.h"
 
 namespace mcc::d2 {
-  static VertexArrayObject k2dMeshVao(kInvalidVertexArrayObject);
+  static Vao kMeshVao;
 
   void Mesh::OnInit() {
-    k2dMeshVao = VertexArrayObject();
+    kMeshVao = VertexArrayObject::New();
   }
 
   void Mesh::Init() {
@@ -13,7 +13,7 @@ namespace mcc::d2 {
   }
 
   Mesh::Mesh(const Vertex* vertices, const uint64_t num_vertices):
-    vao(k2dMeshVao),
+    vao(kMeshVao),
     vbo(vertices, num_vertices) {
   }
 
@@ -26,7 +26,7 @@ namespace mcc::d2 {
   }
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices) {
-    VertexArrayObjectScope vao_scope(k2dMeshVao);
+    VertexArrayObjectScope vao_scope(kMeshVao);
     return new Mesh(vertices, num_vertices);
   }
 }

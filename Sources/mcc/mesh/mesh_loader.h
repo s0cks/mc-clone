@@ -17,7 +17,7 @@ namespace mcc::mesh {
   class ObjMeshLoader : public MeshLoader {
   private:
     std::string filename_;
-    VertexArrayObject vao_;
+    Vao vao_;
     VertexList mesh_verts_;
     std::vector<glm::vec3> vertices_;
     std::vector<glm::vec3> normals_;
@@ -64,7 +64,7 @@ namespace mcc::mesh {
       return true;
     }
   public:
-    explicit ObjMeshLoader(VertexArrayObject vao, const std::string& filename):
+    explicit ObjMeshLoader(Vao vao, const std::string& filename):
       MeshLoader(),
       vao_(vao),
       filename_(filename),

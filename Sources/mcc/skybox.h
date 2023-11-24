@@ -74,7 +74,7 @@ namespace mcc {
     DEFINE_RESOURCE_SCOPE(VertexBuffer);
 
     struct Skybox {
-      VertexArrayObject vao;
+      Vao vao;
       VertexBuffer vbo;
       TextureRef texture;
       ShaderRef shader;
