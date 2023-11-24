@@ -2,6 +2,7 @@
 #define MCC_TEXTURE_H
 
 #include "mcc/gfx.h"
+#include "mcc/uri.h"
 #include "mcc/platform.h"
 #include "mcc/resource.h"
 
@@ -296,6 +297,8 @@ namespace mcc::texture {
       stream << ")";
       return stream;
     }
+  public:
+    static void Init();
   };
 }
 
@@ -326,10 +329,11 @@ namespace mcc {
     return GetTexture(res::Token(res::Tag::Texture(location), location));
   }
 
+  TextureRef GetTexture(const uri::Uri& uri);
+
   static inline TextureRef
-  GetTexture(const std::string& name) {
-    const auto token = resource::Registry::Get(resource::NewTextureTag(name));
-    return GetTexture(token);
+  GetTexture(const uri::basic_uri& uri) {
+    return GetTexture(uri::Uri(uri));
   }
 
   template<const uint32_t Slot>

@@ -131,6 +131,7 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
   mcc/state_machine.h
   mcc/bitset.h
+  mcc/uri.h mcc/uri.cc
   mcc/particle/particle.h mcc/particle/particle.cc
   mcc/particle/particles.h mcc/particle/particles.cc
   mcc/renderer/renderer_state.h

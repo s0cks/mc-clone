@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   using namespace mcc;
+  texture::Texture::Init();
+
   settings::Init();
   font::Initialize();
   Entities::Initialize();
