@@ -15,7 +15,7 @@ namespace mcc::gui {
     static inline Window*
     New(const Position& pos, const Dimension& size) {
       auto window = new Window();
-      window->SetPos(pos);
+      window->SetPosition(pos);
       window->SetSize(size);
       return window;
     }
