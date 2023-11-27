@@ -4,10 +4,13 @@
 #include <string>
 #include "mcc/buffer.h"
 #include "mcc/murmur.h"
+#include "mcc/parser.h"
 
 namespace mcc {
   namespace uri {
     typedef std::string basic_uri;
+    
+    class UriParser;
     struct Uri {
       std::string protocol;
       std::string location;
@@ -57,30 +60,52 @@ namespace mcc {
       return RegisterProtocol(std::make_shared<P>());
     }
 
-    class UriParser {
+    static constexpr const uint64_t kDefaultParserBufferSize = 4096;
+    static constexpr const uint64_t kDefaultTokenBufferSize = 1024;
+    class UriParser : public ParserTemplate<kDefaultParserBufferSize, kDefaultTokenBufferSize> {
     public:
-      typedef std::function<bool(const UriParser* parser, const std::string& value)> SchemeParsedCallback;
-      typedef std::function<bool(const UriParser* parser, const std::string& value)> PathParsedCallback;
-      typedef std::function<bool(const UriParser* parser, const uint64_t idx, const std::string& name, const std::string& value)> QueryParsedCallback;
-      typedef std::function<bool(const UriParser* parser, const std::string& value)> FragmentParsedCallback;
-
       struct Config {
-        SchemeParsedCallback on_scheme_parsed;
-        PathParsedCallback on_path_parsed;
-        QueryParsedCallback on_query_parsed;
-        FragmentParsedCallback on_fragment_parsed;
+        bool (*OnSchemeParsed)(const UriParser* parser, const std::string& value);
+        bool (*OnPathParsed)(const UriParser* parser, const std::string& value);
+        bool (*OnQueryParsed0)(const UriParser* parser, const uint64_t idx, const std::string& key);
+        bool (*OnQueryParsed1)(const UriParser* parser, const uint64_t idx, const std::string& key, const std::string& value);
+        bool (*OnFragmentParsed)(const UriParser* parser, const std::string& value);
       };
-      //TODO: authority?
     protected:
       Config config_;
-      void* data_;
+      uint64_t num_query_params_;
 
-      explicit UriParser(const Config& config):
-        config_(config) {
+      bool ParseScheme();
+      bool ParsePath();
+      bool ParseQueryParameterKey();
+      bool ParseQueryParameterValue();
+      bool ParseQueryParameter();
+      bool ParseQueryParameterList();
+      bool ParseFragment();
+
+      static inline bool
+      IsQueryDelimiter(const char c) {
+        switch(c) {
+          case '&':
+          case ';':
+            return true;
+          default:
+            return false;
+        }
       }
     public:
-      virtual ~UriParser() = default;
-      virtual bool Parse() = 0;
+      explicit UriParser(const Config& config, const std::string& buffer, void* data = nullptr):
+        ParserTemplate(data, buffer),
+        config_(config),
+        num_query_params_(0) {
+      }
+      UriParser(const std::string& buffer, void* data = nullptr):
+        ParserTemplate(data, buffer),
+        config_(),
+        num_query_params_(0) {
+      }
+      ~UriParser() override = default;
+      bool Parse();
     };
   }
 }

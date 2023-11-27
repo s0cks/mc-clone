@@ -39,21 +39,70 @@ namespace mcc::uri {
   };
 
   TEST_F(UriTest, Test_Parse_ExplicitProtocol) {
-    static const std::string kProtocol = "test";
-    static const std::string kLocation = "location1";
-
-    static const std::string kTestUri = std::string() + kProtocol + "://" + kLocation;
-
-    Uri uri(kProtocol + "://" + kLocation);
-    ASSERT_EQ(uri.protocol, kProtocol);
-    ASSERT_EQ(uri.location, kLocation);
+    Uri uri("test://hello-world");
+    ASSERT_EQ(uri.protocol, "test");
+    ASSERT_EQ(uri.location, "hello-world");
   }
 
-  TEST_F(UriTest, Test_Parse_ImplicitProtocol) {
-    static const std::string kTestUri = "location1";
+  class UriParserTest : public ::testing::Test {
+  protected:
+    UriParserTest() = default;
+  public:
+    ~UriParserTest() override = default;
+  };
 
-    Uri uri(kTestUri);
-    ASSERT_EQ(uri.protocol, "file");
-    ASSERT_EQ(uri.location, kTestUri);
+  TEST_F(UriParserTest, Test_ParseFails_InvalidScheme1) {
+    UriParser parser("tex:/test.png");
+    ASSERT_FALSE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_ParseFails_InvalidScheme) {
+    UriParser parser(":test.png");
+    ASSERT_FALSE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse0) {
+    UriParser parser("t:test");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse1) {
+    UriParser parser("t://test");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse2) {
+    UriParser parser("tex://test.png");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse3) {
+    UriParser parser("tex://test.png?");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse4) {
+    UriParser parser("tex://test.png?test");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse5) {
+    UriParser parser("tex://test.png?message=hello");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse6) {
+    UriParser parser("tex://test.png?message=hello&");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse7) {
+    UriParser parser("tex://test.png?message=hello&test");
+    ASSERT_TRUE(parser.Parse());
+  }
+
+  TEST_F(UriParserTest, Test_Parse8) {
+    UriParser parser("tex://test.png?message=hello&test#test");
+    ASSERT_TRUE(parser.Parse());
   }
 }

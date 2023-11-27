@@ -90,7 +90,7 @@ namespace mcc {
 
   static constexpr const uint64_t kDefaultObjParserBufferSize = 4096;
   static constexpr const uint64_t kDefaultObjParserTokenBufferSize = 1024;
-  class ObjParser : public FileParserTemplate<TokenKind, kDefaultObjParserBufferSize, kDefaultObjParserTokenBufferSize> {
+  class ObjParser : public FileParserTemplate<kDefaultObjParserBufferSize, kDefaultObjParserTokenBufferSize> {
   public:
     struct Config {
       OnFaceParsed on_face_parsed;

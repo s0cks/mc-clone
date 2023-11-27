@@ -111,8 +111,7 @@ namespace mcc {
     }
   };
 
-  template<typename Kind,
-           const uint64_t ParserBufferSize,
+  template<const uint64_t ParserBufferSize,
            const uint64_t TokenBufferSize>
   class ParserTemplate {
   protected:
@@ -124,7 +123,7 @@ namespace mcc {
     uint8_t token_[TokenBufferSize];
     uint64_t token_len_;
 
-    ParserTemplate(void* data):
+    explicit ParserTemplate(void* data):
       data_(data),
       pos_(1, 1),
       buffer_(),
@@ -132,6 +131,27 @@ namespace mcc {
       rpos_(0),
       token_(),
       token_len_(0) {
+    }
+    ParserTemplate(void* data, const uint8_t* bytes, const uint64_t nbytes):
+      data_(data),
+      pos_(1, 1),
+      buffer_(),
+      buffer_len_(0),
+      rpos_(0),
+      token_(),
+      token_len_(0) {
+      CopyBufferFrom(bytes, nbytes);
+    }
+    ParserTemplate(void* data, const std::string& buffer):
+      ParserTemplate(data, (const uint8_t*) &buffer[0], static_cast<uint64_t>(buffer.length())) {
+    }
+
+    inline void CopyBufferFrom(const uint8_t* data, const uint64_t nbytes) {
+      if(data == nullptr || nbytes <= 0)
+        return;
+      const auto len = std::min(nbytes, ParserBufferSize);
+      memcpy(&buffer_[0], data, len);
+      buffer_len_ = len;
     }
 
     inline uint64_t row() const {
@@ -212,17 +232,16 @@ namespace mcc {
     }
   };
 
-  template<typename Kind,
-           const uint64_t ParserBufferSize,
+  template<const uint64_t ParserBufferSize,
            const uint64_t TokenBufferSize>
-  class FileParserTemplate : public ParserTemplate<Kind, ParserBufferSize, TokenBufferSize> {
+  class FileParserTemplate : public ParserTemplate<ParserBufferSize, TokenBufferSize> {
   private:
-    typedef ParserTemplate<Kind, ParserBufferSize, TokenBufferSize> Parent;
+    typedef ParserTemplate<ParserBufferSize, TokenBufferSize> Parent;
   protected:
     FILE* file_;
 
     FileParserTemplate(FILE* file, void* data):
-      ParserTemplate<Kind, ParserBufferSize, TokenBufferSize>(data),
+      ParserTemplate<ParserBufferSize, TokenBufferSize>(data),
       file_(file) {
     }
 
