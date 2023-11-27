@@ -31,12 +31,13 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h
   mcc/pipeline.h mcc/pipeline.cc
+  mcc/parser.h
+  mcc/reference.h
   mcc/resource_type.h
   mcc/resource_token.h
   mcc/resource_tag.h
   mcc/resource_ptr.h
   mcc/resource_loader.h
-  mcc/resource_reference.h
   mcc/resource.h mcc/resource.cc
   mcc/resource_registry.h mcc/resource_registry.cc
   mcc/engine/engine.h mcc/engine/engine.cc

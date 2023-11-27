@@ -52,7 +52,25 @@ namespace mcc {
 
   TextureRef GetTexture(const uri::Uri& uri) {
     MCC_ASSERT(uri.protocol == std::string(texture::kProtocolName));
-    texture::TextureLoader loader(res::NewTextureTag(uri.location), uri.location);
-    return loader.Load();
+    DLOG(INFO) << "checking for: " << uri;
+    auto location = FLAGS_resources + "/textures/" + uri.location;
+    if(FileExists(location) && IsDirectory(location)) {
+      texture::TextureLoader loader(res::NewTextureTag(uri.location), location);
+      return loader.Load();
+    } else if(FileExists(location + ".json")) {
+      texture::TextureLoader loader(res::NewTextureTag(uri.location), location + ".json");
+      return loader.Load();
+    } else if(FileExists(location + ".png")) {
+      texture::TextureLoader loader(res::NewTextureTag(uri.location), location + ".png");
+      return loader.Load();
+    } else if(FileExists(location + ".jpeg")) {
+      texture::TextureLoader loader(res::NewTextureTag(uri.location), location + ".jpeg");
+      return loader.Load();
+    } else if(FileExists(location + ".jpg")) {
+      texture::TextureLoader loader(res::NewTextureTag(uri.location), location + ".jpg");
+      return loader.Load();
+    }
+
+    return TextureRef();
   }
 }

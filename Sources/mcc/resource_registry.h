@@ -13,7 +13,7 @@
 #include <leveldb/comparator.h>
 #include "mcc/common.h"
 #include "mcc/resource_token.h"
-#include "mcc/resource_reference.h"
+#include "mcc/reference.h"
 
 namespace mcc {
 #define FOR_EACH_RESOURCE_REGISTRY_STATE(V) \

@@ -319,7 +319,7 @@ namespace mcc::texture {
       LOG_IF(FATAL, !LoadCubeMapFace(kFrontFace)) << "failed to load cube map front face.";
       LOG_IF(FATAL, !LoadCubeMapFace(kBackFace)) << "failed to load cube map back face.";
       texture->Unbind();
-      return TextureRef(tag_, texture);
+      return TextureRef(texture);
     }
   };
 

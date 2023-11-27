@@ -28,6 +28,13 @@ namespace mcc {
         return protocol != rhs.protocol
             || location != rhs.location;
       }
+
+      friend std::ostream& operator<<(std::ostream& stream, const Uri& rhs) {
+        stream << "Uri(";
+        stream << "protocol=" << rhs.protocol << "://" << rhs.location;
+        stream << ")";
+        return stream;
+      }
     };
 
     class Protocol {
@@ -49,6 +56,32 @@ namespace mcc {
     RegisterProtocol() {
       return RegisterProtocol(std::make_shared<P>());
     }
+
+    class UriParser {
+    public:
+      typedef std::function<bool(const UriParser* parser, const std::string& value)> SchemeParsedCallback;
+      typedef std::function<bool(const UriParser* parser, const std::string& value)> PathParsedCallback;
+      typedef std::function<bool(const UriParser* parser, const uint64_t idx, const std::string& name, const std::string& value)> QueryParsedCallback;
+      typedef std::function<bool(const UriParser* parser, const std::string& value)> FragmentParsedCallback;
+
+      struct Config {
+        SchemeParsedCallback on_scheme_parsed;
+        PathParsedCallback on_path_parsed;
+        QueryParsedCallback on_query_parsed;
+        FragmentParsedCallback on_fragment_parsed;
+      };
+      //TODO: authority?
+    protected:
+      Config config_;
+      void* data_;
+
+      explicit UriParser(const Config& config):
+        config_(config) {
+      }
+    public:
+      virtual ~UriParser() = default;
+      virtual bool Parse() = 0;
+    };
   }
 }
 

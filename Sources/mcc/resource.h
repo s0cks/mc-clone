@@ -7,7 +7,6 @@
 #include "mcc/resource_token.h"
 #include "mcc/resource_loader.h"
 #include "mcc/resource_registry.h"
-#include "mcc/resource_reference.h"
 
 namespace mcc {
   namespace res=resource;

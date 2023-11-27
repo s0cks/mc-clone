@@ -27,7 +27,7 @@ namespace mcc {
       TextureRef normal;
       TextureRef roughness;
 
-      ~Material();
+      ~Material() = default;
 
       void Bind() const {
         albedo->Bind(0);

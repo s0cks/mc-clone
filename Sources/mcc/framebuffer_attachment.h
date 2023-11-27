@@ -99,7 +99,7 @@ namespace mcc {
       const auto texture = new texture::Texture(texture::k2D, true, true, false, internal_format, size, format, type, false, alignment, filter, wrap, NULL);
       glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
       CHECK_GL(FATAL);
-      return new ColorBufferAttachment(slot, TextureRef(res::Tag(res::kTextureType), texture));
+      return new ColorBufferAttachment(slot, TextureRef(texture));
     }
 
     static inline ColorBufferAttachment*
@@ -160,7 +160,7 @@ namespace mcc {
       const auto texture = new texture::Texture(texture::k2D, true, true, false, GL_RGB32I, size, GL_RED_INTEGER , GL_UNSIGNED_INT, false, alignment, filter, wrap, NULL);
       glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
       CHECK_GL(FATAL);
-      return new PickingAttachment(enabled, slot, TextureRef(res::Tag(res::kTextureType), texture));
+      return new PickingAttachment(enabled, slot, TextureRef(texture));
     }
 
     static inline PickingAttachment*

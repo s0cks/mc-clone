@@ -32,7 +32,7 @@ namespace mcc {
 
   static inline ShaderRef
   CreateReferenceTo(const Shader* value, const res::Tag& tag = res::Tag::Shader()) {
-    return ShaderRef(tag, (Shader*) value);
+    return ShaderRef((Shader*) value);
   }
 
   ShaderRef GetShader(const std::string& name) {

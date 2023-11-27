@@ -100,7 +100,7 @@ namespace mcc::terrain {
   class ApplyTerrainMaterialPipeline : public ApplyMaterialPipeline {
   public:
     explicit ApplyTerrainMaterialPipeline():
-      ApplyMaterialPipeline(MaterialRef(0)) {
+      ApplyMaterialPipeline(MaterialRef()) {
       Terrain::GetMaterialObservable()
         .subscribe([this](MaterialRef material) {
           material_ = material;

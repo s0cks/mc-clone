@@ -53,12 +53,16 @@ namespace mcc::uri {
 
   static inline void
   ParseLocation(const basic_uri& uri, std::string* result) {
-    const auto first_colon = uri.find_first_of(':');
+    auto first_colon = uri.find_first_of(':');
     if(first_colon == std::string::npos) {
       (*result) = uri;
       return;
     }
-    (*result) = uri.substr(first_colon + 3);
+    if(uri[first_colon + 1] == '/')
+      first_colon += 1;
+    if(uri[first_colon + 1] == '/')
+      first_colon += 1;
+    (*result) = uri.substr(first_colon + 1);
   }
 
   Uri::Uri(const basic_uri& uri):

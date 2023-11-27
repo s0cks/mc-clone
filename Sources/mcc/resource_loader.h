@@ -7,7 +7,7 @@
 
 #include <optional>
 #include "mcc/json.h"
-#include "mcc/resource_reference.h"
+#include "mcc/reference.h"
 
 namespace mcc {
   namespace resource {

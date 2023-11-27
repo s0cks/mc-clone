@@ -36,7 +36,7 @@ namespace mcc::texture {
         DLOG(ERROR) << "failed to load texture from: " << filename_;
         return TextureRef();
       }
-      return TextureRef(tag_, texture.value());
+      return TextureRef(texture.value());
     }
   };
 
