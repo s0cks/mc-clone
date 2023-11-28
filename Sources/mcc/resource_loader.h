@@ -14,18 +14,10 @@ namespace mcc {
     template<typename R>
     class Loader {
     protected:
-      Tag tag_;
-
-      explicit Loader(const Tag& tag):
-        tag_(tag) {
-      }
+      Loader() = default;
     public:
       virtual ~Loader() = default;
       virtual Reference<R> Load() = 0;
-
-      Tag tag() const {
-        return tag_;
-      }
     };
 
     template<typename R>
@@ -34,9 +26,8 @@ namespace mcc {
       std::string filename_;
       FILE* file_;
 
-      explicit FileLoader(const Tag& tag,
-                          const std::string& filename):
-        Loader<R>(tag),
+      explicit FileLoader(const std::string& filename):
+        Loader<R>(),
         filename_(filename),
         file_(NULL) {
         if((file_ = fopen(filename_.c_str(), "rb")) == NULL)
@@ -64,8 +55,8 @@ namespace mcc {
     protected:
       json::Document& doc_;
 
-      explicit JsonLoader(const Tag& tag, json::Document& doc):
-        Loader<R>(tag),
+      explicit JsonLoader(json::Document& doc):
+        Loader<R>(),
         doc_(doc) {
       }
 
@@ -93,9 +84,8 @@ namespace mcc {
     protected:
       json::Document doc_;
     
-      explicit JsonFileLoader(const Tag& tag,
-                              const std::string& filename):
-        FileLoader<R>(tag, filename) {
+      explicit JsonFileLoader(const std::string& filename):
+        FileLoader<R>(filename) {
         if(!json::ParseJson(FileLoader<R>::file_, doc_)) {
           DLOG(ERROR) << "failed to parse json document from: " << FileLoader<R>::filename_;
           FileLoader<R>::Close();

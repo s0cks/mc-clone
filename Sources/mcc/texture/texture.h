@@ -208,7 +208,7 @@ namespace mcc::texture {
       id_(rhs.id_),
       size_(rhs.size_) {
     }
-    ~Texture() override = default;
+    ~Texture() override;
 
     TextureId id() const {
       return id_;
@@ -260,22 +260,17 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
 
-    void Delete() {
-      glDeleteTextures(1, &id_);
-      CHECK_GL(FATAL);
-    }
-
     void Bind(const uint32_t slot) const {
       glActiveTexture(GL_TEXTURE0 + slot);
       CHECK_GL(FATAL);
       Bind();
     }
 
-    void Bind0() const {
+    inline void Bind0() const {
       return Bind(0);
     }
 
-    void Bind1() const {
+    inline void Bind1() const {
       return Bind(1);
     }
 
@@ -297,8 +292,6 @@ namespace mcc::texture {
       stream << ")";
       return stream;
     }
-  public:
-    static void Init();
   };
 }
 
@@ -308,11 +301,6 @@ namespace mcc {
 
   namespace resource {
     typedef Reference<Texture> TextureRef;
-
-    static inline Tag
-    NewTextureTag(const std::string& name) {
-      return Tag::Texture(name);
-    }
   }
 
   using resource::TextureRef;
@@ -320,13 +308,6 @@ namespace mcc {
   static inline TextureRef
   NullTexture() {
     return TextureRef();
-  }
-
-  TextureRef GetTexture(const resource::Token& token);
-
-  static inline TextureRef
-  GetTextureFromFile(const std::string& location) {
-    return GetTexture(res::Token(res::Tag::Texture(location), location));
   }
 
   TextureRef GetTexture(const uri::Uri& uri);

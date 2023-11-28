@@ -8,6 +8,7 @@
 #include "mcc/buffer.h"
 #include "mcc/common.h"
 
+#include "mcc/uri.h"
 #include "mcc/cache.h"
 #include "mcc/material.h"
 #include "mcc/resource.h"
@@ -153,17 +154,16 @@ namespace mcc {
 
   namespace resource {
     typedef Reference<Shader> ShaderRef;
-    
-    static inline Tag
-    NewShaderTag(const std::string& name) {
-      return Tag::Shader(name);
-    }
   }
 
   using resource::ShaderRef;
 
-  ShaderRef GetShader(const res::Token& token);
-  ShaderRef GetShader(const std::string& name);
+  ShaderRef GetShader(const uri::Uri& uri);
+  
+  static inline ShaderRef
+  GetShader(const uri::basic_uri& uri) {
+    return GetShader(uri::Uri(uri));
+  }
 }
 
 #endif //MCC_SHADER_H

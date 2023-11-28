@@ -44,8 +44,6 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   using namespace mcc;
-  texture::Texture::Init();
-
   settings::Init();
   font::Initialize();
   Entities::Initialize();
@@ -58,7 +56,6 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   Window::Init();
   terrain::Terrain::Init();
-  resource::Registry::Init();
   d2::Mesh::Init();
   FrameBuffer::Init();
 

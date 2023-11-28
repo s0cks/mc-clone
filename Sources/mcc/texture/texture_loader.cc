@@ -2,6 +2,7 @@
 
 #include <regex>
 #include "mcc/json.h"
+#include "mcc/texture/texture_resolver.h"
 
 namespace mcc::texture {
   static const std::regex kPngPattern(".*\\.(png)$");
@@ -37,25 +38,29 @@ namespace mcc::texture {
   }
 
   TextureRef TextureLoader::Load() {
-    DLOG(INFO) << "loading Texture from " << filename_ << "....";
-    if(IsDirectory(filename_)) {
-      const auto index = filename_ + "/texture.json";
+    TextureResolver resolver(FLAGS_resources + "/textures");
+    const auto filenameOpt = resolver.Resolve(target());
+    if(!filenameOpt)
+      return TextureRef();
+    const auto& filename = (*filenameOpt);
+    if(IsDirectory(filename)) {
+      const auto index = filename + "/texture.json";
       DLOG(INFO) << "checking for index: " <<  index;
       if(!FileExists(index)) {
-        DLOG(ERROR) << "no Texture index found in: " << filename_;
+        DLOG(ERROR) << "no Texture index found in: " << filename;
         return TextureRef();
       }
 
-      JsonTextureLoader loader(tag_, index);
+      JsonTextureLoader loader(index);
       return loader.Load();
-    } else if(std::regex_match(filename_, kPngPattern)) {
-      PngFileLoader loader(tag_, filename_);
+    } else if(std::regex_match(filename, kPngPattern)) {
+      PngFileLoader loader(filename);
       return loader.Load();
-    } else if(std::regex_match(filename_, kJpegPattern)) {
-      JpegFileLoader loader(tag_, filename_);
+    } else if(std::regex_match(filename, kJpegPattern)) {
+      JpegFileLoader loader(filename);
       return loader.Load();
-    } else if(std::regex_match(filename_, kJsonPattern)) {
-      JsonTextureLoader loader(tag_, filename_);
+    } else if(std::regex_match(filename, kJsonPattern)) {
+      JsonTextureLoader loader(filename);
       return loader.Load();
     }
 
@@ -215,9 +220,8 @@ namespace mcc::texture {
 
   class TextureJsonLoader : public res::JsonLoader<Texture> {
   public:
-    explicit TextureJsonLoader(const res::Tag& tag,
-                               json::Document& doc):
-      JsonLoader<Texture>(tag, doc) {
+    explicit TextureJsonLoader(json::Document& doc):
+      JsonLoader<Texture>(doc) {
     }
     ~TextureJsonLoader() override = default;
 
@@ -231,10 +235,10 @@ namespace mcc::texture {
       const auto filter = TextureFilter(minFilter.Get(), magFilter.Get());
       const auto texture = GetDocumentString("filename").value_or("");
       if(std::regex_match(texture, kPngPattern)) {
-        PngFileLoader loader(tag_, texture, filter, alignment);
+        PngFileLoader loader(texture, filter, alignment);
         return loader.Load();
       } else if(std::regex_match(texture, kJpegPattern)) {
-        JpegFileLoader loader(tag_, texture, filter, alignment);
+        JpegFileLoader loader(texture, filter, alignment);
         return loader.Load();
       }
 
@@ -293,11 +297,10 @@ namespace mcc::texture {
       return true;
     }
   public:
-    CubeMapJsonLoader(const res::Tag& tag,
-                      json::Document& doc,
+    CubeMapJsonLoader(json::Document& doc,
                       const std::string& filename,
                       const std::string& dirname):
-      JsonLoader<Texture>(tag, doc),
+      JsonLoader<Texture>(doc),
       filename_(filename),
       dirname_(dirname) {    
     }
@@ -330,10 +333,10 @@ namespace mcc::texture {
     if((*type) == "cubemap") {
       auto dirname = filename_.substr(0, filename_.find_last_of('/'));
       dirname = dirname.substr(dirname.find_last_of('/') + 1);
-      CubeMapJsonLoader loader(tag_, doc_, filename_, dirname);
+      CubeMapJsonLoader loader(doc_, filename_, dirname);
       return loader.Load();
     } else if((*type) == "texture") {
-      TextureJsonLoader loader(tag_, doc_);
+      TextureJsonLoader loader(doc_);
       return loader.Load();
     }
 

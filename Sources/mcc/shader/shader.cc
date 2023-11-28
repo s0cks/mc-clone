@@ -8,8 +8,6 @@
 namespace mcc {
   using namespace shader;
 
-  static std::unordered_map<std::string, Shader*> all_shaders_;
-
   static inline std::string
   GetShaderFilename(const std::string& name, const std::string& extension) {
     auto filename = name;
@@ -30,33 +28,19 @@ namespace mcc {
     return GetShaderFilename(name, kFragmentShaderExtension);
   }
 
-  static inline ShaderRef
-  CreateReferenceTo(const Shader* value, const res::Tag& tag = res::Tag::Shader()) {
-    return ShaderRef((Shader*) value);
-  }
-
-  ShaderRef GetShader(const std::string& name) {
-    const auto& pos = all_shaders_.find(name);
-    if(pos != all_shaders_.end())
-      return CreateReferenceTo(pos->second, res::Tag::Shader(name));
-    return GetShader(res::Registry::Get(res::Tag::Shader(name)));
-  }
-
-  ShaderRef GetShader(const res::Token& token) {
-    const auto pos = all_shaders_.find(token.tag.value());
-    if(pos != all_shaders_.end())
-      return CreateReferenceTo(pos->second, token.tag);
-
-    DLOG(INFO) << "getting shader from: " << token;
+  ShaderRef GetShader(const uri::Uri& uri) {
+    MCC_ASSERT(uri.scheme == "shader");
+    //TODO: cache
+    const auto location = FLAGS_resources + "/shaders";
     ProgramBuilder builder;
     {
-      const auto source = Source::FromFile(GetVertexShaderFilename(token.location));
+      const auto source = Source::FromFile(GetVertexShaderFilename(location + uri.path));
       const auto result = builder.AttachVertexShader(source);
       LOG_IF(FATAL, !result.success()) << "failed to compile vertex shader: " << result;
     }
 
     {
-      const auto source = Source::FromFile(GetFragmentShaderFilename(token.location));
+      const auto source = Source::FromFile(GetFragmentShaderFilename(location + uri.path));
       const auto result = builder.AttachFragmentShader(source);
       LOG_IF(FATAL, !result.success()) << "failed to compile fragment shader: " << result;
     }
@@ -64,7 +48,6 @@ namespace mcc {
     auto shader = new Shader();
     auto result = builder.Build(shader);
     LOG_IF(ERROR, !result.success()) << "failed to compile shader: " << result;
-    all_shaders_.insert({ token.tag.value(), shader });
-    return CreateReferenceTo(shader, token.tag);
+    return ShaderRef(shader);
   }
 }

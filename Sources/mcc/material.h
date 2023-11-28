@@ -54,24 +54,7 @@ namespace mcc {
       std::string root_;
       json::Document& doc_;
 
-      inline TextureRef ParseMaterialComponent(const char* name) {
-        if(!doc_.HasMember(name))
-          return TextureRef();
-        const auto& value = doc_[name];
-        if(value.IsBool()) {
-          if(!value.GetBool()) // not enabled
-            return TextureRef();
-          const auto filename = root_ + "/" + name + ".png";
-          DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-          return GetTextureFromFile(filename);
-        } else if(value.IsString()) {
-          const auto filename = root_ + "/" + value.GetString() + ".png";
-          DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-          return GetTextureFromFile(filename);
-        }
-        DLOG(INFO) << "cannot determine material component '" << name << "' from json value";
-        return TextureRef();
-      }
+      TextureRef ParseMaterialComponent(const char* name);
     public:
       explicit JsonMaterialLoader(const std::string& root,
                                   json::Document& doc):
@@ -98,11 +81,6 @@ namespace mcc {
 
   namespace resource {
     typedef Reference<Material> MaterialRef;
-
-    static inline Tag
-    NewMaterialTag(const std::string& name) {
-      return Tag::Material(name);
-    }
   }
 
   using resource::MaterialRef;
@@ -110,14 +88,13 @@ namespace mcc {
   bool RegisterMaterial(const std::string& name);
   uint64_t GetNumberOfMaterials();
   bool VisitAllMaterials(std::function<bool(const std::string&)> vis);
-  MaterialRef GetMaterial(const resource::Token& token);
+  MaterialRef GetMaterial(const uri::Uri& uri);
 
   static inline MaterialRef
-  GetMaterial(const std::string& name) {
-    const auto token = resource::Registry::Get(resource::NewMaterialTag(name));
-    return GetMaterial(token);
+  GetMaterial(const uri::basic_uri& uri) {
+    return GetMaterial(uri::Uri(uri));
   }
-
+  
   class ApplyMaterialPipeline : public Pipeline {
   protected:
     MaterialRef material_;

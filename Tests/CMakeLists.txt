@@ -4,7 +4,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(${PROJECT_NAME}-tests
   main.cc
   mcc/test_uri.cc
-  mcc/test_resource.h mcc/test_resource.cc
   mcc/test_material.h mcc/test_material.cc
   mcc/test_cache.h mcc/test_cache.cc
   mcc/test_rapidjson.h mcc/test_rapidjson.cc

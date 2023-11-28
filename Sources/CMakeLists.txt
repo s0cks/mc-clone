@@ -34,12 +34,9 @@ add_library(${PROJECT_NAME}
   mcc/parser.h
   mcc/reference.h
   mcc/resource_type.h
-  mcc/resource_token.h
-  mcc/resource_tag.h
   mcc/resource_ptr.h
   mcc/resource_loader.h
   mcc/resource.h mcc/resource.cc
-  mcc/resource_registry.h mcc/resource_registry.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
   mcc/engine/engine_stage_preinit.h
@@ -107,6 +104,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_alignment.h
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc
+  mcc/texture/texture_resolver.h mcc/texture/texture_resolver.cc
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
