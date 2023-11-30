@@ -153,6 +153,7 @@ target_link_libraries(${PROJECT_NAME}
   semver
   fmt
   vorbis
+  tweeny
   OpenAL::OpenAL
   Backward::Backward
   OpenSSL::Crypto

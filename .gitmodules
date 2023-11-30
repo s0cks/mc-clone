@@ -22,3 +22,6 @@
 [submodule "lib/vorbis"]
 	path = lib/vorbis
 	url = https://gitlab.xiph.org/xiph/vorbis.git
+[submodule "lib/tweeny"]
+	path = lib/tweeny
+	url = git@github.com:mobius3/tweeny.git
