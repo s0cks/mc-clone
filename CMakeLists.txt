@@ -50,3 +50,5 @@ include_directories(${NK_INCLUDE_DIRS})
 add_subdirectory(Tests)
 add_subdirectory(Sources)
 add_subdirectory(Benchmarks)
+
+add_subdirectory(lib/units)

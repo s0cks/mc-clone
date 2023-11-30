@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <uv.h>
 
+#include <units.h>
+
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
 #include "mcc/gui/gui.h"
