@@ -149,6 +149,7 @@ target_link_libraries(${PROJECT_NAME}
   flatbuffers::flatbuffers
   Freetype::Freetype
   units
+  semver
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)

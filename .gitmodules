@@ -7,3 +7,6 @@
 [submodule "lib/units"]
 	path = lib/units
 	url = git@github.com:nholthaus/units.git
+[submodule "lib/semver"]
+	path = lib/semver
+	url = git@github.com:h2non/semver.c.git
