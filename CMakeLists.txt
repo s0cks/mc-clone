@@ -27,6 +27,7 @@ find_package(nk REQUIRED)
 find_package(leveldb REQUIRED)
 find_package(Flatbuffers REQUIRED)
 find_package(utf8 REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     message(STATUS "Compiling w/ debug mode.")

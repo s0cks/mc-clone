@@ -153,6 +153,7 @@ target_link_libraries(${PROJECT_NAME}
   semver
   fmt
   Backward::Backward
+  OpenSSL::Crypto
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
