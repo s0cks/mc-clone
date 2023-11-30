@@ -152,6 +152,7 @@ target_link_libraries(${PROJECT_NAME}
   units
   semver
   fmt
+  Backward::Backward
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
