@@ -9,6 +9,8 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/filereadstream.h>
 
+#include "mcc/common.h"
+
 namespace mcc::json {
   using namespace rapidjson;
 
@@ -21,6 +23,27 @@ namespace mcc::json {
     if(!file)
       return false;
     return ParseJson(file, doc);
+  }
+
+  static inline std::string
+  GetParseError(const Document& doc) {
+    MCC_ASSERT(doc.HasParseError());
+    std::stringstream ss;
+    switch(doc.GetParseError()) {
+      case kParseErrorDocumentEmpty:
+        ss << "Document is empty.";
+        break;
+      case kParseErrorDocumentRootNotSingular:
+        ss << "Document has multiple root values.";
+        break;
+      case kParseErrorValueInvalid:
+        ss << "Valid is invalid.";
+        break;
+      default:
+        ss << "Unknown: " << static_cast<uint64_t>(doc.GetParseError());
+        break;
+    }
+    return ss.str(); //TODO: optimize and improve this
   }
 
   static inline bool

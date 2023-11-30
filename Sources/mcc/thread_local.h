@@ -23,6 +23,10 @@ namespace mcc {
     T* Get() {
       return reinterpret_cast<T*>(GetCurrentThreadLocal(key_));
     }
+
+    operator bool () const {
+      return Get() != nullptr;
+    }
   };
 }
 

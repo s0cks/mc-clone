@@ -129,7 +129,7 @@ namespace mcc {
   void Window::OnPostInit() {
     const auto e3 = Entities::CreateEntity();
     e3.AddComponent<renderer::Renderable>({
-      .shader = GetShader("light_sphere"),
+      .shader = GetShader("shader:light_sphere"),
       .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
     });
     e3.AddComponent<physics::Transform>({

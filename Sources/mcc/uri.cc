@@ -6,7 +6,6 @@
 namespace mcc::uri {
   static inline bool
   OnSchemeParsed(const Parser* parser, const std::string& scheme) {
-    DLOG(INFO) << "parsed scheme: " << scheme;
     auto uri = (Uri*)parser->data();
     uri->scheme = scheme;
     return true;
@@ -14,7 +13,6 @@ namespace mcc::uri {
 
   static inline bool
   OnPathParsed(const Parser* parser, const std::string& path) {
-    DLOG(INFO) << "parsed path: " << path;
     auto uri = (Uri*)parser->data();
     uri->path = path;
     return true;
@@ -44,7 +42,6 @@ namespace mcc::uri {
 
   static inline bool
   OnFragmentParsed(const Parser* parser, const std::string& value) {
-    DLOG(INFO) << "parsed fragment: " << value;
     auto uri = (Uri*)parser->data();
     uri->fragment = value;
     return true;
@@ -61,7 +58,9 @@ namespace mcc::uri {
       .OnFragmentParsed = &OnFragmentParsed,
     };
     Parser parser(config, uri, this);
-    DLOG_IF(ERROR, !parser.Parse()) << "failed to parse uri: " << uri;
+    if(!parser.Parse()) {
+      DLOG(ERROR) << "failed to parse uri: " << uri;
+    }
   }
 
   bool Parser::ParseScheme() {

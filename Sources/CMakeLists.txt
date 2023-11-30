@@ -19,7 +19,10 @@ add_library(${PROJECT_NAME}
   mcc/window.h mcc/window.cc
   mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/shader_json.h mcc/shader/shader_json.cc
   mcc/shader/shader_pipeline.h
+  mcc/shader/shader_resolver.h mcc/shader/shader_resolver.cc
+  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
   mcc/shader/compiler_result.h
   mcc/shader/compiler.h mcc/shader/compiler.cc
   mcc/shader/builder.h mcc/shader/builder.cc

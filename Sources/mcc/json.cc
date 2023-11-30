@@ -8,6 +8,11 @@ namespace mcc::json {
     auto buffer = Buffer::New(4096);
     FileReadStream frs(file, (char*) buffer->data(), 4096);
     doc.ParseStream(frs);
+    if(doc.HasParseError()) {
+      fclose(file);
+      return false;
+    }
+    
     fclose(file);
     return true;
   }

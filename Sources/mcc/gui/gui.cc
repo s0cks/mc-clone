@@ -68,7 +68,7 @@ namespace mcc::gui {
 
   static inline void
   CreateShader() {
-    shader_ = GetShader("gui");
+    shader_ = GetShader("shader:gui");
   }
 
   static inline void

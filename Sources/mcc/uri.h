@@ -25,6 +25,14 @@ namespace mcc {
       Uri(const Uri& rhs) = default;
       ~Uri() = default;
 
+      bool HasFragment() const {
+        return !fragment.empty();
+      }
+
+      bool HasQuery() const {
+        return !query.empty();
+      }
+
       Uri& operator=(const Uri& rhs) = default;
 
       bool operator==(const Uri& rhs) const {
@@ -38,6 +46,27 @@ namespace mcc {
       }
 
       friend std::ostream& operator<<(std::ostream& stream, const Uri& rhs) {
+        stream << "Uri(";
+        stream << "scheme=" << rhs.scheme << ", ";
+        stream << "path=" << rhs.path;
+        if(rhs.HasQuery()) {
+          stream << ", query=[";
+          bool first = true;
+          for(const auto& [ key, value ] : rhs.query) {
+            if(!first)
+              stream << ", ";
+            stream << key << "=" << value;
+            if(first) {
+              first = false;
+              continue;
+            }
+          }
+          stream << "]";
+        }
+        if(rhs.HasFragment()) {
+          stream << ", fragment=" << rhs.fragment;
+        }
+        stream << ")";
         return stream;
       }
     };

@@ -1,0 +1,6 @@
+{
+  "name": "test",
+  "description": "This is a test shader",
+  "fragment": true,
+  "message": "This is another property that shouldn't be here."
+}

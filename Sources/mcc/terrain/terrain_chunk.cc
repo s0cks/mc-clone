@@ -120,7 +120,7 @@ namespace mcc::terrain {
         chunk_ = chunk;
       });
     AddChild(new ApplyTerrainMaterialPipeline());
-    AddChild(new ApplyShaderPipeline(GetShader("terrain"), [this](const ShaderRef& shader) {
+    AddChild(new ApplyShaderPipeline(GetShader("shader:terrain"), [this](const ShaderRef& shader) {
       shader->ApplyShader();
       shader->SetUniformBlock("Camera", 0);
       shader->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));

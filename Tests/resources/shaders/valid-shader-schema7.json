@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "description": "This is a test shader",
+  "vertex": "",
+  "fragment": "",
+  "geometry": "",
+  "tessEval": "",
+  "tessControl": ""
+}

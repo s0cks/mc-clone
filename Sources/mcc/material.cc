@@ -67,4 +67,10 @@ namespace mcc {
     }
     return true;
   }
+
+  MaterialRef GetMaterial(const uri::Uri& uri) {
+    MCC_ASSERT(uri.scheme == "material");
+    NOT_IMPLEMENTED(ERROR);
+    return MaterialRef();
+  }
 }
