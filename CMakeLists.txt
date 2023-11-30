@@ -54,3 +54,4 @@ add_subdirectory(Benchmarks)
 
 add_subdirectory(lib/units)
 add_subdirectory(lib/semver)
+add_subdirectory(lib/fmt)

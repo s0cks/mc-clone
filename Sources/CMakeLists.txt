@@ -2,6 +2,7 @@ configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
+include_directories(${UTF8_INCLUDE_DIRS})
 
 set(FB_SCHEMAS
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/materials.fbs")
@@ -150,6 +151,7 @@ target_link_libraries(${PROJECT_NAME}
   Freetype::Freetype
   units
   semver
+  fmt
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
