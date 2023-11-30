@@ -7,7 +7,7 @@
 #include "mcc/component/component.h"
 #include "mcc/component/component_state_table.h"
 
-#include "mcc/material.h"
+#include "mcc/material/material.h"
 
 namespace mcc::renderer {
   struct Renderable {

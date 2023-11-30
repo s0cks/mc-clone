@@ -2,7 +2,7 @@
 #define MCC_TEST_MATERIAL_H
 
 #include <gtest/gtest.h>
-#include "mcc/material.h"
+#include "mcc/material/material.h"
 
 namespace mcc {
   class MaterialTest : public ::testing::Test {

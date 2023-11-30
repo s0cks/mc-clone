@@ -12,7 +12,7 @@
 #include "mcc/gui/gui.h"
 
 #include "mcc/mcc.h"
-#include "mcc/material.h"
+#include "mcc/material/material.h"
 #include "mcc/font/font.h"
 #include "mcc/window.h"
 #include "mcc/settings.h"

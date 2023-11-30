@@ -1,4 +1,4 @@
-#include "mcc/material.h"
+#include "mcc/material/material.h"
 #include "mcc/texture/texture.h"
 #include "mcc/texture/texture_loader.h"
 

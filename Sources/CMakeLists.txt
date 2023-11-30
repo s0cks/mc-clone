@@ -4,15 +4,15 @@ include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${UTF8_INCLUDE_DIRS})
 
-set(FB_SCHEMAS
-  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/materials.fbs")
-build_flatbuffers("${FB_SCHEMAS}"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/"
-                  fbschemas
-                  ""
-                  "${PROJECT_BINARY_DIR}/mcc"
-                  ""
-                  "")
+# set(FB_SCHEMAS
+#   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/materials.fbs")
+# build_flatbuffers("${FB_SCHEMAS}"
+#                   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/"
+#                   fbschemas
+#                   ""
+#                   "${PROJECT_BINARY_DIR}/mcc"
+#                   ""
+#                   "")
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
@@ -58,7 +58,7 @@ add_library(${PROJECT_NAME}
   mcc/physics/transform.h mcc/physics/transform.cc
   mcc/physics/collision.h mcc/physics/collision.cc
   mcc/physics/physics.h mcc/physics/physics.cc
-  mcc/material.h mcc/material.cc
+  mcc/material/material.h mcc/material/material.cc
   mcc/gfx.h
   mcc/vao.h
   mcc/buffer_object.h
@@ -146,7 +146,7 @@ add_library(${PROJECT_NAME}
   mcc/renderer/renderer_stats.h
   mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc)
-add_dependencies(${PROJECT_NAME} fbschemas)
+# add_dependencies(${PROJECT_NAME} fbschemas)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads
   glog::glog

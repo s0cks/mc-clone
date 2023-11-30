@@ -10,7 +10,6 @@
 
 #include "mcc/uri.h"
 #include "mcc/cache.h"
-#include "mcc/material.h"
 #include "mcc/resource.h"
 
 namespace mcc::shader {
