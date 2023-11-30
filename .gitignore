@@ -8,7 +8,6 @@
 !/lib/
 !/resources/
 !/Sources/
-!/test
 !/Tests/
 !/.gitignore
 !/.gitattributes
