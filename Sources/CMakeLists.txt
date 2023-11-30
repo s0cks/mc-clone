@@ -152,6 +152,7 @@ target_link_libraries(${PROJECT_NAME}
   units
   semver
   fmt
+  vorbis
   Backward::Backward
   OpenSSL::Crypto
   ${LIBUV_LIBRARIES})
