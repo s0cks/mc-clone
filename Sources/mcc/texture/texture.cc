@@ -8,13 +8,6 @@
 #include "mcc/texture/texture_resolver.h"
 
 namespace mcc {
-  namespace texture {
-    Texture::~Texture() {
-      glDeleteTextures(1, &id_);
-      CHECK_GL(FATAL);
-    }
-  }
-
   TextureRef GetTexture(const uri::Uri& uri) {
     DLOG(INFO) << "checking for: " << uri;
     auto location = FLAGS_resources + "/textures/" + uri.path;

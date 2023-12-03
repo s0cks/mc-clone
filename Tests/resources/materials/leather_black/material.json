@@ -1,0 +1,8 @@
+{
+  "albedo": "",
+  "ao": true,
+  "height": true,
+  "metallic": true,
+  "normal": true,
+  "roughness": true
+}

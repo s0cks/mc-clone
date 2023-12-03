@@ -5,6 +5,14 @@
 #include "mcc/texture/texture.h"
 
 namespace mcc::texture {
+  class TextureLoader {
+  protected:
+    TextureLoader() = default;
+  public:
+    virtual ~TextureLoader() = default;
+    virtual TextureRef Load(const uri::Uri& uri);
+  };
+
   class TextureFileLoader : public res::FileLoader<Texture> {
   protected:
     Image image_;
@@ -87,21 +95,12 @@ namespace mcc::texture {
     TextureRef Load() override;
   };
 
-  class TextureLoader : public res::Loader<Texture> {
-  private:
-    const uri::Uri& target_;
+  class DefaultTextureLoader : public TextureLoader {
+  protected:
+    DefaultTextureLoader() = default;
   public:
-    TextureLoader(const uri::Uri& target):
-      Loader(),
-      target_(target) {
-    }
-    ~TextureLoader() override = default;
-
-    const uri::Uri& target() const {
-      return target_;
-    }
-
-    TextureRef Load() override;
+    ~DefaultTextureLoader() override = default;
+    TextureRef Load(const uri::Uri& uri) override;
   };
 }
 

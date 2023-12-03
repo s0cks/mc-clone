@@ -15,6 +15,7 @@ namespace mcc::json {
   using namespace rapidjson;
 
   bool ParseJson(FILE* file, Document& doc);
+  bool ParseJson(Document& doc, const std::string& value);
   
   static inline bool
   ParseJson(const std::string& filename, Document& doc) {

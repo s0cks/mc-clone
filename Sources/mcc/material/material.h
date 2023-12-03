@@ -40,40 +40,6 @@ namespace mcc {
     public:
       static Material* LoadFrom(const std::string& filename);
     };
-
-    class MaterialLoader {
-    protected:
-      MaterialLoader() = default;
-    public:
-      virtual ~MaterialLoader() = default;
-      virtual Material* LoadMaterial() = 0;
-    };
-
-    class JsonMaterialLoader : public MaterialLoader {
-    private:
-      std::string root_;
-      json::Document& doc_;
-
-      TextureRef ParseMaterialComponent(const char* name);
-    public:
-      explicit JsonMaterialLoader(const std::string& root,
-                                  json::Document& doc):
-        MaterialLoader(),
-        root_(root),
-        doc_(doc) {
-      }
-      ~JsonMaterialLoader() override = default;
-      Material* LoadMaterial() override;
-    public:
-      static inline Material*
-      Load(const std::string& root) {
-        json::Document doc;
-        if(!json::ParseJson(root + "/material.json", doc))
-          return nullptr;
-        material::JsonMaterialLoader loader(root, doc);
-        return loader.LoadMaterial();
-      }
-    };
   }
 
   using material::Material;

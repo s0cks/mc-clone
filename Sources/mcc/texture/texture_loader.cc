@@ -37,11 +37,12 @@ namespace mcc::texture {
     return std::optional<Texture*>{ texture };
   }
 
-  TextureRef TextureLoader::Load() {
+  TextureRef TextureLoader::Load(const uri::Uri& uri) {
     TextureResolver resolver(FLAGS_resources + "/textures");
-    const auto filenameOpt = resolver.Resolve(target());
+    const auto filenameOpt = resolver.Resolve(uri);
     if(!filenameOpt)
       return TextureRef();
+      
     const auto& filename = (*filenameOpt);
     if(IsDirectory(filename)) {
       const auto index = filename + "/texture.json";

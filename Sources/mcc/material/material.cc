@@ -1,53 +1,17 @@
+#include <fmt/format.h>
+
 #include "mcc/material/material.h"
 #include "mcc/texture/texture.h"
 #include "mcc/texture/texture_loader.h"
+
+#include "mcc/material/material_loader.h"
 
 namespace mcc {
   std::vector<std::string> all_materials_;
 
   namespace material {
-    TextureRef JsonMaterialLoader::ParseMaterialComponent(const char* name) {
-      if(!doc_.HasMember(name))
-        return TextureRef();
-      const auto& value = doc_[name];
-      if(value.IsBool()) {
-        if(!value.GetBool()) // not enabled
-          return TextureRef();
-        const auto filename = root_ + "/" + name + ".png";
-        DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-        texture::PngFileLoader loader(filename);
-        return loader.Load();
-      } else if(value.IsString()) {
-        const auto filename = root_ + "/" + value.GetString() + ".png";
-        DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-        texture::PngFileLoader loader(filename);
-        return loader.Load();
-      }
-      DLOG(INFO) << "cannot determine material component '" << name << "' from json value";
-      return TextureRef();
-    }
-
-    Material* JsonMaterialLoader::LoadMaterial() {
-      if(!doc_.HasMember("name")) {
-        DLOG(ERROR) << "no 'name' field found in material document.";
-        return nullptr;
-      }
-      const auto name = std::string(doc_["name"].GetString());
-      const auto material = new Material{
-        .name = name,
-        .location = root_,
-        .albedo = ParseMaterialComponent("albedo"),
-        .ao = ParseMaterialComponent("ao"),
-        .height = ParseMaterialComponent("height"),
-        .metallic = ParseMaterialComponent("metallic"),
-        .normal = ParseMaterialComponent("normal"),
-        .roughness = ParseMaterialComponent("roughness"),
-      };
-      return material;
-    }
-
     Material* Material::LoadFrom(const std::string& filename) {
-      return JsonMaterialLoader::Load(filename);
+      return JsonMaterialLoader::LoadMaterial(filename);
     }
   }
 
@@ -68,9 +32,57 @@ namespace mcc {
     return true;
   }
 
+  static inline std::string
+  GetMaterialName(const uri::Uri& uri) {
+    auto name = uri.path;
+    const auto slashpos = name.find_last_of('/');
+    if(slashpos != std::string::npos)
+      name = name.substr(slashpos + 1);
+    const auto dotpos = name.find_last_of('.');
+    if(dotpos != std::string::npos)
+      name = name.substr(0, dotpos);
+    return name;
+  }
+
+  static inline bool
+  ForEachMaterialIndexFilename(std::function<bool(const std::string&)> fn) {
+    static const std::unordered_set<std::string> kIndexFilenames = {
+      "material.json",
+      "index.json",
+    };
+    for(const auto& filename : kIndexFilenames) {
+      if(!fn(filename))
+        return false;
+    }
+    return true;
+  }
+
   MaterialRef GetMaterial(const uri::Uri& uri) {
     MCC_ASSERT(uri.scheme == "material");
-    NOT_IMPLEMENTED(ERROR);
+    const auto name = GetMaterialName(uri);
+    DLOG(INFO) << "loading " << name << " from: " << uri;
+    const auto root = fmt::format("{}/{}/{}", FLAGS_resources, "materials", uri.path);
+    DLOG(INFO) << "root: " << root;
+
+    MaterialRef material;
+    ForEachMaterialIndexFilename([&root,&material](const std::string& filename) {
+      const auto index = fmt::format("{}/{}", root, filename);
+      if(FileExists(index)) {
+        DLOG(INFO) << "found: " << index;
+        const auto mat = material::JsonMaterialLoader::LoadMaterial(index);
+        if(!mat) {
+          DLOG(ERROR) << "failed to load material from: " << index;
+          return true;// try something else
+        }
+        
+        material = MaterialRef(mat);
+        return false; //break loop
+      }
+      return true;
+    });
+    if(material.valid())
+      return material;
+
     return MaterialRef();
   }
 }

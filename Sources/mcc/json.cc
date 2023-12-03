@@ -16,4 +16,10 @@ namespace mcc::json {
     fclose(file);
     return true;
   }
+
+  bool ParseJson(Document& doc, const std::string& value) {
+    StringStream ss(value.data());
+    doc.ParseStream(ss);
+    return !doc.HasParseError();
+  }
 }

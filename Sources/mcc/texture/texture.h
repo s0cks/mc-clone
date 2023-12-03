@@ -208,7 +208,10 @@ namespace mcc::texture {
       id_(rhs.id_),
       size_(rhs.size_) {
     }
-    ~Texture() override;
+    ~Texture() override {
+      glDeleteTextures(1, &id_);
+      CHECK_GL(FATAL);
+    }
 
     TextureId id() const {
       return id_;

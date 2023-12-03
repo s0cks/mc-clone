@@ -29,6 +29,8 @@ add_library(${PROJECT_NAME}
   mcc/shader/source.h
   mcc/atomic_linked_list.h
   mcc/wsq.h
+  mcc/predicate.h
+  mcc/file_resolver.h
   mcc/cache.h mcc/cache.cc
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_stats.h
@@ -59,6 +61,8 @@ add_library(${PROJECT_NAME}
   mcc/physics/collision.h mcc/physics/collision.cc
   mcc/physics/physics.h mcc/physics/physics.cc
   mcc/material/material.h mcc/material/material.cc
+  mcc/material/material_json.h mcc/material/material_json.cc
+  mcc/material/material_loader.h mcc/material/material_loader.cc
   mcc/gfx.h
   mcc/vao.h
   mcc/buffer_object.h
@@ -104,6 +108,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_wrap.h
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h
+  mcc/texture/texture_builder.h
   mcc/texture/texture_alignment.h
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc

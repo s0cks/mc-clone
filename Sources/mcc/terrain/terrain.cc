@@ -55,7 +55,7 @@ namespace mcc::terrain {
   }
 
   void Terrain::OnPostInit() {
-    SetTerrainMaterial(GetMaterial("floors/old_wood"));
+    SetTerrainMaterial(GetMaterial("material:floors/old_wood"));
   }
 
   rx::observable<TerrainChunk*> Terrain::GetChunkObservable() {
