@@ -12,7 +12,8 @@ add_executable(${PROJECT_NAME}-tests
   mcc/shader/test_shader_json.cc
   mcc/material/test_material_json.cc
   mcc/material/test_material_loader_default.cc
-  mcc/texture/test_texture_wrap.cc
+  mcc/texture/test_texture_filter.cc
+  mcc/texture/test_texture_alignment.cc
   mcc/mock_glfw.h mcc/mock_glfw.cc
   mcc/mesh/test_obj_parser.h mcc/mesh/test_obj_parser.cc
   mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)

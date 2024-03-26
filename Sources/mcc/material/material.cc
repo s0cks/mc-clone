@@ -1,4 +1,6 @@
 #include <fmt/format.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "mcc/material/material.h"
 #include "mcc/texture/texture.h"

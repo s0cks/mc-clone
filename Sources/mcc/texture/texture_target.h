@@ -1,6 +1,8 @@
 #ifndef MCC_TEXTURE_TARGET_H
 #define MCC_TEXTURE_TARGET_H
 
+#include "mcc/json.h"
+
 namespace mcc::texture {
   enum TextureTarget : GLenum {
     k1D = GL_TEXTURE_1D,
@@ -10,6 +12,24 @@ namespace mcc::texture {
 
     kDefaultTarget = k2D,
   };
+
+  static inline std::optional<TextureTarget>
+  ParseTextureTarget(const std::string& value) {
+    if(EqualsIgnoreCase(value, "1d"))
+      return { k1D };
+    else if(EqualsIgnoreCase(value, "2d"))
+      return { k2D };
+    else if(EqualsIgnoreCase(value, "3d"))
+      return { k3D };
+    return std::nullopt;
+  }
+
+  static inline std::optional<TextureTarget>
+  ParseTextureTarget(const json::Value& value) {
+    if(!value.IsString())
+      return std::nullopt;
+    return ParseTextureTarget(std::string(value.GetString(), value.GetStringLength()));
+  }
 
   static inline std::ostream& operator<<(std::ostream& stream, const TextureTarget& rhs) {
     switch(rhs) {

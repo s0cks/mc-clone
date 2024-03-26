@@ -1,8 +1,11 @@
-#include "mcc/texture/image.h"
+#include "mcc/texture/image/image.h"
+
+#include <cstdio>
+#include <cstdlib>
 #include <jerror.h>
 #include <jpeglib.h>
 
-namespace mcc::jpeg {
+namespace mcc::img::jpeg {
   static inline Image::Type
   GetType(const int channels) {
     switch(channels) {
@@ -33,12 +36,14 @@ namespace mcc::jpeg {
     result.size[1] = info.output_height;
     result.type = GetType(channels);
     const auto size = result.size[0] * result.size[1] * channels;
-    const auto buffer = Buffer::New(size);
+    auto data = (uint8_t*) malloc(sizeof(uint8_t) * size);
     while (info.output_scanline < info.output_height) {
-      const auto row_ptr = &buffer->data()[channels * info.output_width * info.output_scanline];
+      const auto row_ptr = &data[channels * info.output_width * info.output_scanline];
       jpeg_read_scanlines(&info, (JSAMPARRAY)&row_ptr, 1);
     }
-    result.data = buffer;
+
+    result.bytes = data;
+    result.num_bytes = size;
     jpeg_finish_decompress(&info);
     jpeg_destroy_decompress(&info);
     fclose(file);

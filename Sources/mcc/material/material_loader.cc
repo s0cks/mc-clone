@@ -1,15 +1,20 @@
 #include "mcc/material/material_loader.h"
 
 #include <fmt/format.h>
-
 #include "mcc/texture/texture.h"
 #include "mcc/texture/texture_loader.h"
 
 namespace mcc::material {
+  static const std::vector<std::string> kValidImageExtension = {
+    ".jpeg",
+    ".jpg",
+    ".png"
+  };
+
   TextureRef DefaultMaterialLoader::FindTexture(const std::string& name) {
     DLOG(INFO) << "finding " << name << " texture for " << name_;
     TextureRef result = TextureRef();
-    texture::ForEachImageExtension([this,&name,&result](const std::string& extension) {
+    std::for_each(kValidImageExtension.begin(), kValidImageExtension.end(), [this,&name,&result](const std::string& extension) {
       const auto filename = fmt::format("{0:s}/{1:s}.{2:s}", root_, name, extension);
       if(FileExists(filename)) {
         DLOG(INFO) << "found " << filename;
@@ -43,13 +48,17 @@ namespace mcc::material {
         return TextureRef();
       const auto filename = root_ + "/" + name + ".png";
       DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-      texture::PngFileLoader loader(filename);
-      return loader.Load();
+      //TODO: implement
+      // texture::PngFileLoader loader(filename);
+      // return loader.Load();
+      return TextureRef();
     } else if(value.IsString()) {
       const auto filename = root_ + "/" + value.GetString() + ".png";
-      DLOG(INFO) << "loading material " << name << " texture from: " << filename;
-      texture::PngFileLoader loader(filename);
-      return loader.Load();
+      //TODO:
+      // DLOG(INFO) << "loading material " << name << " texture from: " << filename;
+      // texture::PngFileLoader loader(filename);
+      // return loader.Load();
+      return TextureRef();
     }
     DLOG(INFO) << "cannot determine material component '" << name << "' from json value";
     return TextureRef();

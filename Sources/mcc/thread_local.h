@@ -28,6 +28,40 @@ namespace mcc {
       return Get() != nullptr;
     }
   };
+
+  template<typename T>
+  class LazyThreadLocal {
+  public:
+    typedef std::function<T*()> Supplier;
+  protected:
+    ThreadLocalKey local_;
+    Supplier supplier_;
+
+    inline bool SetLocal(const T* value) const {
+      return SetCurrentThreadLocal(local_, (const void*) value);
+    }
+
+    inline T* GetLocal() const {
+      return (T*) GetCurrentThreadLocal(local_);
+    }
+
+    inline T* Supply() const {
+      return supplier_();
+    }
+  public:
+    explicit LazyThreadLocal(Supplier supplier):
+      local_(),
+      supplier_(supplier) {
+    }
+    virtual ~LazyThreadLocal() = default;
+
+    T* Get() const {
+      auto value = GetLocal();
+      if(value == nullptr)
+        SetLocal(value = Supply());
+      return value;
+    }
+  };
 }
 
 #endif //MCC_THREAD_LOCAL_H

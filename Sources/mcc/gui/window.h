@@ -8,7 +8,7 @@ namespace mcc::gui {
   protected:
     Window() = default;
 
-    void Render();
+    void Render() override;
   public:
     ~Window() override = default;
   public:

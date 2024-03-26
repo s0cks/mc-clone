@@ -2,48 +2,92 @@
 #define MCC_TEXTURE_JSON_H
 
 #include <optional>
+
 #include "mcc/json.h"
 #include "mcc/texture/texture.h"
 
 namespace mcc::texture {
-  void InitializeSchemaDocument();
-  json::SchemaDocument* GetSchemaDocument();
+  class JsonTexture {
+    DEFINE_NON_COPYABLE_TYPE(JsonTexture);
+    static constexpr const auto kFilenameFieldName = "filename";
+    static constexpr const auto kTargetFieldName = "target";
+    static constexpr const auto kFilterFieldName = "filter";
+    static constexpr const auto kWrapFieldName = "wrap";
+    static constexpr const auto kAlignmentFieldName = "alignment";
+  protected:
+    const json::Value& value_;
 
-  static inline bool
-  HasSchemaDocument() {
-    return GetSchemaDocument() != nullptr;
-  }
-
-  bool IsValidTextureDocument(json::Document& doc);
-
-  static inline bool
-  IsValidTextureDocument(const std::string& filename) {
-    json::Document doc;
-    if(!json::ParseJson(filename, doc)) {
-      DLOG(ERROR) << "failed to parse texture document at: " << filename;
-      return false;
+    inline std::optional<std::string>
+    GetStringProperty(const char* name) const {
+      MCC_ASSERT(IsObject());
+      const auto& value = value_[name];
+      if(!value.IsString())
+        return std::nullopt;
+      return { std::string(value.GetString(), value.GetStringLength()) };
     }
-    return IsValidTextureDocument(doc);
-  }
 
-  class TextureDocument {
-    static constexpr const char* kFilenamePropertyName = "filename";
-    static constexpr const char* kFilterPropertyName = "filter";
-    static constexpr const char* kFilterMinPropertyName = "min";
-    static constexpr const char* kFilterMagPropertyName = "mag";
-    static constexpr const char* kAlignmentPropertyName = "alignment";
-  private:
-    json::Document& doc_;
+    inline bool
+    HasProperty(const char* name) const {
+      MCC_ASSERT(IsObject());
+      return value_.HasMember(name);
+    }
   public:
-    TextureDocument(json::Document& doc):
-      doc_(doc) {  
+    JsonTexture() = delete;
+    explicit JsonTexture(const json::Value& value):
+      value_(value) {
     }
-    ~TextureDocument() = default;
+    explicit JsonTexture(const json::Document& doc):
+      JsonTexture((const json::Value&) doc) {
+    }
+    virtual ~JsonTexture() = default;
 
-    std::string GetFilename() const {
-      const auto& value = doc_[kFilenamePropertyName];
-      return std::string(value.GetString(), value.GetStringLength());
+    const json::Value& value() const {
+      return value_;
     }
+
+    inline bool IsObject() const {
+      return value().IsObject();
+    }
+
+    inline bool IsString() const {
+      return value().IsString();
+    }
+
+    std::optional<TextureTarget> GetTarget() const {
+      if(!IsObject())
+        return std::nullopt;
+      if(!HasProperty(kTargetFieldName))
+        return std::nullopt;
+      return ParseTextureTarget((const json::Value&) value_[kTargetFieldName]);
+    }
+
+    std::optional<TextureFilter> GetFilter() const {
+      if(!IsObject())
+        return std::nullopt;
+      if(!HasProperty(kFilterFieldName))
+        return std::nullopt;
+      JsonTextureFilter filter((const json::Value&) value_[kFilterFieldName]);
+      return { (const TextureFilter) filter };
+    }
+
+    std::optional<TextureWrap> GetWrap() const {
+      if(!IsObject())
+        return std::nullopt;
+      if(!HasProperty(kWrapFieldName))
+        return std::nullopt;
+      JsonTextureWrap wrap((const json::Value&) value_[kWrapFieldName]);
+      return { (const TextureWrap) wrap };
+    }
+
+    std::optional<std::string> GetFilename() const {
+      if(!IsObject())
+        return std::nullopt;
+      if(!HasProperty(kFilenameFieldName))
+        return std::nullopt;
+      return GetStringProperty(kFilenameFieldName);
+    }
+
+    bool IsValid() const;
   };
 }
 

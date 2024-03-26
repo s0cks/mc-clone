@@ -1,4 +1,5 @@
 #include <memory>
+#include <fmt/format.h>
 
 #include "mcc/flags.h"
 #include "mcc/file_resolver.h"

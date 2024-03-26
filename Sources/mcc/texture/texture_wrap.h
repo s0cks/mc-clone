@@ -108,7 +108,11 @@ namespace mcc::texture {
     return std::nullopt;
   }
 
-  class JsonTextureWrapParser {
+  class JsonTextureWrap {
+    DEFINE_NON_COPYABLE_TYPE(JsonTextureWrap);
+    static constexpr const auto kRFieldName = "r";
+    static constexpr const auto kSFieldName = "s";
+    static constexpr const auto kTFieldName = "t";
   protected:
     const json::Value& value_;
 
@@ -122,31 +126,29 @@ namespace mcc::texture {
       return ParseTextureWrapMode(std::string(value.GetString(), value.GetStringLength()));
     }
   public:
-    explicit JsonTextureWrapParser(const json::Value& value):
+    explicit JsonTextureWrap(const json::Value& value):
       value_(value) {
     }
-    explicit JsonTextureWrapParser(const json::Document& doc):
-      JsonTextureWrapParser((const json::Value&) doc) {
+    explicit JsonTextureWrap(const json::Document& doc):
+      JsonTextureWrap((const json::Value&) doc) {
     }
-    virtual ~JsonTextureWrapParser() = default;
+    virtual ~JsonTextureWrap() = default;
 
-    bool Parse(TextureWrap& wrap) {
+    explicit operator TextureWrap() const {
+      TextureWrap wrap;
       if(value_.IsString()) {
         const auto w = std::string(value_.GetString(), value_.GetStringLength()); //normalize w
         const auto& mode = ParseTextureWrapMode(w).value_or(kDefaultWrapMode);
         wrap.r = mode;
         wrap.s = mode;
         wrap.t = mode;
-        return true;
       } else if(value_.IsObject()) {
-        wrap.r = GetTextureWrapMode("r").value_or(kDefaultWrapMode);
-        wrap.s = GetTextureWrapMode("s").value_or(kDefaultWrapMode);
-        wrap.t = GetTextureWrapMode("t").value_or(kDefaultWrapMode);
-        return true;
+        wrap.r = GetTextureWrapMode(kRFieldName).value_or(kDefaultWrapMode);
+        wrap.s = GetTextureWrapMode(kSFieldName).value_or(kDefaultWrapMode);
+        wrap.t = GetTextureWrapMode(kTFieldName).value_or(kDefaultWrapMode);
       }
-
-      DLOG(ERROR) << "unknown texture wrap: "; //TODO: serialize value_
-      return false;
+      
+      return wrap;
     }
   };
 }

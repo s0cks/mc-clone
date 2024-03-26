@@ -2,13 +2,14 @@
 #error "Please #include <mcc/texture/image.h> instead."
 #endif //MCC_IMAGE_H
 
-#ifndef MCC_PNG_H
-#define MCC_PNG_H
+#ifndef MCC_JPEG_H
+#define MCC_JPEG_H
 
+#include "mcc/texture/image/image.h"
 #include <string>
 
-namespace mcc::png {
+namespace mcc::img::jpeg {
   bool Decode(const std::string& filename, Image& result);
 }
 
-#endif //MCC_PNG_H
+#endif //MCC_JPEG_H

@@ -33,6 +33,25 @@ namespace mcc {
         return !query.empty();
       }
 
+      std::optional<std::string> GetPathExtension() const {
+        const auto dotpos = path.find_first_of('.');
+        if(dotpos == std::string::npos)
+          return std::nullopt;
+        return { path.substr(dotpos + 1) };
+      }
+
+      bool HasPathExtension() const {
+        const auto dotpos = path.find_first_of('.');
+        return dotpos != std::string::npos;
+      }
+
+      std::optional<std::string> GetQuery(const std::string& name) const {
+        const auto pos = query.find(name);
+        if(pos == query.end())
+          return std::nullopt;
+        return { pos->second };
+      }
+
       Uri& operator=(const Uri& rhs) = default;
 
       bool operator==(const Uri& rhs) const {
@@ -73,7 +92,6 @@ namespace mcc {
 
     static constexpr const uint64_t kDefaultParserBufferSize = 4096;
     static constexpr const uint64_t kDefaultTokenBufferSize = 1024;
-    //TODO: rename to Parser
     class Parser : public ParserTemplate<kDefaultParserBufferSize, kDefaultTokenBufferSize> {
     public:
       struct Config {

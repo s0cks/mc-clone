@@ -9,7 +9,7 @@
 #include <glog/logging.h>
 #include <algorithm>
 
-#include "mcc/platform.h"
+#include "platform.h"
 
 #if defined(OS_IS_LINUX) || defined(OS_IS_OSX)
 #include <unistd.h>
@@ -50,7 +50,7 @@ namespace mcc {
   }
 
   static inline uword
-  RoundUpPow2(uword x){
+  RoundUpPow2(uword x) {
     x = x - 1;
     x = x | (x >> 1);
     x = x | (x >> 2);

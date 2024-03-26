@@ -1,4 +1,5 @@
 configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
@@ -31,6 +32,9 @@ add_library(${PROJECT_NAME}
   mcc/wsq.h
   mcc/predicate.h
   mcc/file_resolver.h
+  mcc/common.h
+  mcc/platform.h
+  mcc/buffer.h mcc/buffer.cc
   mcc/cache.h mcc/cache.cc
   mcc/timestamp.h mcc/timestamp.cc
   mcc/engine/engine_stats.h
@@ -75,14 +79,12 @@ add_library(${PROJECT_NAME}
   mcc/vertex_3d.h mcc/vertex_3d.cc
   mcc/bloom.h mcc/bloom.cc
   mcc/rx.h
-  mcc/common.h
+  mcc/glm.h
   mcc/flags.h mcc/flags.cc
-  mcc/platform.h
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
   mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
-  mcc/buffer.h mcc/buffer.cc
   mcc/uv_utils.h
   mcc/os_thread.h mcc/os_thread.cc
   mcc/os_thread_linux.h
@@ -102,9 +104,9 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
-  mcc/texture/image.h mcc/texture/image.cc
-  mcc/texture/image_png.h mcc/texture/image_png.cc
-  mcc/texture/image_jpeg.h mcc/texture/image_jpeg.cc
+  mcc/texture/image/image.h mcc/texture/image/image.cc
+  mcc/texture/image/image_png.h mcc/texture/image/image_png.cc
+  mcc/texture/image/image_jpeg.h mcc/texture/image/image_jpeg.cc
   mcc/texture/texture_wrap.h
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h
@@ -112,7 +114,6 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_alignment.h
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc
-  mcc/texture/texture_resolver.h mcc/texture/texture_resolver.cc
   mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc

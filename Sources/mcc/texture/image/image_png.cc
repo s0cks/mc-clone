@@ -1,8 +1,11 @@
-#include "mcc/texture/image.h"
-#include <png.h>
+#include "mcc/texture/image/image.h"
 
-namespace mcc::png {
-  bool Decode(const std::string& filename, Image& result) {
+#include <png.h>
+#include <string>
+#include <glog/logging.h>
+
+namespace mcc::img::png {
+  bool Decode(const ImageRef& filename, Image& result) {
     auto file = fopen(filename.c_str(), "rb");
     if(!file) {
       LOG(ERROR) << "failed to open: " << filename;
@@ -70,13 +73,15 @@ namespace mcc::png {
 
     const auto row_bytes = png_get_rowbytes(png, info);
     const auto total_size = row_bytes * height;
-    auto buffer = Buffer::New(total_size);
+    uint8_t* data = (uint8_t*)malloc(sizeof(uint8_t) * total_size);
+
     png_bytepp rows = png_get_rows(png, info);
     for(auto i = 0; i < height; i++) {
-      memcpy(buffer->data() + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
+      memcpy(data + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
     }
 
-    result.data = buffer;
+    result.bytes = data;
+    result.num_bytes = total_size;
     result.size[0] = width;
     result.size[1] = height;
     png_destroy_read_struct(&png, &info, NULL);
