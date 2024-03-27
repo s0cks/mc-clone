@@ -127,38 +127,38 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
-    const auto e3 = Entities::CreateEntity();
-    e3.AddComponent<renderer::Renderable>({
-      .shader = GetShader("shader:light_sphere"),
-      .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
-    });
-    e3.AddComponent<physics::Transform>({
-      .position = glm::vec3(0.0f, 3.0f, 0.0f),
-      .rotation = glm::vec3(0.0f),
-      .scale = glm::vec3(1.0f),
-    });
-    e3.AddComponent<light::PointLight>({
-      {
-        .ambient = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f),
-        .diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f),
-        .specular = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
-      },
-      .position = glm::vec4(0.0f, 3.0f, 0.0f, 1.0f),
-      .constant = 1.0f,
-      .linear = 0.09f,
-      .quadratic = 0.032f,
-    });
-    DLOG(INFO) << "light sphere: " << e3;
+    // const auto e3 = Entities::CreateEntity();
+    // e3.AddComponent<renderer::Renderable>({
+    //   .shader = GetShader("shader:light_sphere"),
+    //   .mesh = mesh::LoadFrom("/sphere/sphere.obj"),
+    // });
+    // e3.AddComponent<physics::Transform>({
+    //   .position = glm::vec3(0.0f, 3.0f, 0.0f),
+    //   .rotation = glm::vec3(0.0f),
+    //   .scale = glm::vec3(1.0f),
+    // });
+    // e3.AddComponent<light::PointLight>({
+    //   {
+    //     .ambient = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f),
+    //     .diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f),
+    //     .specular = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+    //   },
+    //   .position = glm::vec4(0.0f, 3.0f, 0.0f, 1.0f),
+    //   .constant = 1.0f,
+    //   .linear = 0.09f,
+    //   .quadratic = 0.032f,
+    // });
+    // DLOG(INFO) << "light sphere: " << e3;
 
-    const auto e4 = Entities::CreateEntity();
-    e4.AddComponent<light::DirectionalLight>(light::DirectionalLight{
-      { 
-        .ambient = glm::vec4(0.05f, 0.05f, 0.5f, 1.0f),
-        .diffuse = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f),
-        .specular = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f),
-      },
-      .direction = glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f),
-    });
+    // const auto e4 = Entities::CreateEntity();
+    // e4.AddComponent<light::DirectionalLight>(light::DirectionalLight{
+    //   { 
+    //     .ambient = glm::vec4(0.05f, 0.05f, 0.5f, 1.0f),
+    //     .diffuse = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f),
+    //     .specular = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f),
+    //   },
+    //   .direction = glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f),
+    // });
   }
 
   void Window::OnTerminating() {

@@ -3,7 +3,6 @@
 
 #include <cstdio>
 #include <cstdint>
-#include <cassert>
 #include <string>
 #include <optional>
 #include <glog/logging.h>
@@ -17,6 +16,17 @@
 #else
 #error "unsupported operating system"
 #endif
+
+#ifdef MCC_DEBUG
+
+#include <cassert>
+#define MCC_ASSERT(x) assert((x));
+
+#else
+
+#define MCC_ASSERT(x) \
+
+#endif //MCC_DEBUG
 
 #define DEFINE_NON_COPYABLE_TYPE(Name) \
   public:                              \
@@ -119,15 +129,5 @@ namespace mcc {
         && std::equal(rhs.begin(), rhs.end(), lhs.begin(), lhs.end(), CharEqualsIgnoreCase);
   }
 }
-
-#ifdef MCC_DEBUG
-
-#define MCC_ASSERT(x) assert(x)
-
-#else
-
-#define MCC_ASSERT(x)
-
-#endif //MCC_DEBUG
 
 #endif //MCC_COMMON_H

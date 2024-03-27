@@ -4,23 +4,37 @@
 #include "mcc/json.h"
 
 namespace mcc::texture {
-  enum TextureTarget : GLenum {
-    k1D = GL_TEXTURE_1D,
-    k2D = GL_TEXTURE_2D,
-    k3D = GL_TEXTURE_3D,
-    kCubeMap = GL_TEXTURE_CUBE_MAP,
+#define FOR_EACH_TEXTURE_TARGET(V) \
+  V(1D, 1D)                        \
+  V(2D, 2D)                        \
+  V(3D, 3D)                        \
+  V(CubeMap, CUBE_MAP)
 
+  enum TextureTarget : GLenum {
+#define DEFINE_TEXTURE_TARGET(Name, Target) k##Name = GL_TEXTURE_##Target,
+    FOR_EACH_TEXTURE_TARGET(DEFINE_TEXTURE_TARGET)
+#undef DEFINE_TEXTURE_TARGET
     kDefaultTarget = k2D,
   };
 
+  static inline std::ostream& operator<<(std::ostream& stream, const TextureTarget& rhs) {
+    switch(rhs) {
+#define DEFINE_TOSTRING(Name, Target) \
+      case k##Name: return stream << #Name << "(GL_TEXTURE_" << #Target << ")";
+      FOR_EACH_TEXTURE_TARGET(DEFINE_TOSTRING)
+#undef DEFINE_TOSTRING
+      default: return stream << "Unknown";
+    }
+  }
+
   static inline std::optional<TextureTarget>
   ParseTextureTarget(const std::string& value) {
-    if(EqualsIgnoreCase(value, "1d"))
-      return { k1D };
-    else if(EqualsIgnoreCase(value, "2d"))
-      return { k2D };
-    else if(EqualsIgnoreCase(value, "3d"))
-      return { k3D };
+    if(EqualsIgnoreCase(value, "default")) return { kDefaultTarget };
+#define DEFINE_PARSE_TARGET(Name, Target) \
+    else if(EqualsIgnoreCase(value, #Name)) { return { k##Name }; }
+    FOR_EACH_TEXTURE_TARGET(DEFINE_PARSE_TARGET)
+#undef DEFINE_PARSE_TARGET
+    DLOG(ERROR) << "unknown texture::TextureTarget: " << value;
     return std::nullopt;
   }
 
@@ -28,18 +42,8 @@ namespace mcc::texture {
   ParseTextureTarget(const json::Value& value) {
     if(!value.IsString())
       return std::nullopt;
-    return ParseTextureTarget(std::string(value.GetString(), value.GetStringLength()));
-  }
-
-  static inline std::ostream& operator<<(std::ostream& stream, const TextureTarget& rhs) {
-    switch(rhs) {
-      case k1D: return stream << "1D";
-      case k2D: return stream << "2D";
-      case k3D: return stream << "3D";
-      case kCubeMap: return stream << "CubeMap";
-      default:
-        return stream << "Unknown";
-    }
+    const std::string target(value.GetString(), value.GetStringLength());
+    return ParseTextureTarget(target);
   }
 }
 

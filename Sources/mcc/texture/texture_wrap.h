@@ -82,6 +82,25 @@ namespace mcc::texture {
           || s != rhs
           || t != rhs;
     }
+
+    template<const TextureTarget Target = k2D>
+    static inline TextureWrapMode
+    GetTextureWrapMode(const GLenum coord) {
+      GLint mode;
+      glGetTexParameteriv(Target, coord, &mode);
+      CHECK_GL(FATAL);
+      return static_cast<TextureWrapMode>(mode);
+    }
+
+    template<const TextureTarget Target = k2D>
+    static inline TextureWrap
+    GetTextureWrap() {
+      return {
+        GetTextureWrapMode<Target>(GL_TEXTURE_WRAP_R),
+        GetTextureWrapMode<Target>(GL_TEXTURE_WRAP_S),
+        GetTextureWrapMode<Target>(GL_TEXTURE_WRAP_T)
+      };
+    }
   };
 
   static constexpr const auto kDefaultWrap = TextureWrap(kDefaultWrapMode);

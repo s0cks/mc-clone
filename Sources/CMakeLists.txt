@@ -1,5 +1,5 @@
 configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
@@ -104,17 +104,18 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Textures
   mcc/texture/image/image.h mcc/texture/image/image.cc
   mcc/texture/image/image_png.h mcc/texture/image/image_png.cc
   mcc/texture/image/image_jpeg.h mcc/texture/image/image_jpeg.cc
   mcc/texture/texture_wrap.h
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h
-  mcc/texture/texture_builder.h
   mcc/texture/texture_alignment.h
+  mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc
-  mcc/texture/texture_loader.h mcc/texture/texture_loader.cc
+# Terrain
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
   mcc/terrain/terrain_vertex.h

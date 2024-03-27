@@ -24,8 +24,9 @@ namespace mcc {
     MOCK_METHOD1(glActiveTexture, void(GLenum target));
     MOCK_METHOD2(glBindTexture, void(GLenum target, GLuint texture));
     MOCK_METHOD2(glGenTextures, void(GLsizei n, GLuint* data));
-    MOCK_METHOD3(glTexParameterIiv, void(GLenum target, GLenum pname, const GLint *params));
     MOCK_METHOD3(glTexParameteri, void(GLenum target, GLenum pname, GLint param));
+    MOCK_METHOD3(glTexParameterIiv, void(GLenum target, GLenum pname, const GLint *params));
+    MOCK_METHOD3(glGetTexParameteriv, void(GLenum target, GLenum pname, GLint* param));
     MOCK_METHOD9(glTexImage2D, void(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels));
     MOCK_METHOD2(glDeleteTextures, void(GLsizei n, const GLuint* arrays));
 

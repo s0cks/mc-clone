@@ -48,6 +48,10 @@ void glGenTextures(GLsizei n, GLuint* textures) {
   __ glGenTextures(n, textures);
 }
 
+void glGetTexParameteriv(GLenum target, GLenum pname, GLint* params) {
+  __ glGetTexParameteriv(target, pname, params);
+}
+
 void glBindTexture(GLenum target, GLuint texture) {
   __ glBindTexture(target, texture);
 }

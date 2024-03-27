@@ -207,24 +207,24 @@ namespace mcc::renderer {
       auto fb = Renderer::GetFrameBuffer();
       fb->Bind();
       const auto size = Window::GetSize();
-      AddChild(new skybox::RenderSkyboxPipeline());
-      AddChild(new terrain::RenderTerrainChunkPipeline());
-      AddChild(new RenderEntitiesPipeline());
-      AddChild(new RenderFbPipeline(fb));
-      AddChild(new gui::RenderScreenPipeline(size));
-      AddChild(new ApplyPipeline([]() {
-        gui::FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
-        Window::VisitFrames(&frame_renderer);
-      }));
-      AddChild(new ApplyPipeline([this,fb]() {
-        fb->Bind();
-        const auto picker = fb->GetPickingAttachment(2);
-        if(!picker)
-          return;
-        const auto mPos = Mouse::GetPosition();
-        DLOG(INFO) << "pixel: " << picker->GetPixel(mPos[0], mPos[1]);
-        fb->Unbind();
-      }));
+      // AddChild(new skybox::RenderSkyboxPipeline());
+      // AddChild(new terrain::RenderTerrainChunkPipeline());
+      // AddChild(new RenderEntitiesPipeline());
+      // AddChild(new RenderFbPipeline(fb));
+      // AddChild(new gui::RenderScreenPipeline(size));
+      // AddChild(new ApplyPipeline([]() {
+      //   gui::FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
+      //   Window::VisitFrames(&frame_renderer);
+      // }));
+      // AddChild(new ApplyPipeline([this,fb]() {
+      //   fb->Bind();
+      //   const auto picker = fb->GetPickingAttachment(2);
+      //   if(!picker)
+      //     return;
+      //   const auto mPos = Mouse::GetPosition();
+      //   DLOG(INFO) << "pixel: " << picker->GetPixel(mPos[0], mPos[1]);
+      //   fb->Unbind();
+      // }));
     }
     ~RendererPipeline() override = default;
 

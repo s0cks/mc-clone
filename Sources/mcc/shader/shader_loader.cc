@@ -46,5 +46,6 @@ namespace mcc {
     // auto result = builder.Build(shader);
     // LOG_IF(ERROR, !result.success()) << "failed to compile shader: " << result;
     // return ShaderRef(shader);
+    return ShaderRef();
   }
 }

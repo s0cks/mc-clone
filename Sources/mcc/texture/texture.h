@@ -6,13 +6,12 @@
 #include "mcc/platform.h"
 #include "mcc/resource.h"
 
-#include "mcc/texture/texture_wrap.h"
-#include "mcc/texture/texture_target.h"
-#include "mcc/texture/texture_filter.h"
-#include "mcc/texture/texture_alignment.h"
+#include "mcc/texture/texture_options.h"
 
 namespace mcc::texture {
-  typedef glm::u64vec2 TextureSize;
+  typedef glm::u32vec2 TextureSize;
+  typedef uint32_t Pixel;
+  typedef glm::u32vec2 TextureCoord;
 
   typedef GLuint TextureId;
 
@@ -60,153 +59,140 @@ namespace mcc::texture {
     }
   }
 
+  class TextureData {
+  private:
+    GLint level_;
+    GLint internal_fmt_;
+    TextureSize size_;
+    GLint border_;
+    GLenum fmt_;
+    GLenum type_;
+
+    uint8_t* bytes_;
+    uint64_t num_bytes_;
+
+    virtual void ApplyTo(const TextureTarget target) const {
+      MCC_ASSERT(border() == 0);
+      MCC_ASSERT(HasData());
+      glTexImage2D(target, level(), internal_format(), width(), height(), border(), format(), type(), data());
+      CHECK_GL(FATAL);
+    }
+  public:
+    TextureData() = default;
+    TextureData(const TextureData& rhs):
+      level_(rhs.level_),
+      internal_fmt_(rhs.internal_fmt_),
+      size_(rhs.size_),
+      border_(rhs.border_),
+      fmt_(rhs.fmt_),
+      type_(rhs.type_),
+      bytes_(rhs.bytes_),
+      num_bytes_(rhs.num_bytes_) {
+    }
+    virtual ~TextureData() = default;
+
+    GLint level() const {
+      return level_;
+    }
+
+    GLint internal_format() const {
+      return internal_fmt_;
+    }
+
+    GLint border() const {
+      return border_;
+    }
+
+    GLenum format() const {
+      return fmt_;
+    }
+
+    GLenum type() const {
+      return type_;
+    }
+
+    const TextureSize size() const {
+      return size_;
+    }
+
+    const uint32_t width() const {
+      return size_[0];
+    }
+
+    const uint32_t height() const {
+      return size_[1];
+    }
+
+    const uint8_t* bytes() const {
+      return bytes_;
+    }
+
+    const uint8_t* bytes_begin() const {
+      return bytes();
+    }
+
+    const uint8_t* bytes_end() const {
+      return bytes() + num_bytes();
+    }
+
+    uint64_t num_bytes() const {
+      return num_bytes_;
+    }
+
+    const GLvoid* data() const {
+      return (const GLvoid*) bytes_;
+    }
+
+    bool HasData() const {
+      return bytes() && num_bytes() >= 1;
+    }
+  };
+
+  class Texture;
+  class TextureFactory {
+  protected:
+    TextureFactory() = default;
+  public:
+    virtual ~TextureFactory() = default;
+    virtual Texture* CreateTexture(const TextureTarget target, const uri::Uri& uri) = 0;
+  public:
+    static TextureFactory* GetInstance();
+
+    static inline Texture*
+    Create(const TextureTarget target, const uri::Uri& uri) {
+      const auto factory = GetInstance();
+      MCC_ASSERT(factory != nullptr);
+      return factory->CreateTexture(target, uri);
+    }
+
+    template<const TextureTarget Target = k2D>
+    static inline Texture*
+    Create(const uri::Uri& uri) {
+      return Create(Target, uri);
+    }
+  };
+
   class Texture : public gfx::Resource {
   protected:
     TextureId id_;
     TextureTarget target_;
-    GLenum internal_format_;
-    TextureSize size_;
-    GLenum format_;
-    GLenum type_;
-    bool mipmap_;
-    PixelStoreAlignment alignment_;
-    TextureFilter filter_;
-    TextureWrap wrap_;
-  private:
-    void InitializeTexture(const bool generate,
-                           const bool bind,
-                           const bool unbind,
-                           const GLvoid* pixels) {
-      if(generate) {
-        glGenTextures(1, &id_);
-        CHECK_GL(FATAL);
-        if(bind) {
-          glBindTexture(target_, id_);
-          CHECK_GL(FATAL);
-          alignment_.Apply();
-          if(pixels) {
-            DLOG(INFO) << "loading pixels for texture....";
-            glTexImage2D(target_, 0, internal_format_, size_[0], size_[1], 0, format_, type_, pixels);
-            CHECK_GL(FATAL);
-          }
-          if(mipmap_) {
-            DLOG(INFO) << "generating mipmap for texture....";
-            glGenerateMipmap(target_);
-            CHECK_GL(FATAL);
-          }
-          filter_.ApplyTo(target_);
-          wrap_.ApplyTo(target_);
-          if(unbind) {
-            glBindTexture(target_, 0);
-            CHECK_GL(FATAL);
-          }
-        }
-      }
+    TextureOptions options_;
+    TextureData data_;
+
+    explicit Texture(const TextureId id,
+                     const TextureOptions& options,
+                     const TextureData& data):
+      Resource(),
+      id_(id),
+      options_(options),
+      data_(data) {
     }
   public:
-    explicit Texture(const TextureTarget target,
-                     const bool generate = true,
-                     const bool bind = true,
-                     const bool unbind = true,
-                     const PixelStoreAlignment& alignment = kDefaultAlignment,
-                     const TextureFilter& filter = kDefaultFilter,
-                     const TextureWrap& wrap = kDefaultWrap):
-      Resource(),
-      id_(kInvalidTextureId),
-      target_(target),
-      internal_format_(),
-      size_(),
-      format_(),
-      type_(),
-      mipmap_(false),
-      alignment_(alignment),
-      filter_(filter),
-      wrap_(wrap) {
-      InitializeTexture(generate, bind, unbind, NULL);
-    }
-    explicit Texture(const TextureTarget target,
-                     const bool generate,
-                     const bool bind,
-                     const bool unbind,
-                     const GLenum internal_format,
-                     const TextureSize& size,
-                     const GLenum format,
-                     const GLenum type,
-                     const bool mipmap = false,
-                     const TextureAlignment pack_align = kDefaultPackAlignment,
-                     const TextureAlignment unpack_align = kDefaultUnpackAlignment,
-                     const TextureFilterComponent min = kDefaultMinFilter,
-                     const TextureFilterComponent mag = kDefaultMagFilter,
-                     const TextureWrapMode wrapR = kDefaultWrapMode,
-                     const TextureWrapMode wrapS = kDefaultWrapMode,
-                     const TextureWrapMode wrapT = kDefaultWrapMode,
-                     const GLvoid* pixels = NULL):
-      Resource(),
-      id_(kInvalidTextureId),
-      target_(target),
-      internal_format_(internal_format),
-      size_(size),
-      format_(format),
-      type_(type),
-      mipmap_(mipmap),
-      alignment_(pack_align, unpack_align),
-      filter_(min, mag),
-      wrap_(wrapR, wrapS, wrapT) {
-      InitializeTexture(generate, bind, unbind, pixels);
-    }
-    explicit Texture(const TextureTarget target,
-                     const bool generate,
-                     const bool bind,
-                     const bool unbind,
-                     const GLenum internal_format,
-                     const TextureSize& size,
-                     const GLenum format,
-                     const GLenum type,
-                     const bool mipmap,
-                     const PixelStoreAlignment& alignment,
-                     const TextureFilter& filter,
-                     const TextureWrap& wrap,
-                     const GLvoid* pixels = NULL):
-      Resource(),
-      id_(kInvalidTextureId),
-      target_(target),
-      internal_format_(internal_format),
-      size_(size),
-      format_(format),
-      type_(type),
-      mipmap_(mipmap),
-      alignment_(alignment),
-      filter_(filter),
-      wrap_(wrap) {
-      InitializeTexture(generate, bind, unbind, pixels);
-    }
-    explicit Texture(const TextureTarget target,
-                     const bool generate,
-                     const bool bind,
-                     const bool unbind,
-                     const GLenum internal_format,
-                     const TextureSize& size,
-                     const GLenum format,
-                     const GLenum type,
-                     const bool mipmap = false,
-                     const GLvoid* pixels = NULL):
-      Resource(),
-      id_(kInvalidTextureId),
-      target_(target),
-      internal_format_(internal_format),
-      size_(size),
-      format_(format),
-      type_(type),
-      mipmap_(mipmap),
-      alignment_(),
-      filter_(),
-      wrap_() {
-      InitializeTexture(generate, bind, unbind, pixels);
-    }
     Texture(const Texture& rhs):
       Resource(),
       id_(rhs.id_),
-      size_(rhs.size_) {
+      options_(rhs.options_),
+      data_(rhs.data_) {
     }
     ~Texture() override {
       glDeleteTextures(1, &id_);
@@ -220,37 +206,20 @@ namespace mcc::texture {
     TextureTarget target() const {
       return target_;
     }
+    
+    TextureWrap GetTextureWrap() const;
 
-    GLenum internal_format() const {
-      return internal_format_;
+    Pixel GetPixel(const uint32_t x, const uint32_t y) {
+      glReadBuffer(target());
+      CHECK_GL(FATAL);
+      Pixel pixel;
+      glReadPixels(x, y, 1, 1, data_.format(), data_.type(), &pixel);
+      CHECK_GL(FATAL);
+      return pixel;
     }
 
-    TextureSize size() const {
-      return size_;
-    }
-
-    GLenum format() const {
-      return format_;
-    }
-
-    GLenum type() const {
-      return type_;
-    }
-
-    PixelStoreAlignment alignment() const {
-      return alignment_;
-    }
-
-    bool mipmap() const {
-      return mipmap_;
-    }
-
-    TextureFilter filter() const {
-      return filter_;
-    }
-
-    TextureWrap wrap() const {
-      return wrap_;
+    Pixel GetPixel(const TextureCoord& coord) {
+      return GetPixel(coord[0], coord[1]);
     }
 
     void Bind() const override {
@@ -320,24 +289,42 @@ namespace mcc {
     return GetTexture(uri::Uri(uri));
   }
 
-  template<const uint32_t Slot>
+  template<const uint32_t Slot, const texture::TextureTarget Target = texture::k2D>
   class TextureBindScope { //TODO: move to mcc::texture
   private:
-    TextureRef texture_;
+    texture::TextureId id_; //TODO: need to hold reference to this texture
+
+    inline void Bind() const {
+      glBindTexture(Target, id_);
+      CHECK_GL(FATAL);
+      glActiveTexture(GL_TEXTURE0 + Slot);
+      CHECK_GL(FATAL);
+    }
+
+    void Unbind() const {
+      glBindTexture(Target, kInvalidTextureId);
+      CHECK_GL(FATAL);
+    }
   public:
-    TextureBindScope(TextureRef texture):
-      texture_(texture) {
-      texture_->Bind(Slot);
+    explicit TextureBindScope(const texture::TextureId id):
+      id_(id) {
+      Bind();
+    }
+    explicit TextureBindScope(const texture::Texture* texture):
+      TextureBindScope(texture->id()) {
+    }
+    explicit TextureBindScope(const TextureRef& ref):
+      TextureBindScope(ref->id()) {
     }
     ~TextureBindScope() {
-      texture_->Unbind();
+      Unbind();
     }
 
-    TextureRef GetTexture() const {
-      return texture_;
+    texture::TextureId id() const {
+      return id_;
     }
 
-    uint32_t GetSlot() const {
+    uint32_t slot() const {
       return Slot;
     }
   };

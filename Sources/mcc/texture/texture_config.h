@@ -1,10 +1,10 @@
 #ifndef MCC_TEXTURE_CONFIG_H
 #define MCC_TEXTURE_CONFIG_H
 
+#include "mcc/texture/texture_wrap.h"
 #include "mcc/texture/texture_target.h"
 #include "mcc/texture/texture_filter.h"
 #include "mcc/texture/texture_alignment.h"
-#include "mcc/texture/texture_wrap.h"
 
 namespace mcc::texture {
   struct TextureConfig {

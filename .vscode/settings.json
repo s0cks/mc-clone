@@ -89,6 +89,7 @@
     "__memory": "cpp",
     "codecvt": "cpp",
     "typeindex": "cpp",
-    "numeric": "cpp"
+    "numeric": "cpp",
+    "*.tcc": "cpp"
   }
 }

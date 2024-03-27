@@ -96,10 +96,11 @@ namespace mcc {
         const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
         const texture::TextureFilter& filter = texture::kLinearFilter,
         const texture::TextureWrap& wrap = texture::kDefaultWrap) {
-      const auto texture = new texture::Texture(texture::k2D, true, true, false, internal_format, size, format, type, false, alignment, filter, wrap, NULL);
-      glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
-      CHECK_GL(FATAL);
-      return new ColorBufferAttachment(slot, TextureRef(texture));
+      //TODO:
+      // const auto texture = new texture::Texture(texture::k2D, true, true, false, internal_format, size, format, type, false, alignment, filter, wrap, NULL);
+      // glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
+      // CHECK_GL(FATAL);
+      return new ColorBufferAttachment(slot, TextureRef());
     }
 
     static inline ColorBufferAttachment*
@@ -140,15 +141,6 @@ namespace mcc {
     GLuint slot() const {
       return target_ - GL_COLOR_ATTACHMENT0;
     }
-
-    uint32_t GetPixel(const uint64_t x, const uint64_t y) {
-      glReadBuffer(target());
-      CHECK_GL(FATAL);
-      uint32_t pixel;
-      glReadPixels(x, y, 1, 1, texture_->format(), texture_->type(), &pixel);
-      CHECK_GL(FATAL);
-      return pixel;
-    }
   public:
     static inline PickingAttachment*
     New(const bool enabled,
@@ -157,10 +149,11 @@ namespace mcc {
         const texture::PixelStoreAlignment& alignment = texture::kDefaultAlignment,
         const texture::TextureFilter& filter = texture::kNearestFilter,
         const texture::TextureWrap& wrap = texture::kDefaultWrap) {
-      const auto texture = new texture::Texture(texture::k2D, true, true, false, GL_RGB32I, size, GL_RED_INTEGER , GL_UNSIGNED_INT, false, alignment, filter, wrap, NULL);
-      glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
-      CHECK_GL(FATAL);
-      return new PickingAttachment(enabled, slot, TextureRef(texture));
+      //TODO:
+      // const auto texture = new texture::Texture(texture::k2D, true, true, false, GL_RGB32I, size, GL_RED_INTEGER , GL_UNSIGNED_INT, false, alignment, filter, wrap, NULL);
+      // glTexImage2D(GL_TEXTURE_2D, 0, texture->internal_format(), size[0], size[1], 0, texture->format(), texture->type(), NULL);
+      // CHECK_GL(FATAL);
+      return new PickingAttachment(enabled, slot, TextureRef());
     }
 
     static inline PickingAttachment*

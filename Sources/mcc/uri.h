@@ -4,10 +4,12 @@
 #include <cstdio>
 #include <string>
 #include <optional>
+#include <fmt/format.h>
 
 #include "mcc/buffer.h"
 #include "mcc/murmur.h"
 #include "mcc/parser.h"
+#include "mcc/common.h"
 
 namespace mcc {
   namespace uri {
@@ -31,6 +33,13 @@ namespace mcc {
 
       bool HasQuery() const {
         return !query.empty();
+      }
+
+      std::string GetPathWithoutExtension() const {
+        const auto dotpos = path.find_first_of('.');
+        if(dotpos != std::string::npos)
+          return path.substr(0, path.size() - dotpos);
+        return path;
       }
 
       std::optional<std::string> GetPathExtension() const {
@@ -89,6 +98,17 @@ namespace mcc {
         return stream;
       }
     };
+
+    static inline bool
+    IsDirectory(const Uri& uri) {
+      return IsDirectory(uri.path);
+    }
+
+    static inline bool
+    IsDirectory(const std::string& root, const Uri& uri) {
+      const auto abs_path = fmt::format("{0:s}/{1:s}", root, uri.path);
+      return mcc::IsDirectory((const std::string&) abs_path);
+    }
 
     static constexpr const uint64_t kDefaultParserBufferSize = 4096;
     static constexpr const uint64_t kDefaultTokenBufferSize = 1024;
