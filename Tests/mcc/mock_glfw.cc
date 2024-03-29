@@ -77,3 +77,63 @@ void glfwGetWindowSize(GLFWwindow* window, int* width, int* height) {
 void glfwSetInputMode(GLFWwindow* window, int mode, int value) {
   __ glfwSetInputMode(window, mode, value);
 }
+
+GLFWmonitor* glfwGetPrimaryMonitor() {
+  __ glfwGetPrimaryMonitor();
+}
+
+void* glfwGetWindowUserPointer(GLFWwindow* window) {
+  __ glfwGetWindowUserPointer(window);
+}
+
+void glfwSetWindowUserPointer(GLFWwindow* window, void* data) {
+  __ glfwSetWindowUserPointer(window, data);
+}
+
+void glfwGetWindowPos(GLFWwindow* window, int* xPos, int* yPos) {
+  __ glfwGetWindowPos(window, xPos, yPos);
+}
+
+GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* window, GLFWwindowcontentscalefun callback) {
+  __ glfwSetWindowContentScaleCallback(window, callback);
+}
+
+GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwindowfocusfun callback) {
+  __ glfwSetWindowFocusCallback(window, callback);
+}
+
+GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* window, GLFWwindowiconifyfun callback) {
+  __ glfwSetWindowIconifyCallback(window, callback);
+}
+
+GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* window, GLFWwindowmaximizefun callback) {
+  __ glfwSetWindowMaximizeCallback(window, callback);
+}
+
+void glfwSetWindowPos(GLFWwindow* window, int xPos, int yPos) {
+  __ glfwSetWindowPos(window, xPos, yPos);
+}
+
+void glfwSetWindowSize(GLFWwindow* window, int xPos, int yPos) {
+  __ glfwSetWindowSize(window, xPos, yPos);
+}
+
+void glfwSetWindowTitle(GLFWwindow* window, const char* title) {
+  __ glfwSetWindowTitle(window, title);
+}
+
+GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun callback) {
+  __ glfwSetWindowPosCallback(window, callback);
+}
+
+GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun callback) {
+  __ glfwSetWindowRefreshCallback(window, callback);
+}
+
+GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun callback) {
+  __ glfwSetWindowSizeCallback(window, callback);
+}
+
+const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor) {
+  __ glfwGetVideoMode(monitor);
+}

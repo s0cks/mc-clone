@@ -133,7 +133,7 @@ namespace mcc {
       
         glBindTexture(target, 0);
         CHECK_GL(FATAL);
-        return nullptr;
+        return new Texture(id, options, data);
       }
     };
 

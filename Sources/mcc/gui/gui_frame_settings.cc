@@ -1,8 +1,8 @@
 #include "mcc/gui/gui_frame_settings.h"
-#include "mcc/window.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/terrain/terrain.h"
 
+#include "mcc/window/window.h"
 #include "mcc/physics/physics.h"
 #include "mcc/camera/perspective_camera.h"
 
@@ -10,7 +10,7 @@ namespace mcc::gui {
   using renderer::Renderer;
 
   SettingsFrame::SettingsFrame():
-    Frame("Settings", kBottom, glm::vec2(0.0f, Window::GetHeight() / 8.0f)) {
+    Frame("Settings", kBottom, glm::vec2(0.0f, Window::Get()->GetHeight() / 8.0f)) {
   }
 
   void SettingsFrame::Render(nk::Context* ctx) {

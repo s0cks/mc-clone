@@ -14,7 +14,7 @@
 #include "mcc/mcc.h"
 #include "mcc/material/material.h"
 #include "mcc/font/font.h"
-#include "mcc/window.h"
+#include "mcc/window/window.h"
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/engine/engine.h"
 #include "mcc/renderer/renderer.h"
@@ -24,12 +24,15 @@
 
 #include "mcc/resource.h"
 
+#include "mcc/os_thread.h"
+
 int main(int argc, char** argv) {
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);
 
+  LOG_IF(FATAL, !mcc::SetCurrentThreadName("main")) << "failed to set main thread name.";
   glfwSetErrorCallback(&mcc::OnGlfwError);
   LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

@@ -1,5 +1,5 @@
 #include "mcc/input/mouse.h"
-#include "mcc/window.h"
+#include "mcc/window/window.h"
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/physics/transform.h"
 
@@ -16,7 +16,7 @@ namespace mcc {
   }
 
   glm::vec2 Mouse::GetNormalizedPosition() {
-    const auto size = Window::GetSize();
+    const auto size = Window::Get()->GetSize();
     return glm::vec2(2.0f * pos.x / size[0] - 1.0f, 1.0f - 2.0f * pos.y / size[1]);
   }
 
@@ -54,7 +54,7 @@ namespace mcc {
   }
 
   void Mouse::Process() {
-    const auto handle = Window::GetHandle();
+    const auto handle = Window::Get()->handle();
     glfwGetCursorPos(handle, &pos[0], &pos[1]);
     delta = (pos - last_pos);
     position_.get_subscriber().on_next(MousePosition {

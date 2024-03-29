@@ -46,8 +46,8 @@ namespace mcc::trie {
       return false;
     }
 
-    virtual void SetChildAt(const uint64_t idx, Node* node) {
-      // do nothing
+    virtual bool SetChildAt(const uint64_t idx, Node* node) {
+      return false; // do nothing
     }
 
     virtual bool HasChildren() const {
@@ -83,8 +83,11 @@ namespace mcc::trie {
       return children_[idx] != nullptr;
     }
 
-    void SetChildAt(const uint64_t idx, Node* node) override {
+    bool SetChildAt(const uint64_t idx, Node* node) override {
+      if(idx < 0 || idx > NumberOfChildren)
+        return false;
       children_[idx] = node;
+      return true;
     }
 
     bool HasChildren() const override {

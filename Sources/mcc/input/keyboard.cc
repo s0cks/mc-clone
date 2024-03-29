@@ -1,12 +1,13 @@
 #include "mcc/input/keyboard.h"
-#include "mcc/window.h"
+
+#include "mcc/window/window.h"
 
 namespace mcc {
   static KeyEventSubject events_;
   static InputState keys[kNumberOfKeyCodes];
 
   void Keyboard::Process() {
-    const auto window = Window::GetHandle();
+    const auto window = Window::Get()->handle();
     auto subscriber = events_.get_subscriber();
     for(auto idx = 0; idx < kNumberOfKeyCodes; idx++) {
       const auto code = static_cast<KeyCode>(idx);

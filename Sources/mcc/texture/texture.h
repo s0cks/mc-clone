@@ -178,7 +178,8 @@ namespace mcc::texture {
     TextureTarget target_;
     TextureOptions options_;
     TextureData data_;
-
+  public:
+    Texture() = default;
     explicit Texture(const TextureId id,
                      const TextureOptions& options,
                      const TextureData& data):
@@ -187,7 +188,6 @@ namespace mcc::texture {
       options_(options),
       data_(data) {
     }
-  public:
     Texture(const Texture& rhs):
       Resource(),
       id_(rhs.id_),

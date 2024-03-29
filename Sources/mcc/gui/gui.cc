@@ -1,12 +1,13 @@
 #include "mcc/gui/gui.h"
 #include "mcc/shader/shader.h"
 #include "mcc/thread_local.h"
-#include "mcc/window.h"
 #include "mcc/engine/engine.h"
 
 #include "mcc/flags.h"
 #include "mcc/terrain/terrain.h"
 #include "mcc/renderer/renderer.h"
+
+#include "mcc/window/window.h"
 
 namespace mcc::gui {
   using d2::Vertex;
@@ -101,7 +102,7 @@ namespace mcc::gui {
   }
 
   void Screen::NewFrame() {
-    const auto window = Window::GetHandle();
+    const auto window = Window::Get()->handle();
     glfwGetWindowSize(window, &width_, &height_);
     CHECK_GL(FATAL);
     glfwGetFramebufferSize(window, &display_width_, &display_height_);

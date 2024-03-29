@@ -5,7 +5,8 @@
 
 #include "mcc/input/mouse.h"
 #include "mcc/input/keyboard.h"
-#include "mcc/window.h"
+
+#include "mcc/window/window.h"
 
 namespace mcc::camera {
   DEFINE_COMPONENT(PerspectiveCamera);
@@ -30,7 +31,7 @@ namespace mcc::camera {
   }
 
   glm::mat4 PerspectiveCamera::GetProjectionMatrix() const {
-    const auto window_size = Window::GetSize();
+    const auto window_size = Window::Get()->GetSize();
     return glm::perspective(glm::radians(zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
   }
 
@@ -40,7 +41,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCamera::ComputeMatrices() {
-    const auto window_size = Window::GetSize();
+    const auto window_size = Window::Get()->GetSize();
     const auto p = glm::vec3(pos);
     view = glm::lookAt(p, p + front, up);
     projection = glm::perspective(glm::radians(zoom), static_cast<float>(window_size[0] / window_size[1]), 0.1f, 1000.0f);
@@ -80,7 +81,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& mpos) {
-    const auto window = Window::GetHandle();
+    const auto window = Window::Get()->handle();
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
     VisitEntities([&](const Entity& e) {
@@ -175,7 +176,7 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnTick(const Tick& tick) {
-    const auto window = Window::GetHandle();
+    const auto window = Window::Get()->handle();
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;

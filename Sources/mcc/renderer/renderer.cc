@@ -3,7 +3,7 @@
 
 #include "mcc/thread_local.h"
 
-#include "mcc/window.h"
+#include "mcc/window/window.h"
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/font/font.h"
@@ -25,6 +25,8 @@
 
 #include "mcc/skybox.h"
 #include "mcc/bloom.h"
+
+#include "mcc/gui/shape.h"
 
 namespace mcc::renderer {
   static ThreadLocal<FrameBuffer> frame_buffer_;
@@ -86,13 +88,7 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnInit() {
-    const auto size = Window::GetSize();
-    FrameBufferAttachmentList attachments = {
-      ColorBufferAttachment::NewDefault(0, size), // default
-      ColorBufferAttachment::NewHdr(1, size), // brightness
-      PickingAttachment::New(2, size), // picking
-    };
-    frame_buffer_.Set(FrameBuffer::New(Dimension(size), attachments));
+    const auto size = Window::Get()->handle();
   }
 
   class RenderEntityPipeline : public Pipeline {
@@ -175,7 +171,7 @@ namespace mcc::renderer {
       Pipeline(),
       fb_(fb),
       shader_(GetShader("shader:framebuffer")),
-      bloom_(fb, Dimension(Window::GetSize()), GetShader("shader:blur")),
+      bloom_(fb, Dimension(Window::Get()->GetSize()), GetShader("shader:blur")),
       pipeline_(fb, kColorAndDepthClearMask) {
       pipeline_.AddChild(new ApplyPipeline([this]() {
         fb_->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
@@ -198,41 +194,40 @@ namespace mcc::renderer {
     }
   };
 
+  class RenderSquarePipeline : public Pipeline {
+  public:
+    RenderSquarePipeline(const glm::mat4& projection):
+      Pipeline() {
+      AddChild(new ApplyShaderPipeline(GetShader("gui"), [&projection](const ShaderRef& shader) {
+        shader->SetMat4("projection", projection);
+        shader->ApplyShader();
+      }));
+    }
+    ~RenderSquarePipeline() override = default;
+
+    void Render() override {
+      RenderChildren();
+    }
+  };
 
   class RendererPipeline : public Pipeline {
   private:
   public:
     RendererPipeline():
       Pipeline() {
-      auto fb = Renderer::GetFrameBuffer();
-      fb->Bind();
-      const auto size = Window::GetSize();
-      // AddChild(new skybox::RenderSkyboxPipeline());
-      // AddChild(new terrain::RenderTerrainChunkPipeline());
-      // AddChild(new RenderEntitiesPipeline());
-      // AddChild(new RenderFbPipeline(fb));
-      // AddChild(new gui::RenderScreenPipeline(size));
-      // AddChild(new ApplyPipeline([]() {
-      //   gui::FrameRenderer frame_renderer(gui::Screen::GetNuklearContext());
-      //   Window::VisitFrames(&frame_renderer);
-      // }));
-      // AddChild(new ApplyPipeline([this,fb]() {
-      //   fb->Bind();
-      //   const auto picker = fb->GetPickingAttachment(2);
-      //   if(!picker)
-      //     return;
-      //   const auto mPos = Mouse::GetPosition();
-      //   DLOG(INFO) << "pixel: " << picker->GetPixel(mPos[0], mPos[1]);
-      //   fb->Unbind();
-      // }));
+      const auto size = Window::Get()->GetSize();
+      const auto xPos = 0 + (size[0] / 2);
+      const auto yPos = 0 + (size[1] / 2);
+      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f);
+      AddChild(new ApplyPipeline([]() {
+
+      }));
     }
     ~RendererPipeline() override = default;
 
     void Render() override {
       gui::Screen::NewFrame();
-      auto fb = Renderer::GetFrameBuffer();
-      fb->Bind();
-      const auto window = Window::GetHandle();
+      const auto window = Window::Get()->handle();
       int width;
       int height;
       glfwGetFramebufferSize(window, &width, &height);
@@ -287,8 +282,8 @@ namespace mcc::renderer {
     signature_.set(physics::Transform::GetComponentId());
     DLOG(INFO) << "signature: " << signature_;
 
-    Window::AddFrame(gui::SettingsFrame::New());
-    Window::AddFrame(gui::RendererFrame::New());
+    //Window::AddFrame(gui::SettingsFrame::New());
+    //Window::AddFrame(gui::RendererFrame::New());
 
     pipeline_.Set(new RendererPipeline());
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());

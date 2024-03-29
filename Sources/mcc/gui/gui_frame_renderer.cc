@@ -1,16 +1,17 @@
 #include "mcc/gui/gui_frame_renderer.h"
-#include "mcc/window.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/terrain/terrain.h"
 
 #include "mcc/shader/shader.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/window/window.h"
+
 namespace mcc::gui {
   using renderer::Renderer;
 
   RendererFrame::RendererFrame():
-    Frame("Renderer", kTop, glm::vec2(0.0f, Window::GetHeight() / 8.0f)) {
+    Frame("Renderer", kTop, glm::vec2(0.0f, Window::Get()->GetHeight() / 8.0f)) {
   }
 
   void RendererFrame::Render(nk::Context* ctx) {

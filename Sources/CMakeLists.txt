@@ -17,7 +17,6 @@ include_directories(${UTF8_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
-  mcc/window.h mcc/window.cc
   mcc/json.h mcc/json.cc
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_json.h mcc/shader/shader_json.cc
@@ -104,6 +103,17 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Window
+  mcc/window/monitor_constants.h
+  mcc/window/monitor_glfw.h
+  mcc/window/monitor.h
+  mcc/window/window_constants.h
+  mcc/window/window_event.h
+  mcc/window/window.h mcc/window/window.cc
+  mcc/window/window_glfw.h mcc/window/window_glfw.cc
+# Events
+  mcc/event/event.h
+  mcc/event/event_bus.h mcc/event/event_bus.cc
 # Textures
   mcc/texture/image/image.h mcc/texture/image/image.cc
   mcc/texture/image/image_png.h mcc/texture/image/image_png.cc
@@ -134,6 +144,8 @@ add_library(${PROJECT_NAME}
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/ecs/entity.h mcc/ecs/entity.cc
+# GUIs
+  mcc/gui/shape.h mcc/gui/shape.cc
   mcc/gui/constants.h
   mcc/gui/window.h mcc/gui/window.cc
   mcc/gui/component.h
@@ -144,6 +156,7 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
+# Misc
   mcc/state_machine.h
   mcc/bitset.h
   mcc/uri.h mcc/uri.cc

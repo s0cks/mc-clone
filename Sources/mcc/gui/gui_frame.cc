@@ -1,5 +1,6 @@
 #include "mcc/gui/gui_frame.h"
-#include "mcc/window.h"
+
+#include "mcc/window/window.h"
 
 namespace mcc::gui {
 #define WINDOW_WIDTH (win_size[0])
@@ -20,7 +21,7 @@ namespace mcc::gui {
     pos_(0.0f, 0.0f),
     size_(size),
     flags_(flags) {
-    const auto win_size = Window::GetSize();
+    const auto win_size = Window::Get()->GetSize();
     switch(pos) {
       case kTop:
         FRAME_WIDTH = WINDOW_WIDTH;

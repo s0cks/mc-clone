@@ -23,6 +23,21 @@ namespace mcc {
     MOCK_METHOD1(glfwMakeContextCurrent, void(GLFWwindow* window));
     MOCK_METHOD3(glfwGetWindowSize, void(GLFWwindow* window, int* width, int* height));
     MOCK_METHOD3(glfwSetInputMode, void(GLFWwindow* window, int mode, int value));
+    MOCK_METHOD0(glfwGetPrimaryMonitor, GLFWmonitor*());
+    MOCK_METHOD3(glfwGetWindowPos, void(GLFWwindow* window, int* xPos, int* yPos));
+    MOCK_METHOD1(glfwGetWindowUserPointer, void*(GLFWwindow*));
+    MOCK_METHOD2(glfwSetWindowUserPointer, void(GLFWwindow*, void* data));
+    MOCK_METHOD2(glfwSetWindowContentScaleCallback, GLFWwindowcontentscalefun(GLFWwindow*, GLFWwindowcontentscalefun callback));
+    MOCK_METHOD2(glfwSetWindowFocusCallback, GLFWwindowfocusfun(GLFWwindow*, GLFWwindowfocusfun));
+    MOCK_METHOD2(glfwSetWindowIconifyCallback, GLFWwindowiconifyfun(GLFWwindow*, GLFWwindowiconifyfun));
+    MOCK_METHOD2(glfwSetWindowMaximizeCallback, GLFWwindowmaximizefun(GLFWwindow*, GLFWwindowmaximizefun));
+    MOCK_METHOD3(glfwSetWindowPos, void(GLFWwindow*,int,int));
+    MOCK_METHOD3(glfwSetWindowSize, void(GLFWwindow*,int,int));
+    MOCK_METHOD2(glfwSetWindowTitle, void(GLFWwindow*, const char*));
+    MOCK_METHOD2(glfwSetWindowPosCallback, GLFWwindowposfun(GLFWwindow*, GLFWwindowposfun));
+    MOCK_METHOD2(glfwSetWindowRefreshCallback, GLFWwindowrefreshfun(GLFWwindow*, GLFWwindowrefreshfun));
+    MOCK_METHOD2(glfwSetWindowSizeCallback, GLFWwindowsizefun(GLFWwindow*,GLFWwindowsizefun));
+    MOCK_METHOD1(glfwGetVideoMode, const GLFWvidmode*(GLFWmonitor*));
   };
 }
 
