@@ -54,6 +54,43 @@ namespace mcc::shader {
     return rx::observable<>::error<ShaderSource>(std::runtime_error("Hello World"));
   }
 
+  template<const ShaderType Type>
+  static inline std::optional<ShaderSource>
+  FindShaderSource(const std::string& dir, const std::string& name) {
+    DLOG(INFO) << "getting " << Type << " shader source for: " << name << " in " << dir << "....";
+    const auto path = fmt::format("{0:s}/{1:s}.{2:s}", dir, name, GetExtensionForType(Type));
+    if(!FileExists(path))
+      return std::nullopt;
+    return { ShaderSource(Type, path) };
+  }
+
+  static inline rx::observable<ShaderSource> LoadShaderFromDirectory(const std::string& dir, const std::string& name) {
+    return rx::observable<>::create<ShaderSource>([dir,name](rx::subscriber<ShaderSource> s) {
+      const auto f = FindShaderSource<kFragmentShader>(dir, name);
+      if(!f)
+        return s.on_error(std::make_exception_ptr(std::runtime_error(fmt::format("cannot find fragment shader source for {0:s} in {1:s}", name, dir))));
+      s.on_next(*f);
+
+      const auto v = FindShaderSource<kVertexShader>(dir, name);
+      if(!v)
+        return s.on_error(std::make_exception_ptr(std::runtime_error(fmt::format("cannot find vertex shader source for {0:s} in {1:s}", name, dir))));
+      s.on_next(*v);
+
+      const auto g = FindShaderSource<kGeometryShader>(dir, name);
+      if(g)
+        return s.on_next(*g);
+      
+      const auto tc = FindShaderSource<kTessControlShader>(dir, name);
+      if(tc)
+        return s.on_next(*tc);
+
+      const auto te = FindShaderSource<kTessEvalShader>(dir, name);
+      if(te)
+        return s.on_next(*te);
+      s.on_completed();
+    });
+  }
+
   rx::observable<ShaderSource> ShaderSourceResolver::Resolve() {
     MCC_ASSERT(target().HasScheme("shader"));
     // check if exists
@@ -72,30 +109,7 @@ namespace mcc::shader {
     }
 
     DLOG(INFO) << "scanning....";
-    // check for files manually
-    return rx::observable<>::create<ShaderSource>([this,path](rx::subscriber<ShaderSource> s) {
-      DLOG(INFO) << "looking for shader sources: " << path;
-      const auto fragPath = fmt::format("{0:s}.{1:s}", path, GetExtensionForType(kFragmentShader));
-      if(!FileExists(fragPath)) {
-        DLOG(ERROR) << "cannot find fragment shader for: " << fragPath;
-        s.on_error(std::make_exception_ptr(std::runtime_error(fmt::format("cannot find fragment shader: {0:s}", fragPath))));
-        return;
-      }
-      ShaderSource fragSource(kFragmentShader, fragPath);
-      DLOG(INFO) << "found: " << fragSource;
-      s.on_next(fragSource);
-
-      const auto vertPath = fmt::format("{0:s}.{1:s}", path, GetExtensionForType(kVertexShader));
-      if(!FileExists(vertPath)) {
-        DLOG(ERROR) << "cannot find vertex shader for: " << vertPath;
-        s.on_error(std::make_exception_ptr(std::runtime_error(fmt::format("cannot find vertex shader for: {0:s}", path))));
-        return;
-      }
-      ShaderSource vertSource(kVertexShader, vertPath);
-      DLOG(INFO) << "found: " << vertSource;
-      s.on_next(vertSource);
-
-      s.on_completed();
-    });
+    const auto dir = path.substr(0, path.size() - (path.size() - path.find_last_of('/')));
+    return LoadShaderFromDirectory(dir, target().path);
   }
 }
