@@ -2,7 +2,10 @@
 #define MCC_SHADER_SOURCE_H
 
 #include <memory>
+#include <fmt/format.h>
+
 #include "mcc/gfx.h"
+#include "mcc/flags.h"
 #include "mcc/buffer.h"
 #include "mcc/common.h"
 
@@ -41,6 +44,8 @@ namespace mcc::shader {
       return path_.substr(last_slash + 1);
     }
 
+    ShaderCodePtr GetSource() const;
+
     ShaderSource& operator=(const ShaderSource& rhs) = default;
 
     friend std::ostream& operator<<(std::ostream& stream, const ShaderSource& rhs) {
@@ -77,7 +82,7 @@ namespace mcc::shader {
       source_(source) {
     }
     explicit ShaderCode(const ShaderSource* source):
-      ShaderCode(source, Buffer::FromFile(source->filename())) {
+      ShaderCode(source, Buffer::FromFile(source->path())) {
     }
     ShaderCode(const ShaderCode& rhs) = default;
     virtual ~ShaderCode() = default;
@@ -98,6 +103,10 @@ namespace mcc::shader {
       return (const GLint) raw()->write_pos();
     }
 
+    bool IsEmpty() const {
+      return data_->empty();
+    }
+
     ShaderCode& operator=(const ShaderCode& rhs) = default;
 
     friend std::ostream& operator<<(std::ostream& stream, const ShaderCode& rhs) {
@@ -106,6 +115,11 @@ namespace mcc::shader {
       stream << "length=" << rhs.length();
       stream << ")";
       return stream;
+    }
+  public:
+    static inline ShaderCodePtr
+    New(const ShaderType type, const std::string& code) {
+      return std::make_shared<ShaderCode>(type, code);
     }
   };
 }

@@ -98,10 +98,8 @@ add_library(${PROJECT_NAME}
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_pipeline.h
   mcc/shader/shader_document.h mcc/shader/shader_document.cc
-  mcc/shader/shader_resolver.h mcc/shader/shader_resolver.cc
-  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
-  mcc/shader/compiler.h mcc/shader/compiler.cc
-  mcc/shader/builder.h mcc/shader/builder.cc
+  mcc/shader/shader_compiler.h mcc/shader/shader_compiler.cc
+  mcc/shader/shader_linker.h mcc/shader/shader_linker.cc
   mcc/shader/source.h mcc/shader/source.cc
   mcc/shader/shader_source_resolver.h mcc/shader/shader_source_resolver.cc
 # Window

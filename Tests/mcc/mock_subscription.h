@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <glog/logging.h>
 
 #include "mcc/rx.h"
 
@@ -29,6 +30,13 @@ namespace mcc::rx {
     MOCK_METHOD1(OnNext, void(const T&));
     MOCK_METHOD1(OnError, void(rx::error_ptr));
     MOCK_METHOD0(OnCompleted, void());
+
+    rx::composite_subscription Subscribe(rx::observable<T> observable) {
+      const auto onnext = [this](const T& next) { return OnNext(next); };
+      const auto onerror = [this](const rx::error_ptr& err) { return OnError(err); };
+      const auto oncompleted = [this]() { return OnCompleted(); };
+      return observable.subscribe(onnext, onerror, oncompleted);
+    }
   };
 }
 

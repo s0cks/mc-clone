@@ -7,7 +7,6 @@
 #include "mcc/json.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/source.h"
-#include "mcc/shader/shader_loader.h"
 #include "mcc/shader/shader_constants.h"
 
 namespace mcc::shader {

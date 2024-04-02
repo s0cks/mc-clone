@@ -9,7 +9,8 @@
 
 namespace mcc::shader {
   typedef GLuint ShaderId;
-  static constexpr const ShaderId kUnknownShaderId = 0;
+  static constexpr const ShaderId kUnknownShaderId = 0; //TODO: remove
+  static constexpr const ShaderId kInvalidShaderId = 0;
 
 #define FOR_EACH_SHADER_TYPE(V)                             \
   V(Vertex, vert, GL_VERTEX_SHADER)                         \
@@ -23,6 +24,7 @@ namespace mcc::shader {
     FOR_EACH_SHADER_TYPE(DEFINE_SHADER_TYPE)
 #undef DEFINE_SHADER_TYPE
 
+    kProgramShader,
     kNumberOfShaderTypes,
   };
 
@@ -48,11 +50,14 @@ namespace mcc::shader {
   }
 
   class ShaderStatus {
-    static constexpr const auto kMessageSize = 1024;
+  public:
+    static constexpr const size_t kMessageSize = 1024;
   protected:
     ShaderId id_;
     ShaderType type_;
+
     GLint status_;
+    GLint length_;
     GLchar message_[kMessageSize];
   public:
     ShaderStatus() = default;
@@ -64,16 +69,18 @@ namespace mcc::shader {
       glGetShaderiv(id_, pname, &status_);
       CHECK_GL(ERROR);
       if(!status_) {
-        glGetShaderInfoLog(id_, ShaderStatus::kMessageSize, NULL, message_);
+        glGetShaderInfoLog(id_, ShaderStatus::kMessageSize, &length_, message_);
         CHECK_GL(ERROR);
+        DLOG(ERROR) << "message: " << std::string((const char*) message_, length_);
       }
     }
     ShaderStatus(const ShaderStatus& rhs):
       id_(rhs.id()),
       type_(rhs.type()),
       status_(rhs.status()),
+      length_(rhs.length_),
       message_() {
-      memcpy(&message_[0], &rhs.message_[0], kMessageSize);
+      memcpy(&message_[0], &rhs.message_[0], std::min(kMessageSize, length()));
     }
     ~ShaderStatus() = default;
     
@@ -89,20 +96,111 @@ namespace mcc::shader {
       return status_;
     }
 
+    size_t length() const {
+      return static_cast<size_t>(length_);
+    }
+
     std::string message() const {
-      return { message_, kMessageSize };
+      return { message_, length() };
     }
 
     ShaderStatus& operator=(const ShaderStatus& rhs) {
       id_ = rhs.id();
       type_ = rhs.type();
       status_ = rhs.status();
-      memcpy(&message_[0], &rhs.message_[0], kMessageSize);
+      length_ = rhs.length_;
+      memcpy(&message_[0], &rhs.message_[0], std::min(kMessageSize, rhs.length()));
       return *this;
     }
 
     explicit operator bool() const {
       return status_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const ShaderStatus& rhs) {
+      stream << "ShaderStatus(";
+      stream << "id=" << rhs.id() << ", ";
+      stream << "type=" << rhs.type() << ", ";
+      stream << "message=" << rhs.message();
+      stream << ")";
+      return stream;
+    }
+  };
+
+  class ProgramStatus {
+  public:
+    static constexpr const size_t kMessageSize = 1024;
+  protected:
+    ShaderId id_;
+    ShaderType type_;
+
+    GLint status_;
+    GLint length_;
+    GLchar message_[kMessageSize];
+  public:
+    ProgramStatus() = default;
+    ProgramStatus(const GLenum pname, const ShaderId shaderId, const ShaderType type):
+      id_(shaderId),
+      type_(type),
+      status_(),
+      message_() {
+      glGetProgramiv(id_, pname, &status_);
+      CHECK_GL(ERROR);
+      if(!status_) {
+        glGetProgramInfoLog(id_, ProgramStatus::kMessageSize, &length_, message_);
+        CHECK_GL(ERROR);
+      }
+    }
+    ProgramStatus(const ProgramStatus& rhs):
+      id_(rhs.id()),
+      type_(rhs.type()),
+      status_(rhs.status()),
+      length_(rhs.length_),
+      message_() {
+      memcpy(&message_[0], &rhs.message_[0], std::min(kMessageSize, length()));
+    }
+    ~ProgramStatus() = default;
+    
+    ShaderId id() const {
+      return id_;
+    }
+
+    ShaderType type() const {
+      return type_;
+    }
+
+    GLint status() const {
+      return status_;
+    }
+
+    size_t length() const {
+      return static_cast<size_t>(length_);
+    }
+
+    std::string message() const {
+      return { message_, length() };
+    }
+
+    ProgramStatus& operator=(const ProgramStatus& rhs) {
+      id_ = rhs.id();
+      type_ = rhs.type();
+      status_ = rhs.status();
+      length_ = rhs.length_;
+      memcpy(&message_[0], &rhs.message_[0], std::min(kMessageSize, rhs.length()));
+      return *this;
+    }
+
+    explicit operator bool() const {
+      return status_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const ProgramStatus& rhs) {
+      stream << "ProgramStatus(";
+      stream << "id=" << rhs.id() << ", ";
+      stream << "type=" << rhs.type() << ", ";
+      stream << "message=" << rhs.message();
+      stream << ")";
+      return stream;
     }
   };
 

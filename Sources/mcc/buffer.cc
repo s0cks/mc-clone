@@ -105,7 +105,8 @@ namespace mcc {
   }
 
   BufferPtr Buffer::FromFile(const std::string& filename) {
-    std::ifstream stream(filename, std::ios::in|std::ios::binary);
+    DLOG(INFO) << "reading buffer from: " << filename;
+    std::ifstream stream(filename, std::ios::in);
     stream.seekg(0, std::ios::end);
     const auto length = stream.tellg();
     stream.seekg(0, std::ios::beg);

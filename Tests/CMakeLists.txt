@@ -13,6 +13,8 @@ add_executable(${PROJECT_NAME}-tests
 # Shaders
   mcc/shader/test_shader_json.cc
   mcc/shader/test_shader_source_resolver.cc
+  mcc/shader/test_shader_compiler.cc
+  mcc/shader/test_shader_linker.cc
 # Materials
   mcc/material/test_material_json.cc
   mcc/material/test_material_loader_default.cc

@@ -2,10 +2,9 @@
 
 #include "mcc/flags.h"
 #include "mcc/shader/shader.h"
-#include "mcc/shader/compiler.h"
-#include "mcc/shader/builder.h"
-
-#include "mcc/shader/shader_resolver.h"
+#include "mcc/shader/shader_linker.h"
+#include "mcc/shader/shader_compiler.h"
+#include "mcc/shader/shader_source_resolver.h"
 
 namespace mcc {
   static inline bool
@@ -27,6 +26,18 @@ namespace mcc {
       DLOG(INFO) << "loading shader from: " << path;
     }
 
-    return ShaderRef();
+    shader::ShaderSourceResolver resolver(uri);
+    auto sources = resolver.Resolve().map([](const shader::ShaderSource& next) {
+      return next.GetSource();
+    });
+    shader::ShaderCompiler compiler;
+    shader::ShaderLinker linker;
+    const auto shader = linker.Link(compiler.Compile(sources))
+      .map([](const shader::ShaderId& next) {
+        return new Shader(next);
+      })
+      .as_blocking()
+      .first();
+    return ShaderRef(shader);
   }
 }
