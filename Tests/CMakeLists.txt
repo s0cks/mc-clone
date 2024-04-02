@@ -9,7 +9,11 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mesh/test_vertex.h mcc/mesh/test_vertex.cc
   mcc/mesh/test_mesh.h mcc/mesh/test_mesh.cc
   mcc/mock_gl.h mcc/mock_gl.cc
+  mcc/mock_subscription.h
+# Shaders
   mcc/shader/test_shader_json.cc
+  mcc/shader/test_shader_source_resolver.cc
+# Materials
   mcc/material/test_material_json.cc
   mcc/material/test_material_loader_default.cc
   mcc/texture/test_texture_filter.cc

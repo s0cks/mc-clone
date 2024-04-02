@@ -1,0 +1,5 @@
+{
+  "name": "terrain",
+  "vert": "terrain.vert",
+  "frag": "terrain.frag"
+}

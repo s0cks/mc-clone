@@ -90,6 +90,8 @@
     "codecvt": "cpp",
     "typeindex": "cpp",
     "numeric": "cpp",
-    "*.tcc": "cpp"
+    "*.tcc": "cpp",
+    "charconv": "cpp",
+    "format": "cpp"
   }
 }

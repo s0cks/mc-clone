@@ -4,74 +4,43 @@
 #include "mcc/gfx.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/source.h"
-#include "mcc/shader/compiler_result.h"
 
 namespace mcc::shader {
   class ProgramBuilder {
-  private:
-    static inline CompilerResult
-    Failed(const std::string& message) {
-      return CompilerResult(false, message);
-    }
-
-    static inline CompilerResult
-    Success() {
-      return CompilerResult(true, "Success.");
-    }
-
-    static inline CompilerResult
-    CheckLinkResult(const ShaderId id, Shader* result) {
-      GLint success;
-      GLchar message[1024];
-      glGetProgramiv(id, GL_LINK_STATUS, &success);
-      if(!success) {
-        glGetProgramInfoLog(id, 1024, NULL, message);
-        DLOG(INFO) << "failed to compile shader: " << message;
-        (*result) = Shader();
-        return CompilerResult(false, message);
-      }
-      (*result) = Shader(id);
-      return Success();
-    }
-
-    static inline CompilerResult
-    Link(const ShaderId id, Shader* result) {
-      glLinkProgram(id);
-      return CheckLinkResult(id, result);
-    }
-  private:
+  protected:
     ShaderId id_;
   public:
-    ProgramBuilder():
-      id_(glCreateProgram()) {
-      CHECK_GL(FATAL);
+    explicit ProgramBuilder(const ShaderId id = glCreateProgram()):
+      id_(id) {
     }
-    ~ProgramBuilder() = default;
-    DEFINE_NON_COPYABLE_TYPE(ProgramBuilder);
+    virtual ~ProgramBuilder() = default;
 
-    ShaderId GetShaderId() const {
+    ShaderId id() const {
       return id_;
     }
 
-    CompilerResult Attach(const Shader& shader);
-
-    template<class Compiler>
-    CompilerResult Attach(const Source& source) {
-      Shader shader;
-      auto result = Compiler::CompileShader(source, &shader);
-      if(!result) 
-        return result;
-      return Attach(shader);
+    void Attach(const ShaderId& id) {
+      glAttachShader(id_, id);
+      CHECK_GL(FATAL);
     }
 
-    CompilerResult AttachVertexShader(const Source& source);
-    CompilerResult AttachFragmentShader(const Source& source);
-    CompilerResult AttachGeometryShader(const Source& source);
-    CompilerResult AttachTessControlShader(const Source& source);
-    CompilerResult AttachTessEvalShader(const Source& source);
+    void Attach(rx::observable<ShaderId>& shaders) {
+      shaders.subscribe([this](const ShaderId& id) {
+        return Attach(id);
+      });
+    }
 
-    CompilerResult Build(Shader* result) {
-      return Link(GetShaderId(), result);
+    ShaderId Build() {
+      glLinkProgram(id_);
+      CHECK_GL(FATAL);
+      GLint success;
+      GLchar message[1024];
+      glGetProgramiv(id_, GL_LINK_STATUS, &success);
+      if(!success) {
+        glGetProgramInfoLog(id_, 1024, NULL, message);
+        DLOG(INFO) << "failed to compile shader: " << message;
+      }
+      return id_;
     }
   };
 }

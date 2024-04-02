@@ -18,15 +18,6 @@ include_directories(${UTF8_INCLUDE_DIRS})
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   mcc/json.h mcc/json.cc
-  mcc/shader/shader.h mcc/shader/shader.cc
-  mcc/shader/shader_json.h mcc/shader/shader_json.cc
-  mcc/shader/shader_pipeline.h
-  mcc/shader/shader_resolver.h mcc/shader/shader_resolver.cc
-  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
-  mcc/shader/compiler_result.h
-  mcc/shader/compiler.h mcc/shader/compiler.cc
-  mcc/shader/builder.h mcc/shader/builder.cc
-  mcc/shader/source.h
   mcc/atomic_linked_list.h
   mcc/wsq.h
   mcc/predicate.h
@@ -103,6 +94,16 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Shader
+  mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/shader_pipeline.h
+  mcc/shader/shader_document.h mcc/shader/shader_document.cc
+  mcc/shader/shader_resolver.h mcc/shader/shader_resolver.cc
+  mcc/shader/shader_loader.h mcc/shader/shader_loader.cc
+  mcc/shader/compiler.h mcc/shader/compiler.cc
+  mcc/shader/builder.h mcc/shader/builder.cc
+  mcc/shader/source.h mcc/shader/source.cc
+  mcc/shader/shader_source_resolver.h mcc/shader/shader_source_resolver.cc
 # Window
   mcc/window/monitor_constants.h
   mcc/window/monitor_glfw.h

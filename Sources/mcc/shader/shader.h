@@ -11,6 +11,7 @@
 #include "mcc/uri.h"
 #include "mcc/cache.h"
 #include "mcc/resource.h"
+#include "mcc/shader/shader_constants.h"
 
 namespace mcc::shader {
   static constexpr const char* kDefaultShaderCacheDir = "";
@@ -24,19 +25,6 @@ namespace mcc::shader {
 
   static constexpr const char* kVertexShaderExtension = ".vsh";
   static constexpr const char* kFragmentShaderExtension = ".fsh";
-
-  typedef GLuint ShaderId;
-
-  static constexpr const ShaderId kUnknownShaderId = 0;
-
-  enum ShaderType : GLenum {
-    kCompositeShader = 1,
-    kVertexShader = GL_VERTEX_SHADER,
-    kFragmentShader = GL_FRAGMENT_SHADER,
-    kGeometryShader = GL_GEOMETRY_SHADER,
-    kTessEvalShader = GL_TESS_EVALUATION_SHADER,
-    kTessControlShader = GL_TESS_CONTROL_SHADER,
-  };
 
   class Shader {
   protected:

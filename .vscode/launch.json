@@ -125,8 +125,8 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Tests/minecraft-tests",
       "args": [
-        "--resources", "${workspaceFolder}/Tests/resources",
-        "--gtest_filter=*Shader*Test.*"
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Shader*Test*.*"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

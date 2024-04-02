@@ -27,6 +27,14 @@ namespace mcc {
       Uri(const Uri& rhs) = default;
       ~Uri() = default;
 
+      bool HasScheme() const {
+        return !scheme.empty();
+      }
+
+      bool HasScheme(const std::string& value) const {
+        return HasScheme() && EqualsIgnoreCase(scheme, value);
+      }
+
       bool HasFragment() const {
         return !fragment.empty();
       }
@@ -63,6 +71,10 @@ namespace mcc {
 
       Uri& operator=(const Uri& rhs) = default;
 
+      explicit operator std::string() const {
+        return fmt::format("{0:s}://{1:s}", scheme, path);
+      }
+
       bool operator==(const Uri& rhs) const {
         return scheme == rhs.scheme
             && path == rhs.path;
@@ -98,6 +110,10 @@ namespace mcc {
         return stream;
       }
     };
+
+    static uri::Uri Shader(const std::string& name) {
+      return { fmt::format("shader://{0:s}", name) };
+    }
 
     static inline bool
     IsDirectory(const Uri& uri) {

@@ -10,6 +10,7 @@
 #include <rapidjson/filereadstream.h>
 
 #include "mcc/common.h"
+#include "mcc/uri.h"
 
 namespace mcc::json {
   using namespace rapidjson;
@@ -81,6 +82,43 @@ namespace mcc::json {
     SchemaDocument schema(schemad);
     return Validate(schema, filename);
   }
+
+  class Spec;
+  class SpecSchema {
+    friend class Spec;
+    friend class SpecSchemaTest;
+  protected:
+    json::SchemaDocument doc_;
+    
+    explicit SpecSchema(const json::Document& doc):
+      doc_(doc) {
+    }
+  public:
+    virtual ~SpecSchema() = default;
+    virtual Spec* GetSpec() const = 0;
+    
+    virtual bool IsValid(const json::Document& doc) const {
+      json::SchemaValidator validator(doc_);
+      if(doc.Accept(validator))
+        return true;
+      //TODO: print errors
+      // StringBuffer sb;
+      // validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
+      // printf("Invalid schema: %s\n", sb.GetString());
+      // printf("Invalid keyword: %s\n", validator.GetInvalidSchemaKeyword());
+      // sb.Clear();
+      // validator.GetInvalidDocumentPointer().StringifyUriFragment(sb);
+      // printf("Invalid document: %s\n", sb.GetString());
+      // return false;
+      return false;
+    }
+  };
+
+  class Spec {
+  public:
+    virtual ~Spec() = default;
+    virtual const char* GetName() const = 0;
+  };
 }
 
 #endif //MCC_JSON_H

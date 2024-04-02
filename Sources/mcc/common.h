@@ -86,10 +86,8 @@ namespace mcc {
   IsDirectory(const std::string& filename) {
 #if defined(OS_IS_OSX) || defined(OS_IS_LINUX) 
     struct stat s;
-    if(stat(filename.c_str(), &s) != 0) {
-      DLOG(ERROR) << "error stat'ing: " << filename;
+    if(stat(filename.c_str(), &s) != 0)
       return false;
-    }
     return S_ISDIR(s.st_mode);
 #else
 #error "unsupported operating system"

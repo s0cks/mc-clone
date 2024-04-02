@@ -1,4 +1,4 @@
-#include "mcc/shader/shader_json.h"
+#include "mcc/shader/shader_document.h"
 #include "mcc/thread_local.h"
 
 namespace mcc::shader {
@@ -14,15 +14,7 @@ namespace mcc::shader {
     virtual bool IsValid(const json::Document& doc) const {
       json::SchemaValidator validator(schema_);
       if(!doc.Accept(validator)) {
-        //TODO:
-        // StringBuffer sb;
-        // validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
-        // printf("Invalid schema: %s\n", sb.GetString());
-        // printf("Invalid keyword: %s\n", validator.GetInvalidSchemaKeyword());
-        // sb.Clear();
-        // validator.GetInvalidDocumentPointer().StringifyUriFragment(sb);
-        // printf("Invalid document: %s\n", sb.GetString());
-        return false;
+
       }
 
       return true;
@@ -52,5 +44,11 @@ namespace mcc::shader {
   bool IsValidShaderDocument(const json::Document& doc) {
     const auto validator = GetValidator();
     return validator->IsValid(doc);
+  }
+
+  rx::observable<ShaderSource> ShaderDocument::GetSources() const {
+    return rx::observable<>::create<ShaderSource>([this](rx::subscriber<ShaderSource> s) {
+      
+    });
   }
 }
