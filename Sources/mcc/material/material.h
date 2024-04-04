@@ -19,6 +19,13 @@ namespace mcc {
     typedef std::shared_ptr<Material> MaterialPtr;
 
     class Material {
+    public:
+      static constexpr const auto kAlbedoTextureSlot = 0;
+      static constexpr const auto kAoTextureSlot = 1;
+      static constexpr const auto kHeightTextureSlot = 2;
+      static constexpr const auto kMetallicTextureSlot = 3;
+      static constexpr const auto kNormalTextureSlot = 4;
+      static constexpr const auto kRoughnessTextureSlot = 5;
     protected:
       std::string name_;
       TextureRef albedo_;
@@ -74,12 +81,12 @@ namespace mcc {
       }
 
       virtual void Bind() const {
-        albedo_->Bind(0);
-        ao_->Bind(1);
-        height_->Bind(2);
-        metallic_->Bind(3);
-        normal_->Bind(4);
-        roughness_->Bind(5);
+        albedo_->Bind(kAlbedoTextureSlot);
+        ao_->Bind(kAoTextureSlot);
+        height_->Bind(kHeightTextureSlot);
+        metallic_->Bind(kMetallicTextureSlot);
+        normal_->Bind(kNormalTextureSlot);
+        roughness_->Bind(kRoughnessTextureSlot);
       }
     public:
       static Material* LoadFrom(const std::string& filename);

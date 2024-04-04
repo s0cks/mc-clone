@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/shader/test_shader_linker.cc
   mcc/shader/test_shader_spec_json.cc
 # Textures
+  mcc/texture/mock_texture.h
   mcc/texture/test_texture_filter.cc
   mcc/texture/test_texture_alignment.cc
 # Materials

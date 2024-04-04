@@ -171,6 +171,19 @@ namespace mcc::texture {
     TextureTarget target_;
     TextureOptions options_;
     TextureData data_;
+
+    explicit Texture(const TextureId id):
+      Resource(),
+      id_(id),
+      target_(),
+      options_(),
+      data_() {
+    }
+
+    virtual void Delete() {
+      glDeleteTextures(1, &id_);
+      CHECK_GL(FATAL);
+    }
   public:
     Texture() = default;
     explicit Texture(const TextureId id,
@@ -188,8 +201,7 @@ namespace mcc::texture {
       data_(rhs.data_) {
     }
     ~Texture() override {
-      glDeleteTextures(1, &id_);
-      CHECK_GL(FATAL);
+      //TODO: delete?
     }
 
     TextureId id() const {
@@ -225,7 +237,7 @@ namespace mcc::texture {
       CHECK_GL(FATAL);
     }
 
-    void Bind(const uint32_t slot) const {
+    virtual void Bind(const uint32_t slot) const {
       glActiveTexture(GL_TEXTURE0 + slot);
       CHECK_GL(FATAL);
       Bind();
