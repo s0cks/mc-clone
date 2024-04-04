@@ -219,9 +219,6 @@ namespace mcc::renderer {
       const auto xPos = 0 + (size[0] / 2);
       const auto yPos = 0 + (size[1] / 2);
       const auto projection = glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f);
-      AddChild(new ApplyPipeline([]() {
-
-      }));
     }
     ~RendererPipeline() override = default;
 

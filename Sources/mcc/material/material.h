@@ -17,25 +17,69 @@ namespace mcc {
   namespace material {
     struct Material;
     typedef std::shared_ptr<Material> MaterialPtr;
-    struct Material {
-      std::string name;
-      std::string location;
-      TextureRef albedo;
-      TextureRef ao;
-      TextureRef height;
-      TextureRef metallic;
-      TextureRef normal;
-      TextureRef roughness;
 
-      ~Material() = default;
+    class Material {
+    protected:
+      std::string name_;
+      TextureRef albedo_;
+      TextureRef ao_;
+      TextureRef height_;
+      TextureRef metallic_;
+      TextureRef normal_;
+      TextureRef roughness_;
+    public:
+      Material(const std::string& name,
+               TextureRef albedo,
+               TextureRef ao,
+               TextureRef height,
+               TextureRef metallic,
+               TextureRef normal,
+               TextureRef roughness):
+        name_(name),
+        albedo_(albedo),
+        ao_(ao),
+        height_(height),
+        metallic_(metallic),
+        normal_(normal),
+        roughness_(roughness) {
+      }
+      virtual ~Material() = default;
 
-      void Bind() const {
-        albedo->Bind(0);
-        ao->Bind(1);
-        height->Bind(2);
-        metallic->Bind(3);
-        normal->Bind(4);
-        roughness->Bind(5);
+      std::string name() const {
+        return name_;
+      }
+
+      TextureRef albedo() const {
+        return albedo_;
+      }
+
+      TextureRef ao() const {
+        return ao_;
+      }
+
+      TextureRef height() const {
+        return height_;
+      }
+
+      TextureRef metallic() const {
+        return metallic_;
+      }
+
+      TextureRef normal() const {
+        return normal_;
+      }
+
+      TextureRef roughness() const {
+        return roughness_;
+      }
+
+      virtual void Bind() const {
+        albedo_->Bind(0);
+        ao_->Bind(1);
+        height_->Bind(2);
+        metallic_->Bind(3);
+        normal_->Bind(4);
+        roughness_->Bind(5);
       }
     public:
       static Material* LoadFrom(const std::string& filename);

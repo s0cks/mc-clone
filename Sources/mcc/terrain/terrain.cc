@@ -23,7 +23,7 @@ namespace mcc::terrain {
   }
 
   std::string Terrain::GetTerrainMaterialName() {
-    return material_->name;
+    return material_->name();
   }
 
   void Terrain::SetTerrainMaterial(MaterialRef material) {

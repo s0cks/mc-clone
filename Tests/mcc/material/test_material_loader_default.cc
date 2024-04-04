@@ -18,7 +18,6 @@ namespace mcc::material {
     DefaultMaterialLoader loader(path);
     const auto material = loader.Load();
     ASSERT_TRUE(material);
-    ASSERT_EQ(material->name, "stones/lunar_rock");
-    ASSERT_EQ(material->location, path);
+    ASSERT_EQ(material->name(), "stones/lunar_rock");
   }
 }

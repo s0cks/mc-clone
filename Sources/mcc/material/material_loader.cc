@@ -28,14 +28,13 @@ namespace mcc::material {
   }
 
   Material* DefaultMaterialLoader::Load() {
-    const auto material = new Material();
-    material->name = name_;
-    material->location = root_;
-    material->albedo = FindAlbedoTexture();
-    material->ao = FindOcclusionTexture();
-    material->metallic = FindMetallicTexture();
-    material->normal = FindNormalTexture();
-    material->roughness = FindRoughnessTexture();
+    const auto material = new Material(name_, 
+      FindAlbedoTexture(),
+      FindOcclusionTexture(),
+      FindHeightTexture(),
+      FindMetallicTexture(),
+      FindNormalTexture(),
+      FindRoughnessTexture());
     return material;
   }
 
@@ -70,16 +69,14 @@ namespace mcc::material {
       return nullptr;
     }
     const auto name = std::string(doc_["name"].GetString());
-    const auto material = new Material{
-      .name = name,
-      .location = root_,
-      .albedo = ParseMaterialComponent("albedo"),
-      .ao = ParseMaterialComponent("ao"),
-      .height = ParseMaterialComponent("height"),
-      .metallic = ParseMaterialComponent("metallic"),
-      .normal = ParseMaterialComponent("normal"),
-      .roughness = ParseMaterialComponent("roughness"),
-    };
-    return material;
+    return new Material(
+      name,
+      ParseMaterialComponent("albedo"),
+      ParseMaterialComponent("ao"),
+      ParseMaterialComponent("height"),
+      ParseMaterialComponent("metallic"),
+      ParseMaterialComponent("normal"),
+      ParseMaterialComponent("roughness")
+    );
   }
 }

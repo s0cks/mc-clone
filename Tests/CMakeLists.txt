@@ -15,11 +15,14 @@ add_executable(${PROJECT_NAME}-tests
   mcc/shader/test_shader_compiler.cc
   mcc/shader/test_shader_linker.cc
   mcc/shader/test_shader_spec_json.cc
-# Materials
-  mcc/material/test_material_json.cc
-  mcc/material/test_material_loader_default.cc
+# Textures
   mcc/texture/test_texture_filter.cc
   mcc/texture/test_texture_alignment.cc
+# Materials
+  mcc/material/test_material.cc
+  mcc/material/test_material_json.cc
+  mcc/material/test_material_loader_default.cc
+# Misc
   mcc/mock_glfw.h mcc/mock_glfw.cc
   mcc/mesh/test_obj_parser.h mcc/mesh/test_obj_parser.cc
   mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)
