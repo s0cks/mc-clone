@@ -98,6 +98,8 @@ add_library(${PROJECT_NAME}
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_pipeline.h
   mcc/shader/shader_document.h mcc/shader/shader_document.cc
+  mcc/shader/shader_spec.h mcc/shader/shader_spec.cc
+  mcc/shader/shader_spec_json.h mcc/shader/shader_spec_json.cc
   mcc/shader/shader_compiler.h mcc/shader/shader_compiler.cc
   mcc/shader/shader_linker.h mcc/shader/shader_linker.cc
   mcc/shader/source.h mcc/shader/source.cc
@@ -121,6 +123,8 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h
   mcc/texture/texture_alignment.h
+  mcc/texture/texture_constants.h
+  mcc/texture/texture_property.h mcc/texture/texture_property.cc
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
   mcc/texture/texture_json.h mcc/texture/texture_json.cc

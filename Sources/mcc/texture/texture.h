@@ -7,16 +7,9 @@
 #include "mcc/resource.h"
 
 #include "mcc/texture/texture_options.h"
+#include "mcc/texture/texture_constants.h"
 
 namespace mcc::texture {
-  typedef glm::u32vec2 TextureSize;
-  typedef uint32_t Pixel;
-  typedef glm::u32vec2 TextureCoord;
-
-  typedef GLuint TextureId;
-
-  static constexpr const TextureId kInvalidTextureId = 0;
-
   enum CubeMapFace {
     kRightFace  = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
     kLeftFace   = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,

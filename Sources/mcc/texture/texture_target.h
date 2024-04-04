@@ -2,31 +2,9 @@
 #define MCC_TEXTURE_TARGET_H
 
 #include "mcc/json.h"
+#include "mcc/texture/texture_constants.h"
 
 namespace mcc::texture {
-#define FOR_EACH_TEXTURE_TARGET(V) \
-  V(1D, 1D)                        \
-  V(2D, 2D)                        \
-  V(3D, 3D)                        \
-  V(CubeMap, CUBE_MAP)
-
-  enum TextureTarget : GLenum {
-#define DEFINE_TEXTURE_TARGET(Name, Target) k##Name = GL_TEXTURE_##Target,
-    FOR_EACH_TEXTURE_TARGET(DEFINE_TEXTURE_TARGET)
-#undef DEFINE_TEXTURE_TARGET
-    kDefaultTarget = k2D,
-  };
-
-  static inline std::ostream& operator<<(std::ostream& stream, const TextureTarget& rhs) {
-    switch(rhs) {
-#define DEFINE_TOSTRING(Name, Target) \
-      case k##Name: return stream << #Name << "(GL_TEXTURE_" << #Target << ")";
-      FOR_EACH_TEXTURE_TARGET(DEFINE_TOSTRING)
-#undef DEFINE_TOSTRING
-      default: return stream << "Unknown";
-    }
-  }
-
   static inline std::optional<TextureTarget>
   ParseTextureTarget(const std::string& value) {
     if(EqualsIgnoreCase(value, "default")) return { kDefaultTarget };

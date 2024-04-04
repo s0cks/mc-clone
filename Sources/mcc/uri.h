@@ -17,11 +17,24 @@ namespace mcc {
     
     class Parser;
     struct Uri {
+    public:
       std::string scheme;
       std::string path;
       std::string fragment;
       std::unordered_map<std::string, std::string> query;
-
+    private:
+      Uri(const std::string& s,
+          const std::string& p,
+          const std::string& f):
+        scheme(s),
+        path(p),
+        fragment(f) {
+      }
+      Uri(const std::string& s,
+          const std::string& p):
+        Uri(s, p, {}) {
+      }
+    public:
       Uri() = default;
       Uri(const basic_uri& uri);
       Uri(const Uri& rhs) = default;
@@ -43,6 +56,19 @@ namespace mcc {
         return !query.empty();
       }
 
+      bool HasExtension() const {
+        const auto dotpos = path.find_last_of('.');
+        return dotpos != std::string::npos;
+      }
+
+      bool HasExtension(const std::string& extension) const {
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto path_extension = path.substr(extension[0] != '.' ? (dotpos + 1) : dotpos);
+        return EqualsIgnoreCase(path_extension, extension);
+      }
+
       std::string GetPathWithoutExtension() const {
         const auto dotpos = path.find_first_of('.');
         if(dotpos != std::string::npos)
@@ -57,16 +83,41 @@ namespace mcc {
         return { path.substr(dotpos + 1) };
       }
 
-      bool HasPathExtension() const {
-        const auto dotpos = path.find_first_of('.');
-        return dotpos != std::string::npos;
-      }
-
       std::optional<std::string> GetQuery(const std::string& name) const {
         const auto pos = query.find(name);
         if(pos == query.end())
           return std::nullopt;
         return { pos->second };
+      }
+
+      std::string GetParentPath() const {
+        const auto slashpos = path.find_last_of('/');
+        if(slashpos == std::string::npos)
+          return "/";
+        return path.substr(0, path.size() - (path.size() - slashpos));
+      }
+
+      Uri GetChild(const std::string& child_path) const {
+        const auto new_uri = fmt::format("{0:s}://{1:s}/{2:s}", scheme, path, child_path);
+        return { new_uri };
+      }
+
+      Uri GetSibling(const std::string& sibling_path) const {
+        const auto new_uri = fmt::format("{0:s}://{1:s}/{2:s}", scheme, GetParentPath(), sibling_path);
+        return { new_uri };
+      }
+
+      FILE* OpenFile(const char* mode) const {
+        MCC_ASSERT(HasScheme("file"));
+        return fopen(path.c_str(), mode);
+      }
+
+      inline FILE* OpenFileForReading() const {
+        return OpenFile("rb");
+      }
+
+      inline FILE* OpenFileForWriting() const {
+        return OpenFile("wb");
       }
 
       Uri& operator=(const Uri& rhs) = default;

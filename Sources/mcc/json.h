@@ -2,6 +2,9 @@
 #define MCC_JSON_H
 
 #include <cstdio>
+#include <string>
+#include <memory>
+#include <optional>
 #include <glog/logging.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/schema.h>
@@ -9,15 +12,20 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/filereadstream.h>
 
-#include "mcc/common.h"
+#include "mcc/rx.h"
 #include "mcc/uri.h"
+#include "mcc/common.h"
 
 namespace mcc::json {
   using namespace rapidjson;
 
+  typedef std::shared_ptr<Document> DocumentPtr;
+
   bool ParseJson(FILE* file, Document& doc);
+  bool ParseJson(const uri::Uri& uri, Document& doc);
+
   bool ParseJson(Document& doc, const std::string& value);
-  
+
   static inline bool
   ParseJson(const std::string& filename, Document& doc) {
     DLOG(INFO) << "parsing json from " << filename;
@@ -25,6 +33,17 @@ namespace mcc::json {
     if(!file)
       return false;
     return ParseJson(file, doc);
+  }
+
+  static constexpr const auto kDefaultJsonFileBufferSize = 4096;
+  rx::observable<DocumentPtr> ParseDocument(FILE* file, const int buffer_size = kDefaultJsonFileBufferSize);
+
+  static inline rx::observable<DocumentPtr>
+  ParseDocument(const uri::Uri& uri, const int buffer_size = kDefaultJsonFileBufferSize) {
+    auto file = fopen(uri.path.c_str(), "rb");
+    if(!file)
+      return rx::observable<>::error<DocumentPtr>(std::runtime_error(""));
+    return ParseDocument(file, buffer_size);
   }
 
   static inline std::string
@@ -114,10 +133,41 @@ namespace mcc::json {
     }
   };
 
-  class Spec {
+  class JsonSpec {
+  protected:
+    uri::Uri uri_;
+    DocumentPtr doc_;
+
+    JsonSpec(const uri::Uri& uri, DocumentPtr doc):
+      uri_(uri),
+      doc_(doc) {
+      MCC_ASSERT(doc.get());
+      MCC_ASSERT(uri.HasScheme("file"));
+      MCC_ASSERT(uri.HasExtension(".json"));
+    }
+
+    inline DocumentPtr doc() const {
+      return doc_;
+    }
+
+    inline std::optional<std::string>
+    GetStringProperty(const char* name) const {
+      if(!doc_->HasMember(name))
+        return std::nullopt;
+      const auto& property = (*doc_)[name];
+      if(!property.IsString())
+        return std::nullopt;
+      const std::string value(property.GetString(), property.GetStringLength());
+      return { value };
+    }
+
+    inline std::optional<uri::Uri>
+    GetUriProperty(const char* name) const {
+      const auto property = GetStringProperty(name);
+      return property ? std::optional<uri::Uri>(uri::Uri(*property)) : std::nullopt;
+    }
   public:
-    virtual ~Spec() = default;
-    virtual const char* GetName() const = 0;
+    virtual ~JsonSpec() = default;
   };
 }
 

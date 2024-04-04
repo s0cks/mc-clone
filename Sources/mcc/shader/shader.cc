@@ -21,11 +21,6 @@ namespace mcc {
 
   ShaderRef GetShader(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("shader"));
-    if(HasShaderExtension(uri)) {
-      const auto path = fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path);
-      DLOG(INFO) << "loading shader from: " << path;
-    }
-
     shader::ShaderSourceResolver resolver(uri);
     auto sources = resolver.Resolve().map([](const shader::ShaderSource& next) {
       return next.GetSource();

@@ -6,6 +6,7 @@
 #include "mcc/gfx.h"
 #include "mcc/json.h"
 #include "mcc/texture/texture_target.h"
+#include "mcc/texture/texture_property.h"
 
 namespace mcc::texture {
   enum TextureWrapMode : GLenum {

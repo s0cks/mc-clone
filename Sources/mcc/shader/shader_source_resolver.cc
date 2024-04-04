@@ -4,7 +4,7 @@
 #include "mcc/flags.h"
 #include "mcc/common.h"
 
-#include "mcc/shader/shader_document.h"
+#include "mcc/shader/shader_spec_json.h"
 
 namespace mcc::shader {
   ShaderSourceResolver::ShaderSourceResolver(const std::string& dir, const uri::Uri& target):
@@ -49,11 +49,6 @@ namespace mcc::shader {
     }
   }
 
-  rx::observable<ShaderSource> ShaderSourceResolver::ResolveFromJsonFile(const std::string& jsonf) {
-    //TODO: parse json
-    return rx::observable<>::error<ShaderSource>(std::runtime_error("Hello World"));
-  }
-
   template<const ShaderType Type>
   static inline std::optional<ShaderSource>
   FindShaderSource(const std::string& dir, const std::string& name) {
@@ -62,6 +57,37 @@ namespace mcc::shader {
     if(!FileExists(path))
       return std::nullopt;
     return { ShaderSource(Type, path) };
+  }
+
+  static inline rx::observable<ShaderSource> GetSources(const JsonShaderSpec& spec) {
+    return rx::observable<>::create<ShaderSource>([&spec](rx::subscriber<ShaderSource> s) {
+      const auto fragment = spec.GetFragmentShader();
+      if(!fragment)
+        return s.on_error(std::make_exception_ptr(std::runtime_error("")));
+      s.on_next(ShaderSource(kFragmentShader, fragment->path));
+
+      const auto vertex = spec.GetVertexShader();
+      if(!vertex)
+        return s.on_error(std::make_exception_ptr(std::runtime_error("")));
+      s.on_next(ShaderSource(kVertexShader, vertex->path));
+      const auto geometry = spec.GetGeometryShader();
+      if(geometry)
+        s.on_next(ShaderSource(kGeometryShader, geometry->path));
+      const auto tessEval = spec.GetTessEvalShader();
+      if(tessEval)
+        s.on_next(ShaderSource(kTessEvalShader, tessEval->path));
+      const auto tessControl = spec.GetTessControlShader();
+      if(tessControl)
+        s.on_next(ShaderSource(kTessControlShader, tessControl->path));
+      s.on_completed();
+    });
+  }
+
+  static inline rx::observable<ShaderSource> LoadShaderFromJson(const uri::Uri& uri) {
+    DLOG(INFO) << "loading shader from: " << uri;
+    return JsonShaderSpec::New(uri)
+      .map(&GetSources)
+      .merge();
   }
 
   static inline rx::observable<ShaderSource> LoadShaderFromDirectory(const std::string& dir, const std::string& name) {
@@ -104,8 +130,11 @@ namespace mcc::shader {
     }
 
     // check for .json
-    if(FileExists(fmt::format("{0:s}.json", path))) {
-      DLOG(INFO) << "found json: " << fmt::format("{0:s}.json", path);
+    const auto json_path = fmt::format("{0:s}.json", path);
+    if(FileExists(json_path)) {
+      const auto json_uri = uri::Uri(fmt::format("file://{0:s}", json_path));
+      DLOG(INFO) << "found json: " << json_uri;
+      return LoadShaderFromJson(json_uri);
     }
 
     DLOG(INFO) << "scanning....";
