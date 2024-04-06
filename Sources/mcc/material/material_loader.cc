@@ -2,7 +2,6 @@
 
 #include <fmt/format.h>
 #include "mcc/texture/texture.h"
-#include "mcc/texture/texture_loader.h"
 
 namespace mcc::material {
   static const std::vector<std::string> kValidImageExtension = {

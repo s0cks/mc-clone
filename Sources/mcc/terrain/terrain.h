@@ -19,7 +19,6 @@ namespace mcc::renderer {
 namespace mcc::terrain {
   class Terrain {
     friend class TerrainChunk;
-    friend class mcc::renderer::RenderTerrainStage;
     DEFINE_NON_COPYABLE_TYPE(Terrain);
   private:
 

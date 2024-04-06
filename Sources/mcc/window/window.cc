@@ -34,6 +34,9 @@ namespace mcc {
     window->on_unfocused().subscribe([](WindowFocusEvent* event) {
       DLOG(INFO) << "window unfocused.";
     });
+    window->on_opened().subscribe([](WindowOpenedEvent* event) {
+      DLOG(INFO) << "window opened.";
+    });
   }
 
   void Window::OnInit() {
@@ -41,7 +44,7 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
-
+    
   }
 
   void Window::OnTerminating() {

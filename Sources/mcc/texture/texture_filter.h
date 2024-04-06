@@ -54,6 +54,27 @@ namespace mcc::texture {
   }
 
   struct TextureFilter {
+  private:
+    static constexpr const auto kMinFilterPropertyName = "min";
+    static constexpr const auto kMagFilterPropertyName = "mag";
+    static inline std::optional<TextureFilterComponent> GetFilterComponent(const json::Value& value) {
+      MCC_ASSERT(value.IsString());
+      const std::string val(value.GetString(), value.GetStringLength());
+      return ParseTextureFilterComponent(val);
+    }
+
+    template<const bool IsConst>
+    static inline std::optional<TextureFilterComponent> GetFilterComponent(const json::GenericObject<IsConst, json::Document::ValueType>& obj, const char* name) {
+      if(!obj.HasMember(name))
+        return std::nullopt;
+      const auto& property = obj[name];
+      if(!property.IsString()) {
+        DLOG(WARNING) << name << " is not a string.";
+        return std::nullopt;
+      }
+      return GetFilterComponent(property);
+    }
+  public:
     TextureFilterComponent min;
     TextureFilterComponent mag;
 
@@ -67,6 +88,18 @@ namespace mcc::texture {
     }
     explicit constexpr TextureFilter(const TextureFilterComponent component):
       TextureFilter(component, component) {
+    }
+    explicit constexpr TextureFilter(const std::string& value):
+      TextureFilter(ParseTextureFilterComponent(value).value_or(kDefaultMinFilter), 
+                    ParseTextureFilterComponent(value).value_or(kDefaultMagFilter)) { //TODO: remove double parsing?
+    }
+    explicit constexpr TextureFilter(const json::Document::Object& value):
+      TextureFilter(GetFilterComponent(value, kMinFilterPropertyName).value_or(kDefaultMinFilter),
+                    GetFilterComponent(value, kMagFilterPropertyName).value_or(kDefaultMagFilter)) {
+    }
+    explicit constexpr TextureFilter(const json::Document::ConstObject& value):
+      TextureFilter(GetFilterComponent(value, kMinFilterPropertyName).value_or(kDefaultMinFilter),
+                    GetFilterComponent(value, kMagFilterPropertyName).value_or(kDefaultMagFilter)) {
     }
     TextureFilter(const TextureFilter& rhs) = default;
     ~TextureFilter() = default;
@@ -117,45 +150,6 @@ namespace mcc::texture {
   static constexpr const auto kDefaultFilter = TextureFilter();
   static constexpr const auto kLinearFilter = TextureFilter(kLinear);
   static constexpr const auto kNearestFilter = TextureFilter(kNearest);
-
-  class JsonTextureFilter {
-  protected:
-    const json::Value& value_;
-
-    inline std::optional<TextureFilterComponent>
-    GetFilterComponent(const char* name) const {
-      MCC_ASSERT(value_.IsObject());
-      if(!value_.HasMember(name))
-        return std::nullopt;
-      const auto& value = value_[name];
-      if(!value.IsString())
-        return std::nullopt;
-      const auto v = std::string(value.GetString(), value.GetStringLength());
-      return ParseTextureFilterComponent(v);
-    }
-  public:
-    explicit JsonTextureFilter(const json::Value& value):
-      value_(value) {
-    }
-    explicit JsonTextureFilter(const json::Document& doc):
-      JsonTextureFilter((const json::Value&) doc) {
-    }
-    virtual ~JsonTextureFilter() = default;
-    
-    explicit operator TextureFilter() const {
-      TextureFilter filter;
-      if(value_.IsString()) {
-        const auto v = std::string(value_.GetString(), value_.GetStringLength());
-        const auto& component = ParseTextureFilterComponent(v).value_or(kLinear); //TODO: fix kLinear
-        filter.min = component;
-        filter.mag = component;
-      } else if(value_.IsObject()) {
-        filter.min = GetFilterComponent("min").value_or(kDefaultMinFilter);
-        filter.mag = GetFilterComponent("mag").value_or(kDefaultMagFilter);
-      }
-      return filter;
-    }
-  };
 }
 
 #endif //MCC_TEXTURE_FILTER_H

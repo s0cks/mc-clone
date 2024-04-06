@@ -116,18 +116,23 @@ add_library(${PROJECT_NAME}
   mcc/event/event.h
   mcc/event/event_bus.h mcc/event/event_bus.cc
 # Textures
+  mcc/texture/image/image_constants.h
   mcc/texture/image/image.h mcc/texture/image/image.cc
+  mcc/texture/image/image_data.h mcc/texture/image/image_data.cc
+  mcc/texture/image/image_decoder.h
   mcc/texture/image/image_png.h mcc/texture/image/image_png.cc
   mcc/texture/image/image_jpeg.h mcc/texture/image/image_jpeg.cc
+  mcc/texture/texture_file.h
+  mcc/texture/texture_file_resolver.h
+  mcc/texture/texture_spec.h mcc/texture/texture_spec.cc
   mcc/texture/texture_wrap.h
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h
   mcc/texture/texture_alignment.h
   mcc/texture/texture_constants.h
-  mcc/texture/texture_property.h mcc/texture/texture_property.cc
+  mcc/texture/texture_property.h
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
-  mcc/texture/texture_json.h mcc/texture/texture_json.cc
 # Terrain
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc
@@ -179,7 +184,7 @@ target_link_libraries(${PROJECT_NAME}
   ${LEVELDB_LIBRARIES}
   flatbuffers::flatbuffers
   Freetype::Freetype
-  units
+  units::units
   semver
   fmt
   vorbis

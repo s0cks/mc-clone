@@ -1,6 +1,4 @@
 #include "mcc/engine/engine.h"
-#include "mcc/window.h"
-
 #include "mcc/engine/engine_stage_preinit.h"
 #include "mcc/engine/engine_stage_init.h"
 #include "mcc/engine/engine_stage_postinit.h"

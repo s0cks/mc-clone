@@ -9,15 +9,59 @@
 #include "mcc/texture/texture_property.h"
 
 namespace mcc::texture {
-  enum TextureWrapMode : GLenum {
-    kRepeat = GL_REPEAT,
-    kClampToEdge = GL_CLAMP_TO_EDGE,
-    kClampToBorder = GL_CLAMP_TO_BORDER,
+#define FOR_EACH_TEXTURE_WRAP_MODE(V)     \
+  V(Repeat, GL_REPEAT)                    \
+  V(ClampToEdge, GL_CLAMP_TO_EDGE)        \
+  V(ClampToBorder, GL_CLAMP_TO_BORDER)
 
-    kDefaultWrapMode = kClampToEdge,
+  enum TextureWrapMode : GLenum {
+#define DEFINE_TEXTURE_WRAP_MODE(Name, GlValue) k##Name = (GlValue),
+    FOR_EACH_TEXTURE_WRAP_MODE(DEFINE_TEXTURE_WRAP_MODE)
+#undef DEFINE_TEXTURE_WRAP_MODE
+
+    kNumberOfTextureWrapModes,
+    kDefaultTextureWrapMode = kClampToEdge
   };
 
+  static inline const char* GetTextureWrapModeName(const TextureWrapMode& rhs) {
+    switch(rhs) {
+#define DEFINE_TOSTRING(Name, GlValue) \
+      case k##Name: return #Name;
+      FOR_EACH_TEXTURE_WRAP_MODE(DEFINE_TOSTRING)
+#undef DEFINE_TOSTRING
+      default: return "unknown";
+    }
+  }
+
+  static inline std::optional<TextureWrapMode> GetWrapMode(const std::string& value) {
+    if(EqualsIgnoreCase(value, "default")) return { kDefaultTextureWrapMode };
+#define DEFINE_FROM_STRING(Name, GlValue) \
+    else if(EqualsIgnoreCase(value, #Name)) return { k##Name };
+    FOR_EACH_TEXTURE_WRAP_MODE(DEFINE_FROM_STRING)
+#undef DEFINE_FROM_STRING
+    DLOG(ERROR) << "unknown TextureWrapMode: " << value;
+    return std::nullopt;
+  }
+
+  static inline std::optional<TextureWrapMode> GetWrapMode(const json::Value& value) {
+    MCC_ASSERT(value.IsString());
+    const std::string val(value.GetString(), value.IsString());
+    return GetWrapMode(val);
+  }
+
+  static inline std::optional<TextureWrapMode> GetWrapMode(const json::Document::ConstObject& obj, const char* name) {
+    if(!obj.HasMember(name))
+      return std::nullopt;
+    const auto& property = obj[name];
+    if(!property.IsString()) {
+      DLOG(WARNING) << name << " is not a string.";
+      return std::nullopt;
+    }
+    return GetWrapMode(property);
+  }
+
   struct TextureWrap {
+  public:
     TextureWrapMode r;
     TextureWrapMode s;
     TextureWrapMode t;
@@ -29,7 +73,12 @@ namespace mcc::texture {
       s(S),
       t(T) {
     }
-    explicit constexpr TextureWrap(const TextureWrapMode mode = kDefaultWrapMode):
+    explicit constexpr TextureWrap(const json::Document::ConstObject& value):
+      TextureWrap(GetWrapMode(value, "r").value_or(kDefaultTextureWrapMode),
+                  GetWrapMode(value, "s").value_or(kDefaultTextureWrapMode),
+                  GetWrapMode(value, "t").value_or(kDefaultTextureWrapMode)) {
+    }
+    explicit constexpr TextureWrap(const TextureWrapMode mode = kDefaultTextureWrapMode):
       TextureWrap(mode, mode, mode) {
     }
     TextureWrap(const TextureWrap& rhs) = default;
@@ -104,73 +153,10 @@ namespace mcc::texture {
     }
   };
 
-  static constexpr const auto kDefaultWrap = TextureWrap(kDefaultWrapMode);
+  static constexpr const auto kDefaultWrap = TextureWrap(kDefaultTextureWrapMode);
   static constexpr const auto kRepeatWrap = TextureWrap(kRepeat);
   static constexpr const auto kClampToEdgeWrap = TextureWrap(kClampToEdge);
   static constexpr const auto kClampToBorderWrap = TextureWrap(kClampToBorder);
-
-  static inline std::optional<TextureWrapMode>
-  ParseTextureWrapMode(const std::string& value) {
-    if(value.empty() || value.length() <= 0)
-      return std::nullopt;
-
-    if(value == "default") {
-      return { kDefaultWrapMode };
-    } else if(value == "repeat") {
-      return { kRepeat };
-    } else if(value == "clamp2edge") {
-      return { kClampToEdge };
-    } else if(value == "clamp2border") {
-      return { kClampToBorder };
-    }
-
-    DLOG(ERROR) << "unknown TextureWrapMode: " << value;
-    return std::nullopt;
-  }
-
-  class JsonTextureWrap {
-    DEFINE_NON_COPYABLE_TYPE(JsonTextureWrap);
-    static constexpr const auto kRFieldName = "r";
-    static constexpr const auto kSFieldName = "s";
-    static constexpr const auto kTFieldName = "t";
-  protected:
-    const json::Value& value_;
-
-    inline std::optional<TextureWrapMode>
-    GetTextureWrapMode(const char* name) const {
-      MCC_ASSERT(value_.IsObject());
-      if(!value_.HasMember(name))
-        return std::nullopt;
-
-      const auto& value = value_[name];
-      return ParseTextureWrapMode(std::string(value.GetString(), value.GetStringLength()));
-    }
-  public:
-    explicit JsonTextureWrap(const json::Value& value):
-      value_(value) {
-    }
-    explicit JsonTextureWrap(const json::Document& doc):
-      JsonTextureWrap((const json::Value&) doc) {
-    }
-    virtual ~JsonTextureWrap() = default;
-
-    explicit operator TextureWrap() const {
-      TextureWrap wrap;
-      if(value_.IsString()) {
-        const auto w = std::string(value_.GetString(), value_.GetStringLength()); //normalize w
-        const auto& mode = ParseTextureWrapMode(w).value_or(kDefaultWrapMode);
-        wrap.r = mode;
-        wrap.s = mode;
-        wrap.t = mode;
-      } else if(value_.IsObject()) {
-        wrap.r = GetTextureWrapMode(kRFieldName).value_or(kDefaultWrapMode);
-        wrap.s = GetTextureWrapMode(kSFieldName).value_or(kDefaultWrapMode);
-        wrap.t = GetTextureWrapMode(kTFieldName).value_or(kDefaultWrapMode);
-      }
-      
-      return wrap;
-    }
-  };
 }
 
 #endif //MCC_TEXTURE_WRAP_H

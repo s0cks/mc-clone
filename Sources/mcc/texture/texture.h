@@ -141,44 +141,14 @@ namespace mcc::texture {
     }
   };
 
-  class Texture;
-  class TextureFactory {
-  protected:
-    TextureFactory() = default;
-  public:
-    virtual ~TextureFactory() = default;
-    virtual Texture* CreateTexture(const TextureTarget target, const uri::Uri& uri) = 0;
-  public:
-    static TextureFactory* GetInstance();
-
-    static inline Texture*
-    Create(const TextureTarget target, const uri::Uri& uri) {
-      const auto factory = GetInstance();
-      MCC_ASSERT(factory != nullptr);
-      return factory->CreateTexture(target, uri);
-    }
-
-    template<const TextureTarget Target = k2D>
-    static inline Texture*
-    Create(const uri::Uri& uri) {
-      return Create(Target, uri);
-    }
-  };
-
   class Texture : public gfx::Resource {
+  public:
+    static rx::observable<TextureId> GenerateTextureId(const int num = 1);
   protected:
     TextureId id_;
     TextureTarget target_;
     TextureOptions options_;
     TextureData data_;
-
-    explicit Texture(const TextureId id):
-      Resource(),
-      id_(id),
-      target_(),
-      options_(),
-      data_() {
-    }
 
     virtual void Delete() {
       glDeleteTextures(1, &id_);
@@ -186,6 +156,13 @@ namespace mcc::texture {
     }
   public:
     Texture() = default;
+    explicit Texture(const TextureId id):
+      Resource(),
+      id_(id),
+      target_(),
+      options_(),
+      data_() {
+    }
     explicit Texture(const TextureId id,
                      const TextureOptions& options,
                      const TextureData& data):

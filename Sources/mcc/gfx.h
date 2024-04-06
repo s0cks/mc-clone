@@ -19,6 +19,9 @@
 #include "mcc/glm.h"
 
 #include <iostream>
+
+#include <units.h>
+
 #include <glog/logging.h>
 
 #include "mcc/common.h"

@@ -4,8 +4,6 @@
 
 #include "mcc/material/material.h"
 #include "mcc/texture/texture.h"
-#include "mcc/texture/texture_loader.h"
-
 #include "mcc/material/material_loader.h"
 
 namespace mcc {

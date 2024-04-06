@@ -143,7 +143,10 @@ namespace mcc {
   static ThreadLocal<Window> window_;
 
   Window* Window::New(const WindowSize& size, const std::string& title, Monitor* monitor) {
-    return new GlfwWindow(NewWindowHandle(size, title, monitor));
+    const auto window = new GlfwWindow(NewWindowHandle(size, title, monitor));
+    WindowOpenedEvent event(window);
+    window->Publish(&event);
+    return window;
   }
 
   void Window::Set(Window* window) {

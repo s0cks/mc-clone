@@ -92,21 +92,23 @@ namespace mcc::texture {
   TEST_F(JsonTextureFilterTest, Test_StringEqualsLinear) {
     json::Document doc;
     ASSERT_TRUE(json::ParseJson(doc, "\"linear\""));
-    const auto filter = JsonTextureFilter((const json::Value&) doc);
+    ASSERT_TRUE(doc.IsString());
+    const auto filter = TextureFilter(std::string(doc.GetString(), doc.GetStringLength()));
     ASSERT_TRUE(IsTextureFilter((const TextureFilter) filter, kLinear));
   }
 
   TEST_F(JsonTextureFilterTest, Test_StringEqualsNearest) {
     json::Document doc;
     ASSERT_TRUE(json::ParseJson(doc, "\"nearest\""));
-    const auto filter = JsonTextureFilter((const json::Value&) doc);
+    ASSERT_TRUE(doc.IsString());
+    const auto filter = TextureFilter(std::string(doc.GetString(), doc.GetStringLength()));
     ASSERT_TRUE(IsTextureFilter((const TextureFilter) filter, kNearest));
   }
 
   TEST_F(JsonTextureFilterTest, Test_MinEqualsNearestMagEqualsLinear) {
     json::Document doc;
     ASSERT_TRUE(json::ParseJson(doc, "{ \"min\": \"nearest\", \"mag\": \"linear\" }"));
-    const auto filter = JsonTextureFilter((const json::Value&) doc);
-    ASSERT_TRUE(IsTextureFilter((const TextureFilter) filter, kNearest, kLinear));
+    const auto filter = TextureFilter(doc.GetObject());
+    ASSERT_TRUE(IsTextureFilter(filter, kNearest, kLinear));
   }
 }

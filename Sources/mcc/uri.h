@@ -4,8 +4,10 @@
 #include <cstdio>
 #include <string>
 #include <optional>
+#include <unordered_set>
 #include <fmt/format.h>
 
+#include "mcc/rx.h"
 #include "mcc/buffer.h"
 #include "mcc/murmur.h"
 #include "mcc/parser.h"
@@ -14,6 +16,8 @@
 namespace mcc {
   namespace uri {
     typedef std::string basic_uri;
+
+    typedef rx::observable<FILE*> FilePointerObservable;
     
     class Parser;
     struct Uri {
@@ -44,8 +48,71 @@ namespace mcc {
         return !scheme.empty();
       }
 
-      bool HasScheme(const std::string& value) const {
-        return HasScheme() && EqualsIgnoreCase(scheme, value);
+      bool HasScheme(const std::string& a) const {
+        return HasScheme() 
+            && EqualsIgnoreCase(scheme, a);
+      }
+
+      bool HasScheme(const std::string& a,
+                     const std::string& b) const {
+        return HasScheme()
+            && (EqualsIgnoreCase(scheme, a)
+            || EqualsIgnoreCase(scheme, b));
+      }
+
+      bool HasScheme(const std::string& a,
+                     const std::string& b,
+                     const std::string& c) const {
+        return HasScheme()
+            && (EqualsIgnoreCase(scheme, a)
+            || EqualsIgnoreCase(scheme, b)
+            || EqualsIgnoreCase(scheme, c));
+      }
+
+      bool HasScheme(const std::string& a,
+                     const std::string& b,
+                     const std::string& c,
+                     const std::string& d) const {
+        return HasScheme()
+            && (EqualsIgnoreCase(scheme, a)
+            || EqualsIgnoreCase(scheme, b)
+            || EqualsIgnoreCase(scheme, c)
+            || EqualsIgnoreCase(scheme, d));
+      }
+
+      bool HasScheme(const std::string& a,
+                     const std::string& b,
+                     const std::string& c,
+                     const std::string& d,
+                     const std::string& e) const {
+        return HasScheme()
+            && (EqualsIgnoreCase(scheme, a)
+            || EqualsIgnoreCase(scheme, b)
+            || EqualsIgnoreCase(scheme, c)
+            || EqualsIgnoreCase(scheme, d)
+            || EqualsIgnoreCase(scheme, e));
+      }
+
+      bool HasScheme(const std::string& a,
+                     const std::string& b,
+                     const std::string& c,
+                     const std::string& d,
+                     const std::string& e,
+                     const std::string& f) const {
+        return HasScheme()
+            && (EqualsIgnoreCase(scheme, a)
+            || EqualsIgnoreCase(scheme, b)
+            || EqualsIgnoreCase(scheme, c)
+            || EqualsIgnoreCase(scheme, d)
+            || EqualsIgnoreCase(scheme, e)
+            || EqualsIgnoreCase(scheme, f));
+      }
+
+      bool HasScheme(const std::unordered_set<std::string>& values) const {
+        if(!HasScheme())
+          return false;
+        const auto pos = values.find(scheme);
+        return pos != values.end();
       }
 
       bool HasFragment() const {
@@ -67,6 +134,96 @@ namespace mcc {
           return false;
         const auto path_extension = path.substr(extension[0] != '.' ? (dotpos + 1) : dotpos);
         return EqualsIgnoreCase(path_extension, extension);
+      }
+
+      bool HasExtension(const std::string& a,
+                        const std::string& b) const {
+        MCC_ASSERT(a[0] == '.');
+        MCC_ASSERT(b[0] == '.');
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto extension = path.substr(dotpos);
+        return EqualsIgnoreCase(extension, a)
+            || EqualsIgnoreCase(extension, b);
+      }
+
+      bool HasExtension(const std::string& a,
+                        const std::string& b,
+                        const std::string& c) const {
+        MCC_ASSERT(a[0] == '.');
+        MCC_ASSERT(b[0] == '.');
+        MCC_ASSERT(c[0] == '.');
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto extension = path.substr(dotpos);
+        return EqualsIgnoreCase(extension, a)
+            || EqualsIgnoreCase(extension, b)
+            || EqualsIgnoreCase(extension, c);
+      }
+
+      bool HasExtension(const std::string& a,
+                        const std::string& b,
+                        const std::string& c,
+                        const std::string& d) const {
+        MCC_ASSERT(a[0] == '.');
+        MCC_ASSERT(b[0] == '.');
+        MCC_ASSERT(c[0] == '.');
+        MCC_ASSERT(d[0] == '.');
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto extension = path.substr(dotpos);
+        return EqualsIgnoreCase(extension, a)
+            || EqualsIgnoreCase(extension, b)
+            || EqualsIgnoreCase(extension, c)
+            || EqualsIgnoreCase(extension, d);
+      }
+
+      bool HasExtension(const std::string& a,
+                        const std::string& b,
+                        const std::string& c,
+                        const std::string& d,
+                        const std::string& e) const {
+        MCC_ASSERT(a[0] == '.');
+        MCC_ASSERT(b[0] == '.');
+        MCC_ASSERT(c[0] == '.');
+        MCC_ASSERT(d[0] == '.');
+        MCC_ASSERT(e[0] == '.');
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto extension = path.substr(dotpos);
+        return EqualsIgnoreCase(extension, a)
+            || EqualsIgnoreCase(extension, b)
+            || EqualsIgnoreCase(extension, c)
+            || EqualsIgnoreCase(extension, d)
+            || EqualsIgnoreCase(extension, e);
+      }
+
+      bool HasExtension(const std::string& a,
+                        const std::string& b,
+                        const std::string& c,
+                        const std::string& d,
+                        const std::string& e,
+                        const std::string& f) const {
+        MCC_ASSERT(a[0] == '.');
+        MCC_ASSERT(b[0] == '.');
+        MCC_ASSERT(c[0] == '.');
+        MCC_ASSERT(d[0] == '.');
+        MCC_ASSERT(e[0] == '.');
+        MCC_ASSERT(f[0] == '.');
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto extension = path.substr(dotpos);
+        return EqualsIgnoreCase(extension, a)
+            || EqualsIgnoreCase(extension, b)
+            || EqualsIgnoreCase(extension, c)
+            || EqualsIgnoreCase(extension, d)
+            || EqualsIgnoreCase(extension, e)
+            || EqualsIgnoreCase(extension, f);
       }
 
       std::string GetPathWithoutExtension() const {
@@ -114,6 +271,20 @@ namespace mcc {
 
       inline FILE* OpenFileForReading() const {
         return OpenFile("rb");
+      }
+
+      inline FilePointerObservable AsyncOpenFile(const char* mode) const {
+        MCC_ASSERT(HasScheme("file"));
+        return rx::observable<>::create<FILE*>([this,mode](rx::subscriber<FILE*> s) {
+          const auto file = fopen(path.c_str(), mode);
+          if(!file) {
+            const auto error = fmt::format("failed to open: {0:s}", path);
+            return s.on_error(rx::util::make_error_ptr(std::runtime_error(error)));
+          }
+
+          s.on_next(file);
+          s.on_completed();
+        });
       }
 
       inline FILE* OpenFileForWriting() const {
@@ -175,6 +346,11 @@ namespace mcc {
     IsDirectory(const std::string& root, const Uri& uri) {
       const auto abs_path = fmt::format("{0:s}/{1:s}", root, uri.path);
       return mcc::IsDirectory((const std::string&) abs_path);
+    }
+
+    static inline bool
+    FileExists(const uri::Uri& uri) {
+      return mcc::FileExists(uri.path);
     }
 
     static constexpr const uint64_t kDefaultParserBufferSize = 4096;

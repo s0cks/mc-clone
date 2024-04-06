@@ -7,9 +7,20 @@
 
 #include "mcc/texture/image/image.h"
 #include <string>
+#include <optional>
+#include "mcc/texture/image/image_decoder.h"
 
-namespace mcc::img::png  {
-  bool Decode(const ImageRef& filename, Image& result);
+namespace mcc::img::png {
+  class PngImageDecoder : public ImageDecoder {
+  protected:
+    ImagePtr DecodePNG(FILE* file);
+  public:
+    explicit PngImageDecoder(const uri::Uri& uri):
+      ImageDecoder(uri) {
+    }
+    ~PngImageDecoder() override = default;
+    rx::observable<ImagePtr> Decode() override;
+  };
 }
 
 #endif //MCC_PNG_H
