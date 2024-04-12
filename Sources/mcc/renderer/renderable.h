@@ -7,6 +7,7 @@
 #include "mcc/component/component.h"
 #include "mcc/component/component_state_table.h"
 
+#include "mcc/engine/engine.h"
 #include "mcc/material/material.h"
 
 namespace mcc::renderer {
@@ -29,9 +30,9 @@ namespace mcc::renderer {
     friend class Renderer;
     DECLARE_COMPONENT(Renderable);
   private:
-    static void OnPreInit();
-    static void OnInit();
-    static void OnPostInit();
+    static void OnPreInit(engine::PreInitEvent* e);
+    static void OnInit(engine::InitEvent* e);
+    static void OnPostInit(engine::PostInitEvent* e);
   public:
     static void Init();
   };

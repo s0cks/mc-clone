@@ -27,8 +27,6 @@ add_library(${PROJECT_NAME}
   mcc/buffer.h mcc/buffer.cc
   mcc/cache.h mcc/cache.cc
   mcc/timestamp.h mcc/timestamp.cc
-  mcc/engine/engine_stats.h
-  mcc/engine/engine_state.h
   mcc/pipeline.h mcc/pipeline.cc
   mcc/parser.h
   mcc/reference.h
@@ -36,14 +34,6 @@ add_library(${PROJECT_NAME}
   mcc/resource_ptr.h
   mcc/resource_loader.h
   mcc/resource.h mcc/resource.cc
-  mcc/engine/engine.h mcc/engine/engine.cc
-  mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
-  mcc/engine/engine_stage_preinit.h
-  mcc/engine/engine_stage_init.h
-  mcc/engine/engine_stage_postinit.h
-  mcc/engine/engine_stage_tick.h
-  mcc/engine/engine_stage_terminating.h
-  mcc/engine/engine_stage_terminated.h
   mcc/component/component_id.h
   mcc/component/component_table.h mcc/component/component_table.cc
   mcc/component/component_state.h
@@ -94,6 +84,11 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Engine
+  mcc/engine/engine.h mcc/engine/engine.cc
+  mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
+  mcc/engine/engine_stats.h
+  mcc/engine/engine_state.h mcc/engine/engine_state.cc
 # Shader
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_pipeline.h

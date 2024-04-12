@@ -198,7 +198,7 @@ namespace mcc {
     }
 
     uint64_t vertex_size() const override {
-      return kVertexSize;
+      return sizeof(Vertex);
     }
   };
 }

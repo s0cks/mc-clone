@@ -64,7 +64,10 @@ namespace mcc::gui {
   }
 
   void Screen::Init() {
-    Engine::OnPostInit(&OnPostInit);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
+      Screen::OnPostInit();
+    });
   }
 
   static inline void

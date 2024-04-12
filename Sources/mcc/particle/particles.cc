@@ -51,9 +51,10 @@ namespace mcc::particle {
   }
 
   void Particles::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO:
+    // Engine::OnPreInit(&OnPreInit);
+    // Engine::OnInit(&OnInit);
+    // Engine::OnPostInit(&OnPostInit);
   }
 
   void Particles::UpdateAll(const Tick& tick) {

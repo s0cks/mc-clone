@@ -8,17 +8,17 @@ namespace mcc {
   class WindowEvent;
 
 #define FOR_EACH_WINDOW_EVENT(V)   \
-  V(WindowOpenedEvent, opened)     \
-  V(WindowClosedEvent, closed)     \
-  V(WindowPosEvent, pos)           \
-  V(WindowSizeEvent, size)         \
-  V(WindowFocusEvent, focus)       \
-  V(WindowIconifyEvent, iconify)   \
-  V(WindowRefreshEvent, refresh)   \
-  V(WindowMaximizeEvent, maximize) \
-  V(WindowContentScaleEvent, content_scale)
+  V(WindowOpened)                  \
+  V(WindowClosed)                  \
+  V(WindowPos)                     \
+  V(WindowSize)                    \
+  V(WindowFocus)                   \
+  V(WindowIconify)                 \
+  V(WindowRefresh)                 \
+  V(WindowMaximize)                \
+  V(WindowContentScale)
 
-#define FORWARD_DECLARE(Name, Subject) class Name;
+#define FORWARD_DECLARE(Name) class Name##Event;
   FOR_EACH_WINDOW_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
@@ -26,15 +26,25 @@ namespace mcc {
   protected:
     Window* window_;
   public:
-    explicit WindowEvent(Window* window):
+    explicit WindowEvent(Window* window = nullptr):
       window_(window) {
     }
     WindowEvent(const WindowEvent& rhs) = default;
     virtual ~WindowEvent() = default;
+    
+    virtual const char* GetName() const {
+      return "WindowEvent";
+    }
 
     Window* window() const {
       return window_;
     }
+
+#define DEFINE_TYPE_CHECK(Name)                                               \
+    virtual Name##Event* As##Name##Event() { return nullptr; }                \
+    virtual bool Is##Name##Event() { return As##Name##Event() != nullptr; }
+    FOR_EACH_WINDOW_EVENT(DEFINE_TYPE_CHECK)
+#undef DEFINE_TYPE_CHECK
 
     WindowEvent& operator=(const WindowEvent& rhs) = default;
 
@@ -46,6 +56,11 @@ namespace mcc {
     }
   };
 
+#define DEFINE_WINDOW_EVENT(Name)                             \
+  public:                                                     \
+    const char* GetName() const override { return #Name; }    \
+    Name##Event* As##Name##Event() override { return this; }
+
   class WindowOpenedEvent : public WindowEvent {
   public:
     explicit WindowOpenedEvent(Window* window):
@@ -53,6 +68,7 @@ namespace mcc {
     }
     WindowOpenedEvent(const WindowOpenedEvent& rhs) = default;
     ~WindowOpenedEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowOpened);
 
     WindowOpenedEvent& operator=(const WindowOpenedEvent& rhs) = default;
 
@@ -71,6 +87,7 @@ namespace mcc {
     }
     WindowClosedEvent(const WindowClosedEvent& rhs) = default;
     ~WindowClosedEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowClosed);
 
     WindowClosedEvent& operator=(const WindowClosedEvent& rhs) = default;
 
@@ -94,6 +111,7 @@ namespace mcc {
       WindowPosEvent(window, { x, y }) {
     }
     ~WindowPosEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowPos);
 
     WindowPos pos() const {
       return pos_;
@@ -134,6 +152,7 @@ namespace mcc {
     }
     WindowSizeEvent(const WindowSizeEvent& rhs) = default;
     ~WindowSizeEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowSize);
 
     WindowSize size() const {
       return size_;
@@ -194,6 +213,7 @@ namespace mcc {
     }
     WindowIconifyEvent(WindowIconifyEvent& rhs) = default;
     ~WindowIconifyEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowIconify);
 
     bool iconified() const {
       return iconified_;
@@ -217,6 +237,7 @@ namespace mcc {
     }
     WindowRefreshEvent(const WindowRefreshEvent& rhs) = default;
     ~WindowRefreshEvent() = default;
+    DEFINE_WINDOW_EVENT(WindowRefresh);
 
     WindowRefreshEvent& operator=(const WindowRefreshEvent& rhs) = default;
 
@@ -238,6 +259,7 @@ namespace mcc {
     }
     WindowMaximizeEvent(const WindowMaximizeEvent& rhs) = default;
     ~WindowMaximizeEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowMaximize);
 
     bool maximized() const {
       return maximized_;
@@ -267,6 +289,7 @@ namespace mcc {
     }
     WindowContentScaleEvent(const WindowContentScaleEvent& rhs) = default;
     ~WindowContentScaleEvent() override = default;
+    DEFINE_WINDOW_EVENT(WindowContentScale);
 
     glm::vec2 scale() const {
       return scale_;

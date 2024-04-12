@@ -64,9 +64,10 @@ namespace mcc {
   }
 
   void FrameBuffer::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO:
+    // Engine::OnPreInit(&OnPreInit);
+    // Engine::OnInit(&OnInit);
+    // Engine::OnPostInit(&OnPostInit);
   }
 
   FrameBuffer* FrameBuffer::New(const Dimension& size, const FrameBufferAttachmentList& attachments) {

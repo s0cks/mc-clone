@@ -5,8 +5,8 @@
 
 namespace mcc {
   namespace rxsub = rxcpp::subjects;
-
   namespace rx {
+    using rxcpp::subjects::subject;
     using namespace rxcpp;
     using error_ptr = rxcpp::util::error_ptr;
     using rxcpp::util::what;

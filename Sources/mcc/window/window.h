@@ -37,19 +37,11 @@ namespace mcc {
     static void Set(Window* window);
   protected:
     WindowHandle* handle_;
-    rxsub::subject<WindowEvent*> events_all_;
-#define DEFINE_WINDOW_EVENT_SUBJECT(Name, Subject) \
-    rxsub::subject<Name*> events_##Subject##_;
-    FOR_EACH_WINDOW_EVENT(DEFINE_WINDOW_EVENT_SUBJECT)
-#undef DEFINE_WINDOW_EVENT_SUBJECT
+    rxsub::subject<WindowEvent*> events_;
 
     explicit Window(WindowHandle* handle):
       handle_(handle),
-      events_all_(),
-      events_opened_(),
-      events_closed_(),
-      events_size_(),
-      events_focus_() {
+      events_() {
     }
 
     inline void SetHandle(WindowHandle* handle) {
@@ -67,6 +59,7 @@ namespace mcc {
       return handle() != nullptr;
     }
 
+    virtual void Open() = 0;
     virtual void Close() = 0;
 
     inline WindowSize GetSize() const {
@@ -87,30 +80,50 @@ namespace mcc {
       return GetWindowPos(handle());
     }
 
-    rx::observable<WindowEvent*> on_event() const {
-      return events_all_.get_observable();
+    rx::observable<WindowEvent*> OnEvent() const {
+      return events_.get_observable();
     }
 
-#define DEFINE_GET_WINDOW_EVENT_OBSERVABLE(Name, Subject) \
-    rx::observable<Name*> on_##Subject() const { return events_##Subject##_.get_observable(); }
-    FOR_EACH_WINDOW_EVENT(DEFINE_GET_WINDOW_EVENT_OBSERVABLE)
-#undef DEFINE_GET_WINDOW_EVENT_OBSERVABLE
-
-#define DEFINE_PUBLISH_WINDOW_EVENT(Name, Subject)      \
-    inline void Publish(Name* next) { return events_##Subject##_.get_subscriber().on_next(next); }
-    FOR_EACH_WINDOW_EVENT(DEFINE_PUBLISH_WINDOW_EVENT)
-#undef DEFINE_PUBLISH_WINDOW_EVENT
-
-    inline rx::observable<WindowFocusEvent*> on_focused() const {
-      return on_focus().filter([](WindowFocusEvent* event) {
-        return event->focused();
-      });
+    inline rx::observable<WindowOpenedEvent*> OnOpened() const {
+      return OnEvent()
+        .filter([](WindowEvent* event) {
+          return event->IsWindowOpenedEvent();
+        })
+        .map([](WindowEvent* event) {
+          return event->AsWindowOpenedEvent();
+        });
     }
 
-    inline rx::observable<WindowFocusEvent*> on_unfocused() const {
-      return on_focus().filter([](WindowFocusEvent* event) {
-        return !event->focused();
-      });
+    inline rx::observable<WindowClosedEvent*> OnClosed() const {
+      return OnEvent()
+        .filter([](WindowEvent* event) {
+          return event->IsWindowClosedEvent();
+        })
+        .map([](WindowEvent* event) {
+          return event->AsWindowClosedEvent();
+        });
+    }
+
+    inline rx::observable<WindowFocusEvent*> OnFocused() const {
+      return OnEvent()
+        .filter([](WindowEvent* event) {
+          return event->IsWindowFocusEvent()
+              && event->AsWindowFocusEvent()->focused();
+        })
+        .map([](WindowEvent* event) {
+          return event->AsWindowFocusEvent();
+        });
+    }
+
+    inline rx::observable<WindowFocusEvent*> OnUnfocused() const {
+      return OnEvent()
+        .filter([](WindowEvent* event) {
+          return event->IsWindowFocusEvent()
+              && !event->AsWindowFocusEvent()->focused();
+        })
+        .map([](WindowEvent* event) {
+          return event->AsWindowFocusEvent();
+        });
     }
 
     inline float GetAspectRatio() {

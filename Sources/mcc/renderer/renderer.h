@@ -11,6 +11,8 @@
 #include "mcc/ecs/entity.h"
 #include "mcc/framebuffer.h"
 
+#include "mcc/engine/engine.h"
+
 #include "mcc/skybox.h"
 #include "mcc/camera/perspective_camera.h"
 
@@ -56,9 +58,9 @@ namespace mcc::renderer {
       kDefaultMode = kFillMode,
     };
   private:
-    static void OnPreInit();
-    static void OnInit();
-    static void OnPostInit();
+    static void OnPreInit(engine::PreInitEvent* e);
+    static void OnInit(engine::InitEvent* e);
+    static void OnPostInit(engine::PostInitEvent* e);
     static void SetLoop(uv_loop_t* loop);
     static void SetMode(const Mode mode);
 

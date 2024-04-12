@@ -50,9 +50,10 @@ namespace mcc::settings {
   }
 
   void Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO:
+    // Engine::OnPreInit(&OnPreInit);
+    // Engine::OnInit(&OnInit);
+    // Engine::OnPostInit(&OnPostInit);
   }
 
 #define FAILED_TO_GET(Name, Type) ({                                                          \

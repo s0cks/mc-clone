@@ -1,12 +1,12 @@
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/renderer/renderer.h"
 #include "mcc/camera/camera.h"
-#include "mcc/engine/engine.h"
 
 #include "mcc/input/mouse.h"
 #include "mcc/input/keyboard.h"
 
 #include "mcc/window/window.h"
+#include "mcc/engine/engine.h"
 
 namespace mcc::camera {
   DEFINE_COMPONENT(PerspectiveCamera);
@@ -24,9 +24,9 @@ namespace mcc::camera {
   }
 
   void PerspectiveCamera::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO: Engine::OnPreInit(&OnPreInit);
+    //TODO: Engine::OnInit(&OnInit);
+    //TODO: Engine::OnPostInit(&OnPostInit);
     Entity::OnDestroyed().subscribe(&OnEntityDestroyed);
   }
 
@@ -138,10 +138,6 @@ namespace mcc::camera {
 
   }
 
-  void PerspectiveCameraBehavior::OnPreInit() {
-
-  }
-
   void PerspectiveCameraBehavior::OnInit() {
     Entity::OnSignatureChanged()
       .subscribe([](EntitySignatureChangedEvent* e) {
@@ -168,10 +164,13 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
-    Engine::OnTick(&OnTick);
+    engine::Engine::GetEngine()->OnInitEvent().subscribe([](engine::InitEvent* e) {
+      return PerspectiveCameraBehavior::OnInit();
+    });
+    engine::Engine::GetEngine()->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
+      return PerspectiveCameraBehavior::OnPostInit();
+    });
+    // Engine::OnTick(&OnTick);
     PerspectiveCamera::Init();
   }
 

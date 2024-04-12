@@ -70,9 +70,10 @@ namespace mcc::renderer {
   }
  
   void Renderer::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnPreInitEvent().subscribe(&OnPreInit);
+    engine->OnInitEvent().subscribe(&OnInit);
+    engine->OnPostInitEvent().subscribe(&OnPostInit);
     FrameBuffer::Init();
     Renderable::Init();
     AmbientLight::Init();
@@ -83,11 +84,11 @@ namespace mcc::renderer {
     skybox::Skybox::Init();
   }
 
-  void Renderer::OnPreInit() {
+  void Renderer::OnPreInit(engine::PreInitEvent* e) {
 
   }
 
-  void Renderer::OnInit() {
+  void Renderer::OnInit(engine::InitEvent* e) {
     const auto size = Window::Get()->handle();
   }
 
@@ -194,18 +195,46 @@ namespace mcc::renderer {
     }
   };
 
-  class RenderSquarePipeline : public Pipeline {
+  static const d2::VertexList kTriangleVertices = {
+    d2::Vertex {
+      .pos = { 0.0f, 0.0f },
+      .color = { 0, 0, 0, 255 },
+    },
+    {
+      .pos = { 0.0f, 1.0f },
+      .color = { 0, 0, 0, 255 },
+    },
+    {
+      .pos = { 1.0f, 1.0f },
+      .color = { 0, 0, 0, 255 },
+    }
+  };
+
+  class RenderTrianglePipeline : public Pipeline {
+  protected:
+    d2::Mesh* mesh_;
+
+    inline d2::Mesh* mesh() const {
+      return mesh_;
+    }
   public:
-    RenderSquarePipeline(const glm::mat4& projection):
-      Pipeline() {
-      AddChild(new ApplyShaderPipeline(GetShader("gui"), [&projection](const ShaderRef& shader) {
+    RenderTrianglePipeline(const glm::mat4& projection):
+      Pipeline(),
+      mesh_(d2::NewMesh(kTriangleVertices)) {
+      AddChild(new ApplyShaderPipeline(GetShader("shader:colored_2d"), [projection](const ShaderRef& shader) {
+        shader->ApplyShader();
         shader->SetMat4("projection", projection);
         shader->ApplyShader();
       }));
+      AddChild(new ApplyPipeline([this]() {
+        mesh()->Draw();
+      }));
     }
-    ~RenderSquarePipeline() override = default;
+    ~RenderTrianglePipeline() override = default;
 
     void Render() override {
+      DLOG(INFO) << "drawing triangle....";
+      InvertedCullFaceScope cull_face;
       RenderChildren();
     }
   };
@@ -216,9 +245,10 @@ namespace mcc::renderer {
     RendererPipeline():
       Pipeline() {
       const auto size = Window::Get()->GetSize();
-      const auto xPos = 0 + (size[0] / 2);
-      const auto yPos = 0 + (size[1] / 2);
-      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f);
+      DLOG(INFO) << "size: " << glm::to_string(size);
+      const auto aspect = ((size[0] * 1.0f) / (size[1] * 1.0f));
+      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f, -1000.0f, 1000.0f);
+      AddChild(new RenderTrianglePipeline(projection));
     }
     ~RendererPipeline() override = default;
 
@@ -274,7 +304,7 @@ namespace mcc::renderer {
     }
   };
 
-  void Renderer::OnPostInit() {
+  void Renderer::OnPostInit(engine::PostInitEvent* e) {
     signature_.set(Renderable::GetComponentId());
     signature_.set(physics::Transform::GetComponentId());
     DLOG(INFO) << "signature: " << signature_;

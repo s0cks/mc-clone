@@ -5,8 +5,9 @@
 #include "mcc/platform.h"
 
 namespace mcc {
+  template<const uword N>
   class BitSet {
-  
+
   };
 }
 

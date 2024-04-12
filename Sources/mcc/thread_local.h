@@ -20,7 +20,7 @@ namespace mcc {
       return SetCurrentThreadLocal(key_, reinterpret_cast<void*>(value));
     }
 
-    T* Get() {
+    T* Get() const {
       return reinterpret_cast<T*>(GetCurrentThreadLocal(key_));
     }
 

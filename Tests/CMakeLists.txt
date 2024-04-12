@@ -33,5 +33,6 @@ target_link_libraries(${PROJECT_NAME}-tests
   GTest::gtest
   GTest::gmock
   glog::glog
+  ${LIBUV_LIBRARIES}
   ${GFLAGS_LIBRARIES}
   ${LEVELDB_LIBRARIES})

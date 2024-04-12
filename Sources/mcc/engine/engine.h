@@ -2,52 +2,111 @@
 #define MCC_ENGINE_H
 
 #include "mcc/uv_utils.h"
-#include "mcc/common.h"
-#include "mcc/engine/tick.h"
 #include "mcc/engine/engine_state.h"
-#include "mcc/relaxed_atomic.h"
-#include "mcc/engine/engine_stats.h"
+#include "mcc/engine/engine_event.h"
 
-namespace mcc {
-  namespace engine {
-    typedef RelaxedAtomic<uint64_t> TickCounter;
+namespace mcc::engine {
+  class Engine {
+  protected:
+    uv_loop_t* loop_;
+    RelaxedAtomic<bool> running_;
+    State* current_state_;
+    State* previous_state_;
+    rx::subject<EngineEvent*> events_;
+    uint64_t ticks_;
+    uint64_t total_ticks_;
+    uint64_t ts_;
+    uint64_t dts_;
+    uint64_t tps_;
+    uint64_t last_;
+    uint64_t last_second_;
+    Tick current_;
 
-    class Engine {
-      DEFINE_NON_INSTANTIABLE_TYPE(Engine);
+    virtual void SetRunning(const bool running = true) {
+      running_ = running;
+    }
 
-      friend class EnginePhase;
-      friend class Stage;
-    private:
-      static void SetRunning(const bool value = true);
-      static void SetState(const State state);
+    inline void SetState(State* state) {
+      previous_state_ = current_state_;
+      current_state_ = state;
+    }
 
-      static void OnLoopClosed(uv_handle_t* handle) {
-        //TODO: implement
+    template<class E, typename... Args>
+    inline void Publish(Args... args) {
+      E event(this, args...);
+      events_.get_subscriber().on_next(&event);
+    }
+
+    template<class State, class Event>
+    inline void RunState(State* state) {
+      DLOG(INFO) << state->GetName() << " running.....";
+      const auto start = uv_hrtime();
+      SetState(state);
+      Publish<Event>(state, previous_state_);
+      const auto total_ns = (uv_hrtime() - start);
+      DLOG(INFO) << state->GetName() << " done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+    }
+  public:
+    explicit Engine(uv_loop_t* loop):
+      loop_(loop),
+      running_(false),
+      current_state_(nullptr),
+      previous_state_(nullptr),
+      events_(),
+      ticks_(),
+      total_ticks_(),
+      ts_(),
+      dts_(),
+      tps_(),
+      last_(),
+      last_second_(),
+      current_() {
+    }
+    virtual ~Engine() {
+      if(loop_) {
+        uv_loop_delete(loop_);
+        loop_ = nullptr;
       }
-    public:
-      static void Init(uv_loop_t* loop = uv_loop_new());
-      static void Run();
-      static void Shutdown();
-      static bool IsRunning();
-      static uv_loop_t* GetLoop();
-      static State GetState();
-      static Tick GetTick();
-      static SampleSeries* GetSamples();
-      
-#define DEFINE_ON_EVENT(Name) \
-      static void On##Name(Name##Callback callback);
-      FOR_EACH_ENGINE_STATE(DEFINE_ON_EVENT)
-#undef DEFINE_ON_EVENT
+    }
 
-#define DEFINE_STATE_CHECK(Name) static inline bool Is##Name() { return GetState() == State::k##Name; }
-      FOR_EACH_ENGINE_STATE(DEFINE_STATE_CHECK)
-#undef DEFINE_STATE_CHECK
+    virtual void Run();
+    virtual void Shutdown();
 
-      static uint64_t GetTPS();
-      static uint64_t GetTotalTicks();
-    };
-  }
-  using engine::Engine;
+    virtual bool IsRunning() const {
+      return (bool) running_;
+    }
+    
+    virtual uv_loop_t* GetLoop() const {
+      return loop_;
+    }
+
+    virtual State* GetCurrentState() const {
+      return current_state_;
+    }
+
+    virtual State* GetPreviousState() const {
+      return previous_state_;
+    }
+
+    virtual rx::observable<EngineEvent*> OnEvent() const {
+      return events_.get_observable();
+    }
+
+#define DEFINE_ON_ENGINE_EVENT(Name)                                   \
+    rx::observable<Name##Event*> On##Name##Event() const {             \
+      return OnEvent()                                                 \
+        .filter([](EngineEvent* event) {                               \
+          return event->Is##Name##Event();                             \
+        })                                                             \
+        .map([](EngineEvent* event) {                                  \
+          return event->As##Name##Event();                             \
+        });                                                            \
+    }
+  FOR_EACH_ENGINE_EVENT(DEFINE_ON_ENGINE_EVENT)
+#undef DEFINE_ON_ENGINE_EVENT
+  public:
+    static Engine* GetEngine();
+  };
 }
 
 #endif //MCC_ENGINE_H

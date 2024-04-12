@@ -17,9 +17,9 @@ namespace mcc {
   }
 
   void AmbientLight::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO: Engine::OnPreInit(&OnPreInit);
+    //TODO: Engine::OnInit(&OnInit);
+    //TODO: Engine::OnPostInit(&OnPostInit);
     Entity::OnDestroyed()
       .subscribe(&OnEntityDestroyed);
   }

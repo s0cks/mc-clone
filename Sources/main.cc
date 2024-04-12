@@ -40,17 +40,28 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+  glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+  glfwWindowHintString(GLFW_COCOA_FRAME_NAME, "Hello");
+  glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GLFW_TRUE);
 #endif
+  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
+  glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+  glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+  glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
+  glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+  glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
+  glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
+  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
+  glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
+  glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
   using namespace mcc;
   //TODO: settings::Init();
   font::Initialize();
   Entities::Initialize();
-  const auto loop = uv_loop_new();
-  Engine::Init(loop);
   gui::Screen::Init();
   renderer::Renderer::Init();
   camera::PerspectiveCameraBehavior::Init();
@@ -61,6 +72,7 @@ int main(int argc, char** argv) {
   d2::Mesh::Init();
   FrameBuffer::Init();
 
-  Engine::Run();
+  const auto engine = engine::Engine::GetEngine();
+  engine->Run();
   return EXIT_SUCCESS;
 }

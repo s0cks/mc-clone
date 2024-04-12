@@ -15,26 +15,39 @@ namespace mcc {
   }
 
   void Window::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
-    Engine::OnTerminating(&OnTerminating);
-    Engine::OnTerminated(&OnTerminated);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnPreInitEvent().subscribe([](engine::PreInitEvent* e) {
+      return Window::OnPreInit();
+    });
+    engine->OnInitEvent().subscribe([](engine::InitEvent* e) {
+      return Window::OnInit();
+    });
+    engine->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
+      return Window::OnPostInit();
+    });
+    engine->OnTerminatingEvent().subscribe([](engine::TerminatingEvent* e) {
+      return Window::OnTerminating();
+    });
+    engine->OnTerminatedEvent().subscribe([](engine::TerminatedEvent* e) {
+      return Window::OnTerminated();
+    });
   }
 
   void Window::OnPreInit() {
+    DLOG(INFO) << "[" << GetCurrentThreadName() << "] pre-init....";
     const auto window = Window::Get();
-    window->on_closed().subscribe([&window](WindowClosedEvent* event) {
+    window->OnClosed().subscribe([&window](WindowClosedEvent* event) {
       DLOG(INFO) << "shutting down engine on thread: " << GetCurrentThreadName();
-      Engine::Shutdown();
+      const auto engine = engine::Engine::GetEngine();
+      engine->Shutdown();
     });
-    window->on_focused().subscribe([](WindowFocusEvent* event) {
+    window->OnFocused().subscribe([](WindowFocusEvent* event) {
       DLOG(INFO) << "window focused.";
     });
-    window->on_unfocused().subscribe([](WindowFocusEvent* event) {
+    window->OnUnfocused().subscribe([](WindowFocusEvent* event) {
       DLOG(INFO) << "window unfocused.";
     });
-    window->on_opened().subscribe([](WindowOpenedEvent* event) {
+    window->OnOpened().subscribe([](WindowOpenedEvent* event) {
       DLOG(INFO) << "window opened.";
     });
   }
@@ -44,7 +57,8 @@ namespace mcc {
   }
 
   void Window::OnPostInit() {
-    
+    const auto window = Window::Get();
+    window->Open();
   }
 
   void Window::OnTerminating() {

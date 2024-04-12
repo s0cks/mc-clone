@@ -48,7 +48,10 @@ namespace mcc::mesh {
   }
 
   void Mesh::Init() {
-    Engine::OnPostInit(&OnPostInit);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
+      return Mesh::OnPostInit();
+    });
   }
   
   void Mesh::Render() {

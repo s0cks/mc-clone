@@ -27,6 +27,7 @@ namespace mcc {
     friend std::ostream& operator<<(std::ostream& stream, const Monitor& rhs) {
       stream << "Monitor(";
       stream << "handle=" << rhs.handle();
+      stream << "resolution=" << glm::to_string(rhs.GetResolution());
       stream << ")";
       return stream;
     }

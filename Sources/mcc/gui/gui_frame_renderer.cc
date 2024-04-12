@@ -36,14 +36,15 @@ namespace mcc::gui {
       nk_labelf(ctx, NK_TEXT_LEFT, "Max: %04.04lfms", samples->GetMaxDuration() / (1.0f * NSEC_PER_MSEC));
     }
 
-    {
-      nk_layout_row_dynamic(ctx, size.y - ((size.y - 4) * 2), 5);
-      nk_labelf(ctx, NK_TEXT_LEFT, "TPS: %04llu", Engine::GetTPS());
-      const auto samples = Engine::GetSamples();
-      nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, samples->GetSize());
-      nk_labelf(ctx, NK_TEXT_LEFT, "Avg: %04.04lfms", samples->GetDurationAvg() / (1.0f * NSEC_PER_MSEC));
-      nk_labelf(ctx, NK_TEXT_LEFT, "Min: %04.04lfms", samples->GetDurationMin() / (1.0f * NSEC_PER_MSEC));
-      nk_labelf(ctx, NK_TEXT_LEFT, "Max: %04.04lfms", samples->GetDurationMax() / (1.0f * NSEC_PER_MSEC));
-    }
+    //TODO:
+    // {
+    //   nk_layout_row_dynamic(ctx, size.y - ((size.y - 4) * 2), 5);
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "TPS: %04llu", Engine::GetTPS());
+    //   const auto samples = Engine::GetSamples();
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, samples->GetSize());
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Avg: %04.04lfms", samples->GetDurationAvg() / (1.0f * NSEC_PER_MSEC));
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Min: %04.04lfms", samples->GetDurationMin() / (1.0f * NSEC_PER_MSEC));
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Max: %04.04lfms", samples->GetDurationMax() / (1.0f * NSEC_PER_MSEC));
+    // }
   }
 }

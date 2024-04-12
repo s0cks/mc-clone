@@ -17,7 +17,7 @@ namespace mcc::skybox {
   }
 
   void Skybox::Init() {
-    Engine::OnPostInit(&OnPostInit);
+    //TODO: Engine::OnPostInit(&OnPostInit);
   }
 
   void Skybox::SetSkybox(Skybox* skybox) {

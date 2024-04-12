@@ -1,25 +1,25 @@
 #include "mcc/renderer/renderable.h"
-#include "mcc/engine/engine.h"
 
 namespace mcc::renderer {
   DEFINE_COMPONENT(Renderable);
 
-  void Renderable::OnPreInit() {
+  void Renderable::OnPreInit(engine::PreInitEvent* e) {
     RegisterComponent();
   }
 
-  void Renderable::OnInit() {
+  void Renderable::OnInit(engine::InitEvent* e) {
 
   }
 
-  void Renderable::OnPostInit() {
+  void Renderable::OnPostInit(engine::PostInitEvent* e) {
 
   }
 
   void Renderable::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnPreInitEvent().subscribe(&OnPreInit);
+    engine->OnInitEvent().subscribe(&OnInit);
+    engine->OnPostInitEvent().subscribe(&OnPostInit);
     Entity::OnDestroyed().subscribe(&OnEntityDestroyed);
   }
 }

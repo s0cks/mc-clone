@@ -9,7 +9,10 @@ namespace mcc::d2 {
   }
 
   void Mesh::Init() {
-    Engine::OnInit(&OnInit);
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnInitEvent().subscribe([](engine::InitEvent* event) {
+      Mesh::OnInit();
+    });
   }
 
   Mesh::Mesh(const Vertex* vertices, const uint64_t num_vertices):

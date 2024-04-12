@@ -41,9 +41,10 @@ namespace mcc::terrain {
   }
 
   void Terrain::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO:
+    // Engine::OnPreInit(&OnPreInit);
+    // Engine::OnInit(&OnInit);
+    // Engine::OnPostInit(&OnPostInit);
     TerrainChunk::Init();
   }
 

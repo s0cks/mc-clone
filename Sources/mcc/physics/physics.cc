@@ -23,9 +23,9 @@ namespace mcc::physics {
   }
 
   void PhysicsSimulator::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnInit(&OnInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO: Engine::OnPreInit(&OnPreInit);
+    //TODO: Engine::OnInit(&OnInit);
+    //TODO: Engine::OnPostInit(&OnPostInit);
   }
 
   void PhysicsSimulator::OnPreInit() {
@@ -52,7 +52,7 @@ namespace mcc::physics {
   void PhysicsSimulator::OnPostInit() {
     signature_.set(RigidBody::GetComponentId());
     signature_.set(Transform::GetComponentId());
-    Engine::OnTick(&OnTick);
+    //TODO: Engine::OnTick(&OnTick);
   }
   
   bool PhysicsSimulator::VisitEntities(std::function<bool(const Entity&)> callback) {

@@ -18,8 +18,8 @@ namespace mcc::light {
   }
 
   void DirectionalLight::Init() {
-    Engine::OnPreInit(&OnPreInit);
-    Engine::OnPostInit(&OnPostInit);
+    //TODO: Engine::OnPreInit(&OnPreInit);
+    //TODO: Engine::OnPostInit(&OnPostInit);
     Entity::OnDestroyed().subscribe(&OnEntityDestroyed);
   }
 
