@@ -25,6 +25,6 @@ namespace mcc {
   }
 }
 
-#include "mcc/vertex_2d.h"
+#include "mcc/vertex/vertex_2d.h"
 
 #endif //MCC_VERTEX_H

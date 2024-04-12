@@ -51,12 +51,8 @@ add_library(${PROJECT_NAME}
   mcc/vao.h
   mcc/buffer_object.h
   mcc/index_buffer.h
-  mcc/vertex_buffer.h
   mcc/uniform_buffer.h
   mcc/renderbuffer.h
-  mcc/vertex.h mcc/vertex.cc
-  mcc/vertex_2d.h mcc/vertex_2d.cc
-  mcc/vertex_3d.h mcc/vertex_3d.cc
   mcc/bloom.h mcc/bloom.cc
   mcc/rx.h
   mcc/glm.h
@@ -84,6 +80,12 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Vertex
+  mcc/vertex/vertex_property.h
+  mcc/vertex/vertex.h mcc/vertex/vertex.cc
+  mcc/vertex/vertex_buffer.h
+  mcc/vertex/vertex_2d.h mcc/vertex/vertex_2d.cc
+  mcc/vertex/vertex_3d.h mcc/vertex/vertex_3d.cc
 # Engine
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc

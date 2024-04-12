@@ -6,7 +6,7 @@
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
 #include "mcc/vao.h"
-#include "mcc/vertex_buffer.h"
+#include "mcc/vertex/vertex_buffer.h"
 
 #include "mcc/shader/shader.h"
 #include "mcc/shader/shader_pipeline.h"

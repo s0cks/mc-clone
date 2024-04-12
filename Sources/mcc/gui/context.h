@@ -2,7 +2,7 @@
 #define MCC_GUI_CONTEXT_H
 
 #include "mcc/vao.h"
-#include "mcc/vertex.h"
+#include "mcc/vertex/vertex.h"
 
 namespace mcc::gui {
   class Context {

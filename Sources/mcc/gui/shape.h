@@ -1,7 +1,7 @@
 #ifndef MCC_SHAPE_H
 #define MCC_SHAPE_H
 
-#include "mcc/vertex.h"
+#include "mcc/vertex/vertex.h"
 #include "mcc/index_buffer.h"
 
 namespace mcc::shape {

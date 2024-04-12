@@ -1,7 +1,7 @@
 #ifndef MCC_FRAMEBUFFER_H
 #define MCC_FRAMEBUFFER_H
 
-#include "mcc/vertex.h"
+#include "mcc/vertex/vertex.h"
 #include "mcc/pipeline.h"
 #include "mcc/renderbuffer.h"
 #include "mcc/shader/shader.h"

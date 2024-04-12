@@ -6,7 +6,7 @@
 #include <iostream>
 #include <glog/logging.h>
 #include "mcc/gfx.h"
-#include "mcc/vertex_buffer.h"
+#include "mcc/vertex/vertex_buffer.h"
 
 namespace mcc::mesh {
   struct Vertex {
