@@ -74,14 +74,14 @@ namespace mcc::renderer {
     engine->OnPreInitEvent().subscribe(&OnPreInit);
     engine->OnInitEvent().subscribe(&OnInit);
     engine->OnPostInitEvent().subscribe(&OnPostInit);
-    FrameBuffer::Init();
-    Renderable::Init();
-    AmbientLight::Init();
-    physics::Transform::Init();
-    physics::RigidBody::Init();
-    light::DirectionalLight::Init();
-    light::PointLight::Init();
-    skybox::Skybox::Init();
+// FrameBuffer::Init();
+// Renderable::Init();
+// AmbientLight::Init();
+// physics::Transform::Init();
+// physics::RigidBody::Init();
+// light::DirectionalLight::Init();
+// light::PointLight::Init();
+// skybox::Skybox::Init();
   }
 
   void Renderer::OnPreInit(engine::PreInitEvent* e) {
@@ -197,15 +197,15 @@ namespace mcc::renderer {
 
   static const d2::VertexList kTriangleVertices = {
     d2::Vertex {
-      .pos = { 0.0f, 0.0f },
+      .pos = { 128.0f, 128.0f },
       .color = { 0, 0, 0, 255 },
     },
     {
-      .pos = { 0.0f, 1.0f },
+      .pos = { 256.0f, 128.0f },
       .color = { 0, 0, 0, 255 },
     },
     {
-      .pos = { 1.0f, 1.0f },
+      .pos = { 192.0f, 192.0f },
       .color = { 0, 0, 0, 255 },
     }
   };
@@ -246,20 +246,18 @@ namespace mcc::renderer {
       Pipeline() {
       const auto size = Window::Get()->GetSize();
       DLOG(INFO) << "size: " << glm::to_string(size);
-      const auto aspect = ((size[0] * 1.0f) / (size[1] * 1.0f));
-      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, size[1] * 1.0f, 0.0f, -1000.0f, 1000.0f);
+      // const auto aspect = ((size[0] * 1.0f) / (size[1] * 1.0f));
+      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, 0.0f, size[1] * 1.0f, -1000.0f, 1000.0f);
       AddChild(new RenderTrianglePipeline(projection));
     }
     ~RendererPipeline() override = default;
 
     void Render() override {
       gui::Screen::NewFrame();
-      const auto window = Window::Get()->handle();
-      int width;
-      int height;
-      glfwGetFramebufferSize(window, &width, &height);
-      CHECK_GL(FATAL);
-      glViewport(0, 0, width, height);
+      const auto window = Window::Get();
+      const auto fb_size = window->GetFramebufferSize();
+      DLOG(INFO) << "framebuffer size: " << glm::to_string(fb_size);
+      glViewport(0, 0, 512, 512);
       CHECK_GL(FATAL);
       glfwPollEvents();
       CHECK_GL(FATAL);
@@ -297,8 +295,7 @@ namespace mcc::renderer {
 
       RenderChildren();
 
-      glfwSwapBuffers(window);
-      CHECK_GL(FATAL);
+      window->SwapBuffers();
       Renderer::ResetEntityCounter();
       Renderer::ResetVertexCounter();
     }

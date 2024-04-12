@@ -28,6 +28,18 @@ namespace mcc {
     void Close() override {
       CloseWindow(handle());
     }
+
+    void SwapBuffers() override {
+      glfwSwapBuffers(handle());
+      CHECK_GL(FATAL);
+    }
+
+    glm::vec2 GetFramebufferSize() const override {
+      glm::ivec2 size;
+      glfwGetFramebufferSize(handle(), (int*) &size[0], (int*) &size[1]);
+      CHECK_GL(FATAL);
+      return size;
+    }
   };
 
   static inline GlfwWindow*

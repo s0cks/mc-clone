@@ -61,6 +61,8 @@ namespace mcc {
 
     virtual void Open() = 0;
     virtual void Close() = 0;
+    virtual void SwapBuffers() = 0;
+    virtual glm::vec2 GetFramebufferSize() const = 0;
 
     inline WindowSize GetSize() const {
       return GetWindowSize(handle());

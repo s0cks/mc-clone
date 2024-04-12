@@ -94,6 +94,7 @@ namespace mcc {
 
     static inline void
     Enable() {
+      DLOG(INFO) << "enabling " << GetIndex() << " (" << GetSize() << ")";
       glEnableVertexAttribArray(GetIndex());
       CHECK_GL(FATAL);
     }
