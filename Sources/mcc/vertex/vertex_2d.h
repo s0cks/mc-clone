@@ -8,7 +8,10 @@
 #include <vector>
 #include "mcc/gfx.h"
 #include "mcc/vao.h"
+#include "mcc/uri.h"
+#include "mcc/pipeline.h"
 #include "mcc/vertex/vertex_buffer.h"
+#include "mcc/shader/shader_pipeline.h"
 
 namespace mcc::d2 {
   struct Vertex {
@@ -111,6 +114,41 @@ namespace mcc::d2 {
     static void Init();
   private:
     static void OnInit();
+  };
+
+  class RenderMeshPipeline : public Pipeline {
+  protected:
+    Mesh* mesh_;
+  public:
+    explicit RenderMeshPipeline(Mesh* mesh, ApplyShaderPipeline* shader = nullptr):
+      Pipeline(),
+      mesh_(mesh) {
+      if(!shader)
+        return;
+      AddChild(shader);
+    }
+    RenderMeshPipeline(Mesh* mesh,
+                       const uri::Uri& shader,
+                       shader::ApplyShaderFunction applyShader = shader::kDefaultApplyFunc):
+      RenderMeshPipeline(mesh, new ApplyShaderPipeline(GetShader(shader), applyShader)) {
+    }
+    RenderMeshPipeline(Mesh* mesh,
+                       const std::string& shader,
+                       shader::ApplyShaderFunction applyShader = shader::kDefaultApplyFunc):
+      RenderMeshPipeline(mesh, new ApplyShaderPipeline(GetShader(shader), applyShader)) {
+    }
+    ~RenderMeshPipeline() override = default;
+
+    Mesh* mesh() const {
+      return mesh_;
+    }
+
+    void Render() override {
+      DLOG(INFO) << "rendering mesh....";
+      InvertedCullFaceScope cull_face;
+      RenderChildren();
+      mesh()->Draw();
+    }
   };
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices);

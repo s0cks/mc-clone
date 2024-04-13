@@ -220,10 +220,11 @@ namespace mcc::renderer {
   public:
     RenderTrianglePipeline(const glm::mat4& projection):
       Pipeline(),
-      mesh_(d2::NewMesh(kTriangleVertices)) {
+      mesh_() {
       AddChild(new ApplyShaderPipeline(GetShader("shader:colored_2d"), [projection](const ShaderRef& shader) {
         shader->ApplyShader();
         shader->SetMat4("projection", projection);
+        shader->SetVec4("iColor", glm::u8vec4(255, 255, 255, 255));
         shader->ApplyShader();
       }));
       AddChild(new ApplyPipeline([this]() {
@@ -248,7 +249,13 @@ namespace mcc::renderer {
       DLOG(INFO) << "size: " << glm::to_string(size);
       // const auto aspect = ((size[0] * 1.0f) / (size[1] * 1.0f));
       const auto projection = glm::ortho(0.0f, size[0] * 1.0f, 0.0f, size[1] * 1.0f, -1000.0f, 1000.0f);
-      AddChild(new RenderTrianglePipeline(projection));
+      const auto render_triangle = new d2::RenderMeshPipeline(d2::NewMesh(kTriangleVertices), "shader:colored_2d", [projection](const ShaderRef& shader) {
+        shader->ApplyShader();
+        shader->SetMat4("projection", projection);
+        shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
+        shader->ApplyShader();
+      });
+      AddChild(render_triangle);
     }
     ~RendererPipeline() override = default;
 
@@ -256,8 +263,7 @@ namespace mcc::renderer {
       gui::Screen::NewFrame();
       const auto window = Window::Get();
       const auto fb_size = window->GetFramebufferSize();
-      DLOG(INFO) << "framebuffer size: " << glm::to_string(fb_size);
-      glViewport(0, 0, 512, 512);
+      glViewport(0, 0, fb_size[0], fb_size[1]);
       CHECK_GL(FATAL);
       glfwPollEvents();
       CHECK_GL(FATAL);

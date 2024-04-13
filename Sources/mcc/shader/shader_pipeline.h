@@ -8,6 +8,8 @@ namespace mcc {
   namespace shader {
     typedef std::function<void(const ShaderRef&)> ApplyShaderFunction;
 
+    static const ApplyShaderFunction kDefaultApplyFunc = [](const ShaderRef& shader) { };
+
     class ApplyShaderPipeline : public Pipeline {
     private:
       ShaderRef shader_;
