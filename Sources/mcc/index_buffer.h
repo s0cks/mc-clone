@@ -38,7 +38,7 @@ namespace mcc {
                                  const uint64_t num_indices):
       IndexBufferObject(),
       length_(num_indices) {
-      BindBufferData(indices, num_indices);
+      BufferData(indices, num_indices);
     }
     explicit IndexBufferTemplate(const uint64_t num_indices):
       IndexBufferObject(),

@@ -80,6 +80,15 @@ add_library(${PROJECT_NAME}
   mcc/input/constants.h
   mcc/input/mouse.h mcc/input/mouse.cc
   mcc/input/keyboard.h mcc/input/keyboard.cc
+# Camera
+  mcc/camera/camera_ortho.h mcc/camera/camera_ortho.cc
+# Render
+  mcc/renderer/projection_matrix.h mcc/renderer/projection_matrix.cc
+  mcc/renderer/render_pass.h mcc/renderer/render_pass.cc
+  mcc/renderer/renderer_state.h
+  mcc/renderer/renderer_stats.h
+  mcc/renderer/renderable.h mcc/renderer/renderable.cc
+  mcc/renderer/renderer.h mcc/renderer/renderer.cc
 # Vertex
   mcc/vertex/vertex_property.h
   mcc/vertex/vertex.h mcc/vertex/vertex.cc
@@ -166,11 +175,7 @@ add_library(${PROJECT_NAME}
   mcc/bitset.h
   mcc/uri.h mcc/uri.cc
   mcc/particle/particle.h mcc/particle/particle.cc
-  mcc/particle/particles.h mcc/particle/particles.cc
-  mcc/renderer/renderer_state.h
-  mcc/renderer/renderer_stats.h
-  mcc/renderer/renderable.h mcc/renderer/renderable.cc
-  mcc/renderer/renderer.h mcc/renderer/renderer.cc)
+  mcc/particle/particles.h mcc/particle/particles.cc)
 # add_dependencies(${PROJECT_NAME} fbschemas)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads

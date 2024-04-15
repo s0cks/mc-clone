@@ -6,6 +6,8 @@
 #include "mcc/window/window.h"
 #include "mcc/camera/perspective_camera.h"
 
+#include "mcc/camera/camera_ortho.h"
+
 #include "mcc/font/font.h"
 #include "mcc/font/font_renderer.h"
 
@@ -27,6 +29,8 @@
 #include "mcc/bloom.h"
 
 #include "mcc/gui/shape.h"
+
+#include "mcc/renderer/render_pass.h"
 
 namespace mcc::renderer {
   static ThreadLocal<FrameBuffer> frame_buffer_;
@@ -210,52 +214,27 @@ namespace mcc::renderer {
     }
   };
 
-  class RenderTrianglePipeline : public Pipeline {
-  protected:
-    d2::Mesh* mesh_;
-
-    inline d2::Mesh* mesh() const {
-      return mesh_;
-    }
-  public:
-    RenderTrianglePipeline(const glm::mat4& projection):
-      Pipeline(),
-      mesh_() {
-      AddChild(new ApplyShaderPipeline(GetShader("shader:colored_2d"), [projection](const ShaderRef& shader) {
-        shader->ApplyShader();
-        shader->SetMat4("projection", projection);
-        shader->SetVec4("iColor", glm::u8vec4(255, 255, 255, 255));
-        shader->ApplyShader();
-      }));
-      AddChild(new ApplyPipeline([this]() {
-        mesh()->Draw();
-      }));
-    }
-    ~RenderTrianglePipeline() override = default;
-
-    void Render() override {
-      DLOG(INFO) << "drawing triangle....";
-      InvertedCullFaceScope cull_face;
-      RenderChildren();
-    }
-  };
-
   class RendererPipeline : public Pipeline {
   private:
   public:
     RendererPipeline():
       Pipeline() {
-      const auto size = Window::Get()->GetSize();
-      DLOG(INFO) << "size: " << glm::to_string(size);
-      // const auto aspect = ((size[0] * 1.0f) / (size[1] * 1.0f));
-      const auto projection = glm::ortho(0.0f, size[0] * 1.0f, 0.0f, size[1] * 1.0f, -1000.0f, 1000.0f);
-      const auto render_triangle = new d2::RenderMeshPipeline(d2::NewMesh(kTriangleVertices), "shader:colored_2d", [projection](const ShaderRef& shader) {
-        shader->ApplyShader();
-        shader->SetMat4("projection", projection);
-        shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
-        shader->ApplyShader();
-      });
-      AddChild(render_triangle);
+      OrthoCamera camera(Window::Get());
+      const auto& projection = camera.GetProjection();
+      {
+        d2::VertexList vertices;
+        u32::IndexList indices;
+        shape::NewRect(glm::vec2(0, 0), glm::vec2(256, 256), vertices, indices);
+        shape::NewRect(glm::vec2(256, 256), glm::vec2(256, 256), vertices, indices);
+        const auto mesh = d2::NewMesh(vertices, indices);
+        const auto render_quads = new d2::RenderMeshPipeline(mesh, "shader:colored_2d", [projection](const ShaderRef& shader) {
+          shader->ApplyShader();
+          shader->SetMat4("projection", projection);
+          shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
+          shader->ApplyShader();
+        });
+        AddChild(render_quads);
+      }
     }
     ~RendererPipeline() override = default;
 
@@ -307,6 +286,36 @@ namespace mcc::renderer {
     }
   };
 
+  class RenderPass2d : public RenderPassTemplate<1000> {
+  public:
+    RenderPass2d() = default;
+    ~RenderPass2d() override = default;
+
+    const char* name() const override {
+      return "2d";
+    }
+
+    void Render() override {
+
+    }
+  };
+
+  class RenderPass3d : public RenderPassTemplate<2000> {
+  public:
+    RenderPass3d() = default;
+    ~RenderPass3d() override = default;
+
+    const char* name() const override {
+      return "3d";
+    }
+
+    void Render() override {
+      pipeline_.Get()->Render();
+    }
+  };
+
+  static RenderPassList render_passes_;
+
   void Renderer::OnPostInit(engine::PostInitEvent* e) {
     signature_.set(Renderable::GetComponentId());
     signature_.set(physics::Transform::GetComponentId());
@@ -314,6 +323,9 @@ namespace mcc::renderer {
 
     //Window::AddFrame(gui::SettingsFrame::New());
     //Window::AddFrame(gui::RendererFrame::New());
+
+    render_passes_.Append(new RenderPass2d());
+    render_passes_.Append(new RenderPass3d());
 
     pipeline_.Set(new RendererPipeline());
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
@@ -349,6 +361,24 @@ namespace mcc::renderer {
   static constexpr const auto kTargetFramesPerSecond = 60.0f;
   static constexpr const float kRate = NSEC_PER_SEC / (kTargetFramesPerSecond * NSEC_PER_SEC);
 
+  static inline bool
+  ExecuteRenderPass(RenderPass* pass) {
+    MCC_ASSERT(pass);
+    DLOG(INFO) << "executing RenderPass: " << pass->name();
+#ifdef MCC_DEBUG
+    const auto start_ns = uv_hrtime();
+#endif //MCC_DEBUG
+
+    pass->Render();
+
+#ifdef MCC_DEBUG
+    const auto stop_ns = uv_hrtime();
+    const auto total_ms = (stop_ns - start_ns) / NSEC_PER_MSEC;
+    DLOG(INFO) << pass->name() << " RenderPass finished in " << total_ms << "ms.";
+#endif//MCC_DEBUG
+    return true;
+  }
+
   void Renderer::Run(const uv_run_mode mode) {
     const auto start_ns = uv_hrtime();
     const auto delta_ns = (start_ns - last_frame_ns_);
@@ -363,7 +393,7 @@ namespace mcc::renderer {
       last_second_ = frame_start_ns_;
     }
 
-    pipeline_.Get()->Render();
+    render_passes_.Visit(&ExecuteRenderPass);
 
     frame_end_ns_ = uv_hrtime();
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);

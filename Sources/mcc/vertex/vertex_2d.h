@@ -10,6 +10,7 @@
 #include "mcc/vao.h"
 #include "mcc/uri.h"
 #include "mcc/pipeline.h"
+#include "mcc/index_buffer.h"
 #include "mcc/vertex/vertex_buffer.h"
 #include "mcc/shader/shader_pipeline.h"
 
@@ -92,16 +93,17 @@ namespace mcc::d2 {
   };
   DEFINE_RESOURCE_SCOPE(VertexBuffer);
 
-  struct Mesh {
+  class Mesh {
+  protected:
     Vao vao;
     VertexBuffer vbo;
-
+  public:
     Mesh(const Vertex* vertices, const uint64_t num_vertices);
     explicit Mesh(const VertexList& vertices):
       Mesh(&vertices[0], vertices.size()) {
     }
-    ~Mesh() = default;
-    void Draw();
+    virtual ~Mesh() = default;
+    virtual void Draw();
 
     friend std::ostream& operator<<(std::ostream& stream, const Mesh& rhs) {
       stream << "d2::Mesh(";
@@ -114,6 +116,26 @@ namespace mcc::d2 {
     static void Init();
   private:
     static void OnInit();
+  };
+
+  class IndexedMesh : public Mesh {
+    friend class Mesh;
+  protected:
+    u32::IndexBuffer ibo_;
+  public:
+    IndexedMesh(const Vertex* vertices, const uint64_t num_vertices,
+                const uint32_t* indices, const uint64_t num_indices):
+      Mesh(vertices, num_vertices),
+      ibo_(indices, num_indices) {
+    }
+    explicit IndexedMesh(const VertexList& vertices,
+                         const u32::IndexList& indices):
+      Mesh(&vertices[0], vertices.size()),
+      ibo_(&indices[0], indices.size()) {
+    }
+    virtual ~IndexedMesh() = default;
+
+    void Draw() override;
   };
 
   class RenderMeshPipeline : public Pipeline {
@@ -152,10 +174,16 @@ namespace mcc::d2 {
   };
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices);
+  Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices, const u32::Index* indices, const uint64_t num_indices);
 
   static inline Mesh*
   NewMesh(const VertexList& vertices) {
     return NewMesh(&vertices[0], vertices.size());
+  }
+
+  static inline Mesh*
+  NewMesh(const VertexList& vertices, const u32::IndexList& indices) {
+    return NewMesh(&vertices[0], vertices.size(), &indices[0], indices.size());
   }
 }
 
