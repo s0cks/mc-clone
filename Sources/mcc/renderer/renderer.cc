@@ -226,6 +226,7 @@ namespace mcc::renderer {
         u32::IndexList indices;
         shape::NewRect(glm::vec2(0, 0), glm::vec2(256, 256), vertices, indices);
         shape::NewRect(glm::vec2(256, 256), glm::vec2(256, 256), vertices, indices);
+        const auto texture = GetTexture("texture://concrete.png");
         const auto mesh = d2::NewMesh(vertices, indices);
         const auto render_quads = new d2::RenderMeshPipeline(mesh, "shader:colored_2d", [projection](const ShaderRef& shader) {
           shader->ApplyShader();
@@ -233,6 +234,9 @@ namespace mcc::renderer {
           shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
           shader->ApplyShader();
         });
+        render_quads->AddChild(new ApplyPipeline([texture]() {
+          texture->Bind0();
+        }));
         AddChild(render_quads);
       }
     }

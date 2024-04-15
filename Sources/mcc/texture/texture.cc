@@ -40,7 +40,6 @@ namespace mcc {
 
   static inline TextureObservable
   LoadTextureFromFile(const uri::Uri& uri) {
-    MCC_ASSERT(FileExists(uri));
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension());
     if(uri.HasExtension(".json")) {
@@ -61,13 +60,10 @@ namespace mcc {
       return TextureRef();
     }
 
-    if(!FileExists(uri)) {
-      LOG(WARNING) << "cannot find texture: " << uri;
-      return TextureRef();
-    }
+    const uri::Uri file(fmt::format("file://{0:s}/textures/{1:s}", FLAGS_resources, uri.path));
     
-    DLOG(INFO) << "getting texture: " << uri;
-    const auto texture = LoadTextureFromFile(uri)
+    DLOG(INFO) << "getting texture: " << file;
+    const auto texture = LoadTextureFromFile(file)
       .as_blocking()
       .first();
     return TextureRef(texture);

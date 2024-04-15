@@ -50,18 +50,22 @@ namespace mcc::shape {
     const auto start = vertices.size();
     vertices.push_back({
       .pos = glm::vec2(x, y + height),
+      .uv = glm::vec2(0.0f, 1.0f),
       .color = glm::u8vec4(255, 0, 0, 255),
     });
     vertices.push_back({
       .pos = glm::vec2(x, y),
+      .uv = glm::vec2(0.0f, 0.0f),
       .color = glm::u8vec4(255, 0, 0, 255),
     });
     vertices.push_back({
       .pos = glm::vec2(x + width, y),
+      .uv = glm::vec2(1.0f, 0.0f),
       .color = glm::u8vec4(255, 0, 0, 255),
     });
     vertices.push_back({
       .pos = glm::vec2(x + width, y + height),
+      .uv = glm::vec2(1.0f, 1.0f),
       .color = glm::u8vec4(255, 0, 0, 255),
     });
     indices.push_back(start);
