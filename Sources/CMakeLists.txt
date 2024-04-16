@@ -171,6 +171,7 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
 # Resource
+  mcc/resource/resource_event.h mcc/resource/resource_event.cc
   mcc/resource/resource_type.h
   mcc/resource/resource_ptr.h
   mcc/resource/resource_loader.h

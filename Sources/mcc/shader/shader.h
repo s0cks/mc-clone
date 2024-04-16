@@ -26,11 +26,12 @@ namespace mcc::shader {
   static constexpr const char* kVertexShaderExtension = ".vsh";
   static constexpr const char* kFragmentShaderExtension = ".fsh";
 
-  class Shader {
+  class Shader : public res::ResourceTemplate<res::kShaderType> {
   protected:
     ShaderId id_;
   public:
     Shader(const ShaderId id = kUnknownShaderId):
+      res::ResourceTemplate<res::kShaderType>(),
       id_(id) {
     }
     Shader(const Shader& rhs):

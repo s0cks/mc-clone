@@ -74,5 +74,9 @@ int main(int argc, char** argv) {
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();
+
+  res::OnResourceEvent().subscribe([](res::ResourceEvent* event) {
+    DLOG(INFO) << (*event);
+  });
   return EXIT_SUCCESS;
 }
