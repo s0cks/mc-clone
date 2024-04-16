@@ -8,8 +8,13 @@
 #include "mcc/resource/resource_loader.h"
 
 namespace mcc {
+  namespace shader {
+    class Shader;
+  }
+
   namespace resource {
     class Resource {
+      friend class shader::Shader;
     protected:
       Resource() = default;
       virtual void Destroy() = 0;

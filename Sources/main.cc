@@ -59,6 +59,10 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
   using namespace mcc;
+  res::OnResourceEvent().subscribe([](res::ResourceEvent* event) {
+    DLOG(INFO) << "resource event: " << event->ToString();
+  });
+
   //TODO: settings::Init();
   font::Initialize();
   Entities::Initialize();
@@ -74,9 +78,5 @@ int main(int argc, char** argv) {
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();
-
-  res::OnResourceEvent().subscribe([](res::ResourceEvent* event) {
-    DLOG(INFO) << (*event);
-  });
   return EXIT_SUCCESS;
 }

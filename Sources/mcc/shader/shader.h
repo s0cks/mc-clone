@@ -11,6 +11,7 @@
 #include "mcc/uri.h"
 #include "mcc/cache.h"
 #include "mcc/resource/resource.h"
+#include "mcc/shader/shader_events.h"
 #include "mcc/shader/shader_constants.h"
 
 namespace mcc::shader {
@@ -31,11 +32,14 @@ namespace mcc::shader {
     ShaderId id_;
 
     void Destroy() override;
-  public:
-    Shader(const ShaderId id = kUnknownShaderId):
-      res::ResourceTemplate<res::kShaderType>(),
-      id_(id) {
+
+  private:
+    template<class E, typename... Args>
+    void Publish(Args... args) {
+      return res::Resource::Publish<E>(id_, args...);
     }
+  public:
+    Shader(const ShaderId id = kUnknownShaderId);
     Shader(const Shader& rhs):
       id_(rhs.id_) {
     }

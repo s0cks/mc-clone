@@ -37,9 +37,16 @@ namespace mcc {
   }
 
   namespace shader {
+    Shader::Shader(const ShaderId id):
+      res::ResourceTemplate<res::kShaderType>(),
+      id_(id) {
+      Publish<ShaderCreatedEvent>();
+    }
+
     void Shader::Destroy() {
       glDeleteShader(id_);
       CHECK_GL(FATAL);
+      Publish<ShaderDestroyedEvent>();
     }
   }
 }

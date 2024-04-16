@@ -49,7 +49,7 @@ namespace mcc::renderer {
   static ThreadLocal<Pipeline> pipeline_;
 
   static mesh::Mesh* mesh_;
-  static shader::Shader shader_;
+  static shader::Shader* shader_;
 
   static Signature signature_;
   static EntitySet tracked_;

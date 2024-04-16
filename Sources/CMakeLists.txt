@@ -102,6 +102,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h mcc/engine/engine_state.cc
 # Shader
+  mcc/shader/shader_events.h mcc/shader/shader_events.cc
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_pipeline.h
   mcc/shader/shader_document.h mcc/shader/shader_document.cc

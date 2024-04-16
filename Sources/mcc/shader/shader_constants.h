@@ -1,6 +1,7 @@
 #ifndef MCC_SHADER_CONSTANTS_H
 #define MCC_SHADER_CONSTANTS_H
 
+#include <memory>
 #include <cstdint>
 #include <fmt/format.h>
 
