@@ -4,7 +4,7 @@
 #include "mcc/gfx.h"
 #include "mcc/uniform_buffer.h"
 #include "mcc/common.h"
-#include "mcc/input/mouse.h"
+#include "mcc/mouse/mouse.h"
 #include "mcc/engine/engine.h"
 #include "mcc/component/component.h"
 #include "mcc/component/component_state_table.h"
@@ -49,7 +49,7 @@ namespace mcc::camera {
   private:
     static Entity CreateCameraEntity(const glm::vec3 pos = kDefaultCameraPosition);
     static void SetCameraEntity(const Entity e);
-    static void OnMousePosition(const MousePosition& pos);
+    static void OnMouseMove(mouse::MouseMoveEvent* event);
     
     static void OnTick(const Tick& tick);
     static void OnPreInit();

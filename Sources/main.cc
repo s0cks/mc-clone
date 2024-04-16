@@ -63,11 +63,11 @@ int main(int argc, char** argv) {
   font::Initialize();
   Entities::Initialize();
   gui::Screen::Init();
+  Window::Init();
+  mouse::InitMouse();
   renderer::Renderer::Init();
-  camera::PerspectiveCameraBehavior::Init();
   physics::PhysicsSimulator::Init();
   mesh::Mesh::Init();
-  Window::Init();
   terrain::Terrain::Init();
   d2::Mesh::Init();
   FrameBuffer::Init();

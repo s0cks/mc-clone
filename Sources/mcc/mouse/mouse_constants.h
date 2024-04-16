@@ -1,13 +1,11 @@
-#ifndef MCC_MOUSE_H
-#define MCC_MOUSE_H
+#ifndef MCC_MOUSE_CONSTANTS_H
+#define MCC_MOUSE_CONSTANTS_H
 
-#include "mcc/rx.h"
+#include <iostream>
 #include "mcc/gfx.h"
-#include "mcc/ecs/entity.h"
-#include "mcc/input/constants.h"
 
-namespace mcc {
-    struct MousePosition {
+namespace mcc::mouse {
+  struct MousePosition {
     glm::vec2 pos;
     glm::vec2 delta;
 
@@ -18,6 +16,12 @@ namespace mcc {
       stream << ")";
       return stream;
     }
+  };
+
+  enum MouseButtonState : uint8_t {
+    kMousePressed = GLFW_PRESS,
+    kMouseReleased = GLFW_RELEASE,
+    kMouseRepeat = GLFW_REPEAT,
   };
 
   enum MouseButton : uint8_t {
@@ -34,26 +38,6 @@ namespace mcc {
     kRightButton = GLFW_MOUSE_BUTTON_RIGHT,
     kMiddleButton = GLFW_MOUSE_BUTTON_MIDDLE,
   };
-  
-  struct MouseButtonEvent {
-    MouseButton button;
-    InputState state;
-  };
-
-  typedef rxsub::subject<MouseButtonEvent> MouseButtonEventSubject;
-
-  class Mouse {
-    DEFINE_NON_INSTANTIABLE_TYPE(Mouse);
-  public:
-    static glm::vec2 GetPosition();
-    static glm::vec2 GetNormalizedPosition();
-    static glm::vec2 GetDelta();
-    static glm::vec3 CastRay();
-    static std::optional<Entity> CastRayTo(const float diff = 0.5);
-    static void Process();
-    static rxsub::subject<MousePosition>& GetPositionSubject();
-    static rxsub::subject<MouseButtonEvent>& GetButtonEventSubject();
-  };
 }
 
-#endif //MCC_MOUSE_H
+#endif //MCC_MOUSE_CONSTANTS_H

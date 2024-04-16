@@ -2,7 +2,7 @@
 #include "mcc/renderer/renderer.h"
 #include "mcc/camera/camera.h"
 
-#include "mcc/input/mouse.h"
+#include "mcc/mouse/mouse.h"
 #include "mcc/input/keyboard.h"
 
 #include "mcc/window/window.h"
@@ -80,11 +80,11 @@ namespace mcc::camera {
     return true;
   }
 
-  void PerspectiveCameraBehavior::OnMousePosition(const MousePosition& mpos) {
+  void PerspectiveCameraBehavior::OnMouseMove(mouse::MouseMoveEvent* event) {
     const auto window = Window::Get()->handle();
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
       return;
-    VisitEntities([&](const Entity& e) {
+    VisitEntities([event](const Entity& e) {
       auto state = PerspectiveCamera::GetState(e);
       if(!state) {
         LOG(WARNING) << "no state for " << e;
@@ -92,9 +92,9 @@ namespace mcc::camera {
       }
 
       auto camera = state.value();
-      const auto& pos = mpos.delta;
-      camera->yaw += (pos[0] * camera->sensitivity);
-      camera->pitch -= (pos[1] * camera->sensitivity);
+      const auto& delta = event->delta();
+      camera->yaw += (delta[0] * camera->sensitivity);
+      camera->pitch -= (delta[1] * camera->sensitivity);
       if(camera->pitch > 89.0f)
         camera->pitch = 89.0f;
       else if(camera->pitch < -89.0f)
@@ -153,9 +153,8 @@ namespace mcc::camera {
       .subscribe([](EntityDestroyedEvent* e) {
         tracked_.erase(e->id);
       });
-    Mouse::GetPositionSubject()
-      .get_observable()
-      .subscribe(&OnMousePosition);
+    GetMouse()->OnMove()
+      .subscribe(&OnMouseMove);
   }
 
   void PerspectiveCameraBehavior::OnPostInit() {

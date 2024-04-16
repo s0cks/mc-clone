@@ -44,8 +44,11 @@ namespace mcc::engine {
         .ts = ts_,
         .dts = dts_,
       };
-      // Mouse::Process();
-      // Keyboard::Process();
+
+      const auto mouse = GetMouse();
+      if(mouse)
+        mouse->Process();
+
       Publish<TickEvent>();
 
       const auto duration = (uv_hrtime() - ts_);
