@@ -153,7 +153,7 @@ namespace mcc::camera {
       .subscribe([](EntityDestroyedEvent* e) {
         tracked_.erase(e->id);
       });
-    GetMouse()->OnMove()
+    GetMouse()->OnMouseMove()
       .subscribe(&OnMouseMove);
   }
 

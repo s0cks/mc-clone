@@ -39,25 +39,18 @@ namespace mcc {
         return GetButton(btn) == kMouseReleased;
       }
 
-      inline rx::observable<MouseMoveEvent*> OnMove() const {
-        return OnEvent()
-          .filter([](MouseEvent* event) {
-            return event->IsMouseMoveEvent();
-          })
-          .map([](MouseEvent* event) {
-            return event->AsMouseMoveEvent();
-          });
+#define DEFINE_ON_EVENT(Name)                                           \
+      inline rx::observable<Name##Event*> On##Name() const {            \
+        return OnEvent()                                                \
+          .filter([](MouseEvent* event) {                               \
+            return event->Is##Name##Event();                            \
+          })                                                            \
+          .map([](MouseEvent* event) {                                  \
+            return event->As##Name##Event();                            \
+          });                                                           \
       }
-
-      inline rx::observable<MouseButtonEvent*> OnPressed() const {
-        return OnEvent()
-          .filter([](MouseEvent* event) {
-            return event->IsMouseButtonEvent();
-          })
-          .map([](MouseEvent* event) {
-            return event->AsMouseButtonEvent();
-          });
-      }
+      FOR_EACH_MOUSE_EVENT(DEFINE_ON_EVENT)
+#undef DEFINE_ON_EVENT
 
       inline rx::observable<MouseButtonEvent*> OnPressed(const MouseButton btn) const {
         return OnEvent()

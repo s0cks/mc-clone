@@ -7,7 +7,9 @@
 namespace mcc::mouse {
 #define FOR_EACH_MOUSE_EVENT(V) \
   V(MouseButton)                \
-  V(MouseMove)
+  V(MouseMove)                  \
+  V(MouseInitialized)           \
+  V(MouseDeinitialized)
 
   class MouseEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
@@ -50,6 +52,22 @@ namespace mcc::mouse {
     Name##Event* As##Name##Event() override { return this; }      \
     const char* GetName() const override { return #Name; }        \
     std::string ToString() const override;
+
+  class MouseInitializedEvent : public MouseEvent {
+  public:
+    explicit MouseInitializedEvent(Mouse* mouse):
+      MouseEvent(mouse) {
+    }
+    ~MouseInitializedEvent() override = default;
+  };
+
+  class MouseDeinitializedEvent : public MouseEvent {
+  public:
+    explicit MouseDeinitializedEvent(Mouse* mouse):
+      MouseEvent(mouse) {
+    }
+    ~MouseDeinitializedEvent() override = default;
+  };
 
   class MouseButtonEvent : public MouseEvent {
   protected:
