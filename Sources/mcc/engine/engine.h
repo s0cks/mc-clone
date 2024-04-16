@@ -7,6 +7,11 @@
 
 namespace mcc::engine {
   class Engine {
+    friend class PreInitState;
+    friend class InitState;
+    friend class PostInitState;
+    friend class TerminatingState;
+    friend class TerminatedState;
   protected:
     uv_loop_t* loop_;
     RelaxedAtomic<bool> running_;
@@ -42,7 +47,7 @@ namespace mcc::engine {
       DLOG(INFO) << state->GetName() << " running.....";
       const auto start = uv_hrtime();
       SetState(state);
-      Publish<Event>(state, previous_state_);
+      Publish<Event>();
       const auto total_ns = (uv_hrtime() - start);
       DLOG(INFO) << state->GetName() << " done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
     }

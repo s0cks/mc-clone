@@ -46,13 +46,8 @@ namespace mcc::engine {
 
   class StateEvent : public EngineEvent {
   protected:
-    State* current_;
-    State* previous_;
-
-    StateEvent(Engine* engine, State* current, State* previous):
-      EngineEvent(engine),
-      current_(current),
-      previous_(previous) {
+    explicit StateEvent(Engine* engine):
+      EngineEvent(engine) {
     }
   public:
     ~StateEvent() override = default;
@@ -62,16 +57,17 @@ namespace mcc::engine {
     }
   };
 
-#define DEFINE_STATE_EVENT(Name)                                                          \
-  class Name##Event : public StateEvent {                                                 \
-  public:                                                                                 \
-    Name##Event(Engine* engine, Name##State* current, State* previous = nullptr):         \
-      StateEvent(engine, current, previous) {                                             \
-    }                                                                                     \
-    ~Name##Event() override = default;                                                    \
-    DECLARE_ENGINE_EVENT(Name);                                                           \
+#define DEFINE_STATE_EVENT(Name)              \
+  class Name##Event : public StateEvent {     \
+  public:                                     \
+    explicit Name##Event(Engine* engine):     \
+      StateEvent(engine) {                    \
+    }                                         \
+    ~Name##Event() override = default;        \
+    DECLARE_ENGINE_EVENT(Name);               \
   };
-  FOR_EACH_ENGINE_STATE(DEFINE_STATE_EVENT)
+
+  FOR_EACH_ENGINE_STATE(DEFINE_STATE_EVENT);
 #undef DEFINE_STATE_EVENT
 
   class PreTickEvent : public EngineEvent {
