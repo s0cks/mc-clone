@@ -1,5 +1,5 @@
 #ifndef MCC_RESOURCE_H
-#error "Please #include <mcc/resource.h> instead."
+#error "Please #include <mcc/resource/resource.h> instead."
 #endif //MCC_RESOURCE_H
 
 #ifndef MCC_RESOURCE_LOADER_H

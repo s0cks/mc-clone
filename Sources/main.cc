@@ -22,7 +22,7 @@
 #include "mcc/terrain/terrain.h"
 #include "mcc/shader/shader.h"
 
-#include "mcc/resource.h"
+#include "mcc/resource/resource.h"
 
 #include "mcc/os_thread.h"
 

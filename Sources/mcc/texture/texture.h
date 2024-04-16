@@ -4,7 +4,7 @@
 #include "mcc/gfx.h"
 #include "mcc/uri.h"
 #include "mcc/platform.h"
-#include "mcc/resource.h"
+#include "mcc/resource/resource.h"
 
 #include "mcc/texture/texture_options.h"
 #include "mcc/texture/texture_constants.h"

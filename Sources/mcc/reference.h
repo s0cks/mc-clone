@@ -2,7 +2,7 @@
 #define MCC_REFERENCE_H
 
 #include "mcc/flags.h"
-#include "mcc/resource_ptr.h"
+#include "mcc/resource/resource_ptr.h"
 
 namespace mcc {
   namespace res=resource;//TODO: remove

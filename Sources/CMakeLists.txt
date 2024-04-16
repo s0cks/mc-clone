@@ -30,10 +30,6 @@ add_library(${PROJECT_NAME}
   mcc/pipeline.h mcc/pipeline.cc
   mcc/parser.h
   mcc/reference.h
-  mcc/resource_type.h
-  mcc/resource_ptr.h
-  mcc/resource_loader.h
-  mcc/resource.h mcc/resource.cc
   mcc/component/component_id.h
   mcc/component/component_table.h mcc/component/component_table.cc
   mcc/component/component_state.h
@@ -174,6 +170,11 @@ add_library(${PROJECT_NAME}
   mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
   mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
   mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
+# Resource
+  mcc/resource/resource_type.h
+  mcc/resource/resource_ptr.h
+  mcc/resource/resource_loader.h
+  mcc/resource/resource.h mcc/resource/resource.cc
 # Misc
   mcc/state_machine.h
   mcc/bitset.h
