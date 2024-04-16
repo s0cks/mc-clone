@@ -2,15 +2,14 @@
 #include <sstream>
 
 namespace mcc::mouse {
-  std::string MouseButtonEvent::ToString() const {
-    std::stringstream ss;
-    ss << (*this);
-    return ss.str();
-  }
 
-  std::string MouseMoveEvent::ToString() const {
-    std::stringstream ss;
-    ss << (*this);
-    return ss.str();
+#define DEFINE_TOSTRING(Name)                               \
+  std::string Name##Event::ToString() const {               \
+    std::stringstream ss;                                   \
+    ss << (*this);                                          \
+    return ss.str();                                        \
   }
+  
+  FOR_EACH_MOUSE_EVENT(DEFINE_TOSTRING)
+#undef DEFINE_TOSTRING
 }

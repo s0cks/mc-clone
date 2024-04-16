@@ -17,11 +17,11 @@ namespace mcc::mouse {
     friend class Engine;
   protected:
     Window* window_;
+    MouseEventSubject events_;
     glm::vec2 pos_;
     glm::vec2 last_pos_;
     glm::vec2 delta_;
     MouseButtonState buttons_[kNumberOfMouseButtons];
-    rx::subject<MouseEvent*> events_;
 
     template<class E, typename... Args>
     inline void Publish(Args... args) {
@@ -33,7 +33,7 @@ namespace mcc::mouse {
   public:
     explicit GlfwMouse(Window* window):
       Mouse(),
-      window_(window),  
+      window_(window),
       pos_(),
       last_pos_(),
       delta_(),

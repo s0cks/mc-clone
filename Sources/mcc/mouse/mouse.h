@@ -65,9 +65,32 @@ namespace mcc {
     };
   
     void InitMouse();
-    void SetMouse(Mouse* mouse);
     bool HasMouse();
     Mouse* GetMouse();
+
+    MouseEventObservable OnEvent();
+    
+    static inline rx::observable<MouseInitializedEvent*>
+    OnInitialized() {
+      return OnEvent()
+        .filter([](MouseEvent* event) {
+          return event->IsMouseInitializedEvent();
+        })
+        .map([](MouseEvent* event) {
+          return event->AsMouseInitializedEvent();
+        });
+    }
+
+    static inline rx::observable<MouseDeinitializedEvent*>
+    OnDeinitialized() {
+      return OnEvent()
+        .filter([](MouseEvent* event) {
+          return event->IsMouseDeinitializedEvent();
+        })
+        .map([](MouseEvent* event) {
+          return event->AsMouseDeinitializedEvent();
+        });
+    }
   }
 
   using mouse::Mouse;

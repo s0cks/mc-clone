@@ -2,6 +2,8 @@
 #define MCC_MOUSE_EVENT_H
 
 #include <iostream>
+
+#include "mcc/rx.h"
 #include "mcc/mouse/mouse_constants.h"
 
 namespace mcc::mouse {
@@ -15,6 +17,9 @@ namespace mcc::mouse {
 #define FORWARD_DECLARE(Name) class Name##Event;
   FOR_EACH_MOUSE_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
+
+  typedef rx::subject<MouseEvent*> MouseEventSubject;
+  typedef rx::observable<MouseEvent*> MouseEventObservable;
 
   class Mouse;
   class MouseEvent {
@@ -59,6 +64,14 @@ namespace mcc::mouse {
       MouseEvent(mouse) {
     }
     ~MouseInitializedEvent() override = default;
+    DECLARE_MOUSE_EVENT(MouseInitialized);
+
+    friend std::ostream& operator<<(std::ostream& stream, const MouseInitializedEvent& rhs) {
+      stream << "MouseInitializedEvent(";
+      stream << "mouse=" << rhs.mouse();
+      stream << ")";
+      return stream;
+    }
   };
 
   class MouseDeinitializedEvent : public MouseEvent {
@@ -67,6 +80,14 @@ namespace mcc::mouse {
       MouseEvent(mouse) {
     }
     ~MouseDeinitializedEvent() override = default;
+    DECLARE_MOUSE_EVENT(MouseDeinitialized);
+
+    friend std::ostream& operator<<(std::ostream& stream, const MouseDeinitializedEvent& rhs) {
+      stream << "MouseDeinitializedEvent(";
+      stream << "mouse=" << rhs.mouse();
+      stream << ")";
+      return stream;
+    }
   };
 
   class MouseButtonEvent : public MouseEvent {
