@@ -42,14 +42,20 @@ namespace mcc::engine {
       events_.get_subscriber().on_next(&event);
     }
 
-    template<class State, class Event>
+    template<class State>
     inline void RunState(State* state) {
       DLOG(INFO) << state->GetName() << " running.....";
       const auto start = uv_hrtime();
       SetState(state);
-      Publish<Event>();
+      state->Apply();
       const auto total_ns = (uv_hrtime() - start);
       DLOG(INFO) << state->GetName() << " done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+    }
+
+    template<class State>
+    inline void RunState() {
+      State state(this);
+      return RunState<State>(&state);
     }
   public:
     explicit Engine(uv_loop_t* loop):

@@ -41,16 +41,24 @@ namespace mcc::engine {
 
 #define DECLARE_STATE(Name)                                             \
   protected:                                                            \
-    void Apply(Engine* engine) override;                                \
+    void Apply() override;                                              \
   public:                                                               \
     StateId GetId() const override { return StateId::k##Name; }         \
     const char* GetName() const override { return #Name; }              \
 
   class State {
   protected:
-    State() = default;
+    Engine* engine_;
 
-    virtual void Apply(Engine* engine) = 0;
+    explicit State(Engine* engine):
+      engine_(engine) {
+    }
+
+    inline Engine* engine() const {
+      return engine_;
+    }
+
+    virtual void Apply() = 0;
   public:
     virtual ~State() = default;
     virtual StateId GetId() const = 0;
@@ -58,36 +66,56 @@ namespace mcc::engine {
   };
 
   class PreInitState : public State {
+    friend class Engine;
+  protected:
+    explicit PreInitState(Engine* engine):
+      State(engine) {
+    }
   public:
-    PreInitState() = default;
     ~PreInitState() override = default;
     DECLARE_STATE(PreInit);
   };
 
   class InitState : public State {
+    friend class Engine;
+  protected:
+    explicit InitState(Engine* engine):
+      State(engine) {
+    }
   public:
-    InitState() = default;
     ~InitState() override = default;
     DECLARE_STATE(Init);
   };
 
   class PostInitState : public State {
+    friend class Engine;
+  protected:
+    explicit PostInitState(Engine* engine):
+      State(engine) {
+    }
   public:
-    PostInitState() = default;
     ~PostInitState() override = default;
     DECLARE_STATE(PostInit);
   };
 
   class TerminatingState : public State {
+    friend class Engine;
+  protected:
+    explicit TerminatingState(Engine* engine):
+      State(engine) {
+    }
   public:
-    TerminatingState() = default;
     ~TerminatingState() override = default;
     DECLARE_STATE(Terminating);
   };
 
   class TerminatedState : public State {
+    friend class Engine;
+  protected:
+    explicit TerminatedState(Engine* engine):
+      State(engine) {
+    }
   public:
-    TerminatedState() = default;
     ~TerminatedState() override = default;
     DECLARE_STATE(Terminated);
   };

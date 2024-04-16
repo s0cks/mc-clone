@@ -4,23 +4,23 @@
 #include "mcc/engine/engine_event.h"
 
 namespace mcc::engine {
-  void PreInitState::Apply(Engine* engine) {
-    engine->Publish<PreInitEvent>();
+  void PreInitState::Apply() {
+    engine()->Publish<PreInitEvent>();
   }
 
-  void InitState::Apply(Engine* engine) {
-    engine->Publish<InitEvent>();
+  void InitState::Apply() {
+    engine()->Publish<InitEvent>();
   }
 
-  void PostInitState::Apply(Engine* engine) {
-    engine->Publish<PostInitEvent>();
+  void PostInitState::Apply() {
+    engine()->Publish<PostInitEvent>();
   }
 
-  void TerminatingState::Apply(Engine* engine) {
-    engine->Publish<TerminatingEvent>();
+  void TerminatingState::Apply() {
+    engine()->Publish<TerminatingEvent>();
   }
 
-  void TerminatedState::Apply(Engine* engine) {
-    engine->Publish<TerminatedEvent>();
+  void TerminatedState::Apply() {
+    engine()->Publish<TerminatedEvent>();
   }
 }

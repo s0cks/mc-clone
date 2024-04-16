@@ -6,26 +6,12 @@
 
 namespace mcc::engine {
   void Engine::Run() {
-    {
-      // pre-init
-      const auto state = new PreInitState();
-      RunState<PreInitState, PreInitEvent>(state);
-      delete state;
-    }
-
-    {
-      // init
-      const auto state = new InitState();
-      RunState<InitState, InitEvent>(state);
-      delete state;
-    }
-
-    {
-      // post-init
-      const auto state = new PostInitState();
-      RunState<PostInitState, PostInitEvent>(state);
-      delete state;
-    }
+    // pre-init
+    RunState<PreInitState>();
+    // init
+    RunState<InitState>();
+    // post-init
+    RunState<PostInitState>();
 
     SetRunning(true);
     while(IsRunning()) {
@@ -61,19 +47,10 @@ namespace mcc::engine {
       renderer::Renderer::Run();
     }
 
-    {
-      // terminating
-      const auto state = new TerminatingState();
-      RunState<TerminatingState, TerminatingEvent>(state);
-      delete state;
-    }
-
-    {
-      // terminated
-      const auto state = new TerminatedState();
-      RunState<TerminatedState, TerminatedEvent>(state);
-      delete state;
-    }
+    // terminating
+    RunState<TerminatingState>();
+    // terminated
+    RunState<TerminatedState>();
   }
 
   void Engine::Shutdown() {
