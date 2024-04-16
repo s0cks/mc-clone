@@ -2,6 +2,7 @@
 #define MCC_ENGINE_EVENT_H
 
 #include "mcc/rx.h"
+#include "mcc/event.h"
 #include "mcc/engine/engine_state.h"
 
 namespace mcc::engine {
@@ -17,32 +18,37 @@ namespace mcc::engine {
 #undef FORWARD_DECLARE_ENGINE_EVENT
 
   class Engine;
-  class EngineEvent {
+  class EngineEvent : public Event {
   protected:
     Engine* engine_;
 
     explicit EngineEvent(Engine* engine):
+      Event(),
       engine_(engine) {
     }
   public:
     virtual ~EngineEvent() = default;
-    virtual const char* GetName() const = 0;
 
     Engine* engine() const {
       return engine_;
     }
 
 #define DEFINE_TYPE_CHECK(Name)                                                \
-    virtual Name##Event* As##Name##Event() { return nullptr; }         \
+    virtual Name##Event* As##Name##Event() { return nullptr; }                 \
     virtual bool Is##Name##Event() { return As##Name##Event() != nullptr; }
     FOR_EACH_ENGINE_EVENT(DEFINE_TYPE_CHECK)
 #undef DEFINE_TYPE_CHECK
+
+    friend std::ostream& operator<<(std::ostream& stream, const EngineEvent& rhs) {
+      return stream << rhs.ToString();
+    }
   };
 
 #define DECLARE_ENGINE_EVENT(Name)                                    \
   public:                                                             \
     const char* GetName() const override { return #Name; }            \
-    Name##Event* As##Name##Event() override { return this; }
+    Name##Event* As##Name##Event() override { return this; }          \
+    std::string ToString() const override;
 
   class StateEvent : public EngineEvent {
   protected:
@@ -57,14 +63,17 @@ namespace mcc::engine {
     }
   };
 
-#define DEFINE_STATE_EVENT(Name)              \
-  class Name##Event : public StateEvent {     \
-  public:                                     \
-    explicit Name##Event(Engine* engine):     \
-      StateEvent(engine) {                    \
-    }                                         \
-    ~Name##Event() override = default;        \
-    DECLARE_ENGINE_EVENT(Name);               \
+#define DEFINE_STATE_EVENT(Name)                                                            \
+  class Name##Event : public StateEvent {                                                   \
+  public:                                                                                   \
+    explicit Name##Event(Engine* engine):                                                   \
+      StateEvent(engine) {                                                                  \
+    }                                                                                       \
+    ~Name##Event() override = default;                                                      \
+    DECLARE_ENGINE_EVENT(Name);                                                             \
+    friend std::ostream& operator<<(std::ostream& stream, const Name##Event& rhs) {         \
+      return stream << rhs.ToString();                                                      \
+    }                                                                                       \
   };
 
   FOR_EACH_ENGINE_STATE(DEFINE_STATE_EVENT);

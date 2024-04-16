@@ -96,6 +96,7 @@ add_library(${PROJECT_NAME}
   mcc/vertex/vertex_2d.h mcc/vertex/vertex_2d.cc
   mcc/vertex/vertex_3d.h mcc/vertex/vertex_3d.cc
 # Engine
+  mcc/engine/engine_event.h mcc/engine/engine_event.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
   mcc/engine/engine_stats.h
