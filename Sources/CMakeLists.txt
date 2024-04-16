@@ -118,9 +118,6 @@ add_library(${PROJECT_NAME}
   mcc/window/window_event.h
   mcc/window/window.h mcc/window/window.cc
   mcc/window/window_glfw.h mcc/window/window_glfw.cc
-# Events
-  mcc/event/event.h
-  mcc/event/event_bus.h mcc/event/event_bus.cc
 # Textures
   mcc/texture/image/image_constants.h
   mcc/texture/image/image.h mcc/texture/image/image.cc
@@ -177,6 +174,7 @@ add_library(${PROJECT_NAME}
   mcc/resource/resource_loader.h
   mcc/resource/resource.h mcc/resource/resource.cc
 # Misc
+  mcc/event.h
   mcc/state_machine.h
   mcc/bitset.h
   mcc/uri.h mcc/uri.cc

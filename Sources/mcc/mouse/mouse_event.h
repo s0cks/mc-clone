@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "mcc/rx.h"
+#include "mcc/event.h"
 #include "mcc/mouse/mouse_constants.h"
 
 namespace mcc::mouse {
@@ -22,17 +23,16 @@ namespace mcc::mouse {
   typedef rx::observable<MouseEvent*> MouseEventObservable;
 
   class Mouse;
-  class MouseEvent {
+  class MouseEvent : public Event {
   protected:
     Mouse* mouse_;
 
     explicit MouseEvent(Mouse* mouse):
+      Event(),
       mouse_(mouse) {
     }
   public:
-    virtual ~MouseEvent() = default;
-    virtual const char* GetName() const = 0;
-    virtual std::string ToString() const = 0;
+    ~MouseEvent() override = default;
 
     Mouse* mouse() const {
       return mouse_;

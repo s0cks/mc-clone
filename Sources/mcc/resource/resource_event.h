@@ -4,6 +4,8 @@
 #include <string>
 #include <ostream>
 
+#include "mcc/event.h"
+
 namespace mcc {
 
   namespace resource {
@@ -17,14 +19,11 @@ namespace mcc {
     FOR_EACH_RESOURCE_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
-    class ResourceEvent {
+    class ResourceEvent : public Event {
     protected:
       ResourceEvent() = default;
     public:
-      virtual ~ResourceEvent() = default;
-      virtual const char* GetName() const = 0;
-      virtual std::string ToString() const = 0;
-
+      ~ResourceEvent() override = default;
 #define TYPE_CHECK(Name)                                                  \
       virtual Name##Event* As##Name##Event() { return nullptr; }          \
       bool Is##Name##Event() { return As##Name##Event() != nullptr; }
