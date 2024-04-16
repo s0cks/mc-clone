@@ -12,6 +12,7 @@ namespace mcc {
     class Resource {
     protected:
       Resource() = default;
+      virtual void Destroy() = 0;
       virtual Type GetResourceType() const = 0;
     private:
       void Publish(ResourceEvent* event);

@@ -89,5 +89,10 @@ namespace mcc {
       Unbind();
       return wrap;
     }
+
+    void Texture::Destroy() {
+      glDeleteTextures(1, &id_);
+      CHECK_GL(FATAL);
+    }
   }
 }

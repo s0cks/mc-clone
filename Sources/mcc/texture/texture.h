@@ -141,7 +141,7 @@ namespace mcc::texture {
     }
   };
 
-  class Texture : public gfx::Resource {
+  class Texture : public gfx::Resource, public res::ResourceTemplate<res::kTextureType>  {
   public:
     static rx::observable<TextureId> GenerateTextureId(const int num = 1);
   protected:
@@ -150,14 +150,12 @@ namespace mcc::texture {
     TextureOptions options_;
     TextureData data_;
 
-    virtual void Delete() {
-      glDeleteTextures(1, &id_);
-      CHECK_GL(FATAL);
-    }
+    void Destroy () override;
   public:
     Texture() = default;
     explicit Texture(const TextureId id):
-      Resource(),
+      gfx::Resource(),
+      res::ResourceTemplate<res::kTextureType>(),
       id_(id),
       target_(),
       options_(),
@@ -166,13 +164,15 @@ namespace mcc::texture {
     explicit Texture(const TextureId id,
                      const TextureOptions& options,
                      const TextureData& data):
-      Resource(),
+      gfx::Resource(),
+      res::ResourceTemplate<res::kTextureType>(),
       id_(id),
       options_(options),
       data_(data) {
     }
     Texture(const Texture& rhs):
-      Resource(),
+      gfx::Resource(),
+      res::ResourceTemplate<res::kTextureType>(),
       id_(rhs.id_),
       options_(rhs.options_),
       data_(rhs.data_) {

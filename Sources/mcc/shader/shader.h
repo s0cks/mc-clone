@@ -29,6 +29,8 @@ namespace mcc::shader {
   class Shader : public res::ResourceTemplate<res::kShaderType> {
   protected:
     ShaderId id_;
+
+    void Destroy() override;
   public:
     Shader(const ShaderId id = kUnknownShaderId):
       res::ResourceTemplate<res::kShaderType>(),
@@ -91,11 +93,6 @@ namespace mcc::shader {
 
     virtual void ApplyShader() const {
       glUseProgram(id_);
-      CHECK_GL(FATAL);
-    }
-
-    virtual void DeleteShader() const {
-      glDeleteShader(id_);
       CHECK_GL(FATAL);
     }
 

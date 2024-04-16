@@ -35,4 +35,11 @@ namespace mcc {
       .first();
     return ShaderRef(shader);
   }
+
+  namespace shader {
+    void Shader::Destroy() {
+      glDeleteShader(id_);
+      CHECK_GL(FATAL);
+    }
+  }
 }
