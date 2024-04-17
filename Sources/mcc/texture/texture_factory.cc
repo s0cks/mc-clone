@@ -76,6 +76,6 @@ namespace mcc::texture {
     const auto height = size[1];
     const auto pixels = image->data();
     glTexImage2D(target(), 0, image->type(), width, height, 0, image->type(), GL_UNSIGNED_BYTE, (const GLvoid*) pixels->bytes());
-    CHECK_GL(FATAL); 
+    CHECK_GL(FATAL);
   }
 }

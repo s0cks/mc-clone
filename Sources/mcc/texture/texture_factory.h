@@ -4,6 +4,7 @@
 #include "mcc/image/image.h"
 #include "mcc/texture/texture_constants.h"
 
+#include "mcc/texture/texture_spec.h"
 #include "mcc/texture/texture_wrap.h"
 #include "mcc/texture/texture_filter.h"
 
@@ -31,7 +32,7 @@ namespace mcc::texture {
       return wrap_;
     }
 
-    void SetTextureWrap(const TextureWrap& wrap) {
+    void SetWrap(const TextureWrap& wrap) {
       wrap_ = wrap;
     }
 
@@ -39,8 +40,17 @@ namespace mcc::texture {
       return filter_;
     }
 
-    void SetTextureFilter(const TextureFilter& filter) {
+    void SetFilter(const TextureFilter& filter) {
       filter_ = filter;
+    }
+
+    void Apply(TextureSpec* spec) {
+      const auto filter = spec->GetFilter();
+      if(filter)
+        SetFilter(*filter);
+      const auto wrap = spec->GetWrap();
+      if(wrap)
+        SetWrap(*wrap);
     }
 
     virtual TextureId Create() const;
