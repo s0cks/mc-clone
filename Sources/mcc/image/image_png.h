@@ -12,16 +12,13 @@
 #include "mcc/image/image_decoder.h"
 
 namespace mcc::img::png {
-  class PngImageDecoder : public ImageDecoder {
-  protected:
-    ImagePtr DecodePNG(FILE* file);
-  public:
-    explicit PngImageDecoder(const uri::Uri& uri):
-      ImageDecoder(uri) {
-    }
-    ~PngImageDecoder() override = default;
-    rx::observable<ImagePtr> Decode() override;
-  };
+  Image* Decode(FILE* file);
+  rx::observable<Image*> DecodeAsync(const uri::Uri& uri);
+
+  static inline rx::observable<Image*>
+  DecodeAsync(const uri::basic_uri& uri) {
+    return DecodeAsync(uri::Uri(uri));
+  }
 }
 
 #endif //MCC_PNG_H

@@ -7,23 +7,17 @@
 namespace mcc::img {
   class Image {
   protected:
-    uri::Uri uri_;
     ImageType type_;
     ImageSize size_;
-    ImageDataPtr data_;
+    ImageData* data_;
   public:
-    Image(const uri::Uri& uri, const ImageType type, const ImageSize& size, const ImageDataPtr& data):
+    Image(const ImageType type, const ImageSize& size, ImageData* data):
       type_(type),
       size_(size),
       data_(data) {
       MCC_ASSERT(data);
-      MCC_ASSERT(uri.HasScheme("file") || uri.HasScheme("img"));
     }
     virtual ~Image() = default;
-
-    uri::Uri uri() const {
-      return uri_;
-    }
 
     ImageType type() const {
       return type_;
@@ -33,13 +27,12 @@ namespace mcc::img {
       return size_;
     }
 
-    ImageDataPtr data() const {
+    ImageData* data() const {
       return data_;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Image& rhs) {
       stream << "Image(";
-      stream << "uri=" << rhs.uri() << ", ";
       stream << "type=" << rhs.type() << ", ";
       stream << "size=" << glm::to_string(rhs.size()) << ", ";
       stream << "data=" << (*rhs.data());
@@ -47,9 +40,9 @@ namespace mcc::img {
       return stream;
     }
   public:
-    static inline ImagePtr
-    New(const uri::Uri& uri, const ImageType type, const ImageSize size, const ImageDataPtr& data) {
-      return std::make_shared<Image>(uri, type, size, data);
+    static inline Image*
+    New(const ImageType type, const ImageSize size, ImageData* data) {
+      return new Image(type, size, data);
     }
   };
 }
@@ -58,7 +51,7 @@ namespace mcc::img {
 #include "mcc/image/image_jpeg.h"
 
 namespace mcc::img {
-  rx::observable<ImagePtr> GetImage(const uri::Uri& uri);
+  rx::observable<Image*> GetImage(const uri::Uri& uri);
 }
 
 #endif //MCC_IMAGE_H

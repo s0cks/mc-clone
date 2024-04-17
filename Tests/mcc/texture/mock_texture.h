@@ -27,7 +27,7 @@ namespace mcc::texture {
       }
     public:
       explicit MockTextureWrapper(MockTexture* delegate):
-        Texture(delegate->id()),
+        Texture(delegate->GetTextureId()),
         delegate_(delegate) {
       }
       ~MockTextureWrapper() = default;

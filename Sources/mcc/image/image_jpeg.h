@@ -10,18 +10,13 @@
 #include "mcc/image/image_decoder.h"
 
 namespace mcc::img::jpeg {
-  bool Decode(const std::string& filename, Image& result);
+  Image* Decode(FILE* file);
+  rx::observable<Image*> DecodeAsync(const uri::Uri& uri);
 
-  class JpegImageDecoder : public ImageDecoder {
-  protected:
-    ImagePtr DecodeJPEG(FILE* file);
-  public:
-    explicit JpegImageDecoder(const uri::Uri& uri):
-      ImageDecoder(uri) {
-    }
-    ~JpegImageDecoder() override = default;
-    rx::observable<ImagePtr> Decode() override;
-  };
+  static inline rx::observable<Image*>
+  DecodeAsync(const uri::basic_uri& uri) {
+    return DecodeAsync(uri::Uri(uri));
+  }
 }
 
 #endif //MCC_JPEG_H

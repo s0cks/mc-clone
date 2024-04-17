@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <jerror.h>
 #include <jpeglib.h>
+#include <fmt/format.h>
 
 namespace mcc::img::jpeg {
   static inline ImageType
@@ -17,7 +18,7 @@ namespace mcc::img::jpeg {
     }
   }
 
-  ImagePtr JpegImageDecoder::DecodeJPEG(FILE* file) {
+  Image* Decode(FILE* file) {
     MCC_ASSERT(file);
 
     ImageType type;
@@ -45,20 +46,28 @@ namespace mcc::img::jpeg {
     }
     jpeg_finish_decompress(&info);
     jpeg_destroy_decompress(&info);
-    return Image::New(target(), type, size, data);
+    return Image::New(type, size, data);
   }
 
-  rx::observable<ImagePtr> JpegImageDecoder::Decode() {
-    MCC_ASSERT(target().HasScheme("file"));
-    MCC_ASSERT(target().HasExtension(".jpeg") || target().HasExtension(".jpg"));
-    return target().AsyncOpenFile("rb")
-      .map([this](FILE* file) {
-        const auto image = DecodeJPEG(file);
-        if(!image) {
-          const auto err = fmt::format("failed to decode PNG from file: {0:s}", (const std::string&) target_);
-          throw new std::runtime_error(err);
-        }
-        return image;
-      });
+  rx::observable<Image*> DecodeAsync(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme("file"));
+    MCC_ASSERT(uri.HasExtension(".jpeg") || uri.HasExtension(".jpg"));
+    return rx::observable<>::create<Image*>([uri](rx::subscriber<Image*> s) {
+      const auto file = uri.OpenFileForReading();
+      if(!file) {
+        const auto err = fmt::format("failed to open file: {0:s}", (const std::string&) uri);
+        s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+        return;
+      }
+
+      const auto image = Decode(file);
+      if(!image) {
+        const auto err = fmt::format("failed to decode JPEG from file: {0:s}", (const std::string&) uri);
+        s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+        return;
+      }
+      s.on_next(image);
+      s.on_completed();
+    });
   }
 }

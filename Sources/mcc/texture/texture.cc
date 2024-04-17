@@ -26,8 +26,7 @@ namespace mcc {
   LoadTextureFromImageFile(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension());
-    return Texture::GenerateTextureId()
-      .zip(&ZipTexture, TextureSpec::New(uri), img::GetImage(uri));
+    return rx::observable<>::error<Texture*>(rx::util::make_error_ptr(std::runtime_error("")));
   }
 
   static inline TextureObservable

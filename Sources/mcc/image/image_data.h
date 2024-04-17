@@ -38,9 +38,9 @@ namespace mcc {
       return stream;
     }
   public:
-    static inline ImageDataPtr
+    static inline ImageData*
     New(const uint32_t num_bytes) {
-      return std::make_shared<ImageData>(num_bytes);
+      return new ImageData(num_bytes);
     }
   };
 }

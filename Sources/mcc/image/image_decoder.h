@@ -20,7 +20,7 @@ namespace mcc::img {
     }
   public:
     virtual ~ImageDecoder() = default;
-    virtual rx::observable<ImagePtr> Decode() = 0;
+    virtual rx::observable<Image*> Decode() = 0;
   };
 }
 

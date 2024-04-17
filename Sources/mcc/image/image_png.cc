@@ -2,31 +2,34 @@
 
 #include <png.h>
 #include <string>
+#include <fmt/format.h>
 #include <glog/logging.h>
 
 #include "mcc/image/image_data.h"
 
 namespace mcc::img::png {
-  ImagePtr PngImageDecoder::DecodePNG(FILE* file) {
+  Image* Decode(FILE* file) {
+    if(!file) {
+      DLOG(ERROR) << "failed to load png from null file.";
+      return nullptr;
+    }
+
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png) {
-      LOG(ERROR) << "failed to load png texture from: " << target();
-      fclose(file);
+      DLOG(ERROR) << "failed to load png texture from file.";
       return nullptr;
     }
 
     png_infop info = png_create_info_struct(png);
     if(!info) {
-      LOG(ERROR) << "failed to load png texture from: " << target();
+      DLOG(ERROR) << "failed to load png texture from file.";
       png_destroy_read_struct(&png, NULL, NULL);
-      fclose(file);
       return nullptr;
     }
 
     if(setjmp(png_jmpbuf(png))) {
-      LOG(ERROR) << "failed to load png texture from: " << target();
+      DLOG(ERROR) << "failed to load png texture from file.";
       png_destroy_read_struct(&png, &info, NULL);
-      fclose(file);
       return nullptr;
     }
 
@@ -48,8 +51,7 @@ namespace mcc::img::png {
         type = ImageType::kRGB;
         break;
       default:
-        LOG(ERROR) << "unknown color type: " << color_type;
-        fclose(file);
+        DLOG(ERROR) << "unknown color type: " << color_type;
         return nullptr;
     }
 
@@ -80,24 +82,30 @@ namespace mcc::img::png {
     }
     png_destroy_read_struct(&png, &info, NULL);
     fclose(file);
-    return Image::New(target(), type, ImageSize(width, height), data);
+    return Image::New(type, ImageSize(width, height), data);
   }
 
-  rx::observable<ImagePtr> PngImageDecoder::Decode() {
-    return rx::observable<>::create<ImagePtr>([this](rx::subscriber<ImagePtr> s) {
-      const auto file = target().OpenFileForReading();
+  rx::observable<Image*> DecodeAsync(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme("file"));
+    MCC_ASSERT(uri.HasExtension(".png"));
+    return rx::observable<>::create<Image*>([uri](rx::subscriber<Image*> s) {
+      const auto file = uri.OpenFileForReading();
       if(!file) {
-        const auto err = fmt::format("failed to open file: {0:s}", (const std::string&) target_);
+        const auto err = fmt::format("failed to open file: {0:s}", (const std::string&) uri);
         s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
         return;
       }
 
-      const auto image = DecodePNG(file);
+      const auto image = Decode(file);
       if(!image) {
-        const auto err = fmt::format("failed to decode PNG from file: {0:s}", (const std::string&) target_);
+        const auto err = fmt::format("failed to decode PNG from file: {0:s}", (const std::string&) uri);
         s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
         return;
       }
+
+      const auto error = fclose(file);
+      //TODO: check error
+
       s.on_next(image);
       s.on_completed();
     });

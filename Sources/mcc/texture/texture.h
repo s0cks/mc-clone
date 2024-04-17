@@ -164,7 +164,7 @@ namespace mcc::texture {
     ~Texture() override = default;
     virtual TextureTarget GetTextureTarget() const = 0;
 
-    TextureId id() const {
+    TextureId GetTextureId() const {
       return id_;
     }
 
@@ -207,25 +207,38 @@ namespace mcc::texture {
     inline void Bind1() const {
       return Bind(1);
     }
+  };
 
-    constexpr operator TextureId () const {
-      return id_;
+  template<const TextureTarget Target>
+  class TextureTemplate : public Texture {
+  protected:
+    explicit TextureTemplate(const TextureId id):
+      Texture(id) {
     }
+  public:
+    ~TextureTemplate() override = default;
 
-    void operator=(const Texture& rhs) {
-      id_ = rhs.id_;
+    TextureTarget GetTextureTarget() const override {
+      return Target;
     }
+  };
 
-    void operator=(const TextureId& rhs) {
-      id_ = rhs;
+  class Texture2D : public TextureTemplate<k2D> {
+  protected:
+    explicit Texture2D(const TextureId id):
+      TextureTemplate<k2D>(id) {
     }
+  public:
+    ~Texture2D() override = default;
+  };
 
-    friend std::ostream& operator<<(std::ostream& stream, const Texture& rhs) {
-      stream << "Texture(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
+  class Texture3D : public TextureTemplate<k3D> {
+  protected:
+    explicit Texture3D(const TextureId id):
+      TextureTemplate<k3D>(id) {
     }
+  public:
+    ~Texture3D() override = default;
   };
 }
 
@@ -273,10 +286,10 @@ namespace mcc {
       Bind();
     }
     explicit TextureBindScope(const texture::Texture* texture):
-      TextureBindScope(texture->id()) {
+      TextureBindScope(texture->GetTextureId()) {
     }
     explicit TextureBindScope(const TextureRef& ref):
-      TextureBindScope(ref->id()) {
+      TextureBindScope(ref->GetTextureId()) {
     }
     ~TextureBindScope() {
       Unbind();
