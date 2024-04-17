@@ -4,29 +4,8 @@
 #include <cstdint>
 #include "mcc/common.h"
 
-namespace mcc {
-  class RenderPass {
-  protected:
-    RenderPass() = default;
-  public:
-    virtual ~RenderPass() = default;
-    virtual uint32_t order() const = 0;
-    virtual const char* name() const = 0;
-    virtual void Render() = 0;
-  };
-
-  template<const uint32_t Order>
-  class RenderPassTemplate : public RenderPass {
-  protected:
-    RenderPassTemplate() = default;
-  public:
-    ~RenderPassTemplate() override = default;
-
-    uint32_t order() const override {
-      return Order;
-    }
-  };
-
+namespace mcc::render {
+  class RenderPass;
   class RenderPassVisitor {
   protected:
     RenderPassVisitor() = default;
@@ -35,52 +14,59 @@ namespace mcc {
     virtual bool Visit(RenderPass* pass) = 0;
   };
 
-  class RenderPassList {
-    struct Node {
-      Node* next;
-      Node* previous;
-      RenderPass* pass;
-
-      Node() = default;
-      explicit Node(RenderPass* p):
-        next(nullptr),
-        previous(nullptr),
-        pass(p) {  
-      }
-      ~Node() {
-        if(next)
-          delete next;
-      }
-
-      inline uint32_t order() const {
-        return pass->order();
-      }
-    };
+  class RenderPass {
   protected:
-    Node* root_;
-
-    inline Node* root() const {
-      return root_;
-    }
-
-    inline bool HasRoot() const {
-      return root() != nullptr;
-    }
-
-    inline void SetRoot(Node* node) {
-      root_ = node;
-    }
+    RenderPass() = default;
   public:
-    RenderPassList():
-      root_(nullptr) {
+    virtual ~RenderPass() = default;
+    virtual const char* GetName() const = 0;
+    virtual void Append(RenderPass* pass) = 0;
+    virtual void Render() = 0;
+    virtual bool Accept(RenderPassVisitor* vis) = 0;
+    virtual bool HasChildren() const = 0;
+    virtual uint32_t GetNumberOfChildren() const = 0;
+    virtual RenderPass* GetChildAt(const uint32_t idx) const = 0;
+  };
+
+  class RenderPassSequence : public RenderPass {
+  protected:
+    std::vector<RenderPass*> children_;
+
+    void Render() override { }
+  public:
+    RenderPassSequence():
+      RenderPass() {
     }
-    virtual ~RenderPassList() {
-      delete root_;
+    ~RenderPassSequence() override = default;
+
+    const char* GetName() const override {
+      return "Sequence";
     }
 
-    virtual void Append(RenderPass* pass);
-    virtual bool Visit(RenderPassVisitor* vis);
-    virtual bool Visit(std::function<bool(RenderPass*)> vis);
+    bool HasChildren() const override {
+      return !children_.empty();
+    }
+
+    uint32_t GetNumberOfChildren() const override {
+      return children_.size();
+    }
+
+    RenderPass* GetChildAt(const uint32_t idx) const override {
+      MCC_ASSERT(idx >= 0 && idx <= children_.size());
+      return children_[idx];
+    }
+
+    bool Accept(RenderPassVisitor* vis) override {
+      for(const auto& child : children_) {
+        if(!vis->Visit(child))
+          return false;
+      }
+      return true;
+    }
+
+    void Append(RenderPass* pass) override {
+      children_.push_back(pass);
+    }
   };
 }
 

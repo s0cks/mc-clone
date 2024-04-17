@@ -31,6 +31,7 @@
 #include "mcc/gui/shape.h"
 
 #include "mcc/renderer/render_pass.h"
+#include "mcc/renderer/render_pass_executor.h"
 
 namespace mcc::renderer {
   static ThreadLocal<FrameBuffer> frame_buffer_;
@@ -294,35 +295,41 @@ namespace mcc::renderer {
     }
   };
 
-  class RenderPass2d : public RenderPassTemplate<1000> {
+  class RenderPass2d : public render::RenderPassSequence {
   public:
     RenderPass2d() = default;
     ~RenderPass2d() override = default;
 
-    const char* name() const override {
+    const char* GetName() const override {
       return "2d";
-    }
-
-    void Render() override {
-
     }
   };
 
-  class RenderPass3d : public RenderPassTemplate<2000> {
+  class RenderPass3d : public render::RenderPassSequence {
+  protected:
+    void Render() override {
+      pipeline_.Get()->Render();
+    }
   public:
     RenderPass3d() = default;
     ~RenderPass3d() override = default;
 
-    const char* name() const override {
+    const char* GetName() const override {
       return "3d";
-    }
-
-    void Render() override {
-      pipeline_.Get()->Render();
     }
   };
 
-  static RenderPassList render_passes_;
+  static ThreadLocal<render::RenderPass> pass_;
+
+  static inline void
+  SetRenderPass(render::RenderPass* pass) {
+    pass_.Set(pass);
+  }
+
+  static inline render::RenderPass*
+  GetRenderPass() {
+    return pass_.Get();
+  }
 
   void Renderer::OnPostInit(engine::PostInitEvent* e) {
     signature_.set(Renderable::GetComponentId());
@@ -332,8 +339,10 @@ namespace mcc::renderer {
     //Window::AddFrame(gui::SettingsFrame::New());
     //Window::AddFrame(gui::RendererFrame::New());
 
-    render_passes_.Append(new RenderPass2d());
-    render_passes_.Append(new RenderPass3d());
+    const auto pass = new render::RenderPassSequence();
+    pass->Append(new RenderPass2d());
+    pass->Append(new RenderPass3d());
+    pass_.Set(pass);
 
     pipeline_.Set(new RendererPipeline());
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
@@ -369,24 +378,6 @@ namespace mcc::renderer {
   static constexpr const auto kTargetFramesPerSecond = 60.0f;
   static constexpr const float kRate = NSEC_PER_SEC / (kTargetFramesPerSecond * NSEC_PER_SEC);
 
-  static inline bool
-  ExecuteRenderPass(RenderPass* pass) {
-    MCC_ASSERT(pass);
-    DLOG(INFO) << "executing RenderPass: " << pass->name();
-#ifdef MCC_DEBUG
-    const auto start_ns = uv_hrtime();
-#endif //MCC_DEBUG
-
-    pass->Render();
-
-#ifdef MCC_DEBUG
-    const auto stop_ns = uv_hrtime();
-    const auto total_ms = (stop_ns - start_ns) / NSEC_PER_MSEC;
-    DLOG(INFO) << pass->name() << " RenderPass finished in " << total_ms << "ms.";
-#endif//MCC_DEBUG
-    return true;
-  }
-
   void Renderer::Run(const uv_run_mode mode) {
     const auto start_ns = uv_hrtime();
     const auto delta_ns = (start_ns - last_frame_ns_);
@@ -401,7 +392,7 @@ namespace mcc::renderer {
       last_second_ = frame_start_ns_;
     }
 
-    render_passes_.Visit(&ExecuteRenderPass);
+    render::RenderPassExecutor::Execute(GetRenderPass());
 
     frame_end_ns_ = uv_hrtime();
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);
