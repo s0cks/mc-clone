@@ -20,6 +20,10 @@ namespace mcc {
   public:
     virtual ~Series() = default;
 
+    void Append(const T value) {
+      data_.put(value);
+    }
+
     T* begin() {
       return data_.begin();
     }
@@ -36,24 +40,21 @@ namespace mcc {
       return data_.end();
     }
 
-    rxcpp::observable<T> asObservable() const {
-      return rxcpp::observable<>::iterate(this);
+    explicit operator rx::observable<T> () const {
+      return rx::observable<>::create<T>([this](rx::subscriber<T> s) {
+        for(const auto& value : data_) {
+          s.on_next(value);
+        }
+        s.on_completed();
+      });
     }
   };
 
-  template<typename N, const uint64_t Capacity>
-  class NumericSeries : public Series<N, Capacity> {
+  template<const uint64_t Capacity = 10>
+  class TimeSeries : public Series<uint64_t, Capacity> {
   public:
-    struct Stats {
-      N average;
-      N sum;
-      N min;
-      N max;
-    };
-  protected:
-    NumericSeries() = default;
-  public:
-    ~NumericSeries() override = default;
+    TimeSeries() = default;
+    ~TimeSeries() override = default;
   };
 }
 

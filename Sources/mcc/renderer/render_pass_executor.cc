@@ -17,8 +17,16 @@ namespace mcc::render {
 #ifdef MCC_DEBUG
     using namespace units::time;
     const auto stop_ns = uv_hrtime();
-    const auto total_ns = nanosecond_t(stop_ns - start_ns);
-    LOG(INFO) << pass->GetName() << " finished in " << total_ns;
+    const auto total_ns = (stop_ns - start_ns);
+
+    auto& stats = pass->stats();
+    stats.UpdateTime(total_ns);
+
+    const auto avg_ns = stats.avg_time();
+    const auto min_ns = stats.min_time();
+    const auto max_ns = stats.max_time();
+
+    LOG(INFO) << pass->GetName() << " finished in " << nanosecond_t(total_ns) << ", avg=" << nanosecond_t(avg_ns) << ", max=" << nanosecond_t(max_ns) << ", min=" << nanosecond_t(min_ns) << ".";
 #endif//MCC_DEBUG
     return true;
   }

@@ -2,7 +2,11 @@
 #define MCC_RENDER_PASS_H
 
 #include <cstdint>
+#include <units.h>
+
+#include "mcc/rx.h"
 #include "mcc/common.h"
+#include "mcc/series.h"
 
 namespace mcc::render {
   class RenderPass;
@@ -14,14 +18,67 @@ namespace mcc::render {
     virtual bool Visit(RenderPass* pass) = 0;
   };
 
-  class RenderPass {
+  class RenderPassStats {
+    friend class RenderPass;
+    friend class RenderPassExecutor;
   protected:
-    RenderPass() = default;
+    TimeSeries<10> time_;
+
+    RenderPassStats():
+      time_() {
+    }
+
+    inline void UpdateTime(const uword time) {
+      time_.Append(time);
+    }
+  public:
+    virtual ~RenderPassStats() = default;
+
+    rx::observable<uint64_t> time() const {
+      return (rx::observable<uint64_t>) time_;
+    }
+
+    inline uint64_t avg_time() const {
+      return time()
+        .as_blocking()
+        .average();
+    }
+
+    inline uint64_t max_time() const {
+      return time()
+        .as_blocking()
+        .max();
+    }
+
+    inline uint64_t min_time() const {
+      return time()
+        .as_blocking()
+        .min();
+    }
+  };
+
+  class RenderPass {
+    friend class RenderPassStats;
+    friend class RenderPassExecutor;
+  private:
+    RenderPassStats stats_;
+
+    RenderPassStats& stats() {
+      return stats_;
+    }
+  protected:
+    RenderPass():
+      stats_() {
+    }
+    virtual void Render() = 0;
+
+    const RenderPassStats& stats() const {
+      return stats_;
+    }
   public:
     virtual ~RenderPass() = default;
     virtual const char* GetName() const = 0;
     virtual void Append(RenderPass* pass) = 0;
-    virtual void Render() = 0;
     virtual bool Accept(RenderPassVisitor* vis) = 0;
     virtual bool HasChildren() const = 0;
     virtual uint32_t GetNumberOfChildren() const = 0;
