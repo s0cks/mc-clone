@@ -4,7 +4,6 @@
 #include "mcc/common.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/state_machine.h"
-#include "mcc/renderer/renderable.h"
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/engine/tick.h"

@@ -3,10 +3,9 @@
 
 #include <functional>
 #include <algorithm>
-#include "mcc/circular_buffer.h"
 
-#include <rxcpp/rx.hpp>
-#include <rxcpp/rx-includes.hpp>
+#include "mcc/rx.h"
+#include "mcc/circular_buffer.h"
 
 namespace mcc {
   template<typename T, const uint64_t Capacity>

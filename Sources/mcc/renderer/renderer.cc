@@ -30,6 +30,7 @@
 
 #include "mcc/gui/shape.h"
 
+#include "mcc/renderer/renderable.h"
 #include "mcc/renderer/render_pass.h"
 #include "mcc/renderer/render_pass_executor.h"
 
