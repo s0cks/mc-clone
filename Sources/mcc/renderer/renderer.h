@@ -8,7 +8,7 @@
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/engine/tick.h"
 #include "mcc/ecs/entity.h"
-#include "mcc/framebuffer.h"
+#include "mcc/framebuffer/framebuffer.h"
 
 #include "mcc/engine/engine.h"
 

@@ -3,7 +3,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/pipeline.h"
-#include "mcc/framebuffer.h"
+#include "mcc/framebuffer/framebuffer.h"
 #include "mcc/shader/shader_pipeline.h"
 
 namespace mcc {

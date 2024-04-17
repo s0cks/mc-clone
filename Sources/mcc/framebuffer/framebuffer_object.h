@@ -3,8 +3,8 @@
 
 #include "mcc/renderbuffer.h"
 #include "mcc/texture/texture.h"
-#include "mcc/framebuffer_constants.h"
-#include "mcc/framebuffer_attachment.h"
+#include "mcc/framebuffer/framebuffer_constants.h"
+#include "mcc/framebuffer/framebuffer_attachment.h"
 
 namespace mcc {
   class FrameBufferObject { //TODO: extend BufferObject somehow

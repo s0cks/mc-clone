@@ -1,8 +1,8 @@
 #ifndef MCC_BLOOM_H
 #define MCC_BLOOM_H
 
-#include "mcc/framebuffer.h"
-#include "mcc/framebuffer_pipeline.h"
+#include "mcc/framebuffer/framebuffer.h"
+#include "mcc/framebuffer/framebuffer_pipeline.h"
 
 namespace mcc {
   class BlurPipeline : public Pipeline {

@@ -66,11 +66,6 @@ add_library(${PROJECT_NAME}
   mcc/trie.h
   mcc/circular_buffer.h
   mcc/series.h
-  mcc/framebuffer_constants.h
-  mcc/framebuffer_object.h
-  mcc/framebuffer_attachment.h
-  mcc/framebuffer.h mcc/framebuffer.cc
-  mcc/framebuffer_pipeline.h mcc/framebuffer_pipeline.cc
   mcc/subscription_trie.h
   mcc/skybox.h mcc/skybox.cc
 # Task
@@ -149,6 +144,12 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_property.h
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+# Framebuffer
+  mcc/framebuffer/framebuffer_constants.h
+  mcc/framebuffer/framebuffer_object.h
+  mcc/framebuffer/framebuffer_attachment.h
+  mcc/framebuffer/framebuffer.h mcc/framebuffer/framebuffer.cc
+  mcc/framebuffer/framebuffer_pipeline.h mcc/framebuffer/framebuffer_pipeline.cc
 # Terrain
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc

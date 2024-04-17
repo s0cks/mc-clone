@@ -6,8 +6,8 @@
 #include "mcc/renderbuffer.h"
 #include "mcc/shader/shader.h"
 #include "mcc/texture/texture.h"
-#include "mcc/framebuffer_object.h"
-#include "mcc/framebuffer_attachment.h"
+#include "mcc/framebuffer/framebuffer_object.h"
+#include "mcc/framebuffer/framebuffer_attachment.h"
 
 namespace mcc {
   class FrameBuffer {

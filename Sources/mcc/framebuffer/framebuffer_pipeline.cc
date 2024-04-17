@@ -1,4 +1,4 @@
-#include "mcc/framebuffer_pipeline.h"
+#include "mcc/framebuffer/framebuffer_pipeline.h"
 
 namespace mcc {
   void FrameBufferPipeline::Render() {
