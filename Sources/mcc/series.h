@@ -40,13 +40,17 @@ namespace mcc {
       return data_.end();
     }
 
-    explicit operator rx::observable<T> () const {
+    rx::observable<T> ToObservable() const {
       return rx::observable<>::create<T>([this](rx::subscriber<T> s) {
         for(const auto& value : data_) {
           s.on_next(value);
         }
         s.on_completed();
       });
+    }
+
+    explicit operator rx::observable<T> () const {
+      return ToObservable();
     }
   };
 
@@ -55,6 +59,28 @@ namespace mcc {
   public:
     TimeSeries() = default;
     ~TimeSeries() override = default;
+
+    inline uint64_t average() const {
+      return Series<uint64_t, Capacity>::ToObservable()
+        .as_blocking()
+        .average();
+    }
+
+    inline uint64_t max() const {
+      return Series<uint64_t, Capacity>::ToObservable()
+        .as_blocking()
+        .max();
+    }
+
+    inline uint64_t min() const {
+      return Series<uint64_t, Capacity>::ToObservable()
+        .as_blocking()
+        .min();
+    }
+
+    explicit operator rx::observable<uint64_t> () const {
+      return Series<uint64_t, Capacity>::ToObservable();
+    }
   };
 }
 

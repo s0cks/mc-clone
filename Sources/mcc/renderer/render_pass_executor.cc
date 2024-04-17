@@ -21,12 +21,8 @@ namespace mcc::render {
 
     auto& stats = pass->stats();
     stats.UpdateTime(total_ns);
-
-    const auto avg_ns = stats.avg_time();
-    const auto min_ns = stats.min_time();
-    const auto max_ns = stats.max_time();
-
-    LOG(INFO) << pass->GetName() << " finished in " << nanosecond_t(total_ns) << ", avg=" << nanosecond_t(avg_ns) << ", max=" << nanosecond_t(max_ns) << ", min=" << nanosecond_t(min_ns) << ".";
+    const auto& time = stats.time();
+    LOG(INFO) << pass->GetName() << " finished in " << nanosecond_t(total_ns) << ", avg=" << nanosecond_t(time.average()) << ", max=" << nanosecond_t(time.max()) << ", min=" << nanosecond_t(time.min()) << ".";
 #endif//MCC_DEBUG
     return true;
   }

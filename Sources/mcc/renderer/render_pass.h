@@ -34,26 +34,8 @@ namespace mcc::render {
   public:
     virtual ~RenderPassStats() = default;
 
-    rx::observable<uint64_t> time() const {
-      return (rx::observable<uint64_t>) time_;
-    }
-
-    inline uint64_t avg_time() const {
-      return time()
-        .as_blocking()
-        .average();
-    }
-
-    inline uint64_t max_time() const {
-      return time()
-        .as_blocking()
-        .max();
-    }
-
-    inline uint64_t min_time() const {
-      return time()
-        .as_blocking()
-        .min();
+    const TimeSeries<10>& time() const {
+      return time_;
     }
   };
 
