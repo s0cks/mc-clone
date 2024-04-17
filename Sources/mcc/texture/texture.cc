@@ -10,6 +10,8 @@
 #include "mcc/texture/texture.h"
 #include "mcc/texture/texture_spec.h"
 
+#include "mcc/texture/texture_factory.h"
+
 namespace mcc {
   using namespace texture;
 
@@ -23,10 +25,29 @@ namespace mcc {
   }
 
   static inline TextureObservable
-  LoadTextureFromImageFile(const uri::Uri& uri) {
+  LoadTextureFromPNG(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension());
-    return rx::observable<>::error<Texture*>(rx::util::make_error_ptr(std::runtime_error("")));
+    DLOG(INFO) << "loading texture from file: " << uri;
+    return img::png::DecodeAsync(uri)
+      .map([](img::Image* image) {
+        TextureFactory2D factory;
+        const auto tex = factory.Create(image);
+        if(tex == kInvalidTextureId)
+          return (Texture*)nullptr;
+        return (Texture*) new Texture2D(tex);
+      });
+  }
+
+  static inline TextureObservable
+  LoadTextureFromJPEG(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme("file"));
+    MCC_ASSERT(uri.HasExtension("jpeg") || uri.HasExtension("jpg"));
+    DLOG(INFO) << "loading texture from file: " << uri;
+    return img::jpeg::DecodeAsync(uri)
+      .map([](img::Image* image) {
+        return (Texture*)nullptr;
+      });
   }
 
   static inline TextureObservable
@@ -44,9 +65,9 @@ namespace mcc {
     if(uri.HasExtension(".json")) {
       return LoadTextureFromJsonFile(uri);
     } else if(uri.HasExtension(".png")) {
-      return LoadTextureFromImageFile(uri);
+      return LoadTextureFromPNG(uri);
     } else if(uri.HasExtension(".jpg", ".jpeg")) {
-      return LoadTextureFromImageFile(uri);
+      return LoadTextureFromJPEG(uri);
     }
 
     const auto err = fmt::format("invalid texture: {0:s}", (const std::string&) uri);
@@ -60,7 +81,6 @@ namespace mcc {
     }
 
     const uri::Uri file(fmt::format("file://{0:s}/textures/{1:s}", FLAGS_resources, uri.path));
-    
     DLOG(INFO) << "getting texture: " << file;
     const auto texture = LoadTextureFromFile(file)
       .as_blocking()

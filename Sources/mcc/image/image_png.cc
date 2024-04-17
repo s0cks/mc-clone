@@ -81,7 +81,7 @@ namespace mcc::img::png {
       memcpy(data->bytes() + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
     }
     png_destroy_read_struct(&png, &info, NULL);
-    fclose(file);
+    DLOG(INFO) << "decoded png from file.";
     return Image::New(type, ImageSize(width, height), data);
   }
 

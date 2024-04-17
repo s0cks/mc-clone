@@ -224,11 +224,10 @@ namespace mcc::texture {
   };
 
   class Texture2D : public TextureTemplate<k2D> {
-  protected:
+  public:
     explicit Texture2D(const TextureId id):
       TextureTemplate<k2D>(id) {
     }
-  public:
     ~Texture2D() override = default;
   };
 

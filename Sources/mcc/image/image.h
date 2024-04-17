@@ -23,7 +23,7 @@ namespace mcc::img {
       return type_;
     }
 
-    ImageSize size() const {
+    const ImageSize& size() const {
       return size_;
     }
 

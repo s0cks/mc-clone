@@ -227,12 +227,20 @@ namespace mcc::renderer {
         shape::NewRect(glm::vec2(0, 0), glm::vec2(256, 256), vertices, indices);
         shape::NewRect(glm::vec2(256, 256), glm::vec2(256, 256), vertices, indices);
         const auto mesh = d2::NewMesh(vertices, indices);
-        const auto render_quads = new d2::RenderMeshPipeline(mesh, "shader:colored_2d", [projection](const ShaderRef& shader) {
+        const auto texture = GetTexture("tex:concrete.png");
+        const auto apply_tex = new ApplyPipeline([texture]() {
+          texture->Bind(0);
+        });
+        const auto apply_shader = new ApplyShaderPipeline(GetShader("shader:textured_2d"), [projection,texture](const ShaderRef& shader) {
           shader->ApplyShader();
+          shader->SetInt("tex", 0);
           shader->SetMat4("projection", projection);
           shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
           shader->ApplyShader();
         });
+        const auto render_quads = new d2::RenderMeshPipeline(mesh);
+        render_quads->AddChild(apply_tex);
+        render_quads->AddChild(apply_shader);
         AddChild(render_quads);
       }
     }
