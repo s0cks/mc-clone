@@ -13,7 +13,7 @@ namespace mcc::fbuff {
       return kFrameBuffer;
     }
 
-    virtual FrameBufferId Create();
+    virtual FrameBufferObjectId Create();
   };
 }
 

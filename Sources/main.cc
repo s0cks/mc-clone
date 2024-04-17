@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   terrain::Terrain::Init();
   d2::Mesh::Init();
-  FrameBuffer::Init();
+  fbuff::FrameBuffer::Init();
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();

@@ -1,6 +1,6 @@
 #include "mcc/framebuffer/framebuffer_pipeline.h"
 
-namespace mcc {
+namespace mcc::fbuff {
   void FrameBufferPipeline::Render() {
     dst_.Bind();
     glPolygonMode(polygon_mode_.face, polygon_mode_.mode);

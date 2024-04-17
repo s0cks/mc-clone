@@ -5,6 +5,7 @@
 #include "mcc/framebuffer/framebuffer_pipeline.h"
 
 namespace mcc {
+  using fbuff::FrameBuffer;
   class BlurPipeline : public Pipeline {
   private:
     TextureRef src_;

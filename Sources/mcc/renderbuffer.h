@@ -4,6 +4,9 @@
 #include "mcc/gfx.h"
 
 namespace mcc {
+  typedef GLuint RenderBufferObjectId;
+  static constexpr const RenderBufferObjectId kInvalidRenderBufferId = -1;
+
 #define FOR_EACH_DEPTH_BUFFER_FORMAT(V) \
   V(Depth, GL_DEPTH_COMPONENT)          \
   V(Depth16, GL_DEPTH_COMPONENT16)      \
@@ -30,7 +33,7 @@ namespace mcc {
            const RenderBufferTarget Target = kDefaultRenderBufferTarget>
   class RenderBuffer : public gfx::Resource {
   private:
-    BufferObjectId id_;
+    RenderBufferObjectId id_;
     Dimension size_;
 
     inline void Initialize(const bool generate,
@@ -57,13 +60,13 @@ namespace mcc {
                  const bool bind = true,
                  const bool unbind = true):
       Resource(),
-      id_(kInvalidBufferObject),
+      id_(kInvalidRenderBufferId),
       size_(size) {
       Initialize(generate, bind, unbind);
     }
     ~RenderBuffer() override = default;
 
-    BufferObjectId id() const {
+    RenderBufferObjectId id() const {
       return id_;
     }
 

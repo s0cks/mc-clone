@@ -6,7 +6,7 @@
 #include "mcc/framebuffer/framebuffer.h"
 #include "mcc/shader/shader_pipeline.h"
 
-namespace mcc {
+namespace mcc::fbuff {
   enum ClearMask : GLbitfield {
     kNoClearMask = 0,
     kColorBufferClearMask = GL_COLOR_BUFFER_BIT,

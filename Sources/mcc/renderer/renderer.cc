@@ -179,14 +179,14 @@ namespace mcc::renderer {
     FrameBuffer* fb_;
     ShaderRef shader_;
     BloomPipeline<> bloom_;
-    RenderFrameBufferPipeline pipeline_;
+    fbuff::RenderFrameBufferPipeline pipeline_;
   public:
     explicit RenderFbPipeline(FrameBuffer* fb):
       Pipeline(),
       fb_(fb),
       shader_(GetShader("shader:framebuffer")),
       bloom_(fb, Dimension(Window::Get()->GetSize()), GetShader("shader:blur")),
-      pipeline_(fb, kColorAndDepthClearMask) {
+      pipeline_(fb, fbuff::kColorAndDepthClearMask) {
       pipeline_.AddChild(new ApplyPipeline([this]() {
         fb_->GetColorBufferAttachment(0)->GetTexture()->Bind(0);
         bloom_.GetFrameBuffer(0)->GetColorBufferAttachment(0)->GetTexture()->Bind(1);

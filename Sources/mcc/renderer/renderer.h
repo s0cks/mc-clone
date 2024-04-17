@@ -95,7 +95,7 @@ namespace mcc::renderer {
     static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
     static const RendererStats& GetStats();
-    static FrameBuffer* GetFrameBuffer();
+    static fbuff::FrameBuffer* GetFrameBuffer();
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);
     static camera::PerspectiveCameraDataUniformBufferObject* GetCameraUniformBuffer();

@@ -3,13 +3,14 @@
 
 #include "mcc/renderbuffer.h"
 #include "mcc/texture/texture.h"
+#include "mcc/resource/resource.h"
 #include "mcc/framebuffer/framebuffer_constants.h"
 #include "mcc/framebuffer/framebuffer_attachment.h"
 
-namespace mcc {
-  class FrameBufferObject { //TODO: extend BufferObject somehow
+namespace mcc::fbuff {
+  class FrameBufferObject : public res::ResourceTemplate<res::kFrameBufferObjectType> { //TODO: extend BufferObject somehow
   private:
-    BufferObjectId id_;
+    FrameBufferObjectId id_; 
 
     inline void Initialize(const bool generate = true,
                            const bool bind = true,
@@ -27,14 +28,18 @@ namespace mcc {
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       CHECK_GL(FATAL);
     }
+
+    void Destroy() override {
+      
+    }
   public:
-    explicit constexpr FrameBufferObject(const BufferObjectId id = kInvalidBufferObject):
+    explicit constexpr FrameBufferObject(const FrameBufferObjectId id = kInvalidFrameBufferId):
       id_(id) {
     }
     FrameBufferObject(const bool generate = true,
                       const bool bind = true,
                       const bool unbind = true):
-      id_(kInvalidBufferObject) {
+      id_(kInvalidFrameBufferId) {
       Initialize(generate, bind, unbind);
     }
     constexpr FrameBufferObject(const FrameBufferObject& rhs):
@@ -102,41 +107,13 @@ namespace mcc {
       if(status != GL_FRAMEBUFFER_COMPLETE)
         LOG_AT_LEVEL(Severity) << "framebuffer error: " << status;
     }
-
-    void operator=(const FrameBufferObject& rhs) {
-      id_ = rhs.id_;
-    }
-
-    void operator=(const BufferObjectId& rhs) {
-      id_ = rhs;
-    }
-
-    bool operator==(const FrameBufferObject& rhs) const {
-      return id_ == rhs.id_;
-    }
-
-    bool operator==(const BufferObjectId& rhs) const {
-      return id_ == rhs;
-    }
-
-    bool operator!=(const FrameBufferObject& rhs) const {
-      return id_ != rhs.id_;
-    }
-
-    bool operator!=(const BufferObjectId& rhs) const {
-      return id_ != rhs;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const FrameBufferObject& rhs) {
-      stream << "FrameBufferObject(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
+  public:
+    static inline FrameBufferObject*
+    New(const FrameBufferObjectId id = kInvalidFrameBufferId) {
+      return new FrameBufferObject(id);
     }
   };
   DEFINE_RESOURCE_SCOPE(FrameBufferObject);
-
-  static constexpr const BufferObjectId kDefaultFrameBufferObjectId = 0;
 }
 
 #endif //MCC_FRAMEBUFFER_OBJECT_H

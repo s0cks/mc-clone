@@ -3,8 +3,10 @@
 
 #include "mcc/gfx.h"
 
-namespace mcc {
-  typedef GLuint FrameBufferId;
+namespace mcc::fbuff {
+  typedef GLuint FrameBufferObjectId;
+  static constexpr const FrameBufferObjectId kInvalidFrameBufferId = -1;
+  static constexpr const FrameBufferObjectId kDefaultFrameBufferObjectId = 0;
 
   enum FrameBufferTarget {
     kFrameBuffer = GL_FRAMEBUFFER,

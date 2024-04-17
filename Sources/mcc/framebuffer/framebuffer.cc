@@ -2,7 +2,7 @@
 #include "mcc/engine/engine.h"
 #include "mcc/shader/shader.h"
 
-namespace mcc {
+namespace mcc::fbuff {
   static const d2::VertexList kFrameBufferVertices = {
     { .pos = glm::vec2(1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f) },
     { .pos = glm::vec2(-1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f) },

@@ -4,7 +4,7 @@
 #include <vector>
 #include "mcc/texture/texture.h"
 
-namespace mcc {
+namespace mcc::fbuff {
 #define FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(V) \
   V(ColorBuffer)                                \
   V(RenderBuffer)                               \

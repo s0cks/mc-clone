@@ -9,7 +9,7 @@
 #include "mcc/framebuffer/framebuffer_object.h"
 #include "mcc/framebuffer/framebuffer_attachment.h"
 
-namespace mcc {
+namespace mcc::fbuff {
   class FrameBuffer {
   private:
     FrameBufferObject fbo_;

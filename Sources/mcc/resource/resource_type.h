@@ -8,7 +8,9 @@ namespace mcc {
 #define FOR_EACH_RESOURCE_TYPE(V) \
   V(Shader)                       \
   V(Texture)                      \
-  V(Material)
+  V(Material)                     \
+  V(BufferObject)                 \
+  V(FrameBufferObject)
 
   namespace resource {
     enum Type : uint8_t {

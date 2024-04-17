@@ -1,8 +1,8 @@
 #include "mcc/framebuffer/framebuffer_factory.h"
 
 namespace mcc::fbuff {
-  FrameBufferId FrameBufferFactory::Create() {
-    FrameBufferId id;
+  FrameBufferObjectId FrameBufferFactory::Create() {
+    FrameBufferObjectId id;
     glGenFramebuffers(1, &id);
     CHECK_GL(FATAL);
     glBindFramebuffer(GetTarget(), id);
