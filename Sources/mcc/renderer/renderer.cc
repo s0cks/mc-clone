@@ -32,6 +32,7 @@
 
 #include "mcc/renderer/renderable.h"
 #include "mcc/renderer/render_pass.h"
+#include "mcc/renderer/renderer_stats.h"
 #include "mcc/renderer/render_pass_executor.h"
 
 namespace mcc::renderer {
@@ -386,9 +387,8 @@ namespace mcc::renderer {
   void Renderer::Run(const uv_run_mode mode) {
     const auto start_ns = uv_hrtime();
     const auto delta_ns = (start_ns - last_frame_ns_);
-    if((delta_ns / (NSEC_PER_SEC * 1.0f)) < kRate) {
+    if((delta_ns / (NSEC_PER_SEC * 1.0f)) < kRate)
       return;
-    }
 
     LOG(INFO) << "rendering....";
     frame_start_ns_ = start_ns;
@@ -405,6 +405,9 @@ namespace mcc::renderer {
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);
     stats_.AppendTime(total_ns);
     stats_.AppendEntities((uint64_t) entities_);
+    entities_ = 0;
+    stats_.AppendVertices((uint64_t) vertices_);
+    vertices_ = 0;
 
     const auto& time = stats_.time();
     using namespace units::time;

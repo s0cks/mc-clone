@@ -15,6 +15,8 @@ namespace mcc::renderer {
   protected:
     TimeSeries<10> time_;
     NumericSeries<uint64_t, 10> entities_;
+    NumericSeries<uint64_t, 10> fps_;
+    NumericSeries<uint64_t, 10> vertices_;
 
     inline void AppendTime(const uint64_t time) {
       time_.Append(time);
@@ -22,6 +24,10 @@ namespace mcc::renderer {
 
     inline void AppendEntities(const uint64_t entities) {
       entities_.Append(entities);
+    }
+
+    inline void AppendVertices(const uint64_t vertices) {
+      vertices_.Append(vertices);
     }
   public:
     RendererStats() = default;
@@ -33,6 +39,10 @@ namespace mcc::renderer {
 
     const NumericSeries<uint64_t, 10> entities() const {
       return entities_;
+    }
+
+    const NumericSeries<uint64_t, 10> vertices() const {
+      return vertices_;
     }
   };
 }
