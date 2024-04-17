@@ -58,18 +58,15 @@ namespace mcc::texture {
   };
 
   TextureId TextureFactory::Create() const {
-    DLOG(INFO) << "creating texture....";
     TextureFactoryBindScope scope(this);
     ApplyProperties();
     return scope.id();
   }
 
   TextureId TextureFactory::Create(img::Image* image) const {
-    DLOG(INFO) << "creating texture from image....";
     TextureFactoryBindScope scope(this);
     ApplyProperties();
     ApplyImage(image);
-    DLOG(INFO) << "created texture: " << scope.id();
     return scope.id();
   }
 
