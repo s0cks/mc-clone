@@ -95,7 +95,7 @@ namespace mcc::renderer {
     static uint64_t GetVertexCounter();
     static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
-    static RendererSampleSeries* GetSamples();
+    static const RendererStats& GetStats();
     static FrameBuffer* GetFrameBuffer();
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);

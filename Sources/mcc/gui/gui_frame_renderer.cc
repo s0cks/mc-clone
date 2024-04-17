@@ -26,17 +26,17 @@ namespace mcc::gui {
     nk_labelf(ctx, NK_TEXT_LEFT, "Entities: %" PRIu64, renderer::Renderer::GetEntityCounter());
     nk_labelf(ctx, NK_TEXT_LEFT, "Vertices: %" PRIu64, renderer::Renderer::GetVertexCounter());
 
-    {
-      nk_layout_row_dynamic(ctx, size.y - (size.y - 4), 5);
-      nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
-      const auto samples = renderer::Renderer::GetSamples();
-      nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, renderer::kNumberOfRendererSamples);
-      nk_labelf(ctx, NK_TEXT_LEFT, "Avg: %04.04lfms", samples->GetAvgDuration() / (1.0f * NSEC_PER_MSEC));
-      nk_labelf(ctx, NK_TEXT_LEFT, "Min: %04.04lfms", samples->GetMinDuration() / (1.0f * NSEC_PER_MSEC));
-      nk_labelf(ctx, NK_TEXT_LEFT, "Max: %04.04lfms", samples->GetMaxDuration() / (1.0f * NSEC_PER_MSEC));
-    }
+    // {
+    //   nk_layout_row_dynamic(ctx, size.y - (size.y - 4), 5);
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %04llu", renderer::Renderer::GetFPS());
+    //   const auto samples = renderer::Renderer::GetSamples();
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Samples: %" PRIu64, renderer::kNumberOfRendererSamples);
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Avg: %04.04lfms", samples->GetAvgDuration() / (1.0f * NSEC_PER_MSEC));
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Min: %04.04lfms", samples->GetMinDuration() / (1.0f * NSEC_PER_MSEC));
+    //   nk_labelf(ctx, NK_TEXT_LEFT, "Max: %04.04lfms", samples->GetMaxDuration() / (1.0f * NSEC_PER_MSEC));
+    // }
 
-    //TODO:
+    // //TODO:
     // {
     //   nk_layout_row_dynamic(ctx, size.y - ((size.y - 4) * 2), 5);
     //   nk_labelf(ctx, NK_TEXT_LEFT, "TPS: %04llu", Engine::GetTPS());

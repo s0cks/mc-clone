@@ -56,7 +56,11 @@ namespace mcc::renderer {
   static EntitySet tracked_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
-  static RendererSampleSeries samples_;
+  static RendererStats stats_;
+
+  const RendererStats& Renderer::GetStats() {
+    return stats_;
+  }
 
   void Renderer::SetMode(const Renderer::Mode mode) {
     mode_ = mode;
@@ -384,6 +388,8 @@ namespace mcc::renderer {
     if((delta_ns / (NSEC_PER_SEC * 1.0f)) < kRate) {
       return;
     }
+
+    LOG(INFO) << "rendering....";
     frame_start_ns_ = start_ns;
     frame_dts_ = delta_ns;
     if((start_ns - last_second_) >= NSEC_PER_SEC) {
@@ -396,16 +402,18 @@ namespace mcc::renderer {
 
     frame_end_ns_ = uv_hrtime();
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);
-    samples_ << RendererSample {
-      .duration = total_ns,
-      .entities = (uint64_t) entities_,
-    };
+    stats_.AppendTime(total_ns);
+    stats_.AppendEntities((uint64_t) entities_);
+
+    const auto& time = stats_.time();
+    using namespace units::time;
+    DLOG(INFO) << "rendering finished.";
+    DLOG(INFO) << "time: " << nanosecond_t(total_ns) << "; avg=" << nanosecond_t(time.average()) << ", min=" << nanosecond_t(time.min()) << ", max=" << nanosecond_t(time.max());
+    const auto& entities = stats_.entities();
+    DLOG(INFO) << "entities: " << entities_ << "; avg=" << entities.average() << ", min=" << entities.min() << ", max=" << entities.max();
+
     frames_ += 1;
     last_frame_ns_ = frame_start_ns_;
-  }
-
-  RendererSampleSeries* Renderer::GetSamples() {
-    return &samples_;
   }
 
   FrameBuffer* Renderer::GetFrameBuffer() {

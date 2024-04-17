@@ -54,11 +54,11 @@ namespace mcc {
     }
   };
 
-  template<const uint64_t Capacity = 10>
-  class TimeSeries : public Series<uint64_t, Capacity> {
+  template<typename T, const uint64_t Capacity = 10>
+  class NumericSeries : public Series<uint64_t, Capacity> {
   public:
-    TimeSeries() = default;
-    ~TimeSeries() override = default;
+    NumericSeries() = default;
+    ~NumericSeries() override = default;
 
     inline uint64_t average() const {
       return Series<uint64_t, Capacity>::ToObservable()
@@ -77,6 +77,17 @@ namespace mcc {
         .as_blocking()
         .min();
     }
+
+    explicit operator rx::observable<uint64_t> () const {
+      return Series<uint64_t, Capacity>::ToObservable();
+    }
+  };
+
+  template<const uint64_t Capacity = 10>
+  class TimeSeries : public NumericSeries<uint64_t, Capacity> {
+  public:
+    TimeSeries() = default;
+    ~TimeSeries() override = default;
 
     explicit operator rx::observable<uint64_t> () const {
       return Series<uint64_t, Capacity>::ToObservable();

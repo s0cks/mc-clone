@@ -10,81 +10,29 @@
 #include "mcc/renderer/renderer_state.h"
 
 namespace mcc::renderer {
-  struct RendererSample {
-    uint64_t duration;
-    uint64_t entities;
+  class RendererStats {
+    friend class Renderer;
+  protected:
+    TimeSeries<10> time_;
+    NumericSeries<uint64_t, 10> entities_;
 
-    friend std::ostream& operator<<(std::ostream& stream, const RendererSample& rhs) {
-      stream << "RendererSample(";
-      stream << "duration=" << rhs.duration << ", ";
-      stream << "entities=" << rhs.entities;
-      stream << ")";
-      return stream;
+    inline void AppendTime(const uint64_t time) {
+      time_.Append(time);
+    }
+
+    inline void AppendEntities(const uint64_t entities) {
+      entities_.Append(entities);
     }
   public:
-    struct DurationComparator {
-    public:
-      bool operator() (const RendererSample& lhs, const RendererSample& rhs) {
-        return lhs.duration < rhs.duration;
-      }
-    };
+    RendererStats() = default;
+    virtual ~RendererStats() = default;
 
-    struct EntitiesComparator {
-    public:
-      bool operator()(const RendererSample& lhs, const RendererSample& rhs) {
-        return lhs.entities < rhs.entities;
-      }
-    };
-  };
-
-  static constexpr const uint64_t kNumberOfRendererSamples = 60;
-  class RendererSampleSeries : public Series<RendererSample, kNumberOfRendererSamples> {  public:
-    RendererSampleSeries():
-      Series() {
-    }
-    ~RendererSampleSeries() = default;
-
-    uint64_t GetTotalNanoseconds() const {
-      uint64_t total = 0;
-      for(auto& sample : data_)
-        total += sample.duration;
-      return total;
+    const TimeSeries<10>& time() const {
+      return time_;
     }
 
-    uint64_t GetAvgDuration() const {
-      return GetTotalNanoseconds() / data_.size();
-    }
-
-    uint64_t GetMaxDuration() const {
-      return std::max_element(data_.begin(), data_.end(), RendererSample::DurationComparator{})->duration;
-    }
-
-    uint64_t GetMinDuration() const {
-      return std::min_element(data_.begin(), data_.end(), RendererSample::DurationComparator{})->duration;
-    }
-
-    uint64_t GetTotalEntities() const {
-      uint64_t total = 0;
-      for(auto& sample : data_) {
-        total += sample.entities;
-      }
-      return total;
-    }
-
-    uint64_t GetAvgEntities() const {
-      return GetTotalEntities() / data_.size();
-    }
-
-    uint64_t GetMaxEntities() const {
-      return std::max_element(data_.begin(), data_.end(), RendererSample::EntitiesComparator{})->entities;
-    }
-
-    uint64_t GetMinEntities() const {
-      return std::min_element(data_.begin(), data_.end(), RendererSample::EntitiesComparator{})->entities;
-    }
-
-    void operator<<(const RendererSample& rhs) {
-      data_.put(rhs);
+    const NumericSeries<uint64_t, 10> entities() const {
+      return entities_;
     }
   };
 }
