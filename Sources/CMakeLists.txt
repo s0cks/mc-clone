@@ -124,13 +124,14 @@ add_library(${PROJECT_NAME}
   mcc/window/window_event.h
   mcc/window/window.h mcc/window/window.cc
   mcc/window/window_glfw.h mcc/window/window_glfw.cc
+# Image
+  mcc/image/image_constants.h
+  mcc/image/image.h mcc/image/image.cc
+  mcc/image/image_data.h mcc/image/image_data.cc
+  mcc/image/image_decoder.h
+  mcc/image/image_png.h mcc/image/image_png.cc
+  mcc/image/image_jpeg.h mcc/image/image_jpeg.cc
 # Textures
-  mcc/texture/image/image_constants.h
-  mcc/texture/image/image.h mcc/texture/image/image.cc
-  mcc/texture/image/image_data.h mcc/texture/image/image_data.cc
-  mcc/texture/image/image_decoder.h
-  mcc/texture/image/image_png.h mcc/texture/image/image_png.cc
-  mcc/texture/image/image_jpeg.h mcc/texture/image/image_jpeg.cc
   mcc/texture/texture_file.h
   mcc/texture/texture_file_resolver.h
   mcc/texture/texture_spec.h mcc/texture/texture_spec.cc

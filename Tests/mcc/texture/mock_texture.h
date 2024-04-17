@@ -16,6 +16,7 @@ namespace mcc::texture {
     MOCK_METHOD(void, Bind, (), (const, override));
     MOCK_METHOD(void, Bind, (const uint32_t), (const, override));
     MOCK_METHOD(void, Unbind, (), (const, override));
+    MOCK_METHOD(TextureTarget, GetTextureTarget, (), (const, override));
   private:
     class MockTextureWrapper : public Texture {
     protected:
@@ -30,6 +31,10 @@ namespace mcc::texture {
         delegate_(delegate) {
       }
       ~MockTextureWrapper() = default;
+
+      TextureTarget GetTextureTarget() const override {
+        return Delegate()->GetTextureTarget();
+      }
 
       void Bind() const override {
         return Delegate()->Bind();

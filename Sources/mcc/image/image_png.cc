@@ -1,10 +1,10 @@
-#include "mcc/texture/image/image.h"
+#include "mcc/image/image.h"
 
 #include <png.h>
 #include <string>
 #include <glog/logging.h>
 
-#include "mcc/texture/image/image_data.h"
+#include "mcc/image/image_data.h"
 
 namespace mcc::img::png {
   ImagePtr PngImageDecoder::DecodePNG(FILE* file) {

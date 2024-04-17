@@ -5,10 +5,11 @@
 #ifndef MCC_PNG_H
 #define MCC_PNG_H
 
-#include "mcc/texture/image/image.h"
 #include <string>
 #include <optional>
-#include "mcc/texture/image/image_decoder.h"
+
+#include "mcc/image/image.h"
+#include "mcc/image/image_decoder.h"
 
 namespace mcc::img::png {
   class PngImageDecoder : public ImageDecoder {

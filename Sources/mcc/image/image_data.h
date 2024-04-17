@@ -5,7 +5,7 @@
 #include <units.h>
 
 #include "mcc/common.h"
-#include "mcc/texture/image/image_constants.h"
+#include "mcc/image/image_constants.h"
 
 namespace mcc {
   class ImageData;

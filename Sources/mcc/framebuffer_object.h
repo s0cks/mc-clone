@@ -58,8 +58,9 @@ namespace mcc {
     }
 
     void Attach(const FrameBufferTextureAttachment attachment, TextureRef texture, const int level = 0) {
-      glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture->target(), texture->id(), level);
-      CHECK_GL(FATAL);
+      //TODO:
+      // glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture->target(), texture->id(), level);
+      // CHECK_GL(FATAL);
     }
 
     void Attach(FrameBufferAttachment* attachment, const int level = 0) {
@@ -82,8 +83,9 @@ namespace mcc {
     }
 
     void Attach(const uint64_t slot, TextureRef texture, const int level = 0) {
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot, texture->target(), texture->id(), level);
-      CHECK_GL(FATAL);
+      //TODO:
+      // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot, texture->target(), texture->id(), level);
+      // CHECK_GL(FATAL);
     }
 
 #define DEFINE_ATTACH_DEPTH_BUFFER(Name, _)                                                           \

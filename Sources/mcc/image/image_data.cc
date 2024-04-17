@@ -1,4 +1,4 @@
-#include "mcc/texture/image/image_data.h"
+#include "mcc/image/image_data.h"
 
 namespace mcc {
   ImageData::ImageData(const uint32_t num_bytes):

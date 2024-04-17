@@ -1,5 +1,5 @@
 #ifndef MCC_IMAGE_H
-#error "Please #include <mcc/texture/image.h> instead."
+#error "Please #include <mcc/image/image.h> instead."
 #endif //MCC_IMAGE_H
 
 #ifndef MCC_JPEG_H
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "mcc/texture/image/image_decoder.h"
+#include "mcc/image/image_decoder.h"
 
 namespace mcc::img::jpeg {
   bool Decode(const std::string& filename, Image& result);

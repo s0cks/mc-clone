@@ -6,8 +6,8 @@
 #include "mcc/uri.h"
 #include "mcc/flags.h"
 #include "mcc/common.h"
+#include "mcc/image/image.h"
 #include "mcc/texture/texture.h"
-#include "mcc/texture/image/image.h"
 #include "mcc/texture/texture_spec.h"
 
 namespace mcc {

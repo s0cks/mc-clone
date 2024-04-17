@@ -2,7 +2,7 @@
 #define MCC_IMAGE_H
 
 #include "mcc/uri.h"
-#include "mcc/texture/image/image_data.h"
+#include "mcc/image/image_data.h"
 
 namespace mcc::img {
   class Image {
@@ -54,8 +54,8 @@ namespace mcc::img {
   };
 }
 
-#include "mcc/texture/image/image_png.h"
-#include "mcc/texture/image/image_jpeg.h"
+#include "mcc/image/image_png.h"
+#include "mcc/image/image_jpeg.h"
 
 namespace mcc::img {
   rx::observable<ImagePtr> GetImage(const uri::Uri& uri);

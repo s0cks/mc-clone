@@ -1,4 +1,4 @@
-#include "mcc/texture/image/image.h"
+#include "mcc/image/image.h"
 
 namespace mcc::img {
   rx::observable<ImagePtr> GetImage(const uri::Uri& uri) {

@@ -3,7 +3,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/uri.h"
-#include "mcc/texture/image/image_constants.h"
+#include "mcc/image/image_constants.h"
 
 namespace mcc::img {
   class ImageDecoder {

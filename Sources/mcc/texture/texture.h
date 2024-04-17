@@ -141,63 +141,43 @@ namespace mcc::texture {
     }
   };
 
-  class Texture : public gfx::Resource, public res::ResourceTemplate<res::kTextureType>  {
+  class Texture : public gfx::Resource,
+                  public res::ResourceTemplate<res::kTextureType>  {
   public:
     static rx::observable<TextureId> GenerateTextureId(const int num = 1);
   protected:
     TextureId id_;
-    TextureTarget target_;
-    TextureOptions options_;
-    TextureData data_;
 
     void Destroy () override;
   public:
     Texture() = default;
-    explicit Texture(const TextureId id):
+    explicit Texture(const TextureId id = kInvalidTextureId):
       gfx::Resource(),
       res::ResourceTemplate<res::kTextureType>(),
-      id_(id),
-      target_(),
-      options_(),
-      data_() {
-    }
-    explicit Texture(const TextureId id,
-                     const TextureOptions& options,
-                     const TextureData& data):
-      gfx::Resource(),
-      res::ResourceTemplate<res::kTextureType>(),
-      id_(id),
-      options_(options),
-      data_(data) {
+      id_(id) {
     }
     Texture(const Texture& rhs):
       gfx::Resource(),
       res::ResourceTemplate<res::kTextureType>(),
-      id_(rhs.id_),
-      options_(rhs.options_),
-      data_(rhs.data_) {
+      id_(rhs.id_) {
     }
-    ~Texture() override {
-      //TODO: delete?
-    }
+    ~Texture() override = default;
+    virtual TextureTarget GetTextureTarget() const = 0;
 
     TextureId id() const {
       return id_;
     }
 
-    TextureTarget target() const {
-      return target_;
-    }
-    
     TextureWrap GetTextureWrap() const;
 
     Pixel GetPixel(const uint32_t x, const uint32_t y) {
-      glReadBuffer(target());
-      CHECK_GL(FATAL);
-      Pixel pixel;
-      glReadPixels(x, y, 1, 1, data_.format(), data_.type(), &pixel);
-      CHECK_GL(FATAL);
-      return pixel;
+      // glReadBuffer(GetTextureTarget());
+      // CHECK_GL(FATAL);
+      // Pixel pixel;
+      // glReadPixels(x, y, 1, 1, data_.format(), data_.type(), &pixel);
+      // CHECK_GL(FATAL);
+      // return pixel;
+      return {};
     }
 
     Pixel GetPixel(const TextureCoord& coord) {
@@ -205,12 +185,12 @@ namespace mcc::texture {
     }
 
     void Bind() const override {
-      glBindTexture(target_, id_);
+      glBindTexture(GetTextureTarget(), id_);
       CHECK_GL(FATAL);
     }
 
     void Unbind() const override {
-      glBindTexture(target_, kInvalidTextureId);
+      glBindTexture(GetTextureTarget(), kInvalidTextureId);
       CHECK_GL(FATAL);
     }
 

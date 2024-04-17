@@ -1,4 +1,4 @@
-#include "mcc/texture/image/image.h"
+#include "mcc/image/image.h"
 
 #include <cstdio>
 #include <cstdlib>
