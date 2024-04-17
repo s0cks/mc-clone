@@ -10,24 +10,7 @@
 namespace mcc::fbuff {
   class FrameBufferObject : public res::ResourceTemplate<res::kFrameBufferObjectType> { //TODO: extend BufferObject somehow
   private:
-    FrameBufferObjectId id_; 
-
-    inline void Initialize(const bool generate = true,
-                           const bool bind = true,
-                           const bool unbind = true) {
-      if(!generate)
-        return;
-      glGenFramebuffers(1, &id_);
-      CHECK_GL(FATAL);
-      if(!bind)
-        return;
-      glBindFramebuffer(GL_FRAMEBUFFER, id_);
-      CHECK_GL(FATAL);
-      if(!unbind)
-        return;
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      CHECK_GL(FATAL);
-    }
+    FrameBufferObjectId id_;
 
     void Destroy() override {
       
@@ -35,12 +18,6 @@ namespace mcc::fbuff {
   public:
     explicit constexpr FrameBufferObject(const FrameBufferObjectId id = kInvalidFrameBufferId):
       id_(id) {
-    }
-    FrameBufferObject(const bool generate = true,
-                      const bool bind = true,
-                      const bool unbind = true):
-      id_(kInvalidFrameBufferId) {
-      Initialize(generate, bind, unbind);
     }
     constexpr FrameBufferObject(const FrameBufferObject& rhs):
       id_(rhs.id_) {  
