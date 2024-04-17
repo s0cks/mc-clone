@@ -90,6 +90,8 @@ add_library(${PROJECT_NAME}
 # Render
   mcc/renderer/projection_matrix.h mcc/renderer/projection_matrix.cc
   mcc/renderer/render_pass.h mcc/renderer/render_pass.cc
+  mcc/renderer/render_pass_2d.h mcc/renderer/render_pass_2d.cc
+  mcc/renderer/render_pass_3d.h mcc/renderer/render_pass_3d.cc
   mcc/renderer/render_pass_executor.h mcc/renderer/render_pass_executor.cc
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h

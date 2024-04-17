@@ -32,6 +32,8 @@
 
 #include "mcc/renderer/renderable.h"
 #include "mcc/renderer/render_pass.h"
+#include "mcc/renderer/render_pass_2d.h"
+#include "mcc/renderer/render_pass_3d.h"
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/renderer/render_pass_executor.h"
 
@@ -301,30 +303,6 @@ namespace mcc::renderer {
     }
   };
 
-  class RenderPass2d : public render::RenderPassSequence {
-  public:
-    RenderPass2d() = default;
-    ~RenderPass2d() override = default;
-
-    const char* GetName() const override {
-      return "2d";
-    }
-  };
-
-  class RenderPass3d : public render::RenderPassSequence {
-  protected:
-    void Render() override {
-      pipeline_.Get()->Render();
-    }
-  public:
-    RenderPass3d() = default;
-    ~RenderPass3d() override = default;
-
-    const char* GetName() const override {
-      return "3d";
-    }
-  };
-
   static ThreadLocal<render::RenderPass> pass_;
 
   static inline void
@@ -345,12 +323,11 @@ namespace mcc::renderer {
     //Window::AddFrame(gui::SettingsFrame::New());
     //Window::AddFrame(gui::RendererFrame::New());
 
-    const auto pass = new render::RenderPassSequence();
-    pass->Append(new RenderPass2d());
-    pass->Append(new RenderPass3d());
-    pass_.Set(pass);
-
     pipeline_.Set(new RendererPipeline());
+    const auto pass = new render::RenderPassSequence();
+    pass->Append(new render::RenderPass2d());
+    pass->Append(new render::RenderPass3d(pipeline_.Get()));
+    pass_.Set(pass);
     cam_data_.Set(new camera::PerspectiveCameraDataUniformBufferObject());
 
     Entity::OnSignatureChanged()
