@@ -5,7 +5,6 @@
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
 #include "mcc/ecs/entity.h"
-#include "mcc/input/constants.h"
 #include "mcc/mouse/mouse_event.h"
 
 namespace mcc {

@@ -73,8 +73,12 @@ add_library(${PROJECT_NAME}
   mcc/framebuffer_pipeline.h mcc/framebuffer_pipeline.cc
   mcc/subscription_trie.h
   mcc/skybox.h mcc/skybox.cc
-  mcc/input/constants.h
-  mcc/input/keyboard.h mcc/input/keyboard.cc
+# Keyboard
+  mcc/keyboard/keyboard_constants.h
+  mcc/keyboard/key_state_set.h
+  mcc/keyboard/keyboard_event.h mcc/keyboard/keyboard_event.cc
+  mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc
+  mcc/keyboard/keyboard_glfw.h mcc/keyboard/keyboard_glfw.cc
 # Mouse
   mcc/mouse/mouse_constants.h
   mcc/mouse/mouse_event.h mcc/mouse/mouse_event.cc

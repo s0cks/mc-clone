@@ -3,7 +3,7 @@
 #include "mcc/camera/camera.h"
 
 #include "mcc/mouse/mouse.h"
-#include "mcc/input/keyboard.h"
+#include "mcc/keyboard/keyboard.h"
 
 #include "mcc/window/window.h"
 #include "mcc/engine/engine.h"

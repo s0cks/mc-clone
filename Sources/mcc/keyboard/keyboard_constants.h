@@ -1,11 +1,14 @@
-#ifndef MCC_KEYBOARD_H
-#define MCC_KEYBOARD_H
+#ifndef MCC_KEYBOARD_CONSTANTS_H
+#define MCC_KEYBOARD_CONSTANTS_H
 
-#include "mcc/rx.h"
 #include "mcc/gfx.h"
-#include "mcc/input/constants.h"
 
-namespace mcc {
+namespace mcc::keyboard {
+  enum KeyState : GLenum {
+    kKeyPressed = GLFW_PRESS,
+    kKeyReleased = GLFW_RELEASE,
+    kKeyRepeat = GLFW_REPEAT,
+  };
 
 #define FOR_EACH_KEY_CODE(_) \
   _(Space, SPACE) \
@@ -110,20 +113,6 @@ namespace mcc {
         return GLFW_KEY_UNKNOWN;
     }
   }
-
-  struct KeyEvent {
-    InputState state;
-    KeyCode code;
-  };
-
-  typedef rxsub::subject<KeyEvent> KeyEventSubject;
-
-  class Keyboard {
-    DEFINE_NON_INSTANTIABLE_TYPE(Keyboard);
-  public:
-    static void Process();
-    static rx::observable<KeyEvent> GetKeyEventObservable();
-  };
 }
 
-#endif //MCC_KEYBOARD_H
+#endif //MCC_KEYBOARD_CONSTANTS_H

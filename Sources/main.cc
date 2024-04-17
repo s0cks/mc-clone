@@ -26,6 +26,8 @@
 
 #include "mcc/os_thread.h"
 
+#include "mcc/keyboard/keyboard.h"
+
 int main(int argc, char** argv) {
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
@@ -78,5 +80,11 @@ int main(int argc, char** argv) {
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();
+
+  const auto keyboard = GetKeyboard();
+  keyboard->OnPressed(keyboard::kEscape)
+    .subscribe([engine](keyboard::KeyPressedEvent* event) {
+      engine->Shutdown();
+    });
   return EXIT_SUCCESS;
 }

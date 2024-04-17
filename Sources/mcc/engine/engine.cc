@@ -4,6 +4,8 @@
 #include "mcc/thread_local.h"
 #include "mcc/renderer/renderer.h"
 
+#include "mcc/keyboard/keyboard.h"
+
 namespace mcc::engine {
   void Engine::Run() {
     // pre-init
@@ -34,6 +36,9 @@ namespace mcc::engine {
       const auto mouse = GetMouse();
       if(mouse)
         mouse->Process();
+      const auto keyboard = GetKeyboard();
+      if(keyboard)
+        keyboard->Process();
 
       Publish<TickEvent>();
 
