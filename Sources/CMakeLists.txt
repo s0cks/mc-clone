@@ -145,6 +145,7 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
 # Framebuffer
+  mcc/framebuffer/framebuffer_factory.h mcc/framebuffer/framebuffer_factory.cc
   mcc/framebuffer/framebuffer_constants.h
   mcc/framebuffer/framebuffer_object.h
   mcc/framebuffer/framebuffer_attachment.h

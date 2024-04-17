@@ -4,6 +4,8 @@
 #include "mcc/gfx.h"
 
 namespace mcc {
+  typedef BufferObjectId FrameBufferId;
+
   enum FrameBufferTarget {
     kFrameBuffer = GL_FRAMEBUFFER,
 
