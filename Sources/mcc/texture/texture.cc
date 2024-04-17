@@ -17,6 +17,12 @@ namespace mcc {
 
   typedef rx::observable<Texture*> TextureObservable;
 
+  static rx::subject<TextureEvent*> events_;
+
+  rx::observable<TextureEvent*> OnEvent() {
+    return events_.get_observable();
+  }
+
   static inline Texture*
   ZipTexture(const TextureId& id, TextureSpec* spec, const img::ImagePtr& image) {
     const auto target = spec->GetTarget().value_or(k2D);

@@ -6,6 +6,7 @@
 #include "mcc/platform.h"
 #include "mcc/resource/resource.h"
 
+#include "mcc/texture/texture_event.h"
 #include "mcc/texture/texture_options.h"
 #include "mcc/texture/texture_constants.h"
 
@@ -250,17 +251,32 @@ namespace mcc {
   }
 
   using resource::TextureRef;
+  
+  TextureRef GetTexture(const uri::Uri& uri);
+  rx::observable<texture::TextureEvent*> OnEvent();
+
+  static inline TextureRef
+  GetTexture(const uri::basic_uri& uri) {
+    return GetTexture(uri::Uri(uri));
+  }
 
   static inline TextureRef
   NullTexture() {
     return TextureRef();
   }
 
-  TextureRef GetTexture(const uri::Uri& uri);
+  static inline rx::observable<texture::TextureCreatedEvent*>
+  OnCreatedEvent() {
+    return OnEvent()
+      .filter(texture::TextureCreatedEvent::FilterBy)
+      .map(texture::TextureCreatedEvent::Cast);
+  }
 
-  static inline TextureRef
-  GetTexture(const uri::basic_uri& uri) {
-    return GetTexture(uri::Uri(uri));
+  static inline rx::observable<texture::TextureDestroyedEvent*>
+  OnDestroyedEvent() {
+    return OnEvent()
+      .filter(texture::TextureDestroyedEvent::FilterBy)
+      .map(texture::TextureDestroyedEvent::Cast);
   }
 
   template<const uint32_t Slot, const texture::TextureTarget Target = texture::k2D>

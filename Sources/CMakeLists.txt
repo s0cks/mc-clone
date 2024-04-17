@@ -138,6 +138,7 @@ add_library(${PROJECT_NAME}
 # Textures
   mcc/texture/texture_factory.h mcc/texture/texture_factory.cc
   mcc/texture/texture_file.h
+  mcc/texture/texture_event.h mcc/texture/texture_event.cc
   mcc/texture/texture_file_resolver.h
   mcc/texture/texture_spec.h mcc/texture/texture_spec.cc
   mcc/texture/texture_wrap.h
