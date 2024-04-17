@@ -281,8 +281,11 @@ namespace mcc {
             const auto error = fmt::format("failed to open: {0:s}", path);
             return s.on_error(rx::util::make_error_ptr(std::runtime_error(error)));
           }
-
           s.on_next(file);
+
+          const auto err = fclose(file);
+          //TODO: check error
+
           s.on_completed();
         });
       }

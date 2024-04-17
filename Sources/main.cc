@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
   gui::Screen::Init();
   Window::Init();
   mouse::InitMouse();
+  keyboard::InitKeyboard();
   renderer::Renderer::Init();
   physics::PhysicsSimulator::Init();
   mesh::Mesh::Init();

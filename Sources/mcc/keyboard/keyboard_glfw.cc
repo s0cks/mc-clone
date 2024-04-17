@@ -24,7 +24,7 @@ namespace mcc::keyboard {
   }
 
   void GlfwKeyboard::Process() {
-    KeyStateSet keys;
-    UpdateAll(window(), keys);
+    // KeyStateSet keys;
+    // UpdateAll(window(), keys);
   }
 }

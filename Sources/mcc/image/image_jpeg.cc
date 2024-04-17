@@ -51,25 +51,14 @@ namespace mcc::img::jpeg {
   rx::observable<ImagePtr> JpegImageDecoder::Decode() {
     MCC_ASSERT(target().HasScheme("file"));
     MCC_ASSERT(target().HasExtension(".jpeg") || target().HasExtension(".jpg"));
-    return rx::observable<>::create<ImagePtr>([this](rx::subscriber<ImagePtr> s) {
-      const auto file = target().OpenFileForReading();
-      if(!file) {
-        const auto err = fmt::format("failed to open file: {0:s}", (const std::string&) target_);
-        s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
-        return;
-      }
-
-      const auto image = DecodeJPEG(file);
-      if(!image) {
-        const auto err = fmt::format("failed to decode PNG from file: {0:s}", (const std::string&) target_);
-        s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
-        return;
-      }
-
-      fclose(file);
-
-      s.on_next(image);
-      s.on_completed();
-    });
+    return target().AsyncOpenFile("rb")
+      .map([this](FILE* file) {
+        const auto image = DecodeJPEG(file);
+        if(!image) {
+          const auto err = fmt::format("failed to decode PNG from file: {0:s}", (const std::string&) target_);
+          throw new std::runtime_error(err);
+        }
+        return image;
+      });
   }
 }
