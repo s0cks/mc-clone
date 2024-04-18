@@ -87,6 +87,7 @@ namespace mcc {
     template<class S>
     class StatefulComponent : public Component {
       typedef ComponentState<S> State;
+      typedef std::set<State*, ComponentStateBase::EntityIdComparator> StateSet;
       typedef rx::observable<State*> StateObservable;
       typedef std::function<S*()> StateSupplier;
     private:
@@ -102,6 +103,10 @@ namespace mcc {
       }
     public:
       ~StatefulComponent() override = default;
+
+      const ComponentStateTable<S>& states() const {
+        return states_;
+      }
 
       bool HasState(const EntityId id) const {
         return states_.Has(id);

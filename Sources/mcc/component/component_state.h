@@ -50,11 +50,16 @@ namespace mcc::component {
     S* operator->() const {
       return Get();
     }
+
+    const S& operator*() const {
+      return *Get();
+    }
   };
 
   template<class S>
   class ComponentStateTable {
     typedef ComponentState<S> State;
+    typedef std::set<State*, ComponentStateBase::EntityIdComparator> StateSet;
     typedef std::function<State*> StateSupplier;
   private:
     class ComponentStateKey : public ComponentStateBase {
@@ -69,7 +74,7 @@ namespace mcc::component {
       }
     };
   protected:
-    std::set<ComponentStateBase*, ComponentStateBase::EntityIdComparator> states_;
+    StateSet states_;
 
     ComponentStateBase* GetState(const EntityId id) const {
       for(const auto state : states_) {
@@ -79,7 +84,7 @@ namespace mcc::component {
       return nullptr;
     }
 
-    inline ComponentStateBase* PutState(ComponentStateBase* state) {
+    inline ComponentStateBase* PutState(State* state) {
       const auto status = states_.insert(state);
       LOG_IF(ERROR, !status.second) << "failed to insert ComponentState into ComponentStateTable.";
       return state;
@@ -87,6 +92,14 @@ namespace mcc::component {
   public:
     ComponentStateTable() = default;
     virtual ~ComponentStateTable() = default;
+
+    typename StateSet::const_iterator begin() const {
+      return states_.begin();
+    }
+
+    typename StateSet::const_iterator end() const {
+      return states_.end();
+    }
 
     virtual void Remove(const EntityId id) {
       NOT_IMPLEMENTED(FATAL);//TODO: implement

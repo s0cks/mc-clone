@@ -12,6 +12,7 @@
 #include "mcc/gui/gui.h"
 
 #include "mcc/mcc.h"
+#include "mcc/entity/entity.h"
 #include "mcc/material/material.h"
 #include "mcc/font/font.h"
 #include "mcc/window/window.h"
@@ -61,10 +62,6 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
   using namespace mcc;
-  res::OnResourceEvent().subscribe([](res::ResourceEvent* event) {
-    DLOG(INFO) << "resource event: " << event->ToString();
-  });
-
   //TODO: settings::Init();
   font::Initialize();
   gui::Screen::Init();
@@ -76,6 +73,7 @@ int main(int argc, char** argv) {
   terrain::Terrain::Init();
   d2::Mesh::Init();
   fbuff::FrameBuffer::Init();
+  camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();

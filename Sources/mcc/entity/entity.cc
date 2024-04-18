@@ -1,5 +1,7 @@
 #include "mcc/entity/entity.h"
 
+#include "mcc/entity/generation.h"
+
 namespace mcc {
   namespace entity {
     static rx::subject<EntityEvent*> events_;

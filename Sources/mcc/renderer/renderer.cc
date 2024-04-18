@@ -50,7 +50,7 @@ namespace mcc::renderer {
   static shader::Shader* shader_;
 
   static Signature signature_;
-  static entity::FilteredEntityTracker tracker_;
+//  static entity::FilteredEntityTracker tracker_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
   static RendererStats stats_;
@@ -309,7 +309,7 @@ namespace mcc::renderer {
   void Renderer::OnPostInit(engine::PostInitEvent* e) {
     // signature_.set(Renderable::GetComponentId());
     // signature_.set(physics::Transform::GetComponentId());
-    tracker_.SetSignature(signature_);
+    //tracker_.SetSignature(signature_);
     // DLOG(INFO) << "signature: " << signature_;
 
     //Window::AddFrame(gui::SettingsFrame::New());
@@ -414,6 +414,7 @@ namespace mcc::renderer {
   }
 
   bool Renderer::VisitEntities(std::function<bool(const Entity&)> callback) {
-    return tracker_.VisitAll(callback);
+    NOT_IMPLEMENTED(ERROR);
+    return false;
   }
 }
