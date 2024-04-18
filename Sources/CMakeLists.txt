@@ -166,8 +166,11 @@ add_library(${PROJECT_NAME}
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
   mcc/camera/perspective_camera_component.h mcc/camera/perspective_camera_component.cc
 # Entity
+  mcc/entity/entity_id.h
+  mcc/entity/entity_signature.h
   mcc/entity/entity.h mcc/entity/entity.cc
   mcc/entity/entity_events.h mcc/entity/entity_events.cc
+  mcc/entity/entity_tracker.h mcc/entity/entity_tracker.cc
 # GUIs
   mcc/gui/shape.h mcc/gui/shape.cc
   mcc/gui/constants.h

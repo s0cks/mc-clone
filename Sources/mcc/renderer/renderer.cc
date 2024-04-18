@@ -23,6 +23,8 @@
 
 #include "mcc/gui/shape.h"
 
+#include "mcc/entity/entity_tracker.h"
+
 #include "mcc/renderer/render_pass.h"
 #include "mcc/renderer/render_pass_2d.h"
 #include "mcc/renderer/render_pass_3d.h"
@@ -48,7 +50,7 @@ namespace mcc::renderer {
   static shader::Shader* shader_;
 
   static Signature signature_;
-  static entity::EntitySet tracked_;
+  static entity::FilteredEntityTracker tracker_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
   static RendererStats stats_;
@@ -307,6 +309,7 @@ namespace mcc::renderer {
   void Renderer::OnPostInit(engine::PostInitEvent* e) {
     // signature_.set(Renderable::GetComponentId());
     // signature_.set(physics::Transform::GetComponentId());
+    tracker_.SetSignature(signature_);
     // DLOG(INFO) << "signature: " << signature_;
 
     //Window::AddFrame(gui::SettingsFrame::New());
@@ -317,21 +320,6 @@ namespace mcc::renderer {
     pass->Append(new render::RenderPass2d());
     pass->Append(new render::RenderPass3d(pipeline_.Get()));
     pass_.Set(pass);
-
-    entity::OnEntitySignatureChangedEvent()
-      .subscribe([](entity::EntitySignatureChangedEvent* e) {
-        const auto& esig = e->signature();
-        const auto& eid = e->id();
-        if((esig & signature_) == signature_) {
-          tracked_.Put(eid);
-        } else {
-          tracked_.Remove(eid);
-        }
-      });
-    entity::OnEntityDestroyedEvent()
-      .subscribe([](entity::EntityDestroyedEvent* e) {
-        tracked_.Remove(e->id());
-      });
   }
 
   uint64_t Renderer::GetFrameCount() {
@@ -426,10 +414,6 @@ namespace mcc::renderer {
   }
 
   bool Renderer::VisitEntities(std::function<bool(const Entity&)> callback) {
-    for(const auto& e : tracked_) {
-      if(!callback(e))
-        return false;
-    }
-    return true;
+    return tracker_.VisitAll(callback);
   }
 }

@@ -1,7 +1,9 @@
 #ifndef MCC_ENTITY_EVENTS_H
 #define MCC_ENTITY_EVENTS_H
 
+#include "mcc/rx.h"
 #include "mcc/event.h"
+#include "mcc/common.h"
 #include "mcc/entity/entity_signature.h"
 
 namespace mcc::entity {

@@ -2,6 +2,8 @@
 #define MCC_ENTITY_SET_H
 
 #include <unordered_set>
+
+#include "mcc/rx.h"
 #include "mcc/entity/entity_id.h"
 
 namespace mcc::entity {
@@ -43,6 +45,10 @@ namespace mcc::entity {
       if(pos == ids_.end())
         return false;
       return ids_.erase(id) == 1;
+    }
+
+    explicit operator rx::observable<EntityId> () const {
+      return rx::observable<>::iterate(ids_);
     }
   };
 }
