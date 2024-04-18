@@ -14,167 +14,150 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
+
 #include "mcc/entity/entity_id.h"
+#include "mcc/entity/entity_events.h"
+#include "mcc/entity/entity_signature.h"
+
 #include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
 
 namespace mcc {
-  typedef std::bitset<32> Signature;
+  namespace entity {
+    typedef std::unordered_set<EntityId> EntitySet;
 
-#define FOR_EACH_ENTITY_EVENT(V) \
-  V(Created)                     \
-  V(Destroyed)                   \
-  V(SignatureChanged)
+    class Entity {
+      struct HashFunction {
+        size_t operator()(const Entity& k) const {
+          return k.id();
+        }
+      };
+    private:
+      EntityId id_;
 
-#define FORWARD_DECLARE(Name) \
-  struct Entity##Name##Event;
-  FOR_EACH_ENTITY_EVENT(FORWARD_DECLARE)
-#undef FORWARD_DECLARE
+      void UpdateSignature(const ComponentId id, const bool value) const;
 
-  class Entity {
-  public:
-    struct HashFunction {
-      size_t operator()(const Entity& k) const {
-        return k.id();
+      inline void
+      AddToSignature(const ComponentId id) const {
+        return UpdateSignature(id, true);
+      }
+
+      inline void
+      RemoveFromSignature(const ComponentId id) const {
+        return UpdateSignature(id, false);
+      }
+    public:
+      constexpr Entity(const EntityId id = kInvalidEntityId):
+        id_(id) {
+      }
+      constexpr Entity(const Entity& rhs):
+        id_(rhs.id_) {
+      }
+      ~Entity() = default;
+
+      EntityId id() const {
+        return id_;
+      }
+
+      rx::observable<EntityEvent*> OnEvent() const;
+#define DECLARE_ON_EVENT(Name) \
+      rx::observable<Name##Event*> On##Name() const;
+      FOR_EACH_ENTITY_EVENT(DECLARE_ON_EVENT)
+#undef DECLARE_ON_EVENT
+
+      constexpr operator EntityId() const {
+        return id_;
+      }
+
+      void operator=(const Entity& rhs) {
+        id_ = rhs.id_;
+      }
+
+      void operator=(const EntityId& rhs) {
+        id_ = rhs;
+      }
+
+      bool operator==(const Entity& rhs) {
+        return id_ == rhs.id_;
+      }
+
+      bool operator!=(const Entity& rhs) {
+        return id_ != rhs.id_;
+      }
+
+      friend std::ostream& operator<<(std::ostream& stream, const Entity& rhs) {
+        stream << "Entity(";
+        stream << "id=" << rhs.id_;
+        stream << ")";
+        return stream;
+      }
+
+      //TODO:
+      // template<typename T>
+      // ComponentState<T> AddComponent(const T& component) const {
+      //   auto state = ComponentState<T>(component);
+      //   if(!T::PutState((*this), state)) {
+      //     LOG(ERROR) << "failed to put " << state << " for " << (*this);
+      //     return state;
+      //   }
+      //   AddToSignature(T::GetComponentId());
+      //   return state;
+      // }
+
+      template<typename T>
+      void RemoveComponent() const {
+        LOG_IF(ERROR, !T::RemoveState(*this)) << "failed to remove state for " << *this;
+        return RemoveFromSignature(T::GetComponentId());
       }
     };
-  private:
-    EntityId id_;
 
-    void UpdateSignature(const ComponentId id, const bool value) const;
+    rx::observable<EntityEvent*> OnEvent();
 
-    inline void
-    AddToSignature(const ComponentId id) const {
-      return UpdateSignature(id, true);
+    static inline rx::observable<EntityEvent*>
+    OnEvent(const EntityId id) {
+      return OnEvent()
+        .filter(EntityEvent::FilterById(id));
     }
 
-    inline void
-    RemoveFromSignature(const ComponentId id) const {
-      return UpdateSignature(id, false);
+#define DEFINE_ON_EVENT(Name)                                                  \
+    static inline rx::observable<Name##Event*>                                 \
+    On##Name##Event() {                                                        \
+      return OnEvent()                                                         \
+        .filter(Name##Event::Filter)                                           \
+        .map(Name##Event::Cast);                                               \
+    }                                                                          \
+    static inline rx::observable<Name##Event*>                                 \
+    On##Name##Event(const EntityId id) {                                       \
+      return OnEvent()                                                         \
+        .filter(Name##Event::FilterBy(id))                                     \
+        .map(Name##Event::Cast);                                               \
     }
-  public:
-    constexpr Entity(const EntityId id = kInvalidEntityId):
-      id_(id) {
-    }
-    constexpr Entity(const Entity& rhs):
-      id_(rhs.id_) {
-    }
-    ~Entity() = default;
+    FOR_EACH_ENTITY_EVENT(DEFINE_ON_EVENT)
+#undef DEFINE_ON_EVENT
 
-    EntityId id() const {
-      return id_;
-    }
+#define DEFINE_EVENT_LISTENER_INTERFACE(Name)                                    \
+    class Name##EventListener {                                                  \
+    protected:                                                                   \
+      rx::subscription sub_;                                                     \
+      Name##EventListener():                                                     \
+        sub_() {                                                                 \
+        sub_ = On##Name##Event()                                                 \
+          .subscribe([this](Name##Event* event) {                                \
+            return On##Name(event);                                              \
+          });                                                                    \
+      }                                                                          \
+      virtual void On##Name(Name##Event* event) = 0;                             \
+    public:                                                                      \
+      virtual ~Name##EventListener() {                                           \
+        sub_.unsubscribe();                                                      \
+      }                                                                          \
+    };
+    FOR_EACH_ENTITY_EVENT(DEFINE_EVENT_LISTENER_INTERFACE)
+#undef DEFINE_EVENT_LISTENER_INTERFACE
+  }
 
-    constexpr operator EntityId() const {
-      return id_;
-    }
-
-    void operator=(const Entity& rhs) {
-      id_ = rhs.id_;
-    }
-
-    void operator=(const EntityId& rhs) {
-      id_ = rhs;
-    }
-
-    bool operator==(const Entity& rhs) {
-      return id_ == rhs.id_;
-    }
-
-    bool operator!=(const Entity& rhs) {
-      return id_ != rhs.id_;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const Entity& rhs) {
-      stream << "Entity(";
-      stream << "id=" << rhs.id_;
-      stream << ")";
-      return stream;
-    }
-
-    //TODO:
-    // template<typename T>
-    // ComponentState<T> AddComponent(const T& component) const {
-    //   auto state = ComponentState<T>(component);
-    //   if(!T::PutState((*this), state)) {
-    //     LOG(ERROR) << "failed to put " << state << " for " << (*this);
-    //     return state;
-    //   }
-    //   AddToSignature(T::GetComponentId());
-    //   return state;
-    // }
-
-    template<typename T>
-    void RemoveComponent() const {
-      LOG_IF(ERROR, !T::RemoveState(*this)) << "failed to remove state for " << *this;
-      return RemoveFromSignature(T::GetComponentId());
-    }
-  public:
-#define DECLARE_GET_EVENT_OBSERVABLE(Name) \
-    static rx::observable<Entity##Name##Event*> On##Name();
-    FOR_EACH_ENTITY_EVENT(DECLARE_GET_EVENT_OBSERVABLE);
-#undef DECLARE_GET_EVENT_OBSERVABLE
-  };
-
-  struct EntitySignatureChangedEvent {
-    const EntityId id;
-    Signature signature;
-
-    friend std::ostream& operator<<(std::ostream& stream, const EntitySignatureChangedEvent& rhs) {
-      stream << "EntitySignatureChangedEvent(";
-      stream << "id=" << rhs.id << ", ";
-      stream << "signature=" << rhs.signature;
-      stream << ")";
-      return stream;
-    }
-  };
-
-#define DEFINE_EVENT_LISTENER_INTERFACE(Name)                                       \
-  class Entity##Name##Listener {                                                    \
-  protected:                                                                        \
-    rx::subscription sub_;                                                          \
-    Entity##Name##Listener():                                                       \
-      sub_() {                                                                      \
-      sub_ = Entity::On##Name()                                                     \
-        .subscribe([this](Entity##Name##Event* event) {                             \
-          return OnEntity##Name(event);                                                   \
-        });                                                                         \
-    }                                                                               \
-    virtual void OnEntity##Name(Entity##Name##Event* event) = 0;                          \
-  public:                                                                           \
-    virtual ~Entity##Name##Listener() {                                             \
-      sub_.unsubscribe();                                                           \
-    }                                                                               \
-  };
-
-  struct EntityDestroyedEvent {
-    const EntityId id;
-
-    friend std::ostream& operator<<(std::ostream& stream, const EntityDestroyedEvent& rhs) {
-      stream << "EntityDestroyedEvent(";
-      stream << "id=" << rhs.id;
-      stream << ")";
-      return stream;
-    }
-  };
-
-  DEFINE_EVENT_LISTENER_INTERFACE(SignatureChanged);
-  DEFINE_EVENT_LISTENER_INTERFACE(Created);
-  DEFINE_EVENT_LISTENER_INTERFACE(Destroyed);
-
-  static constexpr const uint64_t kMaxNumberOfEntities = 32;
-
-  class Entities {
-    DEFINE_NON_INSTANTIABLE_TYPE(Entities);
-  public:
-    static void Initialize();
-    static Entity CreateEntity();
-    static void SetSignature(const Entity e, const Signature& sig);
-    static Signature GetSignature(const Entity e);
-  };
-
-  typedef std::unordered_set<Entity, Entity::HashFunction> EntitySet;
-  typedef std::function<void(const Entity)> EntityCallback;
+  using entity::Signature;
+  using entity::Entity;
 }
 
 #endif //MCC_ENTITY_H

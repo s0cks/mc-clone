@@ -79,8 +79,8 @@ namespace mcc {
 
     template<class S>
     class StatefulComponent : public Component,
-                              public EntityDestroyedListener,
-                              public EntitySignatureChangedListener {
+                              public entity::EntityDestroyedEventListener,
+                              public entity::EntitySignatureChangedEventListener {
       typedef ComponentState<S> State;
       typedef rx::observable<State*> StateObservable;
       typedef std::function<S*()> StateSupplier;
@@ -89,8 +89,8 @@ namespace mcc {
     protected:
       StatefulComponent():
         Component(),
-        EntityDestroyedListener(),
-        EntitySignatureChangedListener(),
+        EntityDestroyedEventListener(),
+        EntitySignatureChangedEventListener(),
         states_() {
       }
 
@@ -98,11 +98,11 @@ namespace mcc {
         return states_.Remove(id);
       }
 
-      void OnEntitySignatureChanged(EntitySignatureChangedEvent* event) override {
+      void OnEntitySignatureChanged(entity::EntitySignatureChangedEvent* event) override {
         NOT_IMPLEMENTED(ERROR); //TODO: implement
       }
 
-      void OnEntityDestroyed(EntityDestroyedEvent* event) override {
+      void OnEntityDestroyed(entity::EntityDestroyedEvent* event) override {
         NOT_IMPLEMENTED(ERROR); //TODO: implement
       }
     public:

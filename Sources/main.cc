@@ -67,7 +67,6 @@ int main(int argc, char** argv) {
 
   //TODO: settings::Init();
   font::Initialize();
-  Entities::Initialize();
   gui::Screen::Init();
   Window::Init();
   mouse::InitMouse();

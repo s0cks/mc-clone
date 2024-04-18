@@ -48,7 +48,7 @@ namespace mcc::renderer {
   static shader::Shader* shader_;
 
   static Signature signature_;
-  static EntitySet tracked_;
+  static entity::EntitySet tracked_;
 
   static RelaxedAtomic<Renderer::Mode> mode_(Renderer::kDefaultMode);
   static RendererStats stats_;
@@ -318,19 +318,19 @@ namespace mcc::renderer {
     pass->Append(new render::RenderPass3d(pipeline_.Get()));
     pass_.Set(pass);
 
-    Entity::OnSignatureChanged()
-      .subscribe([](EntitySignatureChangedEvent* e) {
-        const auto& esig = e->signature;
-        const auto& eid = e->id;
+    entity::OnEntitySignatureChangedEvent()
+      .subscribe([](entity::EntitySignatureChangedEvent* e) {
+        const auto& esig = e->signature();
+        const auto& eid = e->id();
         if((esig & signature_) == signature_) {
           tracked_.insert(eid);
         } else {
           tracked_.erase(eid);
         }
       });
-    Entity::OnDestroyed()
-      .subscribe([](EntityDestroyedEvent* e) {
-        tracked_.erase(e->id);
+    entity::OnEntityDestroyedEvent()
+      .subscribe([](entity::EntityDestroyedEvent* e) {
+        tracked_.erase(e->id());
       });
   }
 
