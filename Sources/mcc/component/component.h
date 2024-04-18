@@ -2,6 +2,7 @@
 #define MCC_COMPONENT_H
 
 #include <cstdint>
+#include <set>
 #include <unordered_map>
 #include <array>
 #include <typeinfo>
@@ -37,7 +38,10 @@ namespace mcc {
     private:
       RelaxedAtomic<bool> registered_;
       RelaxedAtomic<ComponentId> id_;
+      std::set<EntityId> entities_;
+      Signature signature_;
       rx::subscription pre_init_sub_;
+      rx::subscription entity_signature_changed_sub_;
 
       inline void SetRegistered(const bool registered = true) {
         registered_ = registered;
@@ -60,6 +64,10 @@ namespace mcc {
       virtual ~Component();
       virtual const char* GetName() const = 0;
 
+      const Signature& GetSignature() const {
+        return signature_;
+      }
+
       inline ComponentId GetComponentId() const {
         return (ComponentId) id_;
       }
@@ -70,17 +78,32 @@ namespace mcc {
     };
 
     template<class S>
-    class StatefulComponent : public Component {
+    class StatefulComponent : public Component,
+                              public EntityDestroyedListener,
+                              public EntitySignatureChangedListener {
       typedef ComponentState<S> State;
       typedef rx::observable<State*> StateObservable;
       typedef std::function<S*()> StateSupplier;
     private:
       ComponentStateTable<S> states_;
     protected:
-      StatefulComponent() = default;
+      StatefulComponent():
+        Component(),
+        EntityDestroyedListener(),
+        EntitySignatureChangedListener(),
+        states_() {
+      }
 
       bool RemoveState(const EntityId id) {
         return states_.Remove(id);
+      }
+
+      void OnEntitySignatureChanged(EntitySignatureChangedEvent* event) override {
+        NOT_IMPLEMENTED(ERROR); //TODO: implement
+      }
+
+      void OnEntityDestroyed(EntityDestroyedEvent* event) override {
+        NOT_IMPLEMENTED(ERROR); //TODO: implement
       }
     public:
       ~StatefulComponent() override = default;

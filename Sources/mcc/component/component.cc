@@ -7,7 +7,9 @@ namespace mcc::component {
   Component::Component():
     registered_(false),
     id_(kInvalidComponentId),
-    pre_init_sub_() {
+    entities_(),
+    pre_init_sub_(),
+    entity_signature_changed_sub_() {
     const auto engine = engine::Engine::GetEngine();
     pre_init_sub_ = engine->OnPreInitEvent()
       .subscribe([this](engine::PreInitEvent* event) {

@@ -129,6 +129,24 @@ namespace mcc {
     }
   };
 
+#define DEFINE_EVENT_LISTENER_INTERFACE(Name)                                       \
+  class Entity##Name##Listener {                                                    \
+  protected:                                                                        \
+    rx::subscription sub_;                                                          \
+    Entity##Name##Listener():                                                       \
+      sub_() {                                                                      \
+      sub_ = Entity::On##Name()                                                     \
+        .subscribe([this](Entity##Name##Event* event) {                             \
+          return OnEntity##Name(event);                                                   \
+        });                                                                         \
+    }                                                                               \
+    virtual void OnEntity##Name(Entity##Name##Event* event) = 0;                          \
+  public:                                                                           \
+    virtual ~Entity##Name##Listener() {                                             \
+      sub_.unsubscribe();                                                           \
+    }                                                                               \
+  };
+
   struct EntityDestroyedEvent {
     const EntityId id;
 
@@ -139,6 +157,10 @@ namespace mcc {
       return stream;
     }
   };
+
+  DEFINE_EVENT_LISTENER_INTERFACE(SignatureChanged);
+  DEFINE_EVENT_LISTENER_INTERFACE(Created);
+  DEFINE_EVENT_LISTENER_INTERFACE(Destroyed);
 
   static constexpr const uint64_t kMaxNumberOfEntities = 32;
 
