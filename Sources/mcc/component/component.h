@@ -29,6 +29,12 @@ namespace mcc {
 
     class Component {
       friend class Components;
+    public:
+      struct ComponentIdComparator {
+        bool operator()(const Component* lhs, const Component* rhs) const {
+          return lhs->GetComponentId() == rhs->GetComponentId();
+        }
+      };
     private:
       RelaxedAtomic<bool> registered_;
       RelaxedAtomic<ComponentId> id_;
@@ -73,7 +79,9 @@ namespace mcc {
     public:
       ~StatefulComponent() override = default;
 
-      std::optional<ComponentState<State>> GetState(const Entity& e) const;
+      std::optional<ComponentState<State>> GetState(const Entity& e) const {
+        return states_.Get(e);
+      }
       
       bool Visit(std::function<bool(const Entity& e, const ComponentState<State>&)> vis) const {
         return states_.Visit(vis);

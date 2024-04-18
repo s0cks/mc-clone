@@ -1,11 +1,11 @@
-#include <unordered_map>
+#include <set>
 
 #include "mcc/engine/engine.h"
 #include "mcc/component/component.h"
 
 namespace mcc::component {
   static rx::subject<ComponentEvent*> events_;
-  static std::unordered_map<const char*, ComponentId> types_;
+  static std::set<Component*, Component::ComponentIdComparator> components_;
   static RelaxedAtomic<ComponentId> next_id_;
 
   template<class E, typename... Args>
@@ -16,7 +16,7 @@ namespace mcc::component {
   }
 
   void Components::ClearRegisteredComponents() {
-    types_.clear();
+    components_.clear();
     next_id_ = 0;
   }
 
@@ -25,19 +25,22 @@ namespace mcc::component {
     MCC_ASSERT(!component->IsRegistered());
     const auto name = component->GetName();
     const auto id = next_id_.fetch_add(1);
-    types_.insert({ name, id });
     component->SetComponentId(id);
+    components_.insert(component);
     Publish<ComponentRegisteredEvent>(component);
     DLOG(INFO) << "component #" << id << " registered to: " << name;
   }
 
   bool Components::Visit(ComponentVisitor* vis) {
-    MCC_ASSERT(vis);
+    for(const auto& component : components_) {
+      if(!vis->Visit(component))
+        return false;
+    }
+    return true;
   }
 
   rx::observable<Component*> Components::Get() {
-    NOT_IMPLEMENTED(FATAL);
-    return rx::observable<>::error<Component*>(std::runtime_error("error"));
+    return rx::observable<>::iterate(components_);
   }
 
   rx::observable<ComponentEvent*> Components::OnEvent() {
