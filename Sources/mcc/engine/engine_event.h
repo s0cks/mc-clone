@@ -89,11 +89,19 @@ namespace mcc::engine {
   };
 
   class TickEvent : public EngineEvent {
+  protected:
+    Tick tick_;
   public:
-    explicit TickEvent(Engine* engine):
-      EngineEvent(engine) {
+    explicit TickEvent(Engine* engine, const Tick& tick):
+      EngineEvent(engine),
+      tick_(tick) {
     }
     ~TickEvent() override = default;
+
+    const Tick& tick() const {
+      return tick_;
+    }
+
     DECLARE_ENGINE_EVENT(Tick);
   };
 

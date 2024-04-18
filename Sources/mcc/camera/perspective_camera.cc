@@ -158,22 +158,28 @@ namespace mcc::camera {
   }
 
   void PerspectiveCameraBehavior::OnPostInit() {
+    DLOG(INFO) << "post-init.";
     signature_.set(PerspectiveCamera::GetComponentId());
     SetCameraEntity(CreateCameraEntity());
   }
 
   void PerspectiveCameraBehavior::Init() {
-    engine::Engine::GetEngine()->OnInitEvent().subscribe([](engine::InitEvent* e) {
+    const auto engine = engine::Engine::GetEngine();
+    engine->OnInitEvent().subscribe([](engine::InitEvent* e) {
       return PerspectiveCameraBehavior::OnInit();
     });
-    engine::Engine::GetEngine()->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
+    engine->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
       return PerspectiveCameraBehavior::OnPostInit();
     });
-    // Engine::OnTick(&OnTick);
+    engine->OnTickEvent().subscribe([](engine::TickEvent* e) {
+      const auto& tick = e->tick();
+      return PerspectiveCameraBehavior::OnTick(tick);
+    });
     PerspectiveCamera::Init();
   }
 
   void PerspectiveCameraBehavior::OnTick(const Tick& tick) {
+    DLOG(INFO) << "tick.";
     const auto window = Window::Get()->handle();
 
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)

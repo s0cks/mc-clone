@@ -15,7 +15,7 @@ namespace mcc::engine {
 
   void Engine::OnPrepare(uv_prepare_t* handle) {
     const auto engine = GetEngine(handle);
-    engine->Publish<TickEvent>();
+    engine->Publish<TickEvent>(engine->current_);
   }
 
   void Engine::OnCheck(uv_check_t* handle) {

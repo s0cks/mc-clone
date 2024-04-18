@@ -78,6 +78,7 @@ int main(int argc, char** argv) {
   terrain::Terrain::Init();
   d2::Mesh::Init();
   fbuff::FrameBuffer::Init();
+  camera::PerspectiveCameraBehavior::Init();
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();
