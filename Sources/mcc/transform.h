@@ -3,9 +3,8 @@
 
 #include "mcc/gfx.h"
 #include "mcc/component/component.h"
-#include "mcc/component/component_state_table.h"
 
-namespace mcc::physics {
+namespace mcc {
   struct Transform {
     glm::vec3 position;
     glm::vec3 rotation;
@@ -19,14 +18,17 @@ namespace mcc::physics {
       stream << ")";
       return stream;
     }
+  };
 
-    DECLARE_COMPONENT(Transform);
+  class TransformComponent : public StatefulComponent<Transform> {
   private:
-    static void OnPreInit();
-    static void OnInit();
-    static void OnPostInit();
+    TransformComponent() = default;
+  public:
+    ~TransformComponent() override = default;
+    DECLARE_COMPONENT(Transform);
   public:
     static void Init();
+    static TransformComponent* Get();
   };
 }
 

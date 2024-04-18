@@ -95,13 +95,15 @@ namespace mcc {
 
     template<typename T>
     ComponentState<T> AddComponent(const T& component) const {
-      auto state = ComponentState<T>(component);
-      if(!T::PutState((*this), state)) {
-        LOG(ERROR) << "failed to put " << state << " for " << (*this);
-        return state;
-      }
-      AddToSignature(T::GetComponentId());
-      return state;
+      //TODO:
+      // auto state = ComponentState<T>(component);
+      // if(!T::PutState((*this), state)) {
+      //   LOG(ERROR) << "failed to put " << state << " for " << (*this);
+      //   return state;
+      // }
+      // AddToSignature(T::GetComponentId());
+      // return state;
+      return {};
     }
 
     template<typename T>

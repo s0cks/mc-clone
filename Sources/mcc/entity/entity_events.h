@@ -1,0 +1,4 @@
+#ifndef MCC_ENTITY_EVENTS_H
+#define MCC_ENTITY_EVENTS_H
+
+#endif //MCC_ENTITY_EVENTS_H

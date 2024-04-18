@@ -1,8 +1,9 @@
 #include "mcc/mouse/mouse.h"
 
+#include "mcc/transform.h"
 #include "mcc/window/window.h"
+#include "mcc/engine/engine.h"
 #include "mcc/camera/perspective_camera.h"
-#include "mcc/physics/transform.h"
 
 namespace mcc::mouse {
   GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
@@ -24,7 +25,8 @@ namespace mcc::mouse {
     std::optional<Entity> result = std::nullopt;
     const auto ray = CastRay();
     DLOG(INFO) << "ray: " << glm::to_string(ray);
-    physics::Transform::Visit([&result,&ray,&diff](const Entity& e, const ComponentState<physics::Transform>& transform) {
+    const auto transform = TransformComponent::Get();
+    transform->Visit([&result,&ray,&diff](const Entity& e, const ComponentState<Transform>& transform) {
       const auto& pos = (*transform).position;
       DLOG(INFO) << e << " pos: " << glm::to_string(pos);
       const auto distance = ray - pos;
@@ -39,14 +41,16 @@ namespace mcc::mouse {
   }
 
   glm::vec3 GlfwMouse::CastRay() const {
-    auto ndc = GetNormalizedPosition();
-    const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
-    const auto projection = (*camera)->GetProjectionMatrix();
-    const auto view = (*camera)->GetViewMatrix();
-    const auto screen_pos = glm::vec4(ndc.x, -ndc.y, 1.0f, 1.0f);
-    const auto inverse_vp = glm::inverse(projection * view);
-    const auto world_pos = inverse_vp * screen_pos;
-    return glm::normalize(glm::vec3(world_pos));
+    //TODO:
+    // auto ndc = GetNormalizedPosition();
+    // const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
+    // const auto projection = (*camera)->GetProjectionMatrix();
+    // const auto view = (*camera)->GetViewMatrix();
+    // const auto screen_pos = glm::vec4(ndc.x, -ndc.y, 1.0f, 1.0f);
+    // const auto inverse_vp = glm::inverse(projection * view);
+    // const auto world_pos = inverse_vp * screen_pos;
+    // return glm::normalize(glm::vec3(world_pos));
+    return {};
   }
 
   glm::vec2 GlfwMouse::GetNormalizedPosition() const {

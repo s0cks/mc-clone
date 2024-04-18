@@ -5,8 +5,7 @@
 #include "mcc/thread_local.h"
 #include "mcc/flags.h"
 
-#include "mcc/lighting/ambient_light.h"
-#include "mcc/physics/transform.h"
+#include "mcc/transform.h"
 #include "mcc/camera/perspective_camera.h"
 
 namespace mcc::terrain {

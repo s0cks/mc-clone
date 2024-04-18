@@ -8,71 +8,111 @@
 
 #include "mcc/gfx.h"
 #include "mcc/relaxed_atomic.h"
-#include "mcc/ecs/entity.h"
+#include "mcc/entity/entity.h"
 
 #include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
+#include "mcc/component/component_events.h"
+#include "mcc/component/component_state_table.h"
 
 namespace mcc {
-#define DECLARE_COMPONENT(Name)                                                           \
-  private:                                                                                \
-    static void SetComponentId(const ComponentId);                                        \
-    static void OnEntityDestroyed(EntityDestroyedEvent* e);                               \
-public:                                                                                   \
-    static ComponentId GetComponentId();                                                  \
-    static void RegisterComponent();                                                      \
-    static bool Visit(std::function<bool(const Entity& e, const ComponentState<Name>&)>); \
-    static bool PutState(const Entity& e, const ComponentState<Name>& state);             \
-    static bool RemoveState(const Entity& e);                                             \
-    static std::optional<ComponentState<Name>> GetState(const Entity& e);
+  namespace component {
+    class Component;
+    
+    class ComponentVisitor {
+    protected:
+      ComponentVisitor() = default;
+    public:
+      virtual ~ComponentVisitor() = default;
+      virtual bool Visit(Component* component) = 0;
+    };
 
-#define DEFINE_COMPONENT(Name)                                                                    \
-  static RelaxedAtomic<ComponentId> component_id_(kInvalidComponentId);                           \
-  static ComponentStateTable<Name> component_table_;                                              \
-  void Name::SetComponentId(const ComponentId id) { component_id_ = id; }                         \
-  ComponentId Name::GetComponentId() { return (ComponentId) component_id_; }                      \
-  void Name::RegisterComponent() {                                                                \
-    return SetComponentId(Component::Register<Name>());                                          \
-  }                                                                                               \
-  bool Name::PutState(const Entity& e, const ComponentState<Name>& state) {                       \
-    return component_table_.Put(e, state);                                                        \
-  }                                                                                               \
-  bool Name::RemoveState(const Entity& e) {                                                       \
-    return component_table_.Remove(e);                                                            \
-  }                                                                                               \
-  std::optional<ComponentState<Name>> Name::GetState(const Entity& e) {                           \
-    return component_table_.Get(e);                                                               \
-  }                                                                                               \
-  void Name::OnEntityDestroyed(EntityDestroyedEvent* e) {                                         \
-    LOG_IF(ERROR, !RemoveState(e->id)) << "failed to remove " << #Name << " from " << e->id;      \
-  }                                                                                               \
-  bool Name::Visit(std::function<bool(const Entity&, const ComponentState<Name>&)> vis) {         \
-    return component_table_.Visit(vis);                                                           \
+    class Component {
+      friend class Components;
+    private:
+      RelaxedAtomic<bool> registered_;
+      RelaxedAtomic<ComponentId> id_;
+      rx::subscription pre_init_sub_;
+
+      inline void SetRegistered(const bool registered = true) {
+        registered_ = registered;
+      }
+
+      inline void ClearRegistered() {
+        return SetRegistered(false);
+      }
+
+      inline void SetComponentId(const ComponentId id) {
+        id_ = id;
+      }
+
+      inline void ClearComponentId() {
+        return SetComponentId(kInvalidComponentId);
+      }
+    protected:
+      Component();
+    public:
+      virtual ~Component();
+      virtual const char* GetName() const = 0;
+
+      inline ComponentId GetComponentId() const {
+        return (ComponentId) id_;
+      }
+
+      inline bool IsRegistered() const {
+        return (bool) registered_;
+      }
+    };
+
+    template<class State, const uint64_t NumberOfBuckets = kDefaultNumberOfComponentStateTableBuckets>
+    class StatefulComponent : public Component {
+    private:
+      ComponentStateTable<State, NumberOfBuckets> states_;
+    protected:
+      StatefulComponent() = default;
+    public:
+      ~StatefulComponent() override = default;
+
+      std::optional<ComponentState<State>> GetState(const Entity& e) const;
+      
+      bool Visit(std::function<bool(const Entity& e, const ComponentState<State>&)> vis) const {
+        return states_.Visit(vis);
+      }
+
+      bool PutState(const Entity& e, const ComponentState<State>& state) {
+        return states_.Put(e, state);
+      }
+
+      bool RemoveState(const Entity& e) {
+        return states_.Remove(e);
+      }
+    };
+
+    class Components {
+      DEFINE_NON_INSTANTIABLE_TYPE(Components);
+    public:
+      static void Register(Component* component);
+      static void ClearRegisteredComponents();
+      static bool Visit(ComponentVisitor* vis);
+      static rx::observable<Component*> Get();
+      static rx::observable<ComponentEvent*> OnEvent();
+
+      static inline rx::observable<ComponentRegisteredEvent*>
+      OnRegistered() {
+        return OnEvent()
+          .filter(ComponentRegisteredEvent::Filter)
+          .map(ComponentRegisteredEvent::Cast);
+      }
+    };
   }
 
-  class Component {
-    DEFINE_NON_INSTANTIABLE_TYPE(Component);
-  private:
-    template<typename T>
-    static inline const char*
-    TypeId() {
-      return typeid(T).name();
-    }
-  public:
-    static void ClearRegisteredComponents();
-    static ComponentId Register(const char* name);
-    static ComponentId GetComponentId(const char* name);
-    
-    template<typename T>
-    static inline ComponentId Register() {
-      return Register(TypeId<T>());
-    }
+  using component::Components;
+  using component::Component;
+  using component::StatefulComponent;
 
-    template<typename T>
-    static inline ComponentId GetComponentId() {
-      return GetComponentId(TypeId<T>());
-    }
-  };
+#define DECLARE_COMPONENT(Name)                               \
+  public:                                                     \
+    const char* GetName() const override { return #Name; }
 }
 
 #endif //MCC_COMPONENT_H

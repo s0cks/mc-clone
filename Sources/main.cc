@@ -18,7 +18,6 @@
 #include "mcc/camera/perspective_camera.h"
 #include "mcc/engine/engine.h"
 #include "mcc/renderer/renderer.h"
-#include "mcc/physics/physics.h"
 #include "mcc/terrain/terrain.h"
 #include "mcc/shader/shader.h"
 
@@ -26,6 +25,7 @@
 
 #include "mcc/os_thread.h"
 
+#include "mcc/mouse/mouse.h"
 #include "mcc/keyboard/keyboard.h"
 
 int main(int argc, char** argv) {
@@ -73,12 +73,10 @@ int main(int argc, char** argv) {
   mouse::InitMouse();
   keyboard::InitKeyboard();
   renderer::Renderer::Init();
-  physics::PhysicsSimulator::Init();
   mesh::Mesh::Init();
   terrain::Terrain::Init();
   d2::Mesh::Init();
   fbuff::FrameBuffer::Init();
-  camera::PerspectiveCameraBehavior::Init();
 
   const auto engine = engine::Engine::GetEngine();
   engine->Run();

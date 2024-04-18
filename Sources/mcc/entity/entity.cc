@@ -1,4 +1,4 @@
-#include "mcc/ecs/entity.h"
+#include "mcc/entity/entity.h"
 
 namespace mcc {
   static std::queue<Entity> available_;

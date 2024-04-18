@@ -7,7 +7,7 @@
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/engine/tick.h"
-#include "mcc/ecs/entity.h"
+#include "mcc/entity/entity.h"
 #include "mcc/framebuffer/framebuffer.h"
 
 #include "mcc/engine/engine.h"
@@ -98,7 +98,6 @@ namespace mcc::renderer {
     static fbuff::FrameBuffer* GetFrameBuffer();
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);
-    static camera::PerspectiveCameraDataUniformBufferObject* GetCameraUniformBuffer();
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

@@ -4,7 +4,7 @@
 #include <optional>
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
-#include "mcc/ecs/entity.h"
+#include "mcc/entity/entity.h"
 #include "mcc/mouse/mouse_event.h"
 
 namespace mcc {

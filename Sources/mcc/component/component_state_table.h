@@ -1,8 +1,7 @@
 #ifndef MCC_COMPONENT_STATE_TABLE_H
 #define MCC_COMPONENT_STATE_TABLE_H
 
-#include "mcc/ecs/entity.h"
-#include "mcc/component/component.h"
+#include "mcc/entity/entity.h"
 
 namespace mcc::component {
   static constexpr const uint64_t kDefaultNumberOfComponentStateTableBuckets = 10;

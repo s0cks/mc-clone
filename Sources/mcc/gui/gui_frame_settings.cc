@@ -3,7 +3,6 @@
 #include "mcc/terrain/terrain.h"
 
 #include "mcc/window/window.h"
-#include "mcc/physics/physics.h"
 #include "mcc/camera/perspective_camera.h"
 
 namespace mcc::gui {

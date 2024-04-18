@@ -31,11 +31,7 @@ add_library(${PROJECT_NAME}
   mcc/parser.h
   mcc/reference.h
   mcc/aabb.h mcc/aabb.cc
-  mcc/physics/rigid_body.h mcc/physics/rigid_body.cc
-  mcc/physics/force.h mcc/physics/force.cc
-  mcc/physics/transform.h mcc/physics/transform.cc
-  mcc/physics/collision.h mcc/physics/collision.cc
-  mcc/physics/physics.h mcc/physics/physics.cc
+  mcc/transform.h mcc/transform.cc
   mcc/material/material.h mcc/material/material.cc
   mcc/material/material_json.h mcc/material/material_json.cc
   mcc/material/material_loader.h mcc/material/material_loader.cc
@@ -92,7 +88,6 @@ add_library(${PROJECT_NAME}
   mcc/renderer/render_pass_executor.h mcc/renderer/render_pass_executor.cc
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h
-  mcc/renderer/renderable.h mcc/renderer/renderable.cc
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
 # Vertex
   mcc/vertex/vertex_property.h
@@ -162,17 +157,18 @@ add_library(${PROJECT_NAME}
   mcc/murmur.h
   mcc/settings.h mcc/settings.cc
   mcc/bitfield.h
-  mcc/light/point.h mcc/light/point.cc
-  mcc/light/directional.h mcc/light/directional.cc
-  mcc/lighting/ambient_light.h mcc/lighting/ambient_light.cc
   mcc/font/font.h mcc/font/font.cc
   mcc/font/glyph.h mcc/font/glyph.cc
   mcc/font/font_mesh.h mcc/font/font_mesh.cc
   mcc/font/truetype.h
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
+# Camera
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
-  mcc/ecs/entity.h mcc/ecs/entity.cc
+  mcc/camera/perspective_camera_component.h mcc/camera/perspective_camera_component.cc
+# Entity
+  mcc/entity/entity.h mcc/entity/entity.cc
+  mcc/entity/entity_events.h mcc/entity/entity_events.cc
 # GUIs
   mcc/gui/shape.h mcc/gui/shape.cc
   mcc/gui/constants.h
