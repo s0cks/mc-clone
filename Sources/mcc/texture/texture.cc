@@ -38,11 +38,12 @@ namespace mcc {
     return img::png::DecodeAsync(uri)
       .map([](img::Image* image) {
         TextureFactory2D factory;
-        const auto tex = factory.Create(image);
-        if(tex == kInvalidTextureId)
-          return (Texture*)nullptr;
-        return (Texture*) new Texture2D(tex);
-      });
+        const auto id = factory.Create(image);
+        if(id == kInvalidTextureId)
+          throw new std::runtime_error("failed to create new Texture.");
+        return id;
+      })
+      .map(Texture2D::New);
   }
 
   static inline TextureObservable

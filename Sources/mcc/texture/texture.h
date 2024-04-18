@@ -152,7 +152,7 @@ namespace mcc::texture {
     void Destroy () override;
   public:
     Texture() = default;
-    explicit Texture(const TextureId id = kInvalidTextureId):
+    explicit Texture(const TextureId id):
       gfx::Resource(),
       res::ResourceTemplate<res::kTextureType>(),
       id_(id) {
@@ -230,6 +230,11 @@ namespace mcc::texture {
       TextureTemplate<k2D>(id) {
     }
     ~Texture2D() override = default;
+  public:
+    static inline Texture*
+    New(const TextureId id = kInvalidTextureId) {
+      return new Texture2D(id);
+    }
   };
 
   class Texture3D : public TextureTemplate<k3D> {
@@ -239,6 +244,11 @@ namespace mcc::texture {
     }
   public:
     ~Texture3D() override = default;
+  public:
+    static inline Texture*
+    New(const TextureId id = kInvalidTextureId) {
+      return new Texture3D(id);
+    }
   };
 }
 
