@@ -30,10 +30,6 @@ add_library(${PROJECT_NAME}
   mcc/pipeline.h mcc/pipeline.cc
   mcc/parser.h
   mcc/reference.h
-  mcc/component/component_id.h
-  mcc/component/component_table.h mcc/component/component_table.cc
-  mcc/component/component_state.h
-  mcc/component/component.h mcc/component/component.cc
   mcc/aabb.h mcc/aabb.cc
   mcc/physics/rigid_body.h mcc/physics/rigid_body.cc
   mcc/physics/force.h mcc/physics/force.cc
@@ -68,6 +64,12 @@ add_library(${PROJECT_NAME}
   mcc/series.h
   mcc/subscription_trie.h
   mcc/skybox.h mcc/skybox.cc
+# Components
+  mcc/component/component_id.h
+  mcc/component/component_events.h mcc/component/component_events.cc
+  mcc/component/component_table.h mcc/component/component_table.cc
+  mcc/component/component_state.h
+  mcc/component/component.h mcc/component/component.cc
 # Task
 # Keyboard
   mcc/keyboard/keyboard_constants.h
