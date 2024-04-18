@@ -7,6 +7,32 @@
 #include "mcc/keyboard/keyboard.h"
 
 namespace mcc::engine {
+  void Engine::OnIdle(uv_idle_t* handle) {
+    const auto engine = GetEngine(handle);
+    engine->Publish<PreTickEvent>();
+    engine->DoPreTick(uv_hrtime());
+  }
+
+  void Engine::OnPrepare(uv_prepare_t* handle) {
+    const auto engine = GetEngine(handle);
+    engine->Publish<TickEvent>();
+  }
+
+  void Engine::OnCheck(uv_check_t* handle) {
+    const auto engine = GetEngine(handle);
+    engine->Publish<PostTickEvent>();
+    renderer::Renderer::Run();
+  }
+
+  void Engine::OnShutdown(uv_async_t* handle) {
+    const auto engine = GetEngine(handle);
+    uv_idle_stop(&engine->idle_);
+    uv_prepare_stop(&engine->prepare_);
+    uv_check_stop(&engine->check_);
+    uv_stop(engine->GetLoop());
+    engine->SetRunning(false);
+  }
+
   void Engine::Run() {
     // pre-init
     RunState<PreInitState>();
@@ -16,41 +42,7 @@ namespace mcc::engine {
     RunState<PostInitState>();
 
     SetRunning(true);
-    while(IsRunning()) {
-      Publish<PreTickEvent>();
-
-      ts_ = uv_hrtime();
-      dts_ = (ts_ - last_);
-      if((ts_ - last_second_) >= NSEC_PER_SEC) {
-        tps_ = ticks_;
-        ticks_ = 0;
-        last_second_ = ts_;
-      }
-
-      current_ = Tick {
-        .id = total_ticks_,
-        .ts = ts_,
-        .dts = dts_,
-      };
-
-      const auto mouse = GetMouse();
-      if(mouse)
-        mouse->Process();
-      const auto keyboard = GetKeyboard();
-      if(keyboard)
-        keyboard->Process();
-
-      Publish<TickEvent>();
-
-      const auto duration = (uv_hrtime() - ts_);
-      ticks_ += 1;
-      total_ticks_ += 1;
-      last_ = ts_;
-
-      Publish<PostTickEvent>();
-
-      renderer::Renderer::Run();
-    }
+    uv_run(loop_, UV_RUN_DEFAULT);
 
     // terminating
     RunState<TerminatingState>();
@@ -59,7 +51,7 @@ namespace mcc::engine {
   }
 
   void Engine::Shutdown() {
-    running_ = false;
+    uv_async_send(&on_shutdown_);
   }
 
   static ThreadLocal<Engine> engine_;

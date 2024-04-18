@@ -5,6 +5,21 @@
 #include "mcc/physics/transform.h"
 
 namespace mcc::mouse {
+  GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
+    Mouse(),
+    engine_(engine),
+    window_(window),
+    pos_(),
+    last_pos_(),
+    delta_(),
+    buttons_(),
+    events_(),
+    pre_tick_sub_() {
+    pre_tick_sub_ = engine->OnPreTickEvent().subscribe([this](engine::PreTickEvent* event) {
+      Process();
+    });
+  }
+
   std::optional<Entity> GlfwMouse::CastRayTo(const float diff) const {
     std::optional<Entity> result = std::nullopt;
     const auto ray = CastRay();

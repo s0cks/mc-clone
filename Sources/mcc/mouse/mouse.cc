@@ -1,11 +1,11 @@
 #include "mcc/mouse/mouse.h"
 
-#include "mcc/thread_local.h"
-#include "mcc/window/window.h"
+#include <units.h>
 
 #include "mcc/uv_utils.h"
-
-#include <units.h>
+#include "mcc/thread_local.h"
+#include "mcc/window/window.h"
+#include "mcc/engine/engine.h"
 
 namespace mcc {
   namespace mouse {
@@ -25,11 +25,9 @@ namespace mcc {
     }
 
     static inline void
-    InitializeMouse(Window* window) {
-      if(!window) {
-        LOG(ERROR) << "no window available to create mouse.";
-        return;
-      }
+    InitializeMouse(engine::Engine* engine, Window* window) {
+      MCC_ASSERT(engine);
+      MCC_ASSERT(window);
 
       LOG(INFO) << "initializing mouse.....";
 #ifdef MCC_DEBUG
@@ -37,7 +35,7 @@ namespace mcc {
       const auto startns = uv_hrtime();
 #endif//MCC_DEBUG
 
-      const auto mouse = new GlfwMouse(window);
+      const auto mouse = new GlfwMouse(engine, window);
       Publish<MouseInitializedEvent>(mouse);
       SetMouse(mouse);
 
@@ -81,7 +79,8 @@ namespace mcc {
 
       window->OnOpened()
         .subscribe([](WindowEvent* event) {
-          InitializeMouse(event->window());
+          const auto engine = engine::Engine::GetEngine();
+          InitializeMouse(engine, event->window());
         });
     }
 

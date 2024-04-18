@@ -16,12 +16,14 @@ namespace mcc::mouse {
   class GlfwMouse : public Mouse {
     friend class Engine;
   protected:
+    engine::Engine* engine_;
     Window* window_;
     MouseEventSubject events_;
     glm::vec2 pos_;
     glm::vec2 last_pos_;
     glm::vec2 delta_;
     MouseButtonState buttons_[kNumberOfMouseButtons];
+    rx::subscription pre_tick_sub_;
 
     template<class E, typename... Args>
     inline void Publish(Args... args) {
@@ -31,15 +33,7 @@ namespace mcc::mouse {
 
     void Process() override;
   public:
-    explicit GlfwMouse(Window* window):
-      Mouse(),
-      window_(window),
-      pos_(),
-      last_pos_(),
-      delta_(),
-      buttons_(),
-      events_() {
-    }
+    explicit GlfwMouse(engine::Engine* engine, Window* window);
     ~GlfwMouse() override = default;
 
     inline Window* window() const {

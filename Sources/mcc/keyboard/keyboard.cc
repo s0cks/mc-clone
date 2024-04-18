@@ -21,11 +21,9 @@ namespace mcc::keyboard {
   }
 
   static inline void
-  CreateKeyboard(Window* window) {
-    if(!window) {
-      LOG(ERROR) << "no window available to create keyboard.";
-      return;
-    }
+  CreateKeyboard(engine::Engine* engine, Window* window) {
+    MCC_ASSERT(engine);
+    MCC_ASSERT(window);
 
     LOG(INFO) << "creating keyboard....";
 #ifdef MCC_DEBUG
@@ -33,7 +31,7 @@ namespace mcc::keyboard {
     const auto startns = uv_hrtime();
 #endif //MCC_DEBUG
 
-    const auto keyboard = new GlfwKeyboard(window);
+    const auto keyboard = new GlfwKeyboard(engine, window);
     Publish<KeyboardCreatedEvent>(keyboard);
     SetKeyboard(keyboard);
 
@@ -73,7 +71,8 @@ namespace mcc::keyboard {
 
     window->OnOpened()
       .subscribe([](WindowEvent* event) {
-        CreateKeyboard(event->window());
+        const auto engine = engine::Engine::GetEngine();
+        CreateKeyboard(engine, event->window());
       });
   }
 
