@@ -16,6 +16,7 @@
 #include "mcc/common.h"
 
 #include "mcc/entity/entity_id.h"
+#include "mcc/entity/entity_set.h"
 #include "mcc/entity/entity_events.h"
 #include "mcc/entity/entity_signature.h"
 
@@ -24,8 +25,6 @@
 
 namespace mcc {
   namespace entity {
-    typedef std::unordered_set<EntityId> EntitySet;
-
     class Entity {
       struct HashFunction {
         size_t operator()(const Entity& k) const {

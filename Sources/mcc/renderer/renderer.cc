@@ -323,14 +323,14 @@ namespace mcc::renderer {
         const auto& esig = e->signature();
         const auto& eid = e->id();
         if((esig & signature_) == signature_) {
-          tracked_.insert(eid);
+          tracked_.Put(eid);
         } else {
-          tracked_.erase(eid);
+          tracked_.Remove(eid);
         }
       });
     entity::OnEntityDestroyedEvent()
       .subscribe([](entity::EntityDestroyedEvent* e) {
-        tracked_.erase(e->id());
+        tracked_.Remove(e->id());
       });
   }
 
@@ -426,7 +426,7 @@ namespace mcc::renderer {
   }
 
   bool Renderer::VisitEntities(std::function<bool(const Entity&)> callback) {
-    for(auto& e : tracked_) {
+    for(const auto& e : tracked_) {
       if(!callback(e))
         return false;
     }
