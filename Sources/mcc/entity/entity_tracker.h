@@ -24,6 +24,10 @@ namespace mcc::entity {
   public:
     EntityTracker();
 
+    const EntitySet& GetEntities() const {
+      return entities_;
+    }
+
     virtual ~EntityTracker() {
       on_created_.unsubscribe();
       on_destroyed_.unsubscribe();
@@ -70,6 +74,10 @@ namespace mcc::entity {
     }
     ~FilteredEntityTracker() override {
       on_signature_changed_.unsubscribe();
+    }
+
+    const Signature& GetSignature() const {
+      return signature_;
     }
 
     void SetSignature(const Signature& signature);

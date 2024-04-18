@@ -9,7 +9,8 @@
 
 #include "mcc/gfx.h"
 #include "mcc/relaxed_atomic.h"
-#include "mcc/entity/entity.h"
+
+#include "mcc/entity/entity_tracker.h"
 
 #include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
@@ -38,10 +39,8 @@ namespace mcc {
     private:
       RelaxedAtomic<bool> registered_;
       RelaxedAtomic<ComponentId> id_;
-      std::set<EntityId> entities_;
-      Signature signature_;
+      entity::FilteredEntityTracker tracker_;
       rx::subscription pre_init_sub_;
-      rx::subscription entity_signature_changed_sub_;
 
       inline void SetRegistered(const bool registered = true) {
         registered_ = registered;
@@ -58,14 +57,22 @@ namespace mcc {
       inline void ClearComponentId() {
         return SetComponentId(kInvalidComponentId);
       }
+
+      inline void SetSignature(const entity::Signature& signature) {
+        tracker_.SetSignature(signature);
+      }
     protected:
       Component();
     public:
       virtual ~Component();
       virtual const char* GetName() const = 0;
 
-      const Signature& GetSignature() const {
-        return signature_;
+      const entity::EntitySet& GetEntities() const {
+        return tracker_.GetEntities();
+      }
+
+      const entity::Signature& GetSignature() const {
+        return tracker_.GetSignature();
       }
 
       inline ComponentId GetComponentId() const {
@@ -78,9 +85,7 @@ namespace mcc {
     };
 
     template<class S>
-    class StatefulComponent : public Component,
-                              public entity::EntityDestroyedEventListener,
-                              public entity::EntitySignatureChangedEventListener {
+    class StatefulComponent : public Component {
       typedef ComponentState<S> State;
       typedef rx::observable<State*> StateObservable;
       typedef std::function<S*()> StateSupplier;
@@ -89,21 +94,11 @@ namespace mcc {
     protected:
       StatefulComponent():
         Component(),
-        EntityDestroyedEventListener(),
-        EntitySignatureChangedEventListener(),
         states_() {
       }
 
       bool RemoveState(const EntityId id) {
         return states_.Remove(id);
-      }
-
-      void OnEntitySignatureChanged(entity::EntitySignatureChangedEvent* event) override {
-        NOT_IMPLEMENTED(ERROR); //TODO: implement
-      }
-
-      void OnEntityDestroyed(entity::EntityDestroyedEvent* event) override {
-        NOT_IMPLEMENTED(ERROR); //TODO: implement
       }
     public:
       ~StatefulComponent() override = default;
