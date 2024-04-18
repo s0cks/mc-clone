@@ -74,6 +74,8 @@ namespace mcc {
     class StatefulComponent : public Component {
     private:
       ComponentStateTable<State, NumberOfBuckets> states_;
+
+      void Publish(ComponentEvent* event);
     protected:
       StatefulComponent() = default;
     public:
@@ -105,12 +107,19 @@ namespace mcc {
       static rx::observable<Component*> Get();
       static rx::observable<ComponentEvent*> OnEvent();
 
-      static inline rx::observable<ComponentRegisteredEvent*>
-      OnRegistered() {
-        return OnEvent()
-          .filter(ComponentRegisteredEvent::Filter)
-          .map(ComponentRegisteredEvent::Cast);
+#define DEFINE_ON_EVENT(Name)                                                 \
+      static inline rx::observable<Name##Event*>                              \
+      On##Name##Event() {                                                     \
+        return OnEvent()                                                      \
+          .filter(Name##Event::Filter)                                        \
+          .map(Name##Event::Cast);                                            \
       }
+      FOR_EACH_COMPONENT_EVENT(DEFINE_ON_EVENT)
+#undef DEFINE_ON_EVENT
+
+#ifdef MCC_DEBUG
+      static void PrintAll(const google::LogSeverity severity = google::INFO);
+#endif //MCC_DEBUG
     };
   }
 

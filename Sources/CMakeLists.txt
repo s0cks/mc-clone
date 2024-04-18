@@ -63,7 +63,6 @@ add_library(${PROJECT_NAME}
 # Components
   mcc/component/component_id.h
   mcc/component/component_events.h mcc/component/component_events.cc
-  mcc/component/component_table.h mcc/component/component_table.cc
   mcc/component/component_state.h
   mcc/component/component.h mcc/component/component.cc
 # Task

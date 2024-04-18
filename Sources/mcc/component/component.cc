@@ -4,6 +4,22 @@
 #include "mcc/component/component.h"
 
 namespace mcc::component {
+  Component::Component():
+    registered_(false),
+    id_(kInvalidComponentId),
+    pre_init_sub_() {
+    const auto engine = engine::Engine::GetEngine();
+    pre_init_sub_ = engine->OnPreInitEvent()
+      .subscribe([this](engine::PreInitEvent* event) {
+        Components::Register(this);
+      });
+  }
+
+  Component::~Component() {
+    //TODO: de-register component
+    pre_init_sub_.unsubscribe();
+  }
+
   static rx::subject<ComponentEvent*> events_;
   static std::set<Component*, Component::ComponentIdComparator> components_;
   static RelaxedAtomic<ComponentId> next_id_;
@@ -47,19 +63,36 @@ namespace mcc::component {
     return events_.get_observable();
   }
 
-  Component::Component():
-    registered_(false),
-    id_(kInvalidComponentId),
-    pre_init_sub_() {
-    const auto engine = engine::Engine::GetEngine();
-    pre_init_sub_ = engine->OnPreInitEvent()
-      .subscribe([this](engine::PreInitEvent* event) {
-        Components::Register(this);
-      });
-  }
+#ifdef MCC_DEBUG
+  class ComponentPrinter : public ComponentVisitor {
+  protected:
+    google::LogSeverity severity_;
 
-  Component::~Component() {
-    //TODO: de-register component
-    pre_init_sub_.unsubscribe();
+    inline google::LogSeverity
+    GetSeverity() const {
+      return severity_;
+    }
+
+    bool Visit(Component* component) override {
+      LOG_AT_LEVEL(GetSeverity()) << " - " << component->GetName();
+      return true;
+    }
+  public:
+    explicit ComponentPrinter(const google::LogSeverity severity):
+      ComponentVisitor(),
+      severity_(severity) {
+    }
+    ~ComponentPrinter() override = default;
+  public:
+    static inline void
+    PrintAll(const google::LogSeverity severity) {
+      ComponentPrinter printer(severity);
+      LOG_IF(ERROR, !Components::Visit(&printer)) << "failed to print all components.";
+    }
+  };
+
+  void Components::PrintAll(const google::LogSeverity severity) {
+    return ComponentPrinter::PrintAll(severity);
   }
+#endif //MCC_DEBUG
 }

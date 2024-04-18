@@ -6,7 +6,9 @@
 
 namespace mcc::component {
 #define FOR_EACH_COMPONENT_EVENT(V) \
-  V(ComponentRegistered)
+  V(ComponentRegistered)            \
+  V(ComponentStateCreated)          \
+  V(ComponentStateDestroyed)
 
   class ComponentEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
@@ -46,6 +48,10 @@ namespace mcc::component {
       return component_;
     }
 
+    virtual bool IsComponentStateEvent() const {
+      return false;
+    }
+
 #define DEFINE_TYPE_CHECK(Name)                                             \
     virtual Name##Event* As##Name##Event() { return nullptr; }              \
     bool Is##Name##Event() { return As##Name##Event() != nullptr; }
@@ -60,6 +66,39 @@ namespace mcc::component {
     }
     ~ComponentRegisteredEvent() override = default;
     DEFINE_COMPONENT_EVENT(ComponentRegistered);
+  };
+
+  class ComponentStateEvent : public ComponentEvent {
+  protected:
+    explicit ComponentStateEvent(Component* component):
+      ComponentEvent(component) {
+    }
+  public:
+    ~ComponentStateEvent() override = default;
+
+    bool IsComponentStateEvent() const override {
+      return true;
+    }
+  };
+
+  class ComponentStateCreatedEvent : public ComponentStateEvent {
+  protected:
+    explicit ComponentStateCreatedEvent(Component* component):
+      ComponentStateEvent(component) {
+    }
+  public:
+    ~ComponentStateCreatedEvent() override = default;
+    DEFINE_COMPONENT_EVENT(ComponentStateCreated);
+  };
+
+  class ComponentStateDestroyedEvent : public ComponentStateEvent {
+  protected:
+    explicit ComponentStateDestroyedEvent(Component* component):
+      ComponentStateEvent(component) {
+    }
+  public:
+    ~ComponentStateDestroyedEvent() override = default;
+    DEFINE_COMPONENT_EVENT(ComponentStateDestroyed);
   };
 }
 
