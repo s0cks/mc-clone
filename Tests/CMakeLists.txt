@@ -25,8 +25,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/material/test_material_loader_default.cc
 # Misc
   mcc/mock_glfw.h mcc/mock_glfw.cc
-  mcc/mesh/test_obj_parser.h mcc/mesh/test_obj_parser.cc
-  mcc/component/test_component_state_table.h mcc/component/test_component_state_table.cc)
+  mcc/mesh/test_obj_parser.h mcc/mesh/test_obj_parser.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}
   Threads::Threads

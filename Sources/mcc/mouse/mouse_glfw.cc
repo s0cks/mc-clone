@@ -22,22 +22,24 @@ namespace mcc::mouse {
   }
 
   std::optional<Entity> GlfwMouse::CastRayTo(const float diff) const {
-    std::optional<Entity> result = std::nullopt;
-    const auto ray = CastRay();
-    DLOG(INFO) << "ray: " << glm::to_string(ray);
-    const auto transform = TransformComponent::Get();
-    transform->Visit([&result,&ray,&diff](const Entity& e, const ComponentState<Transform>& transform) {
-      const auto& pos = (*transform).position;
-      DLOG(INFO) << e << " pos: " << glm::to_string(pos);
-      const auto distance = ray - pos;
-      DLOG(INFO) << "distance: " << glm::to_string(distance);
-      if(abs(distance.x) <= diff && abs(distance.y) <= diff && abs(distance.z) <= diff) {
-        result = std::optional<Entity>{ e };
-        return false;
-      }
-      return true;
-    });
-    return result;
+    //TODO:
+    // std::optional<Entity> result = std::nullopt;
+    // const auto ray = CastRay();
+    // DLOG(INFO) << "ray: " << glm::to_string(ray);
+    // const auto transform = TransformComponent::Get();
+    // transform->Visit([&result,&ray,&diff](const Entity& e, const ComponentState<Transform>& transform) {
+    //   const auto& pos = (*transform).position;
+    //   DLOG(INFO) << e << " pos: " << glm::to_string(pos);
+    //   const auto distance = ray - pos;
+    //   DLOG(INFO) << "distance: " << glm::to_string(distance);
+    //   if(abs(distance.x) <= diff && abs(distance.y) <= diff && abs(distance.z) <= diff) {
+    //     result = std::optional<Entity>{ e };
+    //     return false;
+    //   }
+    //   return true;
+    // });
+    // return result;
+    return {};
   }
 
   glm::vec3 GlfwMouse::CastRay() const {

@@ -14,12 +14,11 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
+#include "mcc/entity/entity_id.h"
 #include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
 
 namespace mcc {
-  typedef uint64_t EntityId;
-  static constexpr const EntityId kInvalidEntityId = 0;
   typedef std::bitset<32> Signature;
 
 #define FOR_EACH_ENTITY_EVENT(V) \
@@ -93,18 +92,17 @@ namespace mcc {
       return stream;
     }
 
-    template<typename T>
-    ComponentState<T> AddComponent(const T& component) const {
-      //TODO:
-      // auto state = ComponentState<T>(component);
-      // if(!T::PutState((*this), state)) {
-      //   LOG(ERROR) << "failed to put " << state << " for " << (*this);
-      //   return state;
-      // }
-      // AddToSignature(T::GetComponentId());
-      // return state;
-      return {};
-    }
+    //TODO:
+    // template<typename T>
+    // ComponentState<T> AddComponent(const T& component) const {
+    //   auto state = ComponentState<T>(component);
+    //   if(!T::PutState((*this), state)) {
+    //     LOG(ERROR) << "failed to put " << state << " for " << (*this);
+    //     return state;
+    //   }
+    //   AddToSignature(T::GetComponentId());
+    //   return state;
+    // }
 
     template<typename T>
     void RemoveComponent() const {

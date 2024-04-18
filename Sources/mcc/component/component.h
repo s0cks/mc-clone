@@ -13,7 +13,6 @@
 #include "mcc/component/component_id.h"
 #include "mcc/component/component_state.h"
 #include "mcc/component/component_events.h"
-#include "mcc/component/component_state_table.h"
 
 namespace mcc {
   namespace component {
@@ -70,31 +69,40 @@ namespace mcc {
       }
     };
 
-    template<class State, const uint64_t NumberOfBuckets = kDefaultNumberOfComponentStateTableBuckets>
+    template<class S>
     class StatefulComponent : public Component {
+      typedef ComponentState<S> State;
+      typedef rx::observable<State*> StateObservable;
+      typedef std::function<S*()> StateSupplier;
     private:
-      ComponentStateTable<State, NumberOfBuckets> states_;
-
-      void Publish(ComponentEvent* event);
+      ComponentStateTable<S> states_;
     protected:
       StatefulComponent() = default;
+
+      bool RemoveState(const EntityId id) {
+        return states_.Remove(id);
+      }
     public:
       ~StatefulComponent() override = default;
 
-      std::optional<ComponentState<State>> GetState(const Entity& e) const {
-        return states_.Get(e);
-      }
-      
-      bool Visit(std::function<bool(const Entity& e, const ComponentState<State>&)> vis) const {
-        return states_.Visit(vis);
+      bool HasState(const EntityId id) const {
+        return states_.Has(id);
       }
 
-      bool PutState(const Entity& e, const ComponentState<State>& state) {
-        return states_.Put(e, state);
+      State* GetState(const EntityId id) const {
+        return states_.Get(id);
       }
 
-      bool RemoveState(const Entity& e) {
-        return states_.Remove(e);
+      State* GetOrCreateState(const EntityId id) {
+        return states_.GetOrCreate(id);
+      }
+
+      State* CreateState(const EntityId id, const S* data = nullptr) {
+        return states_.Create(id, (const uword) data);
+      }
+
+      StateObservable GetStates() const {
+        return (StateObservable) states_;
       }
     };
 
