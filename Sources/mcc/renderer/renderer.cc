@@ -78,7 +78,6 @@ namespace mcc::renderer {
   void Renderer::Init() {
     const auto engine = engine::Engine::GetEngine();
     engine->OnPreInitEvent().subscribe(&OnPreInit);
-    engine->OnInitEvent().subscribe(&OnInit);
     engine->OnPostInitEvent().subscribe(&OnPostInit);
 // FrameBuffer::Init();
 // Renderable::Init();
@@ -92,10 +91,6 @@ namespace mcc::renderer {
 
   void Renderer::OnPreInit(engine::PreInitEvent* e) {
 
-  }
-
-  void Renderer::OnInit(engine::InitEvent* e) {
-    const auto size = Window::Get()->handle();
   }
 
   // class RenderEntityPipeline : public Pipeline {

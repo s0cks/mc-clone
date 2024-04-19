@@ -39,6 +39,12 @@ namespace mcc {
       return data_.end();
     }
 
+    uint64_t count() const {
+      return ToObservable()
+        .as_blocking()
+        .count();
+    }
+
     rx::observable<T> ToObservable() const {
       return rx::observable<>::create<T>([this](rx::subscriber<T> s) {
         for(const auto& value : data_) {
@@ -58,6 +64,18 @@ namespace mcc {
   public:
     NumericSeries() = default;
     ~NumericSeries() override = default;
+
+    inline uint64_t first() const {
+      return Series<uint64_t, Capacity>::ToObservable()
+        .as_blocking()
+        .first();
+    }
+
+    inline uint64_t last() const {
+      return Series<uint64_t, Capacity>::ToObservable()
+        .as_blocking()
+        .last();
+    }
 
     inline uint64_t average() const {
       return Series<uint64_t, Capacity>::ToObservable()

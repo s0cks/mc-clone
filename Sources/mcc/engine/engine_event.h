@@ -7,12 +7,16 @@
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_EVENT(V) \
-  V(State)                       \
-  FOR_EACH_ENGINE_STATE(V)       \
+  V(PreInit)                     \
+  V(PostInit)                    \
   V(PreTick)                     \
   V(Tick)                        \
-  V(PostTick)
+  V(PostTick)                    \
+  V(Terminating)                 \
+  V(Terminated)
 
+  class EngineEvent;
+  class StateEvent;
 #define FORWARD_DECLARE_ENGINE_EVENT(Name) class Name##Event;
   FOR_EACH_ENGINE_EVENT(FORWARD_DECLARE_ENGINE_EVENT)
 #undef FORWARD_DECLARE_ENGINE_EVENT
@@ -49,35 +53,24 @@ namespace mcc::engine {
     const char* GetName() const override { return #Name; }            \
     Name##Event* As##Name##Event() override { return this; }          \
     std::string ToString() const override;
-
-  class StateEvent : public EngineEvent {
-  protected:
-    explicit StateEvent(Engine* engine):
+  
+  class PreInitEvent : public EngineEvent {
+  public:
+    explicit PreInitEvent(Engine* engine):
       EngineEvent(engine) {
     }
+    ~PreInitEvent() override = default;
+    DECLARE_ENGINE_EVENT(PreInit);
+  };
+
+  class PostInitEvent : public EngineEvent {
   public:
-    ~StateEvent() override = default;
-
-    StateEvent* AsStateEvent() override {
-      return this;
+    explicit PostInitEvent(Engine* engine):
+      EngineEvent(engine) {
     }
+    ~PostInitEvent() override = default;
+    DECLARE_ENGINE_EVENT(PostInit);
   };
-
-#define DEFINE_STATE_EVENT(Name)                                                            \
-  class Name##Event : public StateEvent {                                                   \
-  public:                                                                                   \
-    explicit Name##Event(Engine* engine):                                                   \
-      StateEvent(engine) {                                                                  \
-    }                                                                                       \
-    ~Name##Event() override = default;                                                      \
-    DECLARE_ENGINE_EVENT(Name);                                                             \
-    friend std::ostream& operator<<(std::ostream& stream, const Name##Event& rhs) {         \
-      return stream << rhs.ToString();                                                      \
-    }                                                                                       \
-  };
-
-  FOR_EACH_ENGINE_STATE(DEFINE_STATE_EVENT);
-#undef DEFINE_STATE_EVENT
 
   class PreTickEvent : public EngineEvent {
   public:
@@ -107,11 +100,37 @@ namespace mcc::engine {
 
   class PostTickEvent : public EngineEvent {
   public:
-    explicit PostTickEvent(Engine* engine):
-      EngineEvent(engine) {
+    Tick tick_;
+
+    explicit PostTickEvent(Engine* engine, const Tick& tick):
+      EngineEvent(engine),
+      tick_(tick) {
     }
     ~PostTickEvent() override = default;
+
+    const Tick& tick() const {
+      return tick_;
+    }
+
     DECLARE_ENGINE_EVENT(PostTick);
+  };
+
+  class TerminatingEvent : public EngineEvent {
+  public:
+    explicit TerminatingEvent(Engine* engine):
+      EngineEvent(engine) {
+    }
+    ~TerminatingEvent() override = default;
+    DECLARE_ENGINE_EVENT(Terminating);
+  };
+
+  class TerminatedEvent : public EngineEvent {
+  public:
+    explicit TerminatedEvent(Engine* engine):
+      EngineEvent(engine) {
+    }
+    ~TerminatedEvent() override = default;
+    DECLARE_ENGINE_EVENT(Terminated);
   };
 }
 

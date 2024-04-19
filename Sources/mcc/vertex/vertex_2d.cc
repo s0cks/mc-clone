@@ -10,7 +10,7 @@ namespace mcc::d2 {
 
   void Mesh::Init() {
     const auto engine = engine::Engine::GetEngine();
-    engine->OnInitEvent().subscribe([](engine::InitEvent* event) {
+    engine->OnPreInitEvent().subscribe([](engine::PreInitEvent* event) {
       Mesh::OnInit();
     });
   }

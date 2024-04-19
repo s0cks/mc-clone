@@ -37,11 +37,11 @@ namespace mcc::renderer {
       return time_;
     }
 
-    const NumericSeries<uint64_t, 10> entities() const {
+    const NumericSeries<uint64_t, 10>& entities() const {
       return entities_;
     }
 
-    const NumericSeries<uint64_t, 10> vertices() const {
+    const NumericSeries<uint64_t, 10>& vertices() const {
       return vertices_;
     }
   };

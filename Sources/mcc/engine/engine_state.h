@@ -5,14 +5,13 @@
 #include <functional>
 #include <glog/logging.h>
 
+#include "mcc/series.h"
 #include "mcc/engine/tick.h"
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_STATE(V) \
-  V(PreInit)                     \
   V(Init)                        \
-  V(PostInit)                    \
-  V(Terminating)                 \
+  V(Tick)                        \
   V(Terminated)
 
   class Engine;
@@ -47,11 +46,14 @@ namespace mcc::engine {
     const char* GetName() const override { return #Name; }              \
 
   class State {
+    friend class Engine;
   protected:
     Engine* engine_;
+    TimeSeries<10> duration_;
 
     explicit State(Engine* engine):
-      engine_(engine) {
+      engine_(engine),
+      duration_() {
     }
 
     inline Engine* engine() const {
@@ -59,21 +61,15 @@ namespace mcc::engine {
     }
 
     virtual void Apply() = 0;
+    virtual void Shutdown() { }
   public:
     virtual ~State() = default;
     virtual StateId GetId() const = 0;
     virtual const char* GetName() const = 0;
-  };
 
-  class PreInitState : public State {
-    friend class Engine;
-  protected:
-    explicit PreInitState(Engine* engine):
-      State(engine) {
+    const TimeSeries<10> GetDuration() const {
+      return duration_;
     }
-  public:
-    ~PreInitState() override = default;
-    DECLARE_STATE(PreInit);
   };
 
   class InitState : public State {
@@ -87,26 +83,36 @@ namespace mcc::engine {
     DECLARE_STATE(Init);
   };
 
-  class PostInitState : public State {
+  class TickState : public State {
     friend class Engine;
-  protected:
-    explicit PostInitState(Engine* engine):
-      State(engine) {
-    }
-  public:
-    ~PostInitState() override = default;
-    DECLARE_STATE(PostInit);
-  };
 
-  class TerminatingState : public State {
-    friend class Engine;
-  protected:
-    explicit TerminatingState(Engine* engine):
-      State(engine) {
+    template<typename T>
+    static inline void
+    SetState(T* handle, const TickState* state) {
+      uv_handle_set_data((uv_handle_t*) handle, (void*) state);
     }
+
+    template<typename T>
+    static inline TickState*
+    GetState(T* handle) {
+      return (TickState*) uv_handle_get_data((uv_handle_t*) handle);
+    }
+  protected:
+    uv_idle_t idle_;
+    uv_prepare_t prepare_;
+    uv_check_t check_;
+    uv_async_t on_shutdown_;
+
+    explicit TickState(Engine* engine);
+
+    void Shutdown() override;
+    static void OnIdle(uv_idle_t* handle);
+    static void OnPrepare(uv_prepare_t* handle);
+    static void OnCheck(uv_check_t* handle);
+    static void OnShutdown(uv_async_t* handle);
   public:
-    ~TerminatingState() override = default;
-    DECLARE_STATE(Terminating);
+    ~TickState() override = default;
+    DECLARE_STATE(Tick);
   };
 
   class TerminatedState : public State {

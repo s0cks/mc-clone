@@ -97,7 +97,6 @@ add_library(${PROJECT_NAME}
 # Engine
   mcc/engine/engine_event.h mcc/engine/engine_event.cc
   mcc/engine/engine.h mcc/engine/engine.cc
-  mcc/engine/engine_stage.h mcc/engine/engine_stage.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h mcc/engine/engine_state.cc
 # Shader

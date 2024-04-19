@@ -58,7 +58,6 @@ namespace mcc::renderer {
     };
   private:
     static void OnPreInit(engine::PreInitEvent* e);
-    static void OnInit(engine::InitEvent* e);
     static void OnPostInit(engine::PostInitEvent* e);
     static void SetLoop(uv_loop_t* loop);
     static void SetMode(const Mode mode);

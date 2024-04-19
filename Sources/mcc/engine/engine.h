@@ -1,24 +1,18 @@
 #ifndef MCC_ENGINE_H
 #define MCC_ENGINE_H
 
+#include <units.h>
 #include "mcc/uv_utils.h"
 #include "mcc/engine/engine_state.h"
 #include "mcc/engine/engine_event.h"
 
 namespace mcc::engine {
   class Engine {
-    friend class PreInitState;
     friend class InitState;
-    friend class PostInitState;
-    friend class TerminatingState;
+    friend class TickState;
     friend class TerminatedState;
   protected:
     uv_loop_t* loop_;
-    uv_idle_t idle_;
-    uv_prepare_t prepare_;
-    uv_check_t check_;
-    uv_async_t on_shutdown_;
-
     RelaxedAtomic<bool> running_;
     State* current_state_;
     State* previous_state_;
@@ -50,11 +44,11 @@ namespace mcc::engine {
     template<class State>
     inline void RunState(State* state) {
       DLOG(INFO) << state->GetName() << " running.....";
-      const auto start = uv_hrtime();
       SetState(state);
       state->Apply();
-      const auto total_ns = (uv_hrtime() - start);
-      DLOG(INFO) << state->GetName() << " done in " << (total_ns / NSEC_PER_MSEC) << "ms.";
+      const TimeSeries<10>& duration = state->GetDuration();
+      using namespace units::time;
+      DLOG(INFO) << state->GetName() << " done in " << nanosecond_t(duration.last()) << ", avg=" << nanosecond_t(duration.average()) << ", max=" << nanosecond_t(duration.max()) << ", min=" << nanosecond_t(duration.min());
     }
 
     template<class State>
@@ -63,7 +57,7 @@ namespace mcc::engine {
       return RunState<State>(&state);
     }
 
-    inline void DoPreTick(const uint64_t ts) {
+    inline void DoPreTick(const uint64_t ts = uv_hrtime()) {
       ts_ = ts;
       dts_ = (ts_ - last_);
       if((ts_ - last_second_) >= NSEC_PER_SEC) {
@@ -84,23 +78,6 @@ namespace mcc::engine {
       total_ticks_ += 1;
       last_ = ts_;
     }
-  private:
-    template<typename H>
-    static inline Engine*
-    GetEngine(H* handle) {
-      return (Engine*) uv_handle_get_data((uv_handle_t*) handle);
-    }
-
-    template<typename H>
-    static inline void
-    SetEngine(H* handle, Engine* engine) {
-      uv_handle_set_data((uv_handle_t*) handle, (void*) engine);
-    }
-
-    static void OnIdle(uv_idle_t* handle);
-    static void OnPrepare(uv_prepare_t* handle);
-    static void OnCheck(uv_check_t* handle);
-    static void OnShutdown(uv_async_t* handle);
   public:
     explicit Engine(uv_loop_t* loop):
       loop_(loop),
@@ -115,25 +92,7 @@ namespace mcc::engine {
       tps_(),
       last_(),
       last_second_(),
-      current_(),
-      idle_(),
-      prepare_(),
-      check_(),
-      on_shutdown_() {
-      SetEngine(&idle_, this);
-      uv_idle_init(loop, &idle_);
-      uv_idle_start(&idle_, &OnIdle);
-
-      SetEngine(&prepare_, this);
-      uv_prepare_init(loop, &prepare_);
-      uv_prepare_start(&prepare_, &OnPrepare);
-
-      SetEngine(&check_, this);
-      uv_check_init(loop, &check_);
-      uv_check_start(&check_, &OnCheck);
-
-      SetEngine(&on_shutdown_, this);
-      uv_async_init(loop, &on_shutdown_, &OnShutdown);
+      current_() {
     }
     virtual ~Engine() {
       if(loop_) {
@@ -144,6 +103,10 @@ namespace mcc::engine {
 
     virtual void Run();
     virtual void Shutdown();
+
+    const Tick& GetCurrentTick() const {
+      return current_;
+    }
 
     virtual bool IsRunning() const {
       return (bool) running_;

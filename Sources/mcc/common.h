@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <optional>
 #include <glog/logging.h>
 #include <algorithm>

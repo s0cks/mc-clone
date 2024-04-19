@@ -19,9 +19,6 @@ namespace mcc {
     engine->OnPreInitEvent().subscribe([](engine::PreInitEvent* e) {
       return Window::OnPreInit();
     });
-    engine->OnInitEvent().subscribe([](engine::InitEvent* e) {
-      return Window::OnInit();
-    });
     engine->OnPostInitEvent().subscribe([](engine::PostInitEvent* e) {
       return Window::OnPostInit();
     });
@@ -50,10 +47,6 @@ namespace mcc {
     window->OnOpened().subscribe([](WindowOpenedEvent* event) {
       DLOG(INFO) << "window opened.";
     });
-  }
-
-  void Window::OnInit() {
-    
   }
 
   void Window::OnPostInit() {

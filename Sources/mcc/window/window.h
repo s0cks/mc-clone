@@ -29,7 +29,6 @@ namespace mcc {
     static WindowPos GetWindowPos(WindowHandle* handle);
   private:
     static void OnPreInit();
-    static void OnInit();
     static void OnPostInit();
     static void OnTerminating();
     static void OnTerminated();
