@@ -2,6 +2,8 @@
 #define MCC_ENGINE_H
 
 #include <units.h>
+
+#include "mcc/counter.h"
 #include "mcc/uv_utils.h"
 #include "mcc/engine/engine_state.h"
 #include "mcc/engine/engine_event.h"
@@ -25,6 +27,9 @@ namespace mcc::engine {
     uint64_t last_;
     uint64_t last_second_;
     Tick current_;
+    PerSecondCounter<uint64_t> tick_counter_;
+    TimeSeries<10> tick_duration_;
+    NumericSeries<uint64_t, 10> ticks_per_second_;
 
     virtual void SetRunning(const bool running = true) {
       running_ = running;
@@ -72,11 +77,14 @@ namespace mcc::engine {
       };
     }
 
-    inline void DoPostTick(const uint64_t ts) {
+    inline void DoPostTick(const uint64_t ts = uv_hrtime()) {
       const auto duration = (ts - ts_);
       ticks_ += 1;
       total_ticks_ += 1;
       last_ = ts_;
+      tick_counter_.Increment(1, ts);
+      tick_duration_.Append(duration);
+      ticks_per_second_.Append(tick_counter_.per_sec());
     }
   public:
     explicit Engine(uv_loop_t* loop):
@@ -126,6 +134,18 @@ namespace mcc::engine {
 
     virtual rx::observable<EngineEvent*> OnEvent() const {
       return events_.get_observable();
+    }
+
+    uint64_t GetTotalTicks() const {
+      return (uint64_t) total_ticks_;
+    }
+
+    const TimeSeries<10>& GetTickDuration() const {
+      return tick_duration_;
+    }
+
+    const NumericSeries<uint64_t, 10>& GetTicksPerSecond() const {
+      return ticks_per_second_;
     }
 
 #define DEFINE_ON_ENGINE_EVENT(Name)                                   \

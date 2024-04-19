@@ -1,5 +1,7 @@
 #include "mcc/engine/engine_state.h"
 
+#include <units.h>
+
 #include "mcc/renderer/renderer.h"
 
 #include "mcc/engine/engine.h"
@@ -54,6 +56,7 @@ namespace mcc::engine {
     const auto state = GetState(handle);
     const auto engine = state->engine();
     engine->Publish<PostTickEvent>(engine->GetCurrentTick());
+    engine->DoPostTick();
     renderer::Renderer::Run();
   }
 
