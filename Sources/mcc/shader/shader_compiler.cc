@@ -1,5 +1,6 @@
 #include "mcc/shader/shader_compiler.h"
 #include "mcc/flags.h"
+#include "mcc/shader/shader_status.h"
 
 namespace mcc::shader {
   ShaderId ShaderCompiler::Compile(const ShaderCodePtr source) {
@@ -15,7 +16,7 @@ namespace mcc::shader {
     CHECK_GL(ERROR);
     glCompileShader(id);
     CHECK_GL(ERROR);
-    const auto status = ShaderStatus(GL_COMPILE_STATUS, id, source->type());
+    const auto status = ShaderCompileStatus(id);
     DLOG(INFO) << "status: " << status;
     return !status ? kInvalidShaderId : id;
   }

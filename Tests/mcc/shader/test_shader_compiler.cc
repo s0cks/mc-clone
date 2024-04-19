@@ -55,7 +55,7 @@ namespace mcc::shader {
       .WillByDefault([](GLuint shader, GLenum pname, GLint *params) {
         (*params) = 0;
       });
-    ON_CALL(gl, glGetShaderInfoLog(::testing::Eq(kTestShaderId), ::testing::Eq(ShaderStatus::kMessageSize), ::testing::_, ::testing::_))
+    ON_CALL(gl, glGetShaderInfoLog(::testing::Eq(kTestShaderId), ::testing::_, ::testing::_, ::testing::_))
       .WillByDefault([](GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
         (*length) = kTestErrorMessage.length();
         memset(&infoLog[0], '\0', bufSize);
@@ -84,7 +84,7 @@ namespace mcc::shader {
       .WillByDefault([](GLuint shader, GLenum pname, GLint *params) {
         (*params) = 1;
       });
-    ON_CALL(gl, glGetShaderInfoLog(::testing::Eq(kTestShaderId), ::testing::Eq(ShaderStatus::kMessageSize), ::testing::_, ::testing::_))
+    ON_CALL(gl, glGetShaderInfoLog(::testing::Eq(kTestShaderId), ::testing::_, ::testing::_, ::testing::_))
       .WillByDefault([](GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog) {
         memset(&infoLog[0], '\0', bufSize);
       });

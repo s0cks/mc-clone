@@ -102,6 +102,7 @@ add_library(${PROJECT_NAME}
 # Shader
   mcc/shader/shader_events.h mcc/shader/shader_events.cc
   mcc/shader/shader.h mcc/shader/shader.cc
+  mcc/shader/shader_status.h
   mcc/shader/shader_pipeline.h
   mcc/shader/shader_document.h mcc/shader/shader_document.cc
   mcc/shader/shader_spec.h mcc/shader/shader_spec.cc

@@ -1,4 +1,5 @@
 #include "mcc/shader/shader_linker.h"
+#include "mcc/shader/shader_status.h"
 
 namespace mcc::shader {
   ShaderId ShaderLinker::LinkShader(const ShaderId dst, const ShaderId src) {
@@ -11,9 +12,7 @@ namespace mcc::shader {
   ShaderId ShaderLinker::LinkProgram(const ShaderId id) {
     glLinkProgram(id);
     CHECK_GL(FATAL);
-    ProgramStatus status(GL_LINK_STATUS, id, kProgramShader);
-    if(!status)
-      throw std::runtime_error(fmt::format("failed to link program: {0:s}", status.message()));
-    return id;
+    const auto status = ShaderLinkStatus(id);
+    return !status ? kInvalidShaderId : id;
   }
 }
