@@ -13,7 +13,7 @@ namespace mcc::skybox {
 
   void Skybox::OnPostInit() {
     kSkyboxVao = VertexArrayObject::New();
-    SetSkybox(Skybox::New(GetTexture("tex:space_nebulas"), GetShader("shader:skybox")));
+    SetSkybox(Skybox::New(GetTexture("tex:space_nebulas"), Program::New("skybox")));
   }
 
   void Skybox::Init() {
@@ -73,14 +73,14 @@ namespace mcc::skybox {
     { .pos = glm::vec3(1.0f, -1.0f,  1.0f), },
   };
 
-  Skybox::Skybox(TextureRef t, ShaderRef s):
+  Skybox::Skybox(TextureRef t, ProgramRef s):
     vao(kSkyboxVao),
     vbo(kSkyboxVertices),
     texture(t),
     shader(s) {
   }
 
-  Skybox* Skybox::New(TextureRef texture, ShaderRef shader) {
+  Skybox* Skybox::New(TextureRef texture, ProgramRef shader) {
     VertexArrayObjectScope scope(kSkyboxVao);
     return new Skybox(texture, shader);
   }

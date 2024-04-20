@@ -2,7 +2,6 @@
 #include "mcc/engine/engine.h"
 #include "mcc/terrain/terrain.h"
 #include "mcc/terrain/terrain_flags.h"
-#include "mcc/shader/shader_pipeline.h"
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::terrain {
@@ -121,14 +120,14 @@ namespace mcc::terrain {
         chunk_ = chunk;
       });
     AddChild(new ApplyTerrainMaterialPipeline());
-    AddChild(new ApplyShaderPipeline(GetShader("shader:terrain"), [this](const ShaderRef& shader) {
-      shader->ApplyShader();
-      shader->SetUniformBlock("Camera", 0);
-      shader->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
-      shader->SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
-      shader->SetMat4("model", model_);
-      shader->SetMaterial("material");
-    }));
+    // AddChild(new ApplyShaderPipeline(GetShader("shader:terrain"), [this](const ShaderRef& shader) {
+    //   shader->ApplyShader();
+    //   shader->SetUniformBlock("Camera", 0);
+    //   shader->SetVec3("lightColor", glm::vec3(150.0f, 150.0f, 150.0f));
+    //   shader->SetVec3("lightPos", glm::vec3(0.0f, 3.0f, 0.0f));
+    //   shader->SetMat4("model", model_);
+    //   shader->SetMaterial("material");
+    // }));
     AddChild(new ApplyPipeline([this]() {
       chunk_->Render();
     }));

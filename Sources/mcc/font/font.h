@@ -11,7 +11,7 @@
 
 #include "mcc/font/glyph.h"
 #include "mcc/font/font_mesh.h"
-#include "mcc/shader/shader.h"
+#include "mcc/program/program.h"
 
 namespace mcc::font {
   typedef FT_Face FontFace;
@@ -21,7 +21,7 @@ namespace mcc::font {
 
     static constexpr const FontSize kDefaultFontSize = 32;
   protected:
-    ShaderRef shader_;
+    ProgramRef shader_;
     GlyphMap chars_;
     FontMesh mesh_;
   public:

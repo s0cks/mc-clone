@@ -11,9 +11,8 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mock_gl.h mcc/mock_gl.cc
   mcc/mock_subscription.h
 # Shaders
-  mcc/shader/test_shader_source_resolver.cc
+  mcc/shader/test_program_linker.cc
   mcc/shader/test_shader_compiler.cc
-  mcc/shader/test_shader_linker.cc
   mcc/shader/test_shader_spec_json.cc
 # Textures
   mcc/texture/mock_texture.h

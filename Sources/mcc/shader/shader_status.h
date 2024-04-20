@@ -20,10 +20,40 @@ namespace mcc::shader {
       message_ = bytes;
       message_len_ = nbytes;
     }
+
+    inline void CopyMessage(const ShaderStatus& rhs) {
+      MCC_ASSERT(rhs.HasMessage());
+      const auto length = rhs.message_len_;
+      const auto total_size = sizeof(uint8_t) * length;
+      auto message = (uint8_t*) malloc(total_size);
+      LOG_IF(FATAL, !message) << "failed to allocate ShaderStatus message for copy.";
+      memcpy(message, rhs.message_, total_size);
+      message_ = message;
+      message_len_ = length;
+    }
+
+    inline void FreeMessage() {
+      MCC_ASSERT(HasMessage());
+      free(message_);
+      message_ = nullptr;
+      message_len_ = 0;
+    }
   public:
+    ShaderStatus():
+      shader_(kInvalidShaderId),
+      message_len_(0),
+      message_(nullptr) {
+    }
+    ShaderStatus(const ShaderStatus& rhs):
+      shader_(rhs.shader_),
+      message_len_(0),
+      message_(nullptr) {
+      if(rhs.HasMessage())
+        CopyMessage(rhs);
+    }
     virtual ~ShaderStatus() {
-      if(message_)
-        free(message_);
+      if(HasMessage())
+        FreeMessage();
     }
 
     ShaderId shader() const {
@@ -36,6 +66,14 @@ namespace mcc::shader {
 
     bool HasMessage() const {
       return message_ != nullptr && message_len_ > 0;
+    }
+
+    void operator=(const ShaderStatus& rhs) {
+      if(HasMessage()) 
+        FreeMessage();
+      shader_ = rhs.shader_;
+      if(rhs.HasMessage())
+        CopyMessage(rhs);
     }
   };
 
@@ -71,46 +109,6 @@ namespace mcc::shader {
 
     friend std::ostream& operator<<(std::ostream& stream, const ShaderCompileStatus& rhs) {
       stream << "ShaderCompileStatus(";
-      stream << "shader=" << rhs.shader();
-      if(rhs.HasMessage())
-        stream << ", message=" << rhs.message();
-      stream << ")";
-      return stream;
-    }
-  };
-
-  class ShaderLinkStatus : public ShaderStatus {
-  protected:
-    GLint linked_;
-  public:
-    explicit ShaderLinkStatus(const ShaderId id):
-      ShaderStatus(id),
-      linked_(GL_FALSE) {
-      glGetShaderiv(shader(), GL_LINK_STATUS, &linked_);
-      CHECK_GL(FATAL);
-      if(!IsLinked()) {
-        GLint length = 0;
-        glGetShaderiv(shader(), GL_INFO_LOG_LENGTH, &length);
-        CHECK_GL(FATAL);
-        auto data = (uint8_t*) malloc(sizeof(uint8_t) * length);
-        LOG_IF(FATAL, !data) << "failed to allocate ShaderLinkStatus message of length: " << length;
-        glGetShaderInfoLog(shader(), length, &length, (GLchar*) data);
-        CHECK_GL(FATAL);
-        SetMessage(data, length);
-      }
-    }
-    ~ShaderLinkStatus() override = default;
-
-    bool IsLinked() const {
-      return linked_ == GL_TRUE;
-    }
-
-    operator bool () const {
-      return IsLinked();
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const ShaderLinkStatus& rhs) {
-      stream << "ShaderLinkStatus(";
       stream << "shader=" << rhs.shader();
       if(rhs.HasMessage())
         stream << ", message=" << rhs.message();

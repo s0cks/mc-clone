@@ -7,6 +7,7 @@
 namespace mcc {
 #define FOR_EACH_RESOURCE_TYPE(V) \
   V(Shader)                       \
+  V(Program)                      \
   V(Texture)                      \
   V(Material)                     \
   V(BufferObject)                 \

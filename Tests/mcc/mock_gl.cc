@@ -81,6 +81,10 @@ void glAttachShader(GLuint program, GLuint shader) {
   __ glAttachShader(program, shader);
 }
 
+void glDetachShader(GLuint program, GLuint shader) {
+  __ glDetachShader(program, shader);
+}
+
 void glCompileShader(GLuint shader) {
   __ glCompileShader(shader);
 }
@@ -155,6 +159,26 @@ void glUniform1i (GLint location, GLint v0) {
 
 void glUniform1f (GLint location, GLfloat v0) {
   __ glUniform1f(location, v0);
+}
+
+void glGetActiveAttrib(	GLuint program,
+                        GLuint index,
+                        GLsizei bufSize,
+                        GLsizei *length,
+                        GLint *size,
+                        GLenum *type,
+                        GLchar *name) {
+  __ glGetActiveAttrib(program, index, bufSize, length, size, type, name);
+}
+
+void glGetActiveUniform(	GLuint program,
+                        GLuint index,
+                        GLsizei bufSize,
+                        GLsizei *length,
+                        GLint *size,
+                        GLenum *type,
+                        GLchar *name) {
+  __ glGetActiveUniform(program, index, bufSize, length, size, type, name);
 }
 
 // buffers

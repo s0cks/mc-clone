@@ -32,6 +32,9 @@ namespace mcc {
 
     // shaders
     MOCK_METHOD2(glAttachShader, void(GLuint program, GLuint shader));
+    MOCK_METHOD2(glDetachShader, void(GLuint program, GLuint shader));
+    MOCK_METHOD7(glGetActiveUniform, void(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name));
+    MOCK_METHOD7(glGetActiveAttrib, void(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name));
     MOCK_METHOD1(glCompileShader, void(GLuint shader));
     MOCK_METHOD0(glCreateProgram, GLuint());
     MOCK_METHOD1(glCreateShader, GLuint(GLenum type));

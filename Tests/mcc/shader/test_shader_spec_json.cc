@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "mcc/shader/shader_spec_json.h"
+#include "mcc/shader/shader_spec.h"
 
 namespace mcc::shader {
   class JsonShaderSpecTest : public ::testing::Test {

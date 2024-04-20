@@ -19,7 +19,6 @@
 #include "mcc/gui/gui_frame_renderer.h"
 
 #include "mcc/skybox.h"
-#include "mcc/bloom.h"
 
 #include "mcc/gui/shape.h"
 
@@ -31,9 +30,9 @@
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/renderer/render_pass_executor.h"
 
+#include "mcc/program/program_pipeline.h"
+
 namespace mcc::renderer {
-  static ThreadLocal<FrameBuffer> frame_buffer_;
-  
   static RelaxedAtomic<RendererState> state_;
   static uint64_t frame_start_ns_;
   static uint64_t last_frame_ns_;
@@ -226,12 +225,10 @@ namespace mcc::renderer {
         const auto apply_tex = new ApplyPipeline([texture]() {
           texture->Bind(0);
         });
-        const auto apply_shader = new ApplyShaderPipeline(GetShader("shader:textured_2d"), [projection,texture](const ShaderRef& shader) {
-          shader->ApplyShader();
+        const auto apply_shader = program::ApplyProgramPipeline::New("textured_2d", [projection,texture](const ProgramRef& shader) {
           shader->SetInt("tex", 0);
           shader->SetMat4("projection", projection);
           shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
-          shader->ApplyShader();
         });
         const auto render_quads = new d2::RenderMeshPipeline(mesh);
         render_quads->AddChild(apply_tex);
@@ -366,10 +363,6 @@ namespace mcc::renderer {
 
     frames_ += 1;
     last_frame_ns_ = frame_start_ns_;
-  }
-
-  FrameBuffer* Renderer::GetFrameBuffer() {
-    return frame_buffer_.Get();
   }
 
   void Renderer::IncrementEntityCounter(const uint64_t value) {

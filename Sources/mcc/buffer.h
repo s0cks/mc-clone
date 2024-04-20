@@ -7,6 +7,7 @@
 #include <fstream>
 #include <glog/logging.h>
 
+#include "mcc/uri.h"
 #include "mcc/common.h"
 
 namespace mcc {
@@ -173,7 +174,16 @@ namespace mcc {
     }
   public:
     static BufferPtr New(const uint64_t init_capacity);
+
     static BufferPtr FromFile(const std::string& filename);
+
+    static inline BufferPtr
+    FromFile(const uri::Uri& uri) {
+      MCC_ASSERT(uri.HasScheme("file"));
+      MCC_ASSERT(uri.HasExtension());
+      return FromFile(uri.path);
+    }
+
     static BufferPtr CopyFrom(const uint8_t* data, const uint64_t length, const uint64_t wpos, const uint64_t rpos = 0);
     
     static inline BufferPtr

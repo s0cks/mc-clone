@@ -1,5 +1,4 @@
 #include <fstream>
-
 #include "mcc/buffer.h"
 #include "mcc/platform.h"
 

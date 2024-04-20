@@ -41,7 +41,6 @@ add_library(${PROJECT_NAME}
   mcc/index_buffer.h
   mcc/uniform_buffer.h
   mcc/renderbuffer.h
-  mcc/bloom.h mcc/bloom.cc
   mcc/rx.h
   mcc/glm.h
   mcc/flags.h mcc/flags.cc
@@ -99,18 +98,27 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h mcc/engine/engine_state.cc
+# Program
+  mcc/program/program_document.h
+  mcc/program/program_id.h
+  mcc/program/program_linker.h mcc/program/program_linker.cc
+  mcc/program/program_pipeline.h mcc/program/program_pipeline.cc
+  mcc/program/program_spec_builder.h mcc/program/program_spec_builder.cc
+  mcc/program/program_spec_json.h mcc/program/program_spec_json.cc
+  mcc/program/program_spec.h mcc/program/program_spec.cc
+  mcc/program/program_status.h mcc/program/program_status.cc
+  mcc/program/program.h mcc/program/program.cc
 # Shader
+  mcc/shader/shader_id.h
+  mcc/shader/shader_type.h
+  mcc/shader/shader_code.h mcc/shader/shader_code.cc
   mcc/shader/shader_events.h mcc/shader/shader_events.cc
   mcc/shader/shader.h mcc/shader/shader.cc
   mcc/shader/shader_status.h
-  mcc/shader/shader_pipeline.h
   mcc/shader/shader_document.h mcc/shader/shader_document.cc
   mcc/shader/shader_spec.h mcc/shader/shader_spec.cc
   mcc/shader/shader_spec_json.h mcc/shader/shader_spec_json.cc
   mcc/shader/shader_compiler.h mcc/shader/shader_compiler.cc
-  mcc/shader/shader_linker.h mcc/shader/shader_linker.cc
-  mcc/shader/source.h mcc/shader/source.cc
-  mcc/shader/shader_source_resolver.h mcc/shader/shader_source_resolver.cc
 # Window
   mcc/window/monitor_constants.h
   mcc/window/monitor_glfw.h
@@ -147,7 +155,6 @@ add_library(${PROJECT_NAME}
   mcc/framebuffer/framebuffer_object.h mcc/framebuffer/framebuffer_object.cc
   mcc/framebuffer/framebuffer_attachment.h
   mcc/framebuffer/framebuffer.h mcc/framebuffer/framebuffer.cc
-  mcc/framebuffer/framebuffer_pipeline.h mcc/framebuffer/framebuffer_pipeline.cc
 # Terrain
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc

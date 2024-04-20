@@ -2,51 +2,53 @@
 
 #include "mcc/flags.h"
 #include "mcc/shader/shader.h"
-#include "mcc/shader/shader_linker.h"
 #include "mcc/shader/shader_compiler.h"
-#include "mcc/shader/shader_source_resolver.h"
 
-namespace mcc {
-  static inline bool
-  HasShaderExtension(const uri::Uri& uri) {
-    const auto extension = uri.GetPathExtension();
-    if(!extension)
-      return false;
-#define CHECK_EXTENSION(Name, Ext, GlValue) \
-    else if(EqualsIgnoreCase((*extension), (#Ext))) return true;
-    FOR_EACH_SHADER_TYPE(CHECK_EXTENSION)
-#undef CHECK_EXTENSION
-    return false;
+namespace mcc::shader {
+  static rx::subject<ShaderEvent*> events_;
+
+  rx::observable<ShaderEvent*> OnEvent() {
+    return events_.get_observable();
   }
 
-  ShaderRef GetShader(const uri::Uri& uri) {
+  void Shader::Publish(ShaderEvent* event) {
+    events_.get_subscriber().on_next(event);
+  }
+
+  Shader::Shader(const ShaderId id):
+    res::ResourceTemplate<res::kShaderType>(),
+    id_(id) {
+    Publish<ShaderCreatedEvent>(id);
+  }
+
+  int Shader::GetShaderiv(const Property property) const {
+    GLint value;
+    glGetShaderiv(GetId(), property, &value);
+    CHECK_GL(FATAL);
+    return static_cast<int>(value);
+  }
+
+  void Shader::Destroy() {
+    const auto id = GetId();
+    glDeleteShader(id);
+    CHECK_GL(FATAL);
+    Publish<ShaderDestroyedEvent>(id);
+  }
+
+  std::string Shader::ToString() const {
+    std::stringstream ss;
+    ss << "Shader(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
+  }
+
+  ShaderRef Shader::New(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("shader"));
-    shader::ShaderSourceResolver resolver(uri);
-    auto sources = resolver.Resolve().map([](const shader::ShaderSource& next) {
-      return next.GetSource();
-    });
+    const auto code = shader::ShaderCode::FromFile(uri);
+    if(!code)
+      return ShaderRef();
     shader::ShaderCompiler compiler;
-    shader::ShaderLinker linker;
-    const auto shader = linker.Link(compiler.Compile(sources))
-      .map([](const shader::ShaderId& next) {
-        return new Shader(next);
-      })
-      .as_blocking()
-      .first();
-    return ShaderRef(shader);
-  }
-
-  namespace shader {
-    Shader::Shader(const ShaderId id):
-      res::ResourceTemplate<res::kShaderType>(),
-      id_(id) {
-      Publish<ShaderCreatedEvent>();
-    }
-
-    void Shader::Destroy() {
-      glDeleteShader(id_);
-      CHECK_GL(FATAL);
-      Publish<ShaderDestroyedEvent>();
-    }
+    return New(compiler.Compile(code));
   }
 }

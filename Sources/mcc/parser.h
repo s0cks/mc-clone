@@ -1,8 +1,6 @@
 #ifndef MCC_PARSER_H
 #define MCC_PARSER_H
 
-#include "mcc/buffer.h"
-
 namespace mcc {
   struct Position {
     uint64_t row;

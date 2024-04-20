@@ -8,7 +8,6 @@
 #include <fmt/format.h>
 
 #include "mcc/rx.h"
-#include "mcc/buffer.h"
 #include "mcc/murmur.h"
 #include "mcc/parser.h"
 #include "mcc/common.h"

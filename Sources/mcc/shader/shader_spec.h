@@ -2,24 +2,21 @@
 #define MCC_SHADER_SPEC_H
 
 #include <string>
-#include <optional>
-
-#include "mcc/uri.h"
-#include "mcc/spec.h"
+#include "mcc/shader/shader_type.h"
+#include "mcc/shader/shader_code.h"
 
 namespace mcc::shader {
-  class ShaderSpec : public Spec {
+  class ShaderSpec {
   protected:
     ShaderSpec() = default;
   public:
-    ~ShaderSpec() override = default;
-    DEFINE_SPEC(Shader);
-    DECLARE_SPEC_PROPERTY(FragmentShader, uri::Uri);
-    DECLARE_SPEC_PROPERTY(VertexShader, uri::Uri);
-    DECLARE_SPEC_PROPERTY(GeometryShader, uri::Uri);
-    DECLARE_SPEC_PROPERTY(TessEvalShader, uri::Uri);
-    DECLARE_SPEC_PROPERTY(TessControlShader, uri::Uri);
+    virtual ~ShaderSpec() = default;
+    virtual std::string GetShaderName() const = 0;
+    virtual ShaderType GetShaderType() const = 0;
+    virtual ShaderCode* GetShaderCode() const = 0;
   };
 }
+
+#include "mcc/shader/shader_spec_json.h"
 
 #endif //MCC_SHADER_SPEC_H

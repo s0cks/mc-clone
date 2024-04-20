@@ -8,8 +8,7 @@
 #include "mcc/vao.h"
 #include "mcc/vertex/vertex_buffer.h"
 
-#include "mcc/shader/shader.h"
-#include "mcc/shader/shader_pipeline.h"
+#include "mcc/program/program.h"
 #include "mcc/texture/texture.h"
 
 #include "mcc/pipeline.h"
@@ -77,25 +76,25 @@ namespace mcc {
       Vao vao;
       VertexBuffer vbo;
       TextureRef texture;
-      ShaderRef shader;
+      ProgramRef shader;
 
       Skybox() = default;
       Skybox(const Skybox& rhs) = default;
       ~Skybox() = default;
       Skybox& operator=(const Skybox& rhs) = default;
     private:
-      explicit Skybox(TextureRef texture, ShaderRef shader);
+      explicit Skybox(TextureRef texture, ProgramRef shader);
       static void OnPostInit();
       static void SetSkybox(Skybox* skybox);
     public:
       static void Init();
       static Skybox* Get();
-      static Skybox* New(TextureRef texture, ShaderRef shader);
+      static Skybox* New(TextureRef texture, ProgramRef shader);
       static rx::observable<Skybox*> GetObservable();
 
       static inline Skybox*
       New(TextureRef texture) {
-        return New(texture, GetShader("skybox"));
+        return New(texture, Program::New("skybox"));
       }
     };
 
@@ -110,12 +109,12 @@ namespace mcc {
           .subscribe([this](Skybox* skybox) {
             skybox_ = skybox;
           });
-        AddChild(new ApplyPipeline([this]() {
-          const auto& shader = skybox_->shader;
-          shader->ApplyShader();
-          shader->SetUniformBlock("Camera", 0);
-          shader->SetInt("tex", 0);
-        }));
+        // AddChild(new ApplyPipeline([this]() {
+        //   const auto& shader = skybox_->shader;
+        //   shader->ApplyShader();
+        //   shader->SetUniformBlock("Camera", 0);
+        //   shader->SetInt("tex", 0);
+        // }));
         AddChild(new ApplyPipeline([this]() {
           VertexArrayObjectScope scope(skybox_->vao);
           glDrawArrays(GL_TRIANGLES, 0, skybox_->vbo.length());

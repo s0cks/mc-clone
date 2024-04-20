@@ -14,7 +14,6 @@ namespace mcc {
 
   namespace resource {
     class Resource {
-      friend class shader::Shader;
     protected:
       Resource() = default;
       virtual void Destroy() = 0;

@@ -1,117 +1,58 @@
 #ifndef MCC_SHADER_DOCUMENT_H
 #define MCC_SHADER_DOCUMENT_H
 
-#include <string>
-#include <optional>
-
+#include "mcc/uri.h"
 #include "mcc/json.h"
-#include "mcc/shader/shader.h"
-#include "mcc/shader/source.h"
-#include "mcc/shader/shader_constants.h"
+#include "mcc/shader/shader_type.h"
 
 namespace mcc::shader {
-  bool IsValidShaderDocument(const json::Document& doc);
-  
-  static inline bool
-  IsValidShaderDocument(const std::string& filename) {
-    json::Document doc;
-    if(!json::ParseJson(filename, doc))
-      return false;
-    return IsValidShaderDocument(doc);
-  }
+#define FOR_EACH_SHADER_DOCUMENT_PROPERTY(V) \
+  V(Name)                                    \
+  V(Type)                                    \
+  V(File)                                    \
+  V(Code)
 
   class ShaderDocument {
+#define DEFINE_SHADER_DOCUMENT_PROPERTY_NAME(Name)         \
+    static constexpr const auto k##Name##Property = #Name;
+    FOR_EACH_SHADER_DOCUMENT_PROPERTY(DEFINE_SHADER_DOCUMENT_PROPERTY_NAME)
+#undef DEFINE_SHADER_DOCUMENT_PROPERTY
   protected:
-    std::string root_;
-    std::string name_;
+    uri::Uri uri_;
     json::Document doc_;
 
-    inline std::optional<std::string>
-    GetStringProperty(const char* name) const {
-      if(!doc_.HasMember(name))
-        return std::nullopt;
-      const auto& property = doc_[name];
-      if(!property.IsString())
-        return std::nullopt;
-      const auto value = std::string(property.GetString(), property.GetStringLength());
-      return std::optional<std::string>{ value };
+    inline json::Document& doc() {
+      return doc_;
     }
 
-    inline bool
-    IsBoolProperty(const char* name) const {
-      if(!doc_.HasMember(name))
-        return false;
-      return doc_[name].IsBool()
-          && doc_[name].GetBool();
-    }
-
-    static inline std::string
-    GetNameFromFilename(const std::string& filename) {
-      auto name = filename;
-      const auto slashpos = name.find_last_of('/');
-      if(slashpos != std::string::npos)
-        name = name.substr(slashpos + 1);
-      const auto dotpos = name.find_last_of('.');
-      if(dotpos != std::string::npos)
-        name = name.substr(0, dotpos);
-      return name;
-    }
-
-    static inline std::string
-    GetDirectoryOf(const std::string& filename) {
-      auto name = filename;
-      const auto dotpos = name.find_last_of('.');
-      if(dotpos == std::string::npos) 
-        return name;
-      const auto slashpos = name.find_last_of('/');
-      if(slashpos != std::string::npos)
-        name = name.substr(0, slashpos);
-      return name;
+    inline const json::Document& doc() const {
+      return doc_;
     }
   public:
-    ShaderDocument(const std::string& name, const std::string& filename):
-      doc_(),
-      name_(name),
-      root_(GetDirectoryOf(filename)) {
-      if(!json::ParseJson(filename, doc_)) {
-        DLOG(ERROR) << "failed to parse shader document from: " << filename;
-        return;
-      }
-      if(!IsValid()) {
-        DLOG(ERROR) << "parsed invalid shader document from: " << filename;
-        return;
-      }
-      const auto pName = GetStringProperty("name");
-      if(!pName) {
-        name_ = (*pName);
-        DLOG(INFO) << "set " << name << " shader's name to " << name_;
-      }
-      DLOG(INFO) << "parsed " << name_ << " shader doc in " << root_;
-    }
-    explicit ShaderDocument(const std::string& filename):
-      ShaderDocument(GetNameFromFilename(filename), filename) {
+    explicit ShaderDocument(const uri::Uri& uri):
+      uri_(uri),
+      doc_() {
+      MCC_ASSERT(uri.HasScheme("file"));
+      MCC_ASSERT(uri.HasExtension(".json"));
+      LOG_IF(ERROR, !json::ParseJson(uri, doc_)) << "failed to parse ShaderDocument from: " << uri;
     }
     virtual ~ShaderDocument() = default;
 
-    virtual std::string GetName() const = 0;
-    virtual uri::Uri GetVertexShaderUri() const = 0;
-    virtual uri::Uri GetFragmentShaderUri() const = 0;
-    virtual std::optional<uri::Uri> GetGeometryShaderUri() = 0;
-    virtual std::optional<uri::Uri> GetTessControlShaderUri() = 0;
-    virtual std::optional<uri::Uri> GetTessEvalShaderUri() = 0;
-
-    rx::observable<ShaderSource> GetSources() const; 
-
-    virtual std::string GetIssue() const {
-      if(doc_.HasParseError())
-        return json::GetParseError(doc_);
-      return "Document schema is invalid."; //TODO: more
+    uri::Uri uri() const {
+      return uri_;
     }
 
-    virtual bool IsValid() const {
-      return !doc_.HasParseError() && IsValidShaderDocument(doc_);
+#define DEFINE_GET_SHADER_DOCUMENT_PROPERTY(Name)                 \
+    inline bool Has##Name##Property() const {                     \
+      return doc().HasMember(k##Name##Property);                  \
+    }                                                             \
+    inline const json::Value& Get##Name##Property() const {       \
+      MCC_ASSERT(Has##Name##Property());                          \
+      return doc()[k##Name##Property];                            \
     }
+    FOR_EACH_SHADER_DOCUMENT_PROPERTY(DEFINE_GET_SHADER_DOCUMENT_PROPERTY)
+#undef DEFINE_GET_SHADER_DOCUMENT_PROPERTY
   };
 }
 
-#endif // MCC_SHADER_DOCUMENT_H
+#endif //MCC_SHADER_DOCUMENT_H

@@ -10,6 +10,13 @@ namespace mcc::shader {
     return ss.str();
   }
 
+  std::string ShaderCompiledEvent::ToString() const {
+    std::stringstream ss;
+    ss << "ShaderCompiledEvent(";
+    ss << ")";
+    return ss.str();
+  }
+
   std::string ShaderDestroyedEvent::ToString() const {
     std::stringstream ss;
     ss << "ShaderDestroyedEvent(";

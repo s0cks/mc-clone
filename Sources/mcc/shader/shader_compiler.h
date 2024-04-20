@@ -5,7 +5,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/shader/shader.h"
-#include "mcc/shader/source.h"
+#include "mcc/shader/shader_code.h"
 
 namespace mcc::shader {
   class ShaderCompiler {
@@ -13,8 +13,7 @@ namespace mcc::shader {
   public:
     ShaderCompiler() = default;
     virtual ~ShaderCompiler() = default;
-    virtual ShaderId Compile(const ShaderCodePtr source);
-    virtual rx::observable<ShaderId> Compile(rx::observable<ShaderCodePtr> sources);
+    virtual ShaderId Compile(ShaderCode* source);
   };
 }
 

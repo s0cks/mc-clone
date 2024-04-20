@@ -12,7 +12,7 @@
 #include "mcc/pipeline.h"
 #include "mcc/index_buffer.h"
 #include "mcc/vertex/vertex_buffer.h"
-#include "mcc/shader/shader_pipeline.h"
+#include "mcc/program/program_pipeline.h"
 
 namespace mcc::d2 {
   struct Vertex {
@@ -142,7 +142,7 @@ namespace mcc::d2 {
   protected:
     Mesh* mesh_;
   public:
-    explicit RenderMeshPipeline(Mesh* mesh, ApplyShaderPipeline* shader = nullptr):
+    explicit RenderMeshPipeline(Mesh* mesh, program::ApplyProgramPipeline* shader = nullptr):
       Pipeline(),
       mesh_(mesh) {
       if(!shader)
@@ -150,14 +150,14 @@ namespace mcc::d2 {
       AddChild(shader);
     }
     RenderMeshPipeline(Mesh* mesh,
-                       const uri::Uri& shader,
-                       shader::ApplyShaderFunction applyShader = shader::kDefaultApplyFunc):
-      RenderMeshPipeline(mesh, new ApplyShaderPipeline(GetShader(shader), applyShader)) {
+                       const uri::Uri& uri,
+                       program::ApplyProgramPipeline::SetUniformsCallback apply = program::ApplyProgramPipeline::kDoNothing):
+      RenderMeshPipeline(mesh, program::ApplyProgramPipeline::New(uri, apply)) {
     }
     RenderMeshPipeline(Mesh* mesh,
-                       const std::string& shader,
-                       shader::ApplyShaderFunction applyShader = shader::kDefaultApplyFunc):
-      RenderMeshPipeline(mesh, new ApplyShaderPipeline(GetShader(shader), applyShader)) {
+                       const uri::basic_uri& uri,
+                       program::ApplyProgramPipeline::SetUniformsCallback apply = program::ApplyProgramPipeline::kDoNothing):
+      RenderMeshPipeline(mesh, program::ApplyProgramPipeline::New(uri, apply)) {
     }
     ~RenderMeshPipeline() override = default;
 
