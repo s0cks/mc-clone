@@ -221,7 +221,7 @@ namespace mcc::renderer {
         shape::NewRect(glm::vec2(0, 0), glm::vec2(256, 256), vertices, indices);
         shape::NewRect(glm::vec2(256, 256), glm::vec2(256, 256), vertices, indices);
         const auto mesh = d2::NewMesh(vertices, indices);
-        const auto texture = GetTexture("tex:concrete.png");
+        const auto texture = Texture2D::New("concrete.png");
         const auto apply_tex = new ApplyPipeline([texture]() {
           texture->Bind(0);
         });

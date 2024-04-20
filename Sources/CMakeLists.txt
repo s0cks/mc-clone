@@ -136,11 +136,14 @@ add_library(${PROJECT_NAME}
   mcc/image/image_png.h mcc/image/image_png.cc
   mcc/image/image_jpeg.h mcc/image/image_jpeg.cc
 # Textures
+  mcc/texture/texture_id.h
   mcc/texture/texture_factory.h mcc/texture/texture_factory.cc
   mcc/texture/texture_file.h
+  mcc/texture/texture_document.h mcc/texture/texture_document.cc
   mcc/texture/texture_event.h mcc/texture/texture_event.cc
-  mcc/texture/texture_file_resolver.h
   mcc/texture/texture_spec.h mcc/texture/texture_spec.cc
+  mcc/texture/texture_spec_builder.h mcc/texture/texture_spec_builder.cc
+  mcc/texture/texture_spec_json.h mcc/texture/texture_spec_json.cc
   mcc/texture/texture_wrap.h
   mcc/texture/texture_target.h
   mcc/texture/texture_filter.h

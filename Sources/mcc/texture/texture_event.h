@@ -2,7 +2,7 @@
 #define MCC_TEXTURE_EVENT_H
 
 #include "mcc/event.h"
-#include "mcc/texture/texture_constants.h"
+#include "mcc/texture/texture_id.h"
 
 namespace mcc::texture {
 #define FOR_EACH_TEXTURE_EVENT(V) \
@@ -41,6 +41,10 @@ namespace mcc::texture {
     }
   public:
     ~TextureEvent() override = default;
+
+    TextureId GetTextureId() const {
+      return id_;
+    }
 
 #define DEFINE_TYPE_CHECK(Name)                                       \
     virtual Name##Event* As##Name##Event() { return nullptr; }        \

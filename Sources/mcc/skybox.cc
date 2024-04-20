@@ -13,7 +13,7 @@ namespace mcc::skybox {
 
   void Skybox::OnPostInit() {
     kSkyboxVao = VertexArrayObject::New();
-    SetSkybox(Skybox::New(GetTexture("tex:space_nebulas"), Program::New("skybox")));
+    SetSkybox(Skybox::New(CubeMap::New("space_nebulas"), Program::New("skybox")));
   }
 
   void Skybox::Init() {

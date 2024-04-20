@@ -19,6 +19,9 @@
 namespace mcc::json {
   using namespace rapidjson;
 
+  typedef Document::Object Object;
+  typedef Document::ConstObject ConstObject;
+
   typedef std::shared_ptr<Document> DocumentPtr;
 
   bool ParseJson(FILE* file, Document& doc);

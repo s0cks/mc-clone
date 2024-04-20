@@ -104,7 +104,11 @@ namespace mcc::img::png {
       }
 
       const auto error = fclose(file);
-      //TODO: check error
+      if(error == EOF) {
+        const auto err = fmt::format("failed to close image file: {0:s}", (const std::string&) uri);
+        s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+        return;
+      }
 
       s.on_next(image);
       s.on_completed();

@@ -4,6 +4,7 @@
 #include "mcc/image/image.h"
 #include "mcc/texture/texture_constants.h"
 
+#include "mcc/texture/texture_id.h"
 #include "mcc/texture/texture_spec.h"
 #include "mcc/texture/texture_wrap.h"
 #include "mcc/texture/texture_filter.h"
@@ -14,16 +15,16 @@ namespace mcc::texture {
     TextureWrap wrap_;
     TextureFilter filter_;
 
-    inline void ApplyProperties() const {
-      wrap_.ApplyTo(target());
-      filter_.ApplyTo(target());
-    }
-
+    virtual void ApplyProperties() const;
     virtual void ApplyImage(img::Image* image) const = 0;
   public:
     TextureFactory():
       wrap_(),
       filter_(kLinear, kLinear) {
+    }
+    explicit TextureFactory(TextureSpec* spec):
+      wrap_(spec->GetTextureWrap()),
+      filter_(spec->GetTextureFilter()) {
     }
     virtual ~TextureFactory() = default;
     virtual TextureTarget target() const = 0;
@@ -45,12 +46,9 @@ namespace mcc::texture {
     }
 
     void Apply(TextureSpec* spec) {
-      const auto filter = spec->GetFilter();
-      if(filter)
-        SetFilter(*filter);
-      const auto wrap = spec->GetWrap();
-      if(wrap)
-        SetWrap(*wrap);
+      MCC_ASSERT(spec);
+      SetFilter(spec->GetTextureFilter());
+      SetWrap(spec->GetTextureWrap());
     }
 
     virtual TextureId Create() const;
@@ -61,6 +59,9 @@ namespace mcc::texture {
   class TextureFactoryTemplate : public TextureFactory {
   public:
     TextureFactoryTemplate() = default;
+    explicit TextureFactoryTemplate(TextureSpec* spec):
+      TextureFactory(spec) {
+    }
     ~TextureFactoryTemplate() override = default;
     
     TextureTarget target() const override {
@@ -73,6 +74,9 @@ namespace mcc::texture {
     void ApplyImage(img::Image* image) const override;
   public:
     TextureFactory2D() = default;
+    explicit TextureFactory2D(TextureSpec* spec):
+      TextureFactoryTemplate<k2D>(spec) {
+    }
     ~TextureFactory2D() override = default;
   };
 }

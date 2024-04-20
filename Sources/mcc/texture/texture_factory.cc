@@ -1,6 +1,13 @@
 #include "mcc/texture/texture_factory.h"
 
 namespace mcc::texture {
+  void TextureFactory::ApplyProperties() const {
+    DLOG(INFO) << "applying wrap: " << wrap_;
+    wrap_.ApplyTo(target());
+    DLOG(INFO) << "applying filter: " << filter_;
+    filter_.ApplyTo(target());
+  }
+
   class TextureFactoryBindScope {
   protected:
     TextureId id_;
@@ -57,6 +64,15 @@ namespace mcc::texture {
     }
   };
 
+  void TextureFactory2D::ApplyImage(img::Image* image) const {
+    const auto& size = image->size();
+    const auto width = size[0];
+    const auto height = size[1];
+    const auto pixels = image->data();
+    glTexImage2D(target(), 0, image->type(), width, height, 0, image->type(), GL_UNSIGNED_BYTE, (const GLvoid*) pixels->bytes());
+    CHECK_GL(FATAL);
+  }
+
   TextureId TextureFactory::Create() const {
     TextureFactoryBindScope scope(this);
     ApplyProperties();
@@ -68,14 +84,5 @@ namespace mcc::texture {
     ApplyProperties();
     ApplyImage(image);
     return scope.id();
-  }
-
-  void TextureFactory2D::ApplyImage(img::Image* image) const {
-    const auto& size = image->size();
-    const auto width = size[0];
-    const auto height = size[1];
-    const auto pixels = image->data();
-    glTexImage2D(target(), 0, image->type(), width, height, 0, image->type(), GL_UNSIGNED_BYTE, (const GLvoid*) pixels->bytes());
-    CHECK_GL(FATAL);
   }
 }
