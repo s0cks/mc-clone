@@ -57,6 +57,7 @@ namespace mcc {
 #undef DEFINE_ON_PROGRAM_EVENT
 
     class Program : public res::ResourceTemplate<res::kProgramType> {
+      friend class ProgramLinker;
     public:
       struct ActiveAttribute {
         GLenum type;
@@ -121,6 +122,15 @@ namespace mcc {
 
       inline int GetActiveUniformsMaxLength() const {
         return GetProgramiv(kActiveUniformsMaxLength);
+      }
+
+      static void Publish(ProgramEvent* event);
+
+      template<typename E, typename... Args>
+      inline void
+      Publish(Args... args) const {
+        E event(GetProgramId(), args...);
+        return Publish(&event);
       }
     public:
       virtual ~Program() override = default;

@@ -12,14 +12,22 @@ namespace mcc::program {
     return events_.get_observable();
   }
 
+  void Program::Publish(ProgramEvent* event) {
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
+
   Program::Program(const ProgramId id):
     res::ResourceTemplate<res::kProgramType>(),
     id_(id) {
+    Publish<ProgramCreatedEvent>();
   }
 
   void Program::Destroy() {
     glDeleteProgram(id_);
     CHECK_GL(FATAL);
+    Publish<ProgramDestroyedEvent>();
   }
 
   int Program::GetProgramiv(const Property property) const {
@@ -108,6 +116,12 @@ namespace mcc::program {
     if(!IsValidProgramId(id)) {
       DLOG(ERROR) << "failed to create program.";
       return {};
+    }
+
+    {
+      //TODO: cleanup
+      ProgramCreatedEvent event(id);
+      Publish(&event);
     }
     
     const auto link_status = ProgramLinker::Link(id, spec);

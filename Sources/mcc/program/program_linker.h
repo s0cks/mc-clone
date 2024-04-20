@@ -4,7 +4,8 @@
 #include <vector>
 #include "mcc/rx.h"
 #include "mcc/shader/shader_id.h"
-#include "mcc/program/program_id.h"
+
+#include "mcc/program/program.h"
 #include "mcc/program/program_spec.h"
 #include "mcc/program/program_status.h"
 
@@ -26,6 +27,12 @@ namespace mcc::program {
       }
       attached_.clear();
     }
+
+    template<class E, typename... Args>
+    inline void Publish(Args... args) {
+      E event(GetProgramId(), args...);
+      return Program::Publish(&event);
+    }
   public:
     explicit ProgramLinker(const ProgramId program):
       program_(program),
@@ -33,6 +40,10 @@ namespace mcc::program {
       MCC_ASSERT(IsValidProgramId(program));
     }
     virtual ~ProgramLinker() = default;
+
+    ProgramId GetProgramId() const {
+      return program_;
+    }
 
     bool IsAttached(const ShaderId id) const {
       MCC_ASSERT(shader::IsValidShaderId(id));
