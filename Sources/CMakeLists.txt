@@ -100,6 +100,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_state.h mcc/engine/engine_state.cc
 # Program
   mcc/program/program_document.h
+  mcc/program/program_events.h mcc/program/program_events.cc
   mcc/program/program_id.h
   mcc/program/program_linker.h mcc/program/program_linker.cc
   mcc/program/program_pipeline.h mcc/program/program_pipeline.cc

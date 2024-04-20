@@ -6,6 +6,12 @@
 #include "mcc/shader/shader_compiler.h"
 
 namespace mcc::program {
+  static rx::subject<ProgramEvent*> events_;
+
+  rx::observable<ProgramEvent*> OnProgramEvent() {
+    return events_.get_observable();
+  }
+
   Program::Program(const ProgramId id):
     res::ResourceTemplate<res::kProgramType>(),
     id_(id) {

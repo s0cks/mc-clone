@@ -7,6 +7,7 @@
 
 #include "mcc/shader/shader_id.h"
 #include "mcc/program/program_id.h"
+#include "mcc/program/program_events.h"
 
 namespace mcc {
   namespace program {
@@ -27,6 +28,34 @@ namespace mcc {
   V(ActiveUniformsMaxLength, GL_ACTIVE_UNIFORM_MAX_LENGTH)
 
   namespace program {
+    rx::observable<ProgramEvent*> OnProgramEvent();
+
+    static inline rx::observable<ProgramEvent*>
+    OnProgramEvent(const ProgramId id) {
+      return OnProgramEvent()
+        .filter([id](ProgramEvent* event) {
+          //TODO: cleanup
+          return event
+              && event->GetProgramId() == id;
+        });
+    }
+
+  #define DEFINE_ON_PROGRAM_EVENT(Name)                           \
+    static inline rx::observable<Name##Event*>                    \
+    On##Name##Event() {                                           \
+      return OnProgramEvent()                                     \
+        .filter(Name##Event::Filter)                              \
+        .map(Name##Event::Cast);                                  \
+    }                                                             \
+    static inline rx::observable<Name##Event*>                    \
+    On##Name##Event(const ProgramId id) {                         \
+      return OnProgramEvent()                                     \
+        .filter(Name##Event::FilterBy(id))                        \
+        .map(Name##Event::Cast);                                  \
+    }
+    FOR_EACH_PROGRAM_EVENT(DEFINE_ON_PROGRAM_EVENT)
+#undef DEFINE_ON_PROGRAM_EVENT
+
     class Program : public res::ResourceTemplate<res::kProgramType> {
     public:
       struct ActiveAttribute {
@@ -161,6 +190,19 @@ namespace mcc {
       void Apply();
       void Unapply();
       std::string ToString() const;
+
+      inline rx::observable<ProgramEvent*>
+      OnEvent() const {
+        return OnProgramEvent(GetProgramId());
+      }
+
+#define DEFINE_ON_PROGRAM_EVENT(Name)                      \
+      inline rx::observable<Name##Event*>                  \
+      On##Name##Event() const {                            \
+        return program::On##Name##Event(GetProgramId());   \
+      }
+      FOR_EACH_PROGRAM_EVENT(DEFINE_ON_PROGRAM_EVENT);
+#undef DEFINE_ON_PROGRAM_EVENT
     public:
       static inline ProgramRef
       New(const ProgramId id) {
