@@ -5,6 +5,7 @@
 #include "mcc/rx.h"
 #include "mcc/shader/shader_id.h"
 #include "mcc/program/program_id.h"
+#include "mcc/program/program_spec.h"
 #include "mcc/program/program_status.h"
 
 namespace mcc::program {
@@ -55,6 +56,12 @@ namespace mcc::program {
       ProgramLinker linker(program);
       linker.Attach(shaders);
       return linker.LinkProgram();
+    }
+
+    static inline ProgramLinkStatus
+    Link(const ProgramId program, ProgramSpec* spec) {
+      MCC_ASSERT(spec);
+      return Link(program, spec->GetProgramShaders());
     }
   };
 }

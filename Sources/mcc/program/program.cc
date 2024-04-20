@@ -92,38 +92,10 @@ namespace mcc::program {
     }
 
     // no json, check for vertex & fragment files
-    shader::ShaderCompiler compiler;
-    const auto vertex_path = fmt::format("{0:s}.vert", base_path);
-    if(!FileExists(vertex_path)) {
-      DLOG(ERROR) << "couldn't find vertex shader file: " << vertex_path;
-      return {};
-    }
-    const auto vertex_code = shader::ShaderCode::FromFile(shader::kVertexShader, fmt::format("file://{0:s}", vertex_path));
-    if(!vertex_code || vertex_code->IsEmpty()) {
-      DLOG(ERROR) << "failed to get vertex shader code from file: " << vertex_path;
-      return {};
-    }
-    const auto vertex_shader = compiler.Compile(vertex_code);
-    if(!shader::IsValidShaderId(vertex_shader)) {
-      DLOG(ERROR) << "failed to compile vertex shader code: " << std::endl << (*vertex_code);
-      return {};
-    }
-
-    const auto fragment_path = fmt::format("{0:s}.frag", base_path);
-    if(!FileExists(fragment_path)) {
-      DLOG(ERROR) << "couldn't find fragment shader file: " << fragment_path;
-      return {};
-    }
-    const auto fragment_code = shader::ShaderCode::FromFile(shader::kFragmentShader, fmt::format("file://{0:s}", fragment_path));
-    if(!fragment_code || fragment_code->IsEmpty()) {
-      DLOG(ERROR) << "couldn't get fragment shader file: " << fragment_code;
-      return {};
-    }
-    const auto fragment_shader = compiler.Compile(fragment_code);
-    if(!shader::IsValidShaderId(fragment_shader)) {
-      DLOG(ERROR) << "failed to compile fragment shader code: " << std::endl << (*fragment_code);
-      return {};
-    }
+    ProgramSpecBuilder builder(uri);
+    DLOG(INFO) << "building ProgramSpec....";
+    const auto spec = builder.Build();
+    DLOG(INFO) << "created ProgramSpec: " << spec->GetProgramName();
 
     const auto id = glCreateProgram();
     CHECK_GL(FATAL);
@@ -132,10 +104,7 @@ namespace mcc::program {
       return {};
     }
     
-    ProgramLinker linker(id);
-    linker.Attach(vertex_shader);
-    linker.Attach(fragment_shader);
-    const auto link_status = linker.LinkProgram();
+    const auto link_status = ProgramLinker::Link(id, spec);
     if(!link_status) {
       DLOG(ERROR) << "failed to link program " << id << ": " << link_status;
       return {};

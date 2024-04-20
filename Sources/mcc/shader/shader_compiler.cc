@@ -5,9 +5,10 @@
 #include "mcc/shader/shader_status.h"
 
 namespace mcc::shader {
-  ShaderId ShaderCompiler::Compile(ShaderCode* code) {
+  ShaderId ShaderCompiler::CompileShaderCode(ShaderCode* code) {
     if(code->IsEmpty())
       return kInvalidShaderId;
+
     DLOG(INFO) << "compiling ShaderCode....";
     auto data = code->data();
     const auto length = code->length();
@@ -36,6 +37,34 @@ namespace mcc::shader {
     DLOG(INFO) << "status: " << status;
     DLOG(INFO) << "duration: " << units::time::nanosecond_t(total_ns) << '.';
     DLOG(INFO) << "code: " << std::endl << (*code);
+    return id;
+  }
+
+  static inline ShaderCode*
+  GetShaderCode(const uri::Uri& uri) {
+    if(uri.HasScheme("file")) {
+      return ShaderCode::FromFile(uri);
+    } else if(uri.HasScheme("shader")) {
+      const auto abs_path = fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path);
+      return ShaderCode::FromFile(abs_path);
+    }
+
+    DLOG(ERROR) << "invalid shader uri: " << uri;
+    return nullptr;
+  }
+
+  ShaderId ShaderCompiler::Compile(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme());
+    const auto code = GetShaderCode(uri);
+    if(!code) {
+      DLOG(ERROR) << "failed to get shader code from: " << uri;
+      return kInvalidShaderId;
+    }
+    DLOG(INFO) << "compiling code from: " << uri;
+    DLOG(INFO) << "code: " << std::endl << (*code);
+    const auto id = Compile(code);
+    DLOG(INFO) << "compiled " << id;
+    delete code;
     return id;
   }
 }
