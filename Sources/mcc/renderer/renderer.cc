@@ -13,14 +13,8 @@
 
 #include "mcc/terrain/terrain.h"
 
-#include "mcc/gui/gui.h"
-#include "mcc/gui/gui_frame.h"
-#include "mcc/gui/gui_frame_settings.h"
-#include "mcc/gui/gui_frame_renderer.h"
-
+#include "mcc/shape.h"
 #include "mcc/skybox.h"
-
-#include "mcc/gui/shape.h"
 
 #include "mcc/entity/entity_tracker.h"
 
@@ -213,25 +207,24 @@ namespace mcc::renderer {
   public:
     RendererPipeline():
       Pipeline() {
-      OrthoCamera camera(Window::Get());
+      const auto window = Window::Get();
+      const auto windowSize = window->GetSize();
+      OrthoCamera camera(window);
       const auto& projection = camera.GetProjection();
       {
+        const auto windowCenter = glm::vec2 {
+          windowSize[0] / 2,
+          windowSize[1] / 2,
+        };
+
         d2::VertexList vertices;
         u32::IndexList indices;
-        shape::NewRect(glm::vec2(0, 0), glm::vec2(256, 256), vertices, indices);
-        shape::NewRect(glm::vec2(256, 256), glm::vec2(256, 256), vertices, indices);
+        shape::NewCenteredRect(vertices, indices, windowCenter, glm::vec2(256, 256), kGreen);
         const auto mesh = d2::NewMesh(vertices, indices);
-        const auto texture = Texture2D::New("concrete.png");
-        const auto apply_tex = new ApplyPipeline([texture]() {
-          texture->Bind(0);
-        });
-        const auto apply_shader = program::ApplyProgramPipeline::New("textured_2d", [projection,texture](const ProgramRef& shader) {
-          shader->SetInt("tex", 0);
+        const auto apply_shader = program::ApplyProgramPipeline::New("colored_2d", [projection](const ProgramRef& shader) {
           shader->SetMat4("projection", projection);
-          shader->SetVec4("iColor", glm::u8vec4(255, 0, 0, 255));
         });
         const auto render_quads = new d2::RenderMeshPipeline(mesh);
-        render_quads->AddChild(apply_tex);
         render_quads->AddChild(apply_shader);
         AddChild(render_quads);
       }
@@ -239,7 +232,6 @@ namespace mcc::renderer {
     ~RendererPipeline() override = default;
 
     void Render() override {
-      gui::Screen::NewFrame();
       const auto window = Window::Get();
       const auto fb_size = window->GetFramebufferSize();
       glViewport(0, 0, fb_size[0], fb_size[1]);

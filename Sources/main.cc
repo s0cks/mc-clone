@@ -9,7 +9,6 @@
 
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
-#include "mcc/gui/gui.h"
 
 #include "mcc/mcc.h"
 #include "mcc/entity/entity.h"
@@ -64,7 +63,6 @@ int main(int argc, char** argv) {
   using namespace mcc;
   //TODO: settings::Init();
   font::Initialize();
-  gui::Screen::Init();
   Window::Init();
   mouse::InitMouse();
   keyboard::InitKeyboard();

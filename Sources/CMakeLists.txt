@@ -42,6 +42,8 @@ add_library(${PROJECT_NAME}
   mcc/uniform_buffer.h
   mcc/renderbuffer.h
   mcc/rx.h
+  mcc/color.h mcc/color.cc
+  mcc/shape.h
   mcc/glm.h
   mcc/flags.h mcc/flags.cc
   mcc/mesh/vertex.h mcc/mesh/vertex.cc
@@ -183,18 +185,7 @@ add_library(${PROJECT_NAME}
   mcc/entity/entity.h mcc/entity/entity.cc
   mcc/entity/entity_events.h mcc/entity/entity_events.cc
   mcc/entity/entity_tracker.h mcc/entity/entity_tracker.cc
-# GUIs
-  mcc/gui/shape.h mcc/gui/shape.cc
-  mcc/gui/constants.h
-  mcc/gui/window.h mcc/gui/window.cc
-  mcc/gui/component.h
-  mcc/gui/container.h
-  mcc/gui/context.h mcc/gui/context.cc
-  mcc/gui/gui.h mcc/gui/gui.cc
-  mcc/gui/gui_viewport.h mcc/gui/gui_viewport.cc
-  mcc/gui/gui_frame.h mcc/gui/gui_frame.cc
-  mcc/gui/gui_frame_settings.h mcc/gui/gui_frame_settings.cc
-  mcc/gui/gui_frame_renderer.h mcc/gui/gui_frame_renderer.cc
+# GUI
 # Resource
   mcc/resource/resource_event.h mcc/resource/resource_event.cc
   mcc/resource/resource_type.h

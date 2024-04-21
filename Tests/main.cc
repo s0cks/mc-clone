@@ -1,10 +1,6 @@
 #include <gtest/gtest.h>
 #include <glog/logging.h>
 
-#define NK_IMPLEMENTATION
-#define NK_GLFW_GL3_IMPLEMENTATION
-#include "mcc/gui/gui.h"
-
 #include "mcc/mcc.h"
 
 int main(int argc, char** argv) {
