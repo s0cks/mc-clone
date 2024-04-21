@@ -38,6 +38,7 @@ namespace mcc::renderer {
   static RelaxedAtomic<uint64_t> entities_;
   static RelaxedAtomic<uint64_t> vertices_;
   static ThreadLocal<Pipeline> pipeline_;
+  static uv_async_t on_render_;
 
   static mesh::Mesh* mesh_;
   static shader::Shader* shader_;
@@ -64,6 +65,10 @@ namespace mcc::renderer {
     state_ = state;
   }
 
+  void Renderer::Schedule() {
+    CHECK_UV_RESULT(FATAL, uv_async_send(&on_render_), "uv_async_send");
+  }
+
   RendererState Renderer::GetState() {
     return (RendererState) state_;
   }
@@ -83,7 +88,6 @@ namespace mcc::renderer {
   }
 
   void Renderer::OnPreInit(engine::PreInitEvent* e) {
-
   }
 
   // class RenderEntityPipeline : public Pipeline {
@@ -290,6 +294,10 @@ namespace mcc::renderer {
     return pass_.Get();
   }
 
+  void Renderer::OnRender(uv_async_t* handle) {
+    Renderer::Run();
+  }
+
   void Renderer::OnPostInit(engine::PostInitEvent* e) {
     // signature_.set(Renderable::GetComponentId());
     // signature_.set(physics::Transform::GetComponentId());
@@ -304,6 +312,10 @@ namespace mcc::renderer {
     pass->Append(new render::RenderPass2d());
     pass->Append(new render::RenderPass3d(pipeline_.Get()));
     pass_.Set(pass);
+
+    const auto engine = e->engine();
+    const auto loop = engine->GetLoop();
+    CHECK_UV_RESULT(FATAL, uv_async_init(loop, &on_render_, &OnRender), "uv_async_init");
   }
 
   uint64_t Renderer::GetFrameCount() {
@@ -322,22 +334,9 @@ namespace mcc::renderer {
   static constexpr const float kRate = NSEC_PER_SEC / (kTargetFramesPerSecond * NSEC_PER_SEC);
 
   void Renderer::Run(const uv_run_mode mode) {
-    const auto start_ns = uv_hrtime();
-    const auto delta_ns = (start_ns - last_frame_ns_);
-    if((delta_ns / (NSEC_PER_SEC * 1.0f)) < kRate)
-      return;
-
+    frame_start_ns_ = uv_hrtime();
     LOG(INFO) << "rendering....";
-    frame_start_ns_ = start_ns;
-    frame_dts_ = delta_ns;
-    if((start_ns - last_second_) >= NSEC_PER_SEC) {
-      fps_ = frames_;
-      frames_ = 0;
-      last_second_ = frame_start_ns_;
-    }
-
     render::RenderPassExecutor::Execute(GetRenderPass());
-
     frame_end_ns_ = uv_hrtime();
     const auto total_ns = (frame_end_ns_ - frame_start_ns_);
     stats_.AppendTime(total_ns);

@@ -10,9 +10,8 @@
 namespace mcc::engine {
   void InitState::Apply() {
     engine()->Publish<PreInitEvent>();
-    
-
-
+    DLOG(INFO) << "initializing engine....";
+    // do stuffs?
     engine()->Publish<PostInitEvent>();
   }
 
@@ -21,7 +20,8 @@ namespace mcc::engine {
     idle_(),
     prepare_(),
     check_(),
-    on_shutdown_() {
+    on_shutdown_(),
+    render_timer_(engine->GetLoop(), 60, &OnRenderTick) {
     const auto loop = engine->GetLoop();
     SetState(&idle_, this);
     uv_idle_init(loop, &idle_);
@@ -37,6 +37,10 @@ namespace mcc::engine {
 
     SetState(&on_shutdown_, this);
     uv_async_init(loop, &on_shutdown_, &OnShutdown);
+  }
+
+  void TickState::OnRenderTick(const render::RenderTimer::Tick& tick) {
+    renderer::Renderer::Schedule();
   }
 
   void TickState::OnIdle(uv_idle_t* handle) {
@@ -57,7 +61,6 @@ namespace mcc::engine {
     const auto engine = state->engine();
     engine->Publish<PostTickEvent>(engine->GetCurrentTick());
     engine->DoPostTick();
-    renderer::Renderer::Run();
   }
 
   void TickState::OnShutdown(uv_async_t* handle) {

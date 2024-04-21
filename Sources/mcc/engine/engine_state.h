@@ -8,6 +8,8 @@
 #include "mcc/series.h"
 #include "mcc/engine/tick.h"
 
+#include "mcc/renderer/render_timer.h"
+
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_STATE(V) \
   V(Init)                        \
@@ -102,6 +104,7 @@ namespace mcc::engine {
     uv_prepare_t prepare_;
     uv_check_t check_;
     uv_async_t on_shutdown_;
+    render::RenderTimer render_timer_;
 
     explicit TickState(Engine* engine);
 
@@ -110,6 +113,7 @@ namespace mcc::engine {
     static void OnPrepare(uv_prepare_t* handle);
     static void OnCheck(uv_check_t* handle);
     static void OnShutdown(uv_async_t* handle);
+    static void OnRenderTick(const render::RenderTimer::Tick& tick);
   public:
     ~TickState() override = default;
     DECLARE_STATE(Tick);

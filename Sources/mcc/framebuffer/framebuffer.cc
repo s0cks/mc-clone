@@ -2,7 +2,7 @@
 #include "mcc/engine/engine.h"
 #include "mcc/shader/shader.h"
 
-namespace mcc::fbuff {
+namespace mcc::framebuffer {
   static const d2::VertexList kFrameBufferVertices = {
     { .pos = glm::vec2(1.0f, -1.0f), .uv = glm::vec2(1.0f, 0.0f) },
     { .pos = glm::vec2(-1.0f, -1.0f), .uv = glm::vec2(0.0f, 0.0f) },
@@ -38,8 +38,6 @@ namespace mcc::fbuff {
       fbo_.Attach(attachment);
       if(attachment->IsColorBufferAttachment()) {
         draw_buffers[num_draw_bufffers++] = attachment->AsColorBufferAttachment()->target();
-      } else if(attachment->IsPickingAttachment()) {
-        draw_buffers[num_draw_bufffers++] = attachment->AsPickingAttachment()->target();
       }
     }
     if(num_draw_bufffers > 0) {

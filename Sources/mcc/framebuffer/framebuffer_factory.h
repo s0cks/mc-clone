@@ -3,7 +3,7 @@
 
 #include "mcc/framebuffer/framebuffer_constants.h"
 
-namespace mcc::fbuff {
+namespace mcc::framebuffer {
   class FrameBufferFactory {
   public:
     FrameBufferFactory() = default;

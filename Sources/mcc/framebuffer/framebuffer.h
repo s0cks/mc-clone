@@ -9,7 +9,7 @@
 #include "mcc/framebuffer/framebuffer_object.h"
 #include "mcc/framebuffer/framebuffer_attachment.h"
 
-namespace mcc::fbuff {
+namespace mcc::framebuffer {
   class FrameBuffer {
   private:
     FrameBufferObject fbo_;
@@ -43,14 +43,6 @@ namespace mcc::fbuff {
       for(const auto& attachment : attachments_) {
         if(attachment->IsColorBufferAttachment() && attachment->AsColorBufferAttachment()->slot() == idx)
           return attachment->AsColorBufferAttachment();
-      }
-      return nullptr;
-    }
-
-    PickingAttachment* GetPickingAttachment(const uint64_t idx) const {
-      for(const auto& attachment : attachments_) {
-        if(attachment->IsPickingAttachment() && attachment->AsPickingAttachment()->slot() == idx)
-          return attachment->AsPickingAttachment();
       }
       return nullptr;
     }

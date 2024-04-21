@@ -4,7 +4,7 @@
 #include "mcc/event.h"
 #include "mcc/framebuffer/framebuffer_constants.h"
 
-namespace mcc::fbuff {
+namespace mcc::framebuffer {
 #define FOR_EACH_FRAMEBUFFER_EVENT(V) \
   V(FrameBufferCreated)               \
   V(FrameBufferDestroyed)

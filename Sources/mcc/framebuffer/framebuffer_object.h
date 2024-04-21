@@ -7,7 +7,7 @@
 #include "mcc/framebuffer/framebuffer_constants.h"
 #include "mcc/framebuffer/framebuffer_attachment.h"
 
-namespace mcc::fbuff {
+namespace mcc::framebuffer {
   class FrameBufferObject : public res::ResourceTemplate<res::kFrameBufferObjectType> { //TODO: extend BufferObject somehow
   private:
     FrameBufferObjectId id_;
@@ -49,18 +49,12 @@ namespace mcc::fbuff {
       switch(attachment->type()) {
         case kColorBufferAttachment:
           return Attach((ColorBufferAttachment*) attachment, level);
-        case kPickingAttachment:
-          return Attach(attachment->AsPickingAttachment(), level);
         default:
           DLOG(ERROR) << "unknown FrameBufferAttachment @" << attachment->name();
       }
     }
 
     void Attach(ColorBufferAttachment* attachment, const int level = 0) {
-      return Attach(attachment->slot(), attachment->GetTexture(), level);
-    }
-
-    void Attach(PickingAttachment* attachment, const int level = 0) {
       return Attach(attachment->slot(), attachment->GetTexture(), level);
     }
 

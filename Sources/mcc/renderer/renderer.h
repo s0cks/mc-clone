@@ -4,8 +4,12 @@
 #include "mcc/common.h"
 #include "mcc/mesh/mesh.h"
 #include "mcc/state_machine.h"
+
+#include "mcc/renderer/render_timer.h"
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
+
+
 #include "mcc/engine/tick.h"
 #include "mcc/entity/entity.h"
 #include "mcc/framebuffer/framebuffer.h"
@@ -38,6 +42,7 @@ namespace mcc::renderer {
     friend class gui::SettingsFrame;
     friend class gui::RendererFrame;
 
+    friend class engine::TickState;
     friend class PreRenderStage;
     friend class RenderStage;
     friend class PostRenderStage;
@@ -56,6 +61,8 @@ namespace mcc::renderer {
       kNumberOfModes,
       kDefaultMode = kFillMode,
     };
+
+    static constexpr const int16_t kDefaultTargetFps = 60;
   private:
     static void OnPreInit(engine::PreInitEvent* e);
     static void OnPostInit(engine::PostInitEvent* e);
@@ -84,9 +91,12 @@ namespace mcc::renderer {
     ResetVertexCounter() {
       return SetVertexCounter(0);
     }
+
+    static void Run(const uv_run_mode = UV_RUN_NOWAIT);
+    static void OnRender(uv_async_t* handle);
+    static void Schedule();
   public:
     static void Init();
-    static void Run(const uv_run_mode = UV_RUN_NOWAIT); //TODO: make private
     static uint64_t GetFrameCount();
     static uint64_t GetFPS();
     static uint64_t GetEntityCounter();
@@ -94,9 +104,14 @@ namespace mcc::renderer {
     static uint64_t GetLastFrameTimeInNanoseconds();
     static Mode GetMode();
     static const RendererStats& GetStats();
-    static fbuff::FrameBuffer* GetFrameBuffer();
+    static framebuffer::FrameBuffer* GetFrameBuffer();
     static Signature GetSignature();
     static bool VisitEntities(std::function<bool(const Entity&)> callback);
+
+    static inline uint64_t
+    GetTotalTimeSinceLastFrameInNanoseconds(const uint64_t ts = uv_hrtime()) {
+      return (ts - GetLastFrameTimeInNanoseconds());
+    }
 
 #define DEFINE_STATE_CHECK(Name) \
     static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }

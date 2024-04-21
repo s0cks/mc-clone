@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
   mesh::Mesh::Init();
   terrain::Terrain::Init();
   d2::Mesh::Init();
-  fbuff::FrameBuffer::Init();
+  framebuffer::FrameBuffer::Init();
   camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();
