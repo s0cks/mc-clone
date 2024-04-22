@@ -21,9 +21,9 @@
 #include "mcc/terrain/terrain.h"
 #include "mcc/shader/shader.h"
 
-#include "mcc/resource/resource.h"
-
 #include "mcc/os_thread.h"
+#include "mcc/vertex/vertex.h"
+#include "mcc/resource/resource.h"
 
 #include "mcc/mouse/mouse.h"
 #include "mcc/keyboard/keyboard.h"
@@ -66,11 +66,9 @@ int main(int argc, char** argv) {
   Window::Init();
   mouse::InitMouse();
   keyboard::InitKeyboard();
-  renderer::Renderer::Init();
-  mesh::Mesh::Init();
+  render::Renderer::Init();
   terrain::Terrain::Init();
   d2::Mesh::Init();
-  framebuffer::FrameBuffer::Init();
   camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();

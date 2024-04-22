@@ -4,17 +4,6 @@
 namespace mcc::d2 {
   static Vao kMeshVao;
 
-  void Mesh::OnInit() {
-    kMeshVao = VertexArrayObject::New();
-  }
-
-  void Mesh::Init() {
-    const auto engine = engine::Engine::GetEngine();
-    engine->OnPreInitEvent().subscribe([](engine::PreInitEvent* event) {
-      Mesh::OnInit();
-    });
-  }
-
   Mesh::Mesh(const Vertex* vertices, const uint64_t num_vertices):
     vao(kMeshVao),
     vbo(vertices, num_vertices) {
@@ -28,19 +17,47 @@ namespace mcc::d2 {
     vbo_scope.Draw(GL_TRIANGLES);
   }
 
+  class IndexBufferDrawScope {
+  protected:
+    const IndexBufferObject& ibo_;
+  public:
+    IndexBufferDrawScope(const IndexBufferObject& ibo):
+      ibo_(ibo) {
+      ibo_.Bind();
+    }
+    ~IndexBufferDrawScope() {
+      ibo_.Unbind();
+    }
+
+    void Draw(const GLenum mode) {
+      glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
+      CHECK_GL(FATAL);
+    }
+  };
+
   void IndexedMesh::Draw() {
     VertexArrayObjectScope vao_scope(vao);
-    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
-    CHECK_GL(FATAL);
+    IndexBufferDrawScope ibo(ibo_);
+    ibo.Draw(GL_TRIANGLES);
   }
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices) {
+    if(!kMeshVao || !kMeshVao->IsValid()) {
+      kMeshVao = VertexArrayObject::New();
+      LOG_IF(FATAL, !kMeshVao->IsValid()) << "failed to initialize mesh vao.";
+    }
+
     VertexArrayObjectScope vao_scope(kMeshVao);
     return new Mesh(vertices, num_vertices);
   }
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices,
                 const u32::Index* indices, const uint64_t num_indices) {
+    if(!kMeshVao || !kMeshVao->IsValid()) {
+      kMeshVao = VertexArrayObject::New();
+      LOG_IF(FATAL, !kMeshVao->IsValid()) << "failed to initialize mesh vao.";
+    }
+
     VertexArrayObjectScope vao_scope(kMeshVao);
     return new IndexedMesh(vertices, num_vertices, indices, num_indices);
   }

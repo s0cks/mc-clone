@@ -1,124 +1,127 @@
 #ifndef MCC_RENDERER_H
 #define MCC_RENDERER_H
 
-#include "mcc/common.h"
-#include "mcc/mesh/mesh.h"
-#include "mcc/state_machine.h"
-
+#include "mcc/gfx.h"
+#include "mcc/renderer/render_pass.h"
 #include "mcc/renderer/render_timer.h"
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
 
-
-#include "mcc/engine/tick.h"
-#include "mcc/entity/entity.h"
-#include "mcc/framebuffer/framebuffer.h"
-
-#include "mcc/engine/engine.h"
-
-#include "mcc/skybox.h"
-#include "mcc/camera/perspective_camera.h"
-
 namespace mcc {
-  namespace gui {
-    class Screen;
-    class Frame;
-    class SettingsFrame;
-    class RendererFrame;
+  namespace engine {
+    class TickState;
   }
 
-  namespace skybox {
-    class RenderSkyboxPipeline;
-  }
+  namespace render {
+    class Renderer {
+      friend class engine::TickState;
+    public:
+      static constexpr const auto kDefaultTargetFramesPerSecond = 60;
 
-  namespace terrain {
-    class RenderTerrainChunkPipeline;
-  }
-}
+      enum Mode : GLenum {
+        kFillMode = GL_FILL,
+        kLineMode = GL_LINE,
 
-namespace mcc::renderer {
-  class Renderer {
-    friend class gui::Screen;
-    friend class gui::SettingsFrame;
-    friend class gui::RendererFrame;
+        kNumberOfModes,
+        // aliases
+        kDefaultMode = kFillMode,
+        kWireframeMode = kLineMode,
+      };
+    private:
+      template<typename H>
+      static inline void
+      SetRenderer(H* handle, const Renderer* value) {
+        uv_handle_set_data((uv_handle_t*) handle, (void*) value);
+      }
 
-    friend class engine::TickState;
-    friend class PreRenderStage;
-    friend class RenderStage;
-    friend class PostRenderStage;
-    friend class RenderTerrainStage;
-    friend class RenderEntitiesStage;
-    friend class RenderEntityPipeline;
-    friend class RendererPipeline;
-    friend class mcc::skybox::RenderSkyboxPipeline;
-    friend class mcc::terrain::RenderTerrainChunkPipeline;
-    DECLARE_STATE_MACHINE(Renderer);
-  public:
-    enum Mode {
-      kFillMode = GL_FILL,
-      kWireframeMode = GL_LINE,
+      template<typename H>
+      static inline void
+      SetRenderer(H& handle, const Renderer* value) {
+        return SetRenderer<H>(&handle, value);
+      }
 
-      kNumberOfModes,
-      kDefaultMode = kFillMode,
+      template<typename H>
+      static inline Renderer*
+      GetRenderer(const H* handle) {
+        return (Renderer*) uv_handle_get_data((uv_handle_t*) handle);
+      }
+
+      static inline void
+      InitAsyncHandle(uv_loop_t* loop,
+                      uv_async_t& handle,
+                      uv_async_cb cb) {
+        MCC_ASSERT(loop);
+        const auto err = uv_async_init(loop, &handle, cb);
+        LOG_IF(ERROR, err != UV_OK) << "uv_async_init failed: " << uv_strerror(err);
+      }
+    private:
+      uv_loop_t* loop_;
+      uv_async_t on_run_;
+      RelaxedAtomic<Mode> mode_;
+      RelaxedAtomic<uint64_t> last_frame_;
+      RenderPass* pass_;
+
+      Renderer(uv_loop_t* loop,
+               const Mode mode = kDefaultMode):
+        loop_(loop),
+        on_run_(),
+        mode_(mode),
+        last_frame_(0),
+        pass_(new OrderedSequenceRenderPass()) {
+        MCC_ASSERT(loop);
+        SetRenderer(on_run_, this);
+        InitAsyncHandle(loop, on_run_, &OnRun);
+      }
+
+      inline void SetMode(const Mode mode) {
+        mode_ = mode;
+      }
+
+      inline void SetLastFrameNanos(const uint64_t ts) {
+        last_frame_ = ts;
+      }
+
+      inline void Schedule() {
+        DLOG(INFO) << "scheduling....";
+        const auto err = uv_async_send(&on_run_);
+        LOG_IF(ERROR, err != UV_OK) << "uv_async_send failed: " << uv_strerror(err);
+      }
+
+      virtual void Run(const uv_run_mode mode = UV_RUN_NOWAIT);
+
+      static inline void
+      OnRun(uv_async_t* handle) {
+        const auto renderer = GetRenderer(handle);
+        MCC_ASSERT(renderer);
+        renderer->Run();
+      }
+    public:
+      virtual ~Renderer() = default;
+
+      Mode GetMode() const {
+        return (Mode) mode_;
+      }
+
+      RenderPass* GetPass() const {
+        return pass_;
+      }
+
+      uv_loop_t* GetLoop() const {
+        return loop_;
+      }
+
+      uint64_t GetLastFrameNanos() const {
+        return (uint64_t) last_frame_;
+      }
+
+      inline uint64_t GetNanosSinceLastFrame(const uint64_t ts = uv::Now()) const {
+        return (ts - GetLastFrameNanos());
+      }
+    public:
+      static void Init();
+      static Renderer* Get();
     };
-
-    static constexpr const int16_t kDefaultTargetFps = 60;
-  private:
-    static void OnPreInit(engine::PreInitEvent* e);
-    static void OnPostInit(engine::PostInitEvent* e);
-    static void SetLoop(uv_loop_t* loop);
-    static void SetMode(const Mode mode);
-
-    static inline void
-    ResetMode() {
-      return SetMode(kDefaultMode);
-    }
-
-    static void IncrementEntityCounter(const uint64_t value = 1);
-    static void DecrementEntityCounter(const uint64_t value = 1);
-    static void SetEntityCounter(const uint64_t value);
-
-    static inline void
-    ResetEntityCounter() {
-      return SetEntityCounter(0);
-    }
-
-    static void IncrementVertexCounter(const uint64_t value = 1);
-    static void DecrementVertexCounter(const uint64_t value = 1);
-    static void SetVertexCounter(const uint64_t value);
-
-    static inline void
-    ResetVertexCounter() {
-      return SetVertexCounter(0);
-    }
-
-    static void Run(const uv_run_mode = UV_RUN_NOWAIT);
-    static void OnRender(uv_async_t* handle);
-    static void Schedule();
-  public:
-    static void Init();
-    static uint64_t GetFrameCount();
-    static uint64_t GetFPS();
-    static uint64_t GetEntityCounter();
-    static uint64_t GetVertexCounter();
-    static uint64_t GetLastFrameTimeInNanoseconds();
-    static Mode GetMode();
-    static const RendererStats& GetStats();
-    static framebuffer::FrameBuffer* GetFrameBuffer();
-    static Signature GetSignature();
-    static bool VisitEntities(std::function<bool(const Entity&)> callback);
-
-    static inline uint64_t
-    GetTotalTimeSinceLastFrameInNanoseconds(const uint64_t ts = uv_hrtime()) {
-      return (ts - GetLastFrameTimeInNanoseconds());
-    }
-
-#define DEFINE_STATE_CHECK(Name) \
-    static inline bool Is##Name() { return GetState() == RendererState::k##Name##State; }
-    
-    FOR_EACH_RENDERER_STATE(DEFINE_STATE_CHECK)
-#undef DEFINE_STATE_CHECK
-  };
+  }
 }
 
 #endif //MCC_RENDERER_H

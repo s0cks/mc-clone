@@ -162,6 +162,11 @@ namespace mcc::uv {
       return callback_;
     }
   };
+
+  static inline uint64_t
+  Now() {
+    return uv_hrtime();
+  }
 }
 
 #endif //MCC_UV_UTILS_H

@@ -139,6 +139,6 @@ namespace mcc::terrain {
 
     InvertedCullFaceScope cull_face;
     RenderChildren();
-    renderer::Renderer::IncrementVertexCounter(chunk_->vbo().length());
+    //TODO: renderer::Renderer::IncrementVertexCounter(chunk_->vbo().length());
   }
 }

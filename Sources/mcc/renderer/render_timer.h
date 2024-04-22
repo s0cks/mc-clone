@@ -10,7 +10,9 @@
 namespace mcc::render {
   typedef int32_t FramesPerSecond;
 
+  class Renderer;
   class RenderTimer {
+    friend class OnTickCallback;
   public:
     struct Tick {
       uint64_t ts;
@@ -94,26 +96,16 @@ namespace mcc::render {
       }
     };
   protected:
-    uv_loop_t* loop_;
+    const Renderer* renderer_;
     uv_idle_t idle_;
     FramesPerSecond target_;
     float rate_limit_;
     Tick tick_;
     OnTickCallback callback_;
 
-    inline void InitHandle() {
-      const auto result = uv_idle_init(loop_, &idle_);
-      LOG_IF(ERROR, result != UV_OK) << "failed to initialize RenderTimer handle: " << uv_strerror(result);
-    }
-
-    inline void StartHandle() {
-      const auto result = uv_idle_start(&idle_, &OnIdle);
-      LOG_IF(ERROR, result != UV_OK) << "failed to start RenderTimer handle: " << uv_strerror(result);
-    }
-
-    inline void StopHandle() {
-      const auto result = uv_idle_stop(&idle_);
-      LOG_IF(ERROR, result != UV_OK) << "failed to stop RenderTimer handle: " << uv_strerror(result);
+    inline const Renderer*
+    GetRenderer() const {
+      return renderer_;
     }
 
     template<typename H>
@@ -149,25 +141,11 @@ namespace mcc::render {
       return tick_;
     }
   public:
-    explicit RenderTimer(uv_loop_t* loop,
+    explicit RenderTimer(const Renderer* renderer,
                          const FramesPerSecond target,
-                         const OnTick& callback):
-      loop_(loop),
-      idle_(),
-      target_(target),
-      rate_limit_(CalculateRateLimit(target)),
-      callback_(this, callback) {
-      SetTimer(idle_, this);
-      InitHandle();
-      StartHandle();
-    }
-    virtual ~RenderTimer() {
-      StopHandle();
-    }
-
-    uv_loop_t* GetLoop() const {
-      return loop_;
-    }
+                         const OnTick& callback);
+    virtual ~RenderTimer();
+    uv_loop_t* GetLoop() const;
 
     float GetRateLimit() const {
       return rate_limit_;

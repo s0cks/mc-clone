@@ -99,6 +99,6 @@ namespace mcc::skybox {
     DepthTestScope depth_test(gfx::kLequal);
     TextureBindScope<0> tex(texture);
     RenderChildren();
-    renderer::Renderer::IncrementVertexCounter(skybox_->vbo.length());
+    //TODO: renderer::Renderer::IncrementVertexCounter(skybox_->vbo.length());
   }
 }

@@ -6,7 +6,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
-#include "mcc/series.h"
+#include "mcc/renderer/render_pass_stats.h"
 
 namespace mcc::render {
   class RenderPass;
@@ -18,69 +18,80 @@ namespace mcc::render {
     virtual bool Visit(RenderPass* pass) = 0;
   };
 
-  class RenderPassStats {
-    friend class RenderPass;
-    friend class RenderPassExecutor;
-  protected:
-    TimeSeries<10> time_;
-
-    RenderPassStats():
-      time_() {
-    }
-
-    inline void UpdateTime(const uword time) {
-      time_.Append(time);
-    }
-  public:
-    virtual ~RenderPassStats() = default;
-
-    const TimeSeries<10>& time() const {
-      return time_;
-    }
-  };
-
   class RenderPass {
+    template<const int Capacity>
     friend class RenderPassStats;
+    
     friend class RenderPassExecutor;
-  private:
-    RenderPassStats stats_;
+  public:
+    static constexpr const auto kDefaultStatsCapacity = 10;
+    typedef RenderPassStats<kDefaultStatsCapacity> Stats;
+    
+    typedef uint32_t Order;
+    static constexpr const Order kDefaultOrder = 1000;
 
-    RenderPassStats& stats() {
-      return stats_;
-    }
+    struct OrderComparator {
+      bool operator()(RenderPass* lhs, RenderPass* rhs) const {
+        return lhs->GetOrder() < rhs->GetOrder();
+      }
+    };
   protected:
+    Stats stats_;
+
     RenderPass():
       stats_() {
     }
+
     virtual void Render() = 0;
 
-    const RenderPassStats& stats() const {
-      return stats_;
+    inline void UpdateStats(const uint64_t duration,
+                            const uint64_t num_vertices,
+                            const uint64_t num_indices) {
+      stats_.Update(duration, num_vertices, num_indices);
     }
   public:
     virtual ~RenderPass() = default;
     virtual const char* GetName() const = 0;
-    virtual void Append(RenderPass* pass) = 0;
-    virtual bool Accept(RenderPassVisitor* vis) = 0;
-    virtual bool HasChildren() const = 0;
-    virtual uint32_t GetNumberOfChildren() const = 0;
-    virtual RenderPass* GetChildAt(const uint32_t idx) const = 0;
+    
+    virtual void Append(RenderPass* pass) {
+      // do nothing
+    }
+
+    virtual bool Accept(RenderPassVisitor* vis) {
+      return false;
+    }
+
+    virtual bool HasChildren() const {
+      return false;
+    }
+
+    virtual uint32_t GetNumberOfChildren() const {
+      return 0;
+    }
+
+    virtual Order GetOrder() const {
+      return kDefaultOrder;
+    }
+
+    const Stats& GetStats() const {
+      return stats_;
+    }
   };
 
-  class RenderPassSequence : public RenderPass {
+  template<class Container>
+  class SequenceRenderPassTemplate : public RenderPass {
   protected:
-    std::vector<RenderPass*> children_;
+    Container children_;
+
+    SequenceRenderPassTemplate() = default;
+    explicit SequenceRenderPassTemplate(const Container& children):
+      RenderPass(),
+      children_(children) {
+    }
 
     void Render() override { }
   public:
-    RenderPassSequence():
-      RenderPass() {
-    }
-    ~RenderPassSequence() override = default;
-
-    const char* GetName() const override {
-      return "Sequence";
-    }
+    ~SequenceRenderPassTemplate() override = default;
 
     bool HasChildren() const override {
       return !children_.empty();
@@ -90,11 +101,6 @@ namespace mcc::render {
       return children_.size();
     }
 
-    RenderPass* GetChildAt(const uint32_t idx) const override {
-      MCC_ASSERT(idx >= 0 && idx <= children_.size());
-      return children_[idx];
-    }
-
     bool Accept(RenderPassVisitor* vis) override {
       for(const auto& child : children_) {
         if(!vis->Visit(child))
@@ -102,9 +108,43 @@ namespace mcc::render {
       }
       return true;
     }
+  };
 
-    void Append(RenderPass* pass) override {
-      children_.push_back(pass);
+  typedef std::vector<RenderPass*> RenderPassSequence;
+  class SequenceRenderPass : public SequenceRenderPassTemplate<RenderPassSequence> {
+  public:
+    SequenceRenderPass() = default;
+    explicit SequenceRenderPass(const RenderPassSequence& children):
+      SequenceRenderPassTemplate<RenderPassSequence>(children) {
+    }
+    ~SequenceRenderPass() override = default;
+
+    const char* GetName() const override {
+      return "Sequence";
+    }
+
+    void Append(RenderPass* child) override {
+      MCC_ASSERT(child);
+      children_.push_back(child);
+    }
+  };
+
+  typedef std::set<RenderPass*, RenderPass::OrderComparator> OrderedRenderPassSequence;
+  class OrderedSequenceRenderPass : public SequenceRenderPassTemplate<OrderedRenderPassSequence> {
+  public:
+    OrderedSequenceRenderPass() = default;
+    explicit OrderedSequenceRenderPass(const OrderedRenderPassSequence& children):
+      SequenceRenderPassTemplate<OrderedRenderPassSequence>(children) {   
+    }
+    ~OrderedSequenceRenderPass() override = default;
+    
+    const char* GetName() const override {
+      return "OrderedSequence";
+    }
+
+    void Append(RenderPass* child) override {
+      MCC_ASSERT(child);
+      children_.insert(child);
     }
   };
 }

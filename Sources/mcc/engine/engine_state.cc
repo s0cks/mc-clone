@@ -21,7 +21,7 @@ namespace mcc::engine {
     prepare_(),
     check_(),
     on_shutdown_(),
-    render_timer_(engine->GetLoop(), 60, &OnRenderTick) {
+    render_timer_(render::Renderer::Get(), render::Renderer::kDefaultTargetFramesPerSecond, &OnRenderTick) {
     const auto loop = engine->GetLoop();
     SetState(&idle_, this);
     uv_idle_init(loop, &idle_);
@@ -40,7 +40,8 @@ namespace mcc::engine {
   }
 
   void TickState::OnRenderTick(const render::RenderTimer::Tick& tick) {
-    renderer::Renderer::Schedule();
+    const auto renderer = render::Renderer::Get();
+    renderer->Schedule();
   }
 
   void TickState::OnIdle(uv_idle_t* handle) {
@@ -73,12 +74,12 @@ namespace mcc::engine {
   }
 
   void TickState::Apply() {
-    engine()->SetRunning(true);
     const auto start_ns = uv_hrtime();
+    engine()->SetRunning(true);
     uv_run(engine()->GetLoop(), UV_RUN_DEFAULT);
+    engine()->SetRunning(false);
     const auto stop_ns = uv_hrtime();
     const auto total_ns = (stop_ns - start_ns);
-    engine()->SetRunning(false);
     duration_.Append(total_ns);
   }
 

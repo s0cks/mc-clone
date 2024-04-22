@@ -19,10 +19,10 @@ namespace mcc::render {
     const auto stop_ns = uv_hrtime();
     const auto total_ns = (stop_ns - start_ns);
 
-    auto& stats = pass->stats();
-    stats.UpdateTime(total_ns);
-    const auto& time = stats.time();
-    LOG(INFO) << pass->GetName() << " finished in " << nanosecond_t(total_ns) << ", avg=" << nanosecond_t(time.average()) << ", max=" << nanosecond_t(time.max()) << ", min=" << nanosecond_t(time.min()) << ".";
+    pass->UpdateStats(total_ns, 0, 0);
+    const auto& stats = pass->GetStats();
+    const auto& duration = stats.duration();
+    LOG(INFO) << pass->GetName() << " finished in " << nanosecond_t(total_ns) << ", avg=" << nanosecond_t(duration.average()) << ", max=" << nanosecond_t(duration.max()) << ", min=" << nanosecond_t(duration.min()) << ".";
 #endif//MCC_DEBUG
     return true;
   }

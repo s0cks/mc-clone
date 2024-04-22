@@ -1,9 +1,10 @@
 #ifndef MCC_CIRCULAR_BUFFER_H
 #define MCC_CIRCULAR_BUFFER_H
 
+#include <array>
 #include <cstdint>
 #include <cstdlib>
-#include <array>
+#include <glog/logging.h>
 
 namespace mcc {
   template<typename T, const uint64_t Capacity>

@@ -5,7 +5,7 @@
 #include "mcc/renderer/render_pass.h"
 
 namespace mcc::render {
-  class RenderPass3d : public RenderPassSequence {
+  class RenderPass3d : public SequenceRenderPass {
   protected:
     Pipeline* pipeline_;
 
@@ -14,7 +14,7 @@ namespace mcc::render {
     }
   public:
     explicit RenderPass3d(Pipeline* pipeline):
-      RenderPassSequence(),
+      SequenceRenderPass(),
       pipeline_(pipeline) {
     }
     ~RenderPass3d() override = default;

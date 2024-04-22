@@ -112,10 +112,6 @@ namespace mcc::d2 {
       stream << ")";
       return stream;
     }
-
-    static void Init();
-  private:
-    static void OnInit();
   };
 
   class IndexedMesh : public Mesh {
@@ -130,8 +126,7 @@ namespace mcc::d2 {
     }
     explicit IndexedMesh(const VertexList& vertices,
                          const u32::IndexList& indices):
-      Mesh(&vertices[0], vertices.size()),
-      ibo_(&indices[0], indices.size()) {
+      IndexedMesh(&vertices[0], vertices.size(), &indices[0], indices.size()) {
     }
     virtual ~IndexedMesh() = default;
 
@@ -166,7 +161,6 @@ namespace mcc::d2 {
     }
 
     void Render() override {
-      DLOG(INFO) << "rendering mesh....";
       InvertedCullFaceScope cull_face;
       RenderChildren();
       mesh()->Draw();

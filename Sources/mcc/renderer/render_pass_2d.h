@@ -4,7 +4,7 @@
 #include "mcc/renderer/render_pass.h"
 
 namespace mcc::render {
-  class RenderPass2d : public RenderPassSequence {
+  class RenderPass2d : public SequenceRenderPass {
   public:
     RenderPass2d() = default;
     ~RenderPass2d() override = default;

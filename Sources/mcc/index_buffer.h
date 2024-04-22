@@ -14,6 +14,7 @@ namespace mcc {
       BufferObjectTemplate(rhs) {  
     }
     ~IndexBufferObject() override = default;
+    virtual GLenum type() const = 0;
     virtual uint64_t length() const = 0;
     virtual uint64_t index_size() const = 0;
 
@@ -84,7 +85,7 @@ namespace mcc {
       return kIndexSize;
     }
 
-    GLenum type() const {
+    GLenum type() const override {
       return Type;
     }
 

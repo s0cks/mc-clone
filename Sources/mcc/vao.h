@@ -46,6 +46,10 @@ namespace mcc {
       CHECK_GL(FATAL);
     }
 
+    bool IsValid() const {
+      return id() != kInvalidVertexArrayObject;
+    }
+
     void operator=(const VertexArrayObject& rhs) {
       id_ = rhs.id_;
     }
