@@ -2,6 +2,7 @@
 #define MCC_RENDERER_H
 
 #include "mcc/gfx.h"
+#include "mcc/relaxed_atomic.h"
 #include "mcc/renderer/render_pass.h"
 #include "mcc/renderer/render_timer.h"
 #include "mcc/renderer/renderer_state.h"

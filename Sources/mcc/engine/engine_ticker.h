@@ -1,7 +1,7 @@
 #ifndef MCC_ENGINE_TICKER_H
 #define MCC_ENGINE_TICKER_H
 
-#include "mcc/uv/utils.h"
+#include "mcc/uv/uv_handle.h"
 
 namespace mcc::engine {
   class EngineTicker : public uv::IdleListener {
