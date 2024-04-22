@@ -3,9 +3,13 @@
 
 #include "mcc/uv/utils.h"
 #include "mcc/uv/uv_handle.h"
+
+#include "mcc/rx.h"
 #include "mcc/gfx.h"
+#include "mcc/uv/uv_tick.h"
 #include "mcc/relaxed_atomic.h"
 #include "mcc/renderer/render_pass.h"
+#include "mcc/renderer/render_events.h"
 #include "mcc/renderer/renderer_state.h"
 #include "mcc/renderer/renderer_stats.h"
 
@@ -29,6 +33,15 @@ namespace mcc {
         kDefaultMode = kFillMode,
         kWireframeMode = kLineMode,
       };
+
+      static void Publish(RenderEvent* event);
+
+      template<class E, typename... Args>
+      static inline void
+      Publish(Args... args) {
+        E event(args...);
+        return Publish((RenderEvent*) &event);
+      }
     private:
       template<typename H>
       static inline void
@@ -60,7 +73,6 @@ namespace mcc {
       uv_loop_t* loop_;
       uv_async_t on_run_;
       RelaxedAtomic<Mode> mode_;
-      RelaxedAtomic<uint64_t> last_frame_;
       RenderPass* pass_;
 
       Renderer(uv_loop_t* loop,
@@ -68,23 +80,18 @@ namespace mcc {
         loop_(loop),
         on_run_(),
         mode_(mode),
-        last_frame_(0),
         pass_(new OrderedSequenceRenderPass()) {
         MCC_ASSERT(loop);
         SetRenderer(on_run_, this);
         InitAsyncHandle(loop, on_run_, &OnRun);
+        Publish<RendererInitializedEvent>(this);
       }
 
       inline void SetMode(const Mode mode) {
         mode_ = mode;
       }
 
-      inline void SetLastFrameNanos(const uint64_t ts) {
-        last_frame_ = ts;
-      }
-
       inline void Schedule() {
-        DLOG(INFO) << "scheduling....";
         const auto err = uv_async_send(&on_run_);
         LOG_IF(ERROR, err != UV_OK) << "uv_async_send failed: " << uv_strerror(err);
       }
@@ -112,13 +119,8 @@ namespace mcc {
         return loop_;
       }
 
-      uint64_t GetLastFrameNanos() const {
-        return (uint64_t) last_frame_;
-      }
-
-      inline uint64_t GetNanosSinceLastFrame(const uint64_t ts = uv::Now()) const {
-        return (ts - GetLastFrameNanos());
-      }
+      const uv::TickDurationSeries& GetTickDurationSeries() const;
+      const uv::TicksPerSecond& GetTicksPerSecond() const;
     public:
       static void Init();
       static Renderer* Get();

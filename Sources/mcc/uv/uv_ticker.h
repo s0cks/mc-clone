@@ -2,16 +2,11 @@
 #define MCC_UV_TICKER_H
 
 #include <units.h>
-#include "mcc/series.h"
-#include "mcc/counter.h"
 
 #include "mcc/uv/uv_tick.h"
 #include "mcc/uv/uv_handle.h"
 
 namespace mcc::uv {
-  typedef TimeSeries<10> TickDurationSeries;
-  typedef PerSecondCounter<uint64_t> TicksPerSecond;
-
   class Ticker : public uv::IdleListener,
                  public uv::PrepareListener,
                  public uv::CheckListener {

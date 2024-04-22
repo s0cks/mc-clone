@@ -5,6 +5,9 @@
 #include <units.h>
 #include <cstdint>
 
+#include "mcc/series.h"
+#include "mcc/counter.h"
+
 namespace mcc::uv {
   typedef uint64_t TickId;
 
@@ -37,6 +40,9 @@ namespace mcc::uv {
       return stream;
     }
   };
+
+  typedef TimeSeries<10> TickDurationSeries;
+  typedef PerSecondCounter<uint64_t> TicksPerSecond;
 }
 
 #endif //MCC_UV_TICK_H

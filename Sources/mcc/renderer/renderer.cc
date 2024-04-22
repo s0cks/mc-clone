@@ -15,6 +15,35 @@
 
 namespace mcc::render {
   static ThreadLocal<Renderer> renderer_;
+  static rx::subject<RenderEvent*> events_;
+
+  rx::observable<RenderEvent*> OnEvent() {
+    return events_.get_observable();
+  }
+
+  void Renderer::Publish(RenderEvent* event) {
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
+
+  const uv::TickDurationSeries& Renderer::GetTickDurationSeries() const {
+    const auto engine = engine::Engine::GetEngine();
+    MCC_ASSERT(engine);
+    MCC_ASSERT(engine->IsRunning());
+    const auto state = ((engine::TickState*) engine->GetCurrentState());
+    const auto& render_ticker = state->render_ticker_;
+    return render_ticker.GetTickDurationSeries();
+  }
+
+  const uv::TicksPerSecond& Renderer::GetTicksPerSecond() const {
+    const auto engine = engine::Engine::GetEngine();
+    MCC_ASSERT(engine);
+    MCC_ASSERT(engine->IsRunning());
+    const auto state = ((engine::TickState*) engine->GetCurrentState());
+    const auto& render_ticker = state->render_ticker_;
+    return render_ticker.GetTicksPerSecond();
+  }
 
   static inline void
   SetThreadRenderer(Renderer* renderer) {
@@ -60,7 +89,7 @@ namespace mcc::render {
       const auto windowSize = window->GetSize();
       OrthoCamera camera(window);
       const auto& projection = camera.GetProjection();
-      //AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
+      // AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
     }
     ~RendererPipeline() override = default;
 

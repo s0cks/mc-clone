@@ -77,15 +77,23 @@ int main(int argc, char** argv) {
   // terrain::Terrain::Init();
   // camera::PerspectiveCameraComponent::Init();
 
+
+  const auto renderer = render::Renderer::Get();
+  render::OnPostRenderEvent()
+    .subscribe([renderer](render::PostRenderEvent* event) {
+      const auto& duration = renderer->GetTickDurationSeries();
+      const auto& fps = renderer->GetTicksPerSecond();
+      using namespace units::time;
+      DLOG(INFO) << "render tick #" << event->tick().id << " finished in " << nanosecond_t(duration.last()) << ". stats: frames=" << fps.per_sec() << "/s; time (avg/min/max)=" << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
+    });
   const auto engine = engine::Engine::GetEngine();
-  // engine->OnPostTickEvent()
-  //   .subscribe([engine](engine::PostTickEvent* event) {
-  //     using namespace units::time;
-  //     const auto& duration = event->engine()->GetTickDurationSeries();
-  //     const auto& tps = event->engine()->GetTicksPerSecond();
-  //     DLOG(INFO) << event->tick() << " finished. stats (avg/min/max): " << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
-  //     DLOG(INFO) << "tps: " << tps.per_sec() << "/s";
-  //   });
+  engine->OnPostTickEvent()
+    .subscribe([engine](engine::PostTickEvent* event) {
+      using namespace units::time;
+      const auto& duration = event->engine()->GetTickDurationSeries();
+      const auto& tps = event->engine()->GetTicksPerSecond();
+      DLOG(INFO) << "engine tick #" << event->tick().id << " finished in " << nanosecond_t(duration.last()) << ". stats: ticks=" << tps.per_sec() << "/s; time (avg/min/max)=" << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
+    });
   engine->Run();
 
   const auto keyboard = GetKeyboard();

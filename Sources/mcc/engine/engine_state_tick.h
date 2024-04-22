@@ -10,10 +10,15 @@
 
 #include "mcc/on_shutdown.h"
 
+namespace mcc::render {
+  class Renderer;
+}
+
 namespace mcc::engine {
   class TickState : public State,
                     public ShutdownListener {
     friend class Engine;
+    friend class render::Renderer;
 
     template<typename T>
     static inline void
