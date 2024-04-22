@@ -10,7 +10,7 @@
 #include "mcc/vao/vao.h"
 #include "mcc/uri.h"
 #include "mcc/pipeline.h"
-#include "mcc/index_buffer.h"
+#include "mcc/ibo/index_buffer.h"
 #include "mcc/vertex/vertex_buffer.h"
 #include "mcc/program/program_pipeline.h"
 

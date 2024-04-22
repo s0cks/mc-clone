@@ -3,7 +3,7 @@
 
 #include "mcc/gfx.h"
 #include "mcc/vertex/vertex_buffer.h"
-#include "mcc/index_buffer.h"
+#include "mcc/ibo/index_buffer.h"
 
 namespace mcc::terrain {
   struct Vertex {

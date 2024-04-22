@@ -37,7 +37,6 @@ add_library(${PROJECT_NAME}
   mcc/material/material_loader.h mcc/material/material_loader.cc
   mcc/gfx.h
   mcc/buffer_object.h
-  mcc/index_buffer.h
   mcc/uniform_buffer.h
   mcc/renderbuffer.h
   mcc/rx.h
@@ -105,6 +104,10 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_state_tick.h mcc/engine/engine_state_tick.cc
   mcc/engine/engine_state_terminated.h mcc/engine/engine_state_terminated.cc
   mcc/engine/engine_ticker.h mcc/engine/engine_ticker.cc
+# IBO
+  mcc/ibo/ibo_id.h
+  mcc/ibo/ibo_events.h mcc/ibo/ibo_events.cc
+  mcc/ibo/index_buffer.h mcc/ibo/index_buffer.cc
 # VAO
   mcc/vao/vao.h mcc/vao/vao.cc
   mcc/vao/vao_id.h

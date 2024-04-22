@@ -5,7 +5,7 @@
 #include "mcc/common.h"
 #include "mcc/vao/vao.h"
 #include "mcc/mesh/vertex.h"
-#include "mcc/index_buffer.h"
+#include "mcc/ibo/index_buffer.h"
 
 namespace mcc {
   class Renderer;
