@@ -8,8 +8,6 @@
 #include "mcc/engine/engine_state.h"
 #include "mcc/engine/engine_event.h"
 
-#include "mcc/renderer/render_timer.h"
-
 namespace mcc::engine {
   class Engine {
     friend class InitState;

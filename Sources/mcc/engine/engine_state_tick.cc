@@ -1,20 +1,11 @@
 #include "mcc/engine/engine_state.h"
 
-#include <units.h>
-
-#include "mcc/renderer/renderer.h"
-
 #include "mcc/engine/engine.h"
 #include "mcc/engine/engine_event.h"
 
-namespace mcc::engine {
-  void InitState::Apply() {
-    engine()->Publish<PreInitEvent>();
-    DLOG(INFO) << "initializing engine....";
-    // do stuffs?
-    engine()->Publish<PostInitEvent>();
-  }
+#include "mcc/renderer/renderer.h"
 
+namespace mcc::engine {
   TickState::TickState(Engine* engine):
     State(engine),
     idle_(),
@@ -80,10 +71,5 @@ namespace mcc::engine {
 
   void TickState::Shutdown() {
     on_shutdown_();
-  }
-
-  void TerminatedState::Apply() {
-    engine()->Publish<TerminatingEvent>();
-    engine()->Publish<TerminatedEvent>();
   }
 }
