@@ -104,7 +104,7 @@ namespace mcc {
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const PerSecondCounter<T>& rhs) {
-      return stream << (T)rhs;
+      return stream << (T)rhs << " (" << rhs.per_sec() << "/s)";
     }
   };
 }

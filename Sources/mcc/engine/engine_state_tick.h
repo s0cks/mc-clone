@@ -6,7 +6,7 @@
 #define MCC_ENGINE_STATE_TICK_H
 
 #include "mcc/engine/engine_ticker.h"
-#include "mcc/renderer/render_timer.h"
+#include "mcc/renderer/render_ticker.h"
 
 #include "mcc/on_shutdown.h"
 
@@ -30,13 +30,13 @@ namespace mcc::engine {
     void Stop();
   protected:
     EngineTicker ticker_;
+    render::RenderTicker render_ticker_;
     ShutdownListenerHandle shutdown_;
 
     explicit TickState(Engine* engine);
 
     void Shutdown() override;
     void OnShutdown() override;
-    static void OnRenderTick(const render::RenderTimer::Tick& tick);
   public:
     ~TickState() override = default;
 

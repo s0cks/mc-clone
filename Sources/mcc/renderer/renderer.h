@@ -15,7 +15,7 @@ namespace mcc {
 
   namespace render {
     class Renderer {
-      friend class engine::TickState;
+      friend class RenderTicker;
     public:
       static constexpr const auto kDefaultTargetFramesPerSecond = 60;
 

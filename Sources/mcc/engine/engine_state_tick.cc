@@ -9,16 +9,13 @@ namespace mcc::engine {
   TickState::TickState(Engine* engine):
     State(engine),
     ticker_(engine->events(), engine->GetLoop()),
+    render_ticker_(engine->GetLoop()),
     shutdown_(engine->GetLoop(), this) {
-  }
-
-  void TickState::OnRenderTick(const render::RenderTimer::Tick& tick) {
-    const auto renderer = render::Renderer::Get();
-    renderer->Schedule();
   }
 
   void TickState::Stop() {
     ticker_.Stop();
+    render_ticker_.Stop();
     const auto loop = engine()->GetLoop();
     uv_stop(loop);
   }

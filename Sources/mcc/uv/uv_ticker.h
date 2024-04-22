@@ -87,6 +87,62 @@ namespace mcc::uv {
       check_.Stop();
     }
   };
+
+  class RateLimitedTicker : public Ticker {
+  protected:
+    uint64_t rate_;
+    bool skipped_;
+
+    inline void
+    SetSkipped(const bool skipped = true) {
+      skipped_ = skipped;
+    }
+
+    inline void
+    ClearSkipped() {
+      return SetSkipped(false);
+    }
+
+    inline bool
+    IsSkipped() {
+      return skipped_;
+    }
+
+    void OnIdle() override {
+      if(GetNanosecondsSinceLast() < GetRate())
+        return SetSkipped();
+      return Ticker::OnIdle();
+    }
+
+    void OnPrepare() override {
+      if(IsSkipped())
+        return;
+      return Ticker::OnPrepare();
+    }
+
+    void OnCheck() override {
+      if(IsSkipped())
+        return ClearSkipped();
+      return Ticker::OnCheck();
+    }
+  public:
+    RateLimitedTicker(uv_loop_t* loop,
+                      const uint64_t rate_ns,
+                      const bool start = true):
+      Ticker(loop, start),
+      rate_(rate_ns),
+      skipped_(false) {
+    }
+    ~RateLimitedTicker() override = default;
+
+    uint64_t GetRate() const {
+      return rate_;
+    }
+
+    uint64_t GetNanosecondsSinceLast(const uint64_t ts = uv_hrtime()) const {
+      return ts - last_;
+    }
+  };
 }
 
 #endif //MCC_UV_TICKER_H

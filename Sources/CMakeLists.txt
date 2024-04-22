@@ -91,6 +91,7 @@ add_library(${PROJECT_NAME}
   mcc/renderer/renderer_state.h
   mcc/renderer/renderer_stats.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
+  mcc/renderer/render_ticker.h mcc/renderer/render_ticker.cc
 # Vertex
   mcc/vertex/vertex_property.h
   mcc/vertex/vertex.h mcc/vertex/vertex.cc

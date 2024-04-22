@@ -73,19 +73,19 @@ int main(int argc, char** argv) {
   Window::Init();
   mouse::InitMouse();
   keyboard::InitKeyboard();
-  // render::Renderer::Init();
+  render::Renderer::Init();
   // terrain::Terrain::Init();
   // camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();
-  engine->OnPostTickEvent()
-    .subscribe([engine](engine::PostTickEvent* event) {
-      using namespace units::time;
-      const auto& duration = event->engine()->GetTickDurationSeries();
-      const auto& tps = event->engine()->GetTicksPerSecond();
-      DLOG(INFO) << event->tick() << " finished. stats (avg/min/max): " << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
-      DLOG(INFO) << "tps: " << tps.per_sec() << "/s";
-    });
+  // engine->OnPostTickEvent()
+  //   .subscribe([engine](engine::PostTickEvent* event) {
+  //     using namespace units::time;
+  //     const auto& duration = event->engine()->GetTickDurationSeries();
+  //     const auto& tps = event->engine()->GetTicksPerSecond();
+  //     DLOG(INFO) << event->tick() << " finished. stats (avg/min/max): " << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
+  //     DLOG(INFO) << "tps: " << tps.per_sec() << "/s";
+  //   });
   engine->Run();
 
   const auto keyboard = GetKeyboard();
