@@ -3,7 +3,8 @@
 
 #include "mcc/rx.h"
 #include "mcc/event.h"
-#include "mcc/engine/engine_state.h"
+
+#include "mcc/engine/engine_tick.h"
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_EVENT(V) \

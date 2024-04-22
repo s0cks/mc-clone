@@ -67,7 +67,7 @@ namespace mcc::camera {
     for(const auto& state : states()) {
       const auto& tick = event->tick();
       const auto& camera = (*state);
-      const auto velocity = (camera->speed * 100.0f) * ((1.0f * tick.dts) / NSEC_PER_SEC);
+      const auto velocity = (camera->speed * 100.0f) * ((1.0f * tick.delta) / NSEC_PER_SEC);
       const auto window = Window::Get();
       if(glfwGetKey(window->handle(), GLFW_KEY_W) == GLFW_PRESS)
         camera->pos += glm::vec4((camera->front * velocity), 0.0f);

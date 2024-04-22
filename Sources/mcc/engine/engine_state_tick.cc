@@ -8,7 +8,7 @@
 namespace mcc::engine {
   TickState::TickState(Engine* engine):
     State(engine),
-    ticker_(engine->GetLoop()),
+    ticker_(engine->events(), engine->GetLoop()),
     shutdown_(engine->GetLoop(), this) {
   }
 
@@ -16,26 +16,6 @@ namespace mcc::engine {
     const auto renderer = render::Renderer::Get();
     renderer->Schedule();
   }
-
-  // void TickState::OnIdle(uv_idle_t* handle) {
-  //   const auto state = GetState(handle);
-  //   const auto engine = state->engine();
-  //   engine->Publish<PreTickEvent>();
-  //   engine->DoPreTick();
-  // }
-
-  // void TickState::OnPrepare(uv_prepare_t* handle) {
-  //   const auto state = GetState(handle);
-  //   const auto engine = state->engine();
-  //   engine->Publish<TickEvent>(engine->GetCurrentTick());
-  // }
-
-  // void TickState::OnCheck(uv_check_t* handle) {
-  //   const auto state = GetState(handle);
-  //   const auto engine = state->engine();
-  //   engine->Publish<PostTickEvent>(engine->GetCurrentTick());
-  //   engine->DoPostTick();
-  // }
 
   void TickState::Stop() {
     ticker_.Stop();

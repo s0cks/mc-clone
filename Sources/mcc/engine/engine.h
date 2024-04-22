@@ -5,6 +5,8 @@
 
 #include "mcc/counter.h"
 #include "mcc/uv/utils.h"
+
+#include "mcc/engine/engine_tick.h"
 #include "mcc/engine/engine_state.h"
 #include "mcc/engine/engine_event.h"
 
@@ -12,6 +14,7 @@ namespace mcc::engine {
   class Engine {
     friend class InitState;
     friend class TickState;
+    friend class EngineTicker;
     friend class TerminatedState;
   protected:
     uv_loop_t* loop_;
@@ -27,9 +30,6 @@ namespace mcc::engine {
     uint64_t last_;
     uint64_t last_second_;
     Tick current_;
-    PerSecondCounter<uint64_t> tick_counter_;
-    TimeSeries<10> tick_duration_;
-    NumericSeries<uint64_t, 10> ticks_per_second_;
 
     virtual void SetRunning(const bool running = true) {
       running_ = running;
@@ -70,11 +70,7 @@ namespace mcc::engine {
         ticks_ = 0;
         last_second_ = ts_;
       }
-      current_ = Tick {
-        .id = total_ticks_,
-        .ts = ts_,
-        .dts = dts_,
-      };
+      current_ = Tick((uint64_t) total_ticks_, ts_, last_);
     }
 
     inline void DoPostTick(const uint64_t ts = uv_hrtime()) {
@@ -82,9 +78,14 @@ namespace mcc::engine {
       ticks_ += 1;
       total_ticks_ += 1;
       last_ = ts_;
-      tick_counter_.Increment(1, ts);
-      tick_duration_.Append(duration);
-      ticks_per_second_.Append(tick_counter_.per_sec());
+    }
+
+    inline rx::subject<EngineEvent*>& events() {
+      return events_;
+    }
+
+    inline const rx::subject<EngineEvent*>& events() const {
+      return events_;
     }
   public:
     explicit Engine(uv_loop_t* loop):
@@ -140,12 +141,14 @@ namespace mcc::engine {
       return (uint64_t) total_ticks_;
     }
 
-    const TimeSeries<10>& GetTickDuration() const {
-      return tick_duration_;
+    const EngineTicker::DurationSeries& GetTickDurationSeries() const {
+      MCC_ASSERT(IsRunning()); //TODO: state check
+      return ((TickState*) GetCurrentState())->GetTickDurationSeries();
     }
 
-    const NumericSeries<uint64_t, 10>& GetTicksPerSecond() const {
-      return ticks_per_second_;
+    const EngineTicker::TicksPerSecond& GetTicksPerSecond() const {
+      MCC_ASSERT(IsRunning()); //TODO: state check
+      return ((TickState*) GetCurrentState())->GetTicksPerSecond();
     }
 
 #define DEFINE_ON_ENGINE_EVENT(Name)                                   \

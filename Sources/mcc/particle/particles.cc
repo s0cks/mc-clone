@@ -57,11 +57,11 @@ namespace mcc::particle {
     // Engine::OnPostInit(&OnPostInit);
   }
 
-  void Particles::UpdateAll(const Tick& tick) {
+  void Particles::UpdateAll(const engine::Tick& tick) {
     for(auto idx = 0; idx < kMaxNumberOfParticles; idx++) {
       auto& p = particles_[idx];
       if(p.age > 0) {
-        const auto velocity = (p.speed * ((1.0f * tick.dts) / NSEC_PER_SEC));
+        const auto velocity = (p.speed * ((1.0f * tick.delta) / NSEC_PER_SEC));
         p.position += (p.direction * velocity);
       }
     }

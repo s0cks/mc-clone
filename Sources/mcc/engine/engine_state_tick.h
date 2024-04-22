@@ -40,6 +40,15 @@ namespace mcc::engine {
     static void OnRenderTick(const render::RenderTimer::Tick& tick);
   public:
     ~TickState() override = default;
+
+    const EngineTicker::DurationSeries& GetTickDurationSeries() const {
+      return ticker_.GetDurationSeries();
+    }
+
+    const EngineTicker::TicksPerSecond& GetTicksPerSecond() const {
+      return ticker_.GetTicksPerSecond();
+    }
+
     DECLARE_STATE(Tick);
   };
 }

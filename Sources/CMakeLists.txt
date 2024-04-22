@@ -102,6 +102,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h
+  mcc/engine/engine_tick.h
   mcc/engine/engine_state_init.h mcc/engine/engine_state_init.cc
   mcc/engine/engine_state_tick.h mcc/engine/engine_state_tick.cc
   mcc/engine/engine_state_terminated.h mcc/engine/engine_state_terminated.cc
@@ -205,7 +206,10 @@ add_library(${PROJECT_NAME}
   mcc/uv/utils.h
   mcc/uv/uv_status.h
   mcc/uv/uv_handle.h
-  mcc/uv/uv_idle_handle.h
+  mcc/uv/uv_handle_async.h
+  mcc/uv/uv_handle_check.h
+  mcc/uv/uv_handle_idle.h
+  mcc/uv/uv_handle_prepare.h
 # Misc
   mcc/on_shutdown.h
   mcc/event.h
