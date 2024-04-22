@@ -50,7 +50,6 @@ add_library(${PROJECT_NAME}
   mcc/mesh/mesh.h mcc/mesh/mesh.cc
   mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
   mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
-  mcc/uv_utils.h
   mcc/os_thread.h mcc/os_thread.cc
   mcc/os_thread_linux.h
   mcc/os_thread_osx.h mcc/os_thread_osx.cc
@@ -106,7 +105,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_state_init.h mcc/engine/engine_state_init.cc
   mcc/engine/engine_state_tick.h mcc/engine/engine_state_tick.cc
   mcc/engine/engine_state_terminated.h mcc/engine/engine_state_terminated.cc
-  mcc/engine/engine_ticker.h
+  mcc/engine/engine_ticker.h mcc/engine/engine_ticker.cc
 # Program
   mcc/program/program_document.h
   mcc/program/program_events.h mcc/program/program_events.cc
@@ -202,7 +201,10 @@ add_library(${PROJECT_NAME}
   mcc/resource/resource_ptr.h
   mcc/resource/resource_loader.h
   mcc/resource/resource.h mcc/resource/resource.cc
+# libuv extensions
+  mcc/uv/utils.h
 # Misc
+  mcc/on_shutdown.h
   mcc/event.h
   mcc/state_machine.h
   mcc/bitset.h

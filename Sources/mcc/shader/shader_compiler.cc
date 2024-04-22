@@ -1,7 +1,7 @@
 #include "mcc/shader/shader_compiler.h"
 
 #include "mcc/flags.h"
-#include "mcc/uv_utils.h"
+#include "mcc/uv/utils.h"
 #include "mcc/shader/shader_status.h"
 
 namespace mcc::shader {

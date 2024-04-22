@@ -13,6 +13,60 @@ namespace mcc::uv {
 #define UV_OK 0
 #endif //UV_OK
 
+  typedef int StatusId;
+  class Status {
+  private:
+    StatusId id_;
+  public:
+    constexpr Status(const StatusId id):
+      id_(id) {
+    }
+    Status(const Status& rhs) = default;
+    ~Status() = default;
+
+    inline StatusId id() const {
+      return id_;
+    }
+
+    inline bool IsOk() const {
+      return id() == UV_OK;
+    }
+
+    const char* message() const {
+      return IsOk() ? "Ok" : uv_strerror(id());
+    }
+    
+    operator StatusId () const {
+      return id();
+    }
+
+    operator bool () const {
+      return IsOk();
+    }
+
+    Status& operator=(const Status& rhs) = default;
+
+    friend std::ostream& operator<<(std::ostream& stream, const Status& rhs) {
+      stream << "uv::Status(";
+      stream << "id=" << rhs.id() << ", ";
+      stream << "is_ok=" << rhs.IsOk();
+      if(!rhs)
+        stream << ", message=\"" << rhs.message() << "\"";
+      stream << ")";
+      return stream;
+    }
+  public:
+    static inline constexpr Status
+    New(const StatusId raw) {
+      return Status(raw);
+    }
+
+    static inline constexpr Status
+    Ok() {
+      return New(UV_OK);
+    }
+  };
+
 #define CHECK_UV_RESULT(Severity, Result, Message) \
   LOG_IF(Severity, (Result) != UV_OK) << (Message) << ": " << uv_strerror((Result));
 
@@ -42,6 +96,41 @@ namespace mcc::uv {
       LOG_IF(ERROR, result == UV_OK) << "failed to run loop: " << uv_strerror(result);
       VLOG(3) << "done running loop.";
     }
+  };
+
+  class HandleBase {
+  protected:
+    HandleBase() = default;
+
+    template<typename H, typename D>
+    static inline void
+    SetHandleData(H* handle, const D* data) {
+      return uv_handle_set_data((uv_handle_t*) handle, (void*) data);
+    }
+
+    template<typename H, typename D>
+    static inline void
+    SetHandleData(H& handle, const D* data) {
+      return SetHandleData<H>(&handle, data);
+    }
+
+    template<typename D, typename H>
+    static inline D*
+    GetHandleData(const H* handle) {
+      return (D*) uv_handle_get_data((uv_handle_t*) handle);
+    }
+  public:
+    virtual ~HandleBase() = default;
+  };
+
+  template<typename H>
+  class HandleBaseTemplate : public HandleBase {
+  protected:
+    H handle_;
+
+    HandleBaseTemplate() = default;
+  public:
+    ~HandleBaseTemplate() override = default;
   };
 
   class Handle {
@@ -114,31 +203,6 @@ namespace mcc::uv {
     }
   };
 
-  typedef std::function<void()> IdleCallback;
-
-  class IdleHandle : public HandleTemplate<uv_idle_t, IdleCallback> {
-  protected:
-    static inline void
-    OnIdle(uv_idle_t* h) {
-      auto handle = reinterpret_cast<IdleHandle*>(h->data);
-      handle->callback_();
-    }
-  public:
-    IdleHandle(uv_loop_t* loop, IdleCallback callback):
-      HandleTemplate<uv_idle_t, IdleCallback>(callback) {
-      CHECK_UV_RESULT(ERROR, uv_idle_init(loop, &handle_), "failed to initialize uv_idle_t");
-      CHECK_UV_RESULT(ERROR, uv_idle_start(&handle_, &OnIdle), "failed to start uv_idle_t");
-      handle_.data = this;
-    }
-    ~IdleHandle() override {
-      CHECK_UV_RESULT(ERROR, uv_idle_stop(&handle_), "failed to stop uv_idle_t");
-    }
-
-    IdleCallback callback() const {
-      return callback_;
-    }
-  };
-
   typedef std::function<void()> CheckCallback;
 
   class CheckHandle : public HandleTemplate<uv_check_t, CheckCallback> {
@@ -169,26 +233,26 @@ namespace mcc::uv {
     return uv_hrtime();
   }
 
-  template<typename H, typename D>
-  static inline void
-  SetHandleData(H* handle, const D* data) {
-    return uv_handle_set_data((uv_handle_t*) handle, (void*) data);
-  }
+  class AsyncHandleBase : public HandleBase {
+  protected:
+    uv_async_t handle_;
 
-  template<typename H, typename D>
-  static inline void
-  SetHandleData(H& handle, const D* data) {
-    return SetHandleData<H>(&handle, data);
-  }
+    AsyncHandleBase(uv_loop_t* loop, uv_async_cb callback):
+      handle_() {
+      const auto err = uv_async_init(loop, &handle_, callback);
+      LOG_IF(ERROR, err != UV_OK) << "uv_async_init failed: " << uv_strerror(err);
+    }
+  public:
+    virtual ~AsyncHandleBase() = default;//TODO: remove async handle from loop?
 
-  template<typename D, typename H>
-  static inline D*
-  GetHandleData(const H* handle) {
-    return (D*) uv_handle_get_data((uv_handle_t*) handle);
-  }
+    virtual void Call() {
+      const auto err = uv_async_send(&handle_);
+      LOG_IF(ERROR, err != UV_OK) << "uv_async_send failed: " << uv_strerror(err);
+    }
+  };
 
   template<typename D>
-  class AsyncHandle {
+  class AsyncHandle : public AsyncHandleBase {
   public:
     typedef std::function<void(D*)> Callback;
   private:
@@ -198,18 +262,15 @@ namespace mcc::uv {
       async->callback_(async->GetData());
     }
   protected:
-    uv_async_t handle_;
     Callback callback_;
     uword data_;
   public:
     AsyncHandle(uv_loop_t* loop,
                 const Callback& callback,
                 const uword data = 0):
-      handle_(),
+      AsyncHandleBase(loop, &OnCall),
       callback_(callback),
       data_((uword) data) {
-      const auto err = uv_async_init(loop, &handle_, OnCall);
-      LOG_IF(ERROR, err != UV_OK) << "uv_async_init failed: " << uv_strerror(err);
     }
     AsyncHandle(uv_loop_t* loop,
                 const Callback& callback,
@@ -222,13 +283,70 @@ namespace mcc::uv {
       return (D*) data_;
     }
 
-    inline void Call() {
-      const auto err = uv_async_send(&handle_);
-      LOG_IF(ERROR, err != UV_OK) << "uv_async_send failed: " << uv_strerror(err);
-    }
-
     void operator() () {
       return Call();
+    }
+  };
+
+  class IdleListener {
+    friend class IdleHandle;
+  protected:
+    IdleListener() = default;
+    virtual void OnIdle() = 0;
+  public:
+    virtual ~IdleListener() = default;
+  };
+
+  class IdleHandleBase : public HandleBaseTemplate<uv_idle_t> {
+  protected:
+    IdleHandleBase() = default;
+
+    static inline Status
+    InitIdleHandle(uv_loop_t* loop, uv_idle_t* handle) {
+      return Status(uv_idle_init(loop, handle));
+    }
+
+    static inline Status
+    StartIdleHandle(uv_idle_t* handle, uv_idle_cb cb) {
+      return Status(uv_idle_start(handle, cb));
+    }
+
+    static inline Status
+    StopIdleHandle(uv_idle_t* handle) {
+      return Status(uv_idle_stop(handle));
+    }
+  public:
+    ~IdleHandleBase() override {
+      StopIdleHandle(&handle_);
+    }
+
+    virtual void Start() = 0;
+
+    virtual void Stop() {
+      StopIdleHandle(&handle_);
+    }
+  };
+
+  class IdleHandle : public IdleHandleBase {
+  private:
+    static inline void
+    OnIdle(uv_idle_t* handle) {
+      const auto listener = GetHandleData<IdleListener>(handle);
+      listener->OnIdle();
+    }
+  public:
+    explicit IdleHandle(uv_loop_t* loop,
+                        const IdleListener* listener,
+                        const bool start = true):
+      IdleHandleBase() {
+      SetHandleData(handle_, listener);
+      InitIdleHandle(loop, &handle_);
+      Start();
+    }
+    ~IdleHandle() override = default;
+
+    void Start() override {
+      StartIdleHandle(&handle_, &OnIdle);
     }
   };
 }

@@ -1,17 +1,29 @@
 #ifndef MCC_ENGINE_TICKER_H
 #define MCC_ENGINE_TICKER_H
 
-#include "mcc/uv_utils.h"
+#include "mcc/uv/utils.h"
 
 namespace mcc::engine {
-  class EngineTicker {
+  class EngineTicker : public uv::IdleListener {
   protected:
     uv_loop_t* loop_;
-    uv_idle_t idle_;
-    uv_check_t check_;
+    uv::IdleHandle idle_;
+
+    void OnIdle() override {
+      DLOG(INFO) << "idle.";
+    }
   public:
-    EngineTicker() = default;
-    virtual ~EngineTicker() = default;
+    explicit EngineTicker(uv_loop_t* loop):
+      loop_(loop),
+      idle_(loop, this) {
+    }
+    virtual ~EngineTicker() {
+      Stop();
+    }
+
+    void Stop() {
+      idle_.Stop();
+    }
   };
 }
 

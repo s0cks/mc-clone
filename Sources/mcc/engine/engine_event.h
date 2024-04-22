@@ -48,11 +48,14 @@ namespace mcc::engine {
     }
   };
 
-#define DECLARE_ENGINE_EVENT(Name)                                    \
-  public:                                                             \
-    const char* GetName() const override { return #Name; }            \
-    Name##Event* As##Name##Event() override { return this; }          \
-    std::string ToString() const override;
+#define DECLARE_ENGINE_EVENT(Name)                                                    \
+  public:                                                                             \
+    const char* GetName() const override { return #Name; }                            \
+    Name##Event* As##Name##Event() override { return this; }                          \
+    std::string ToString() const override;                                            \
+    friend std::ostream& operator<<(std::ostream& stream, const Name##Event& rhs) {   \
+      return stream << rhs.ToString();                                                \
+    }
   
   class PreInitEvent : public EngineEvent {
   public:

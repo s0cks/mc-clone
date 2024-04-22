@@ -28,6 +28,14 @@
 #include "mcc/mouse/mouse.h"
 #include "mcc/keyboard/keyboard.h"
 
+template<class Event, const google::LogSeverity Severity = google::INFO>
+static inline std::function<void(Event*)>
+LogEvent() {
+  return [](Event* event) {
+    LOG_AT_LEVEL(Severity) << (*event);
+  };
+}
+
 int main(int argc, char** argv) {
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
@@ -71,6 +79,7 @@ int main(int argc, char** argv) {
   camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();
+  engine->OnTickEvent().subscribe(LogEvent<engine::TickEvent>());
   engine->Run();
 
   const auto keyboard = GetKeyboard();

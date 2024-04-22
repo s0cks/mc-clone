@@ -31,7 +31,8 @@ namespace mcc::engine {
   std::string TickEvent::ToString() const {
     std::stringstream ss;
     ss << "TickEvent(";
-    ss << "engine=" << engine();
+    ss << "engine=" << engine() << ", ";
+    ss << "current=" << tick();
     ss << ")";
     return ss.str();
   }
@@ -39,7 +40,8 @@ namespace mcc::engine {
   std::string PostTickEvent::ToString() const {
     std::stringstream ss;
     ss << "PostTickEvent(";
-    ss << "engine=" << engine();
+    ss << "engine=" << engine() << ", ";
+    ss << "current=" << tick();
     ss << ")";
     return ss.str();
   }

@@ -8,22 +8,8 @@
 namespace mcc::engine {
   TickState::TickState(Engine* engine):
     State(engine),
-    idle_(),
-    prepare_(),
-    check_(),
-    on_shutdown_(engine->GetLoop(), &OnShutdown, this) { // render_timer_(render::Renderer::Get(), render::Renderer::kDefaultTargetFramesPerSecond, &OnRenderTick) 
-    const auto loop = engine->GetLoop();
-    SetState(&idle_, this);
-    uv_idle_init(loop, &idle_);
-    uv_idle_start(&idle_, &OnIdle);
-
-    SetState(&prepare_, this);
-    uv_prepare_init(loop, &prepare_);
-    uv_prepare_start(&prepare_, &OnPrepare);
-
-    SetState(&check_, this);
-    uv_check_init(loop, &check_);
-    uv_check_start(&check_, &OnCheck);
+    ticker_(engine->GetLoop()),
+    shutdown_(engine->GetLoop(), this) {
   }
 
   void TickState::OnRenderTick(const render::RenderTimer::Tick& tick) {
@@ -31,31 +17,29 @@ namespace mcc::engine {
     renderer->Schedule();
   }
 
-  void TickState::OnIdle(uv_idle_t* handle) {
-    const auto state = GetState(handle);
-    const auto engine = state->engine();
-    engine->Publish<PreTickEvent>();
-    engine->DoPreTick();
-  }
+  // void TickState::OnIdle(uv_idle_t* handle) {
+  //   const auto state = GetState(handle);
+  //   const auto engine = state->engine();
+  //   engine->Publish<PreTickEvent>();
+  //   engine->DoPreTick();
+  // }
 
-  void TickState::OnPrepare(uv_prepare_t* handle) {
-    const auto state = GetState(handle);
-    const auto engine = state->engine();
-    engine->Publish<TickEvent>(engine->GetCurrentTick());
-  }
+  // void TickState::OnPrepare(uv_prepare_t* handle) {
+  //   const auto state = GetState(handle);
+  //   const auto engine = state->engine();
+  //   engine->Publish<TickEvent>(engine->GetCurrentTick());
+  // }
 
-  void TickState::OnCheck(uv_check_t* handle) {
-    const auto state = GetState(handle);
-    const auto engine = state->engine();
-    engine->Publish<PostTickEvent>(engine->GetCurrentTick());
-    engine->DoPostTick();
-  }
+  // void TickState::OnCheck(uv_check_t* handle) {
+  //   const auto state = GetState(handle);
+  //   const auto engine = state->engine();
+  //   engine->Publish<PostTickEvent>(engine->GetCurrentTick());
+  //   engine->DoPostTick();
+  // }
 
-  void TickState::OnShutdown(TickState* state) {
-    const auto loop = state->engine()->GetLoop();
-    uv_idle_stop(&state->idle_);
-    uv_prepare_stop(&state->prepare_);
-    uv_check_stop(&state->check_);
+  void TickState::Stop() {
+    ticker_.Stop();
+    const auto loop = engine()->GetLoop();
     uv_stop(loop);
   }
 
@@ -70,6 +54,10 @@ namespace mcc::engine {
   }
 
   void TickState::Shutdown() {
-    on_shutdown_();
+    shutdown_.Call();
+  }
+
+  void TickState::OnShutdown() {
+    Stop();
   }
 }

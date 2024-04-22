@@ -5,10 +5,14 @@
 #ifndef MCC_ENGINE_STATE_TICK_H
 #define MCC_ENGINE_STATE_TICK_H
 
+#include "mcc/engine/engine_ticker.h"
 #include "mcc/renderer/render_timer.h"
 
+#include "mcc/on_shutdown.h"
+
 namespace mcc::engine {
-  class TickState : public State {
+  class TickState : public State,
+                    public ShutdownListener {
     friend class Engine;
 
     template<typename T>
@@ -22,20 +26,17 @@ namespace mcc::engine {
     GetState(T* handle) {
       return (TickState*) uv_handle_get_data((uv_handle_t*) handle);
     }
+  private:
+    void Stop();
   protected:
-    uv_idle_t idle_;
-    uv_prepare_t prepare_;
-    uv_check_t check_;
-    uv::AsyncHandle<TickState> on_shutdown_;
+    EngineTicker ticker_;
+    ShutdownListenerHandle shutdown_;
     //render::RenderTimer render_timer_;
 
     explicit TickState(Engine* engine);
 
     void Shutdown() override;
-    static void OnIdle(uv_idle_t* handle);
-    static void OnPrepare(uv_prepare_t* handle);
-    static void OnCheck(uv_check_t* handle);
-    static void OnShutdown(TickState*);
+    void OnShutdown() override;
     static void OnRenderTick(const render::RenderTimer::Tick& tick);
   public:
     ~TickState() override = default;

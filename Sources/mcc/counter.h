@@ -1,7 +1,7 @@
 #ifndef MCC_COUNTER_H
 #define MCC_COUNTER_H
 
-#include "mcc/uv_utils.h"
+#include "mcc/uv/utils.h"
 #include "mcc/relaxed_atomic.h"
 
 namespace mcc {
