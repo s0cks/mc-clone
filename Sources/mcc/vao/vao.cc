@@ -1,6 +1,7 @@
 #include "mcc/vao/vao.h"
 
 #include <set>
+#include <sstream>
 
 namespace mcc::vao {
   static rx::subject<VaoEvent*> events_;
@@ -28,6 +29,14 @@ namespace mcc::vao {
     MCC_ASSERT(event);
     const auto& subscriber = events_.get_subscriber();
     subscriber.on_next(event);
+  }
+
+  std::string Vao::ToString() const {
+    std::stringstream ss;
+    ss << "Vao(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
   }
 
   Vao* Vao::New(const VaoId id) {

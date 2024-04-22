@@ -89,7 +89,7 @@ namespace mcc::render {
       const auto windowSize = window->GetSize();
       OrthoCamera camera(window);
       const auto& projection = camera.GetProjection();
-      // AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
+      AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
     }
     ~RendererPipeline() override = default;
 

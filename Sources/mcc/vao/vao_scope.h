@@ -22,17 +22,25 @@ namespace mcc {
     public:
       explicit VaoBindScope(const VaoId target):
         target_(target) {
-        BindVao(target);
+        Bind();
       }
       explicit VaoBindScope(const Vao* vao):
         VaoBindScope(vao->GetId()) {
       }
       ~VaoBindScope() {
-        UnbindVao();
+        Unbind();
       }
 
       VaoId GetTargetVaoId() const {
         return target_;
+      }
+
+      void Bind() {
+        BindVao(GetTargetVaoId());
+      }
+
+      void Unbind() {
+        UnbindVao();
       }
     };
   }

@@ -58,6 +58,7 @@ namespace mcc::d2 {
     if(!kMeshVao || !kMeshVao->IsValid()) {
       kMeshVao = Vao::New();
       LOG_IF(FATAL, !kMeshVao->IsValid()) << "failed to initialize mesh vao.";
+      DLOG(INFO) << "created mesh vao: " << (*kMeshVao);
     }
 
     VaoBindScope vao_scope(kMeshVao);

@@ -140,9 +140,8 @@ namespace mcc::d2 {
     explicit RenderMeshPipeline(Mesh* mesh, program::ApplyProgramPipeline* shader = nullptr):
       Pipeline(),
       mesh_(mesh) {
-      if(!shader)
-        return;
-      AddChild(shader);
+      if(shader)
+        AddChild(shader);
     }
     RenderMeshPipeline(Mesh* mesh,
                        const uri::Uri& uri,

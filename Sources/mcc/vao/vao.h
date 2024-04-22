@@ -41,6 +41,7 @@ namespace mcc {
       }
     public:
       ~Vao();
+      std::string ToString() const;
 
       VaoId GetId() const {
         return id_;
@@ -71,6 +72,10 @@ namespace mcc {
       }                                                   \
       FOR_EACH_VAO_EVENT(DEFINE_ON_VAO_EVENT)
 #undef DEFINE_ON_VAO_EVENT
+
+      friend std::ostream& operator<<(std::ostream& stream, const Vao& rhs) {
+        return stream << rhs.ToString();
+      }
     public:
       static Vao* New(const VaoId id);
 
