@@ -204,6 +204,7 @@ add_library(${PROJECT_NAME}
   mcc/resource/resource.h mcc/resource/resource.cc
 # libuv extensions
   mcc/uv/utils.h
+  mcc/uv/uv_ticker.h
   mcc/uv/uv_status.h
   mcc/uv/uv_handle.h
   mcc/uv/uv_handle_async.h

@@ -3,8 +3,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/event.h"
-
-#include "mcc/engine/engine_tick.h"
+#include "mcc/uv/uv_ticker.h"
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_EVENT(V) \
@@ -87,15 +86,15 @@ namespace mcc::engine {
 
   class TickEvent : public EngineEvent {
   protected:
-    Tick tick_;
+    uv::Tick tick_;
   public:
-    explicit TickEvent(Engine* engine, const Tick& tick):
+    explicit TickEvent(Engine* engine, const uv::Tick& tick):
       EngineEvent(engine),
       tick_(tick) {
     }
     ~TickEvent() override = default;
 
-    const Tick& tick() const {
+    const uv::Tick& tick() const {
       return tick_;
     }
 
@@ -104,15 +103,15 @@ namespace mcc::engine {
 
   class PostTickEvent : public EngineEvent {
   public:
-    Tick tick_;
+    uv::Tick tick_;
 
-    explicit PostTickEvent(Engine* engine, const Tick& tick):
+    explicit PostTickEvent(Engine* engine, const uv::Tick& tick):
       EngineEvent(engine),
       tick_(tick) {
     }
     ~PostTickEvent() override = default;
 
-    const Tick& tick() const {
+    const uv::Tick& tick() const {
       return tick_;
     }
 

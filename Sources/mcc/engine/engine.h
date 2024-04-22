@@ -6,7 +6,6 @@
 #include "mcc/counter.h"
 #include "mcc/uv/utils.h"
 
-#include "mcc/engine/engine_tick.h"
 #include "mcc/engine/engine_state.h"
 #include "mcc/engine/engine_event.h"
 
@@ -22,14 +21,6 @@ namespace mcc::engine {
     State* current_state_;
     State* previous_state_;
     rx::subject<EngineEvent*> events_;
-    uint64_t ticks_;
-    uint64_t total_ticks_;
-    uint64_t ts_;
-    uint64_t dts_;
-    uint64_t tps_;
-    uint64_t last_;
-    uint64_t last_second_;
-    Tick current_;
 
     virtual void SetRunning(const bool running = true) {
       running_ = running;
@@ -62,24 +53,6 @@ namespace mcc::engine {
       return RunState<State>(&state);
     }
 
-    inline void DoPreTick(const uint64_t ts = uv_hrtime()) {
-      ts_ = ts;
-      dts_ = (ts_ - last_);
-      if((ts_ - last_second_) >= NSEC_PER_SEC) {
-        tps_ = ticks_;
-        ticks_ = 0;
-        last_second_ = ts_;
-      }
-      current_ = Tick((uint64_t) total_ticks_, ts_, last_);
-    }
-
-    inline void DoPostTick(const uint64_t ts = uv_hrtime()) {
-      const auto duration = (ts - ts_);
-      ticks_ += 1;
-      total_ticks_ += 1;
-      last_ = ts_;
-    }
-
     inline rx::subject<EngineEvent*>& events() {
       return events_;
     }
@@ -93,15 +66,7 @@ namespace mcc::engine {
       running_(false),
       current_state_(nullptr),
       previous_state_(nullptr),
-      events_(),
-      ticks_(),
-      total_ticks_(),
-      ts_(),
-      dts_(),
-      tps_(),
-      last_(),
-      last_second_(),
-      current_() {
+      events_() {
     }
     virtual ~Engine() {
       if(loop_) {
@@ -112,10 +77,6 @@ namespace mcc::engine {
 
     virtual void Run();
     virtual void Shutdown();
-
-    const Tick& GetCurrentTick() const {
-      return current_;
-    }
 
     virtual bool IsRunning() const {
       return (bool) running_;
@@ -137,16 +98,12 @@ namespace mcc::engine {
       return events_.get_observable();
     }
 
-    uint64_t GetTotalTicks() const {
-      return (uint64_t) total_ticks_;
-    }
-
-    const EngineTicker::DurationSeries& GetTickDurationSeries() const {
+    const uv::TickDurationSeries& GetTickDurationSeries() const {
       MCC_ASSERT(IsRunning()); //TODO: state check
       return ((TickState*) GetCurrentState())->GetTickDurationSeries();
     }
 
-    const EngineTicker::TicksPerSecond& GetTicksPerSecond() const {
+    const uv::TicksPerSecond& GetTicksPerSecond() const {
       MCC_ASSERT(IsRunning()); //TODO: state check
       return ((TickState*) GetCurrentState())->GetTicksPerSecond();
     }

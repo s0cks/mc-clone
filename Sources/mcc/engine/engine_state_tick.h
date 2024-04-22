@@ -31,7 +31,6 @@ namespace mcc::engine {
   protected:
     EngineTicker ticker_;
     ShutdownListenerHandle shutdown_;
-    //render::RenderTimer render_timer_;
 
     explicit TickState(Engine* engine);
 
@@ -41,11 +40,11 @@ namespace mcc::engine {
   public:
     ~TickState() override = default;
 
-    const EngineTicker::DurationSeries& GetTickDurationSeries() const {
-      return ticker_.GetDurationSeries();
+    const uv::TickDurationSeries& GetTickDurationSeries() const {
+      return ticker_.GetTickDurationSeries();
     }
 
-    const EngineTicker::TicksPerSecond& GetTicksPerSecond() const {
+    const uv::TicksPerSecond& GetTicksPerSecond() const {
       return ticker_.GetTicksPerSecond();
     }
 

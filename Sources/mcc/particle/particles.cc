@@ -57,7 +57,7 @@ namespace mcc::particle {
     // Engine::OnPostInit(&OnPostInit);
   }
 
-  void Particles::UpdateAll(const engine::Tick& tick) {
+  void Particles::UpdateAll(const uv::Tick& tick) {
     for(auto idx = 0; idx < kMaxNumberOfParticles; idx++) {
       auto& p = particles_[idx];
       if(p.age > 0) {
