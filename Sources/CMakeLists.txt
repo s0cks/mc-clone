@@ -109,6 +109,7 @@ add_library(${PROJECT_NAME}
   mcc/vao/vao.h mcc/vao/vao.cc
   mcc/vao/vao_id.h
   mcc/vao/vao_scope.h
+  mcc/vao/vao_events.h mcc/vao/vao_events.cc
 # Program
   mcc/program/program_document.h
   mcc/program/program_events.h mcc/program/program_events.cc
