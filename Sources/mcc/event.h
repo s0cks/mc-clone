@@ -2,6 +2,7 @@
 #define MCC_EVENT_H
 
 #include <string>
+#include "mcc/rx.h"
 
 namespace mcc {
   class Event {

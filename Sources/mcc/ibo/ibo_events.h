@@ -24,6 +24,10 @@ namespace mcc::ibo {
   public:
     ~IboEvent() override = default;
 
+    IboId GetIboId() const {
+      return id_;
+    }
+
 #define DEFINE_TYPE_CHECK(Name)                                       \
     virtual Name##Event* As##Name##Event() { return nullptr; }        \
     bool Is##Name##Event() { return As##Name##Event() != nullptr; }
