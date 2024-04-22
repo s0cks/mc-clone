@@ -3,7 +3,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/event.h"
-#include "mcc/uv/uv_ticker.h"
+#include "mcc/uv/uv_tick.h"
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_EVENT(V) \
