@@ -68,7 +68,6 @@ int main(int argc, char** argv) {
   keyboard::InitKeyboard();
   render::Renderer::Init();
   terrain::Terrain::Init();
-  d2::Mesh::Init();
   camera::PerspectiveCameraComponent::Init();
 
   const auto engine = engine::Engine::GetEngine();
