@@ -103,6 +103,7 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h mcc/engine/engine_state.cc
+  mcc/engine/engine_ticker.h
 # Program
   mcc/program/program_document.h
   mcc/program/program_events.h mcc/program/program_events.cc

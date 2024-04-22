@@ -20,8 +20,7 @@ namespace mcc::engine {
     idle_(),
     prepare_(),
     check_(),
-    on_shutdown_(),
-    render_timer_(render::Renderer::Get(), render::Renderer::kDefaultTargetFramesPerSecond, &OnRenderTick) {
+    on_shutdown_(engine->GetLoop(), &OnShutdown, this) { // render_timer_(render::Renderer::Get(), render::Renderer::kDefaultTargetFramesPerSecond, &OnRenderTick) 
     const auto loop = engine->GetLoop();
     SetState(&idle_, this);
     uv_idle_init(loop, &idle_);
@@ -34,9 +33,6 @@ namespace mcc::engine {
     SetState(&check_, this);
     uv_check_init(loop, &check_);
     uv_check_start(&check_, &OnCheck);
-
-    SetState(&on_shutdown_, this);
-    uv_async_init(loop, &on_shutdown_, &OnShutdown);
   }
 
   void TickState::OnRenderTick(const render::RenderTimer::Tick& tick) {
@@ -64,8 +60,7 @@ namespace mcc::engine {
     engine->DoPostTick();
   }
 
-  void TickState::OnShutdown(uv_async_t* handle) {
-    const auto state = GetState(handle);
+  void TickState::OnShutdown(TickState* state) {
     const auto loop = state->engine()->GetLoop();
     uv_idle_stop(&state->idle_);
     uv_prepare_stop(&state->prepare_);
@@ -84,7 +79,7 @@ namespace mcc::engine {
   }
 
   void TickState::Shutdown() {
-    uv_async_send(&on_shutdown_);
+    on_shutdown_();
   }
 
   void TerminatedState::Apply() {

@@ -5,6 +5,7 @@
 #include <functional>
 #include <glog/logging.h>
 
+#include "mcc/common.h"
 #include "mcc/relaxed_atomic.h"
 
 namespace mcc::uv {
@@ -167,6 +168,69 @@ namespace mcc::uv {
   Now() {
     return uv_hrtime();
   }
+
+  template<typename H, typename D>
+  static inline void
+  SetHandleData(H* handle, const D* data) {
+    return uv_handle_set_data((uv_handle_t*) handle, (void*) data);
+  }
+
+  template<typename H, typename D>
+  static inline void
+  SetHandleData(H& handle, const D* data) {
+    return SetHandleData<H>(&handle, data);
+  }
+
+  template<typename D, typename H>
+  static inline D*
+  GetHandleData(const H* handle) {
+    return (D*) uv_handle_get_data((uv_handle_t*) handle);
+  }
+
+  template<typename D>
+  class AsyncHandle {
+  public:
+    typedef std::function<void(D*)> Callback;
+  private:
+    static inline void
+    OnCall(uv_async_t* handle) {
+      const auto async = GetHandleData<AsyncHandle>(handle);
+      async->callback_(async->GetData());
+    }
+  protected:
+    uv_async_t handle_;
+    Callback callback_;
+    uword data_;
+  public:
+    AsyncHandle(uv_loop_t* loop,
+                const Callback& callback,
+                const uword data = 0):
+      handle_(),
+      callback_(callback),
+      data_((uword) data) {
+      const auto err = uv_async_init(loop, &handle_, OnCall);
+      LOG_IF(ERROR, err != UV_OK) << "uv_async_init failed: " << uv_strerror(err);
+    }
+    AsyncHandle(uv_loop_t* loop,
+                const Callback& callback,
+                const D* data = 0):
+      AsyncHandle(loop, callback, (uword) data) {
+    }
+    ~AsyncHandle() = default; //TODO: remove async handle from loop?
+
+    D* GetData() const {
+      return (D*) data_;
+    }
+
+    inline void Call() {
+      const auto err = uv_async_send(&handle_);
+      LOG_IF(ERROR, err != UV_OK) << "uv_async_send failed: " << uv_strerror(err);
+    }
+
+    void operator() () {
+      return Call();
+    }
+  };
 }
 
 #endif //MCC_UV_UTILS_H
