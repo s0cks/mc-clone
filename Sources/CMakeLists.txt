@@ -81,7 +81,6 @@ add_library(${PROJECT_NAME}
   mcc/camera/camera_ortho.h mcc/camera/camera_ortho.cc
 # Render
   mcc/renderer/render_events.h mcc/renderer/render_events.cc
-  mcc/renderer/render_timer.h mcc/renderer/render_timer.cc
   mcc/renderer/projection_matrix.h mcc/renderer/projection_matrix.cc
   mcc/renderer/render_pass.h mcc/renderer/render_pass.cc
   mcc/renderer/render_pass_2d.h mcc/renderer/render_pass_2d.cc
