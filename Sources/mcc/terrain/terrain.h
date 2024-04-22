@@ -6,8 +6,8 @@
 
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
-#include "mcc/vao.h"
 #include "mcc/common.h"
+#include "mcc/vao/vao.h"
 #include "mcc/material/material.h"
 #include "mcc/terrain/terrain_chunk.h"
 
@@ -34,7 +34,7 @@ namespace mcc::terrain {
     static void SetChunk(TerrainChunk* chunk);
   public:
     static void Init();
-    static VertexArrayObject GetVao();
+    static Vao* GetVao();
     static TerrainVertexBuffer GetVbo();
     static IndexBuffer GetIbo();
     static TerrainChunk* GetChunk();

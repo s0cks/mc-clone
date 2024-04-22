@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "mcc/gfx.h"
-#include "mcc/vao.h"
+#include "mcc/vao/vao.h"
 #include "mcc/uri.h"
 #include "mcc/pipeline.h"
 #include "mcc/index_buffer.h"
@@ -95,7 +95,7 @@ namespace mcc::d2 {
 
   class Mesh {
   protected:
-    Vao vao;
+    Vao* vao;
     VertexBuffer vbo;
   public:
     Mesh(const Vertex* vertices, const uint64_t num_vertices);

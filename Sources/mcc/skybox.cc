@@ -7,12 +7,12 @@
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::skybox {
-  static Vao kSkyboxVao;
+  static Vao* kSkyboxVao;
   static ThreadLocal<Skybox> skybox_;
   static rxsub::subject<Skybox*> skybox_subject_;
 
   void Skybox::OnPostInit() {
-    kSkyboxVao = VertexArrayObject::New();
+    kSkyboxVao = Vao::New();
     SetSkybox(Skybox::New(CubeMap::New("space_nebulas"), Program::New("skybox")));
   }
 
@@ -81,7 +81,7 @@ namespace mcc::skybox {
   }
 
   Skybox* Skybox::New(TextureRef texture, ProgramRef shader) {
-    VertexArrayObjectScope scope(kSkyboxVao);
+    VaoBindScope scope(kSkyboxVao);
     return new Skybox(texture, shader);
   }
 

@@ -4,11 +4,13 @@
 #include "mcc/terrain/terrain_flags.h"
 #include "mcc/renderer/renderer.h"
 
+#include "mcc/vao/vao_scope.h"
+
 namespace mcc::terrain {
-  static Vao kTerrainVao;
+  static Vao* kTerrainVao;
 
   TerrainChunk* TerrainChunk::New(const VertexList& vertices, const IndexList& indices) {
-    VertexArrayObjectScope scope(kTerrainVao);
+    VaoBindScope scope(kTerrainVao);
     return new TerrainChunk(vertices, indices);
   }
 
@@ -76,7 +78,7 @@ namespace mcc::terrain {
     VLOG(1) << "generated " << indices.size() << " indices.";
     VLOG(10) << "terrain indices: " <<  indices;
 
-    kTerrainVao = VertexArrayObject::New();
+    kTerrainVao = Vao::New();
     Terrain::SetChunk(TerrainChunk::New(vertices, indices));
   }
 
@@ -87,7 +89,7 @@ namespace mcc::terrain {
   }
 
   void TerrainChunk::Render() {
-    VertexArrayObjectScope vao(kTerrainVao);
+    VaoBindScope vao(kTerrainVao);
     TerrainVertexBufferScope vbo(vbo_);
     TerrainVertexBuffer::PositionAttribute::Enable();
     TerrainVertexBuffer::UvAttribute::Enable();

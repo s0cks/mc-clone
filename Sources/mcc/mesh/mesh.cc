@@ -5,6 +5,8 @@
 #include "mcc/engine/engine.h"
 #include "mcc/mesh/mesh_loader.h"
 
+#include "mcc/vao/vao_scope.h"
+
 namespace mcc::mesh {
 #define FOR_EACH_BUILTIN_MESH(V) \
   V(UVSphere)                    \
@@ -32,13 +34,20 @@ namespace mcc::mesh {
     }
   }
 
-  static Vao kBuiltinVaos[kTotalNumberOfBuiltinVaos];
+  static Vao* kBuiltinVaos[kTotalNumberOfBuiltinVaos];
 
   void Mesh::InitializeBuiltinVaos() {
     DLOG(INFO) << "initializing builtin vaos....";
-    for(auto idx = 0; idx < kTotalNumberOfBuiltinVaos; idx++) {
-      kBuiltinVaos[idx] = VertexArrayObject::New();
-    }
+
+    int idx = 0;
+    vao::GenerateVaoId(kTotalNumberOfBuiltinVaos)
+      .filter(vao::IsValidVaoId)
+      .map([](VaoId id) {
+        return Vao::New(id);
+      })
+      .subscribe([&idx](Vao* vao) {
+        kBuiltinVaos[idx++] = vao;
+      });
   }
 
 #define BUILTIN_VAO(Name) kBuiltinVaos[k##Name##Vao]
@@ -55,7 +64,7 @@ namespace mcc::mesh {
   }
   
   void Mesh::Render() {
-    VertexArrayObjectScope vao(vao_);
+    VaoBindScope vao(vao_);
     vbo_.Bind();
     VertexBuffer::PositionAttribute::Bind();
     VertexBuffer::NormalAttribute::Bind();
@@ -76,7 +85,7 @@ namespace mcc::mesh {
   }
 
   void IndexedMesh::Render() {
-    VertexArrayObjectScope vao(vao_);
+    VaoBindScope vao(vao_);
     vbo_.Bind();
     // pos
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*) 0);
@@ -118,13 +127,13 @@ namespace mcc::mesh {
     return ss.str();
   }
 
-  Mesh* NewMesh(const Vao& vao, const VertexList& vertices) {
-    VertexArrayObjectScope scope(vao);
+  Mesh* NewMesh(Vao* vao, const VertexList& vertices) {
+    VaoBindScope scope(vao);
     return new Mesh(vao, vertices);
   }
 
-  Mesh* NewMesh(const Vao& vao, const VertexList& vertices, const u32::IndexList& indices) {
-    VertexArrayObjectScope scope(vao);
+  Mesh* NewMesh(Vao* vao, const VertexList& vertices, const u32::IndexList& indices) {
+    VaoBindScope scope(vao);
     return new IndexedMesh(vao, vertices, indices);
   }
 
@@ -516,7 +525,7 @@ namespace mcc::mesh {
 
   Mesh* LoadFrom(const std::string& filename) {
     //TODO: fix Vao allocation
-    ObjMeshLoader loader(VertexArrayObject::New(), FLAGS_resources + "/meshes" + filename);
+    ObjMeshLoader loader(vao::Vao::New(), FLAGS_resources + "/meshes" + filename);
     return loader.LoadMesh();
   }
 }

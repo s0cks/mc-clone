@@ -36,7 +36,6 @@ add_library(${PROJECT_NAME}
   mcc/material/material_json.h mcc/material/material_json.cc
   mcc/material/material_loader.h mcc/material/material_loader.cc
   mcc/gfx.h
-  mcc/vao.h
   mcc/buffer_object.h
   mcc/index_buffer.h
   mcc/uniform_buffer.h
@@ -106,6 +105,10 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_state_tick.h mcc/engine/engine_state_tick.cc
   mcc/engine/engine_state_terminated.h mcc/engine/engine_state_terminated.cc
   mcc/engine/engine_ticker.h mcc/engine/engine_ticker.cc
+# VAO
+  mcc/vao/vao.h mcc/vao/vao.cc
+  mcc/vao/vao_id.h
+  mcc/vao/vao_scope.h
 # Program
   mcc/program/program_document.h
   mcc/program/program_events.h mcc/program/program_events.cc
@@ -216,9 +219,7 @@ add_library(${PROJECT_NAME}
   mcc/event.h
   mcc/state_machine.h
   mcc/bitset.h
-  mcc/uri.h mcc/uri.cc
-  mcc/particle/particle.h mcc/particle/particle.cc
-  mcc/particle/particles.h mcc/particle/particles.cc)
+  mcc/uri.h mcc/uri.cc)
 # add_dependencies(${PROJECT_NAME} fbschemas)
 target_link_libraries(${PROJECT_NAME}
   Threads::Threads

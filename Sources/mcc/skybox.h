@@ -5,13 +5,15 @@
 
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
-#include "mcc/vao.h"
+#include "mcc/vao/vao.h"
 #include "mcc/vertex/vertex_buffer.h"
 
 #include "mcc/program/program.h"
 #include "mcc/texture/texture.h"
 
 #include "mcc/pipeline.h"
+
+#include "mcc/vao/vao_scope.h"
 
 namespace mcc {
   namespace skybox {
@@ -73,7 +75,7 @@ namespace mcc {
     DEFINE_RESOURCE_SCOPE(VertexBuffer);
 
     struct Skybox {
-      Vao vao;
+      Vao* vao;
       VertexBuffer vbo;
       TextureRef texture;
       ProgramRef shader;
@@ -116,7 +118,7 @@ namespace mcc {
         //   shader->SetInt("tex", 0);
         // }));
         AddChild(new ApplyPipeline([this]() {
-          VertexArrayObjectScope scope(skybox_->vao);
+          VaoBindScope scope(skybox_->vao);
           glDrawArrays(GL_TRIANGLES, 0, skybox_->vbo.length());
           CHECK_GL(FATAL);
         }));
