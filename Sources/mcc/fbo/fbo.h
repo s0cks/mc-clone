@@ -54,6 +54,19 @@ namespace mcc {
       }
       FOR_EACH_FBO_EVENT(DEFINE_ON_FBO_EVENT)
 #undef DEFINE_ON_FBO_EVENT
+    private:
+      static void PublishEvent(FboEvent* event);
+
+      template<typename E, typename... Args>
+      static inline void
+      PublishEvent(Fbo* fbo, Args... args) {
+        E event(fbo, args...);
+        return PublishEvent(&event);
+      }
+
+      static Fbo* New(const FboId id);
+    public:
+      static Fbo* New();
     };
   }
   using fbo::Fbo;

@@ -14,4 +14,29 @@ namespace mcc::fbo {
             && event->GetFboId() == id;
       });
   }
+
+  void Fbo::Destroy() {
+    
+  }
+
+  std::string Fbo::ToString() const {
+    std::stringstream ss;
+    ss << "Fbo(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
+  }
+
+  Fbo* Fbo::New(const FboId id) {
+    const auto fbo = new Fbo(id);
+    MCC_ASSERT(fbo);
+    PublishEvent<FboCreatedEvent>(fbo);
+    return fbo;
+  }
+
+  void Fbo::PublishEvent(FboEvent* event) {
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    return subscriber.on_next(event);
+  }
 }
