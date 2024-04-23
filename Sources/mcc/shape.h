@@ -28,6 +28,14 @@ namespace mcc {
         .pos = bottomRight,
         .color = color,
       });
+      // vertices.push_back(Vertex {
+      //   .pos = topLeft,
+      //   .color = color,
+      // });
+      // vertices.push_back(Vertex {
+      //   .pos = bottomRight,
+      //   .color = color,
+      // });
       vertices.push_back(Vertex {
         .pos = topRight,
         .color = color,

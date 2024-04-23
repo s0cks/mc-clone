@@ -106,7 +106,10 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_ticker.h mcc/engine/engine_ticker.cc
 # IBO
   mcc/ibo/ibo_id.h
+  mcc/ibo/ibo_index.h
   mcc/ibo/ibo_events.h mcc/ibo/ibo_events.cc
+  mcc/ibo/ibo.h mcc/ibo/ibo.cc
+  mcc/ibo/ibo_builder.h mcc/ibo/ibo_builder.cc
   mcc/ibo/index_buffer.h mcc/ibo/index_buffer.cc
 # VAO
   mcc/vao/vao.h mcc/vao/vao.cc

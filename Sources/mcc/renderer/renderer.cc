@@ -66,7 +66,7 @@ namespace mcc::render {
     const auto apply_shader = program::ApplyProgramPipeline::New("colored_2d", [projection](const ProgramRef& shader) {
       shader->SetMat4("projection", projection);
     });
-    return new d2::RenderMeshPipeline(mesh);
+    return new d2::RenderMeshPipeline(mesh, apply_shader);
   }
 
   class RendererPipeline : public Pipeline {

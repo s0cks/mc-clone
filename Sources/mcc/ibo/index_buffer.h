@@ -5,6 +5,7 @@
 
 #include "mcc/ibo/ibo_id.h"
 #include "mcc/ibo/ibo_events.h"
+#include "mcc/ibo/ibo_builder.h"
 
 namespace mcc {
   class IndexBufferObject : public BufferObjectTemplate<kIndex> {
@@ -56,7 +57,7 @@ namespace mcc {
 
     void BufferData(const Index* indices, const uint64_t num_indices) {
       DLOG_IF(ERROR, num_indices == 0) << "creating IndexBufferObject w/ 0 indices.";
-      glBufferData(target(), num_indices * kIndexSize, &indices[0], Usage);
+      glBufferData(target(), size(), &indices[0], Usage);
       CHECK_GL(FATAL);
     }
 

@@ -32,7 +32,7 @@ namespace mcc::d2 {
     }
 
     void Draw(const GLenum mode) {
-      glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
+      glDrawElements(mode, ibo_.length(), ibo_.type(), 0);
       CHECK_GL(FATAL);
     }
   };
