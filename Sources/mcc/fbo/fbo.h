@@ -7,6 +7,7 @@
 namespace mcc {
   namespace fbo {
     rx::observable<FboEvent*> OnFboEvent();
+    rx::observable<FboEvent*> OnFboEvent(const FboId id);
 
 #define DEFINE_ON_FBO_EVENT(Name)                                   \
     static inline rx::observable<Name##Event*>                      \
@@ -41,18 +42,19 @@ namespace mcc {
         return id_;
       }
 
-      rx::observable<FboEvent*> OnEvent() const;
+      inline rx::observable<FboEvent*>
+      OnEvent() const {
+        return fbo::OnFboEvent(GetId());
+      }
 
+#define DEFINE_ON_FBO_EVENT(Name)               \
+      inline rx::observable<Name##Event*>       \
+      On##Name##Event() const {                 \
+        return fbo::On##Name##Event(GetId());   \
+      }
+      FOR_EACH_FBO_EVENT(DEFINE_ON_FBO_EVENT)
+#undef DEFINE_ON_FBO_EVENT
     };
-
-    static inline rx::observable<FboEvent*>
-    OnFboEvent(const FboId id) {
-      return OnFboEvent()
-        .filter([id](FboEvent* event) {
-          return event
-              && event->GetFboId() == id;
-        });
-    }
   }
   using fbo::Fbo;
 }
