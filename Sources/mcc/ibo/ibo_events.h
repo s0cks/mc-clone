@@ -13,20 +13,24 @@ namespace mcc::ibo {
   FOR_EACH_IBO_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
+  class Ibo;
   class IboEvent : public Event {
   protected:
-    IboId id_;
+    const Ibo* ibo_;
 
-    explicit IboEvent(const IboId id):
+    explicit IboEvent(const Ibo* ibo):
       Event(),
-      id_(id) {
+      ibo_(ibo) {
+      MCC_ASSERT(ibo);
     }
   public:
     ~IboEvent() override = default;
 
-    IboId GetIboId() const {
-      return id_;
+    const Ibo* GetIbo() const {
+      return ibo_;
     }
+
+    IboId GetIboId() const;
 
 #define DEFINE_TYPE_CHECK(Name)                                       \
     virtual Name##Event* As##Name##Event() { return nullptr; }        \
@@ -62,8 +66,8 @@ namespace mcc::ibo {
 
   class IboCreatedEvent : public IboEvent {
   public:
-    explicit IboCreatedEvent(const IboId id):
-      IboEvent(id) {
+    explicit IboCreatedEvent(const Ibo* ibo):
+      IboEvent(ibo) {
     }
     ~IboCreatedEvent() override = default;
 
@@ -72,8 +76,8 @@ namespace mcc::ibo {
 
   class IboDestroyedEvent : public IboEvent {
   public:
-    explicit IboDestroyedEvent(const IboId id):
-      IboEvent(id) {
+    explicit IboDestroyedEvent(const Ibo* ibo):
+      IboEvent(ibo) {
     }
     ~IboDestroyedEvent() override = default;
 

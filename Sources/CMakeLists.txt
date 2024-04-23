@@ -112,6 +112,7 @@ add_library(${PROJECT_NAME}
   mcc/ibo/ibo.h mcc/ibo/ibo.cc
   mcc/ibo/ibo_factory.h mcc/ibo/ibo_factory.cc
   mcc/ibo/ibo_scope.h
+  mcc/ibo/ibo_registry.h mcc/ibo/ibo_registry.cc
 # VAO
   mcc/vao/vao.h mcc/vao/vao.cc
   mcc/vao/vao_id.h

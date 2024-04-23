@@ -2,12 +2,13 @@
 
 #include <sstream>
 #include "mcc/ibo/ibo_factory.h"
+#include "mcc/ibo/ibo_registry.h"
 
 namespace mcc::ibo {
   static rx::subject<IboEvent*> events_;
-  static std::set<Ibo*, Ibo::IdComparator> ibos_;
+  static IboRegistry registry_(events_.get_observable());
 
-  void Ibo::Publish(IboEvent* event) {
+  void Ibo::PublishEvent(IboEvent* event) {
     MCC_ASSERT(event);
     const auto& subscriber = events_.get_subscriber();
     return subscriber.on_next(event);
@@ -22,8 +23,8 @@ namespace mcc::ibo {
     return events_.get_observable();
   }
 
-  rx::observable<Ibo*> GetRegisteredIbos() {
-    return rx::observable<>::iterate(ibos_);
+  const IboRegistry& GetRegistry() {
+    return registry_;
   }
 
   void Ibo::Destroy() {

@@ -8,6 +8,7 @@
 #include "mcc/ibo/ibo_type.h"
 #include "mcc/ibo/ibo_usage.h"
 #include "mcc/ibo/ibo_events.h"
+#include "mcc/ibo/ibo_registry.h"
 
 namespace mcc {
   namespace ibo {
@@ -31,11 +32,18 @@ namespace mcc {
     FOR_EACH_IBO_EVENT(DEFINE_ON_IBO_EVENT)
 #undef DEFINE_ON_IBO_EVENT
 
+    class UByteIbo;
+    class UShortIbo;
+    class UIntIbo;
     class IboScope;
     class Ibo {
       friend class IboScope;
     public:
       struct IdComparator {
+        bool operator() (const Ibo* lhs, const Ibo* rhs) const {
+          return lhs->GetId() < rhs->GetId();
+        }
+
         bool operator() (Ibo* lhs, Ibo* rhs) const {
           return lhs->GetId() < rhs->GetId();
         }
@@ -58,13 +66,13 @@ namespace mcc {
         kNumberOfDrawModes = 12,
       };
     private:
-      static void Publish(IboEvent* event);
+      static void PublishEvent(IboEvent* event);
 
       template<typename E, typename... Args>
-      static void
-      Publish(Args... args) {
-        E event(args...);
-        return Publish((IboEvent*) &event);
+      static inline void
+      PublishEvent(Ibo* ibo, Args... args) {
+        E event(ibo, args...);
+        return PublishEvent((IboEvent*) &event);
       }
 
       static void BindIbo(const IboId id);
@@ -72,6 +80,12 @@ namespace mcc {
       static inline void
       BindDefaultIbo() {
         return BindIbo(kDefaultIboId);
+      }
+
+      template<typename E, typename... Args>
+      inline void
+      Publish(Args... args) {
+        return PublishEvent<E>(this, args...);
       }
     protected:
       IboId id_;
@@ -84,13 +98,13 @@ namespace mcc {
         id_(id),
         usage_(usage),
         length_(length) {
-        Publish<IboCreatedEvent>(GetId());
+        Publish<IboCreatedEvent>();
       }
 
       void Destroy();
     public:
       virtual ~Ibo() {
-        Publish<IboDestroyedEvent>(GetId());
+        Publish<IboDestroyedEvent>();
       }
       virtual std::string ToString() const = 0;
       virtual uint64_t GetSize() const = 0;
@@ -160,6 +174,12 @@ namespace mcc {
       GetGlType() {
         return T::GetGlType();
       }
+
+      static inline bool
+      Filter(const Ibo* ibo) {
+        return ibo
+            && ibo->GetType() == GetGlType();
+      }
     protected:
       IboTemplate(const IboId id,
                   const Usage usage,
@@ -210,6 +230,13 @@ namespace mcc {
         return new UByteIbo(id, usage, length);
       }
     public:
+      static inline const UByteIbo*
+      Cast(const Ibo* ibo) {
+        MCC_ASSERT(ibo);
+        MCC_ASSERT(Filter(ibo));
+        return (const UByteIbo*) ibo;
+      }
+
       static UByteIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
       
       static inline UByteIbo*
@@ -246,6 +273,13 @@ namespace mcc {
         return new UShortIbo(id, usage, length);
       }
     public:
+      static inline const UShortIbo*
+      Cast(const Ibo* ibo) {
+        MCC_ASSERT(ibo);
+        MCC_ASSERT(Filter(ibo));
+        return (const UShortIbo*) ibo;
+      }
+
       static UShortIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
       
       static inline UShortIbo*
@@ -282,6 +316,13 @@ namespace mcc {
         return new UIntIbo(id, usage, length);
       }
     public:
+      static inline const UIntIbo*
+      Cast(const Ibo* ibo) {
+        MCC_ASSERT(ibo);
+        MCC_ASSERT(Filter(ibo));
+        return (const UIntIbo*) ibo;
+      }
+
       static UIntIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
       
       static inline UIntIbo*
@@ -302,13 +343,7 @@ namespace mcc {
 #undef DEFINE_NEW_USAGE
     };
 
-    static inline rx::observable<IboId>
-    GetRegisteredIboIds() {
-      return GetRegisteredIbos()
-        .map([](Ibo* ibo) {
-          return ibo->GetId();
-        });
-    }
+    const IboRegistry& GetRegistry();
   }
   using ibo::Ibo;
   using ibo::UByteIbo;
