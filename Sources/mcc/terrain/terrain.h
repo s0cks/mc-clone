@@ -34,9 +34,6 @@ namespace mcc::terrain {
     static void SetChunk(TerrainChunk* chunk);
   public:
     static void Init();
-    static Vao* GetVao();
-    static TerrainVertexBuffer GetVbo();
-    static IndexBuffer GetIbo();
     static TerrainChunk* GetChunk();
     static MaterialRef GetTerrainMaterial();
     static std::string GetTerrainMaterialName();

@@ -10,6 +10,8 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mesh/test_mesh.h mcc/mesh/test_mesh.cc
   mcc/mock_gl.h mcc/mock_gl.cc
   mcc/mock_subscription.h
+# IBOs
+  mcc/ibo/test_ibo_factory.cc
 # Shaders
   mcc/shader/test_program_linker.cc
   mcc/shader/test_shader_compiler.cc

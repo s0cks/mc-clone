@@ -4,8 +4,8 @@
 #include "mcc/mesh/mesh.h"
 #include "mcc/engine/engine.h"
 #include "mcc/mesh/mesh_loader.h"
-
 #include "mcc/vao/vao_scope.h"
+#include "mcc/ibo/ibo_scope.h"
 
 namespace mcc::mesh {
 #define FOR_EACH_BUILTIN_MESH(V) \
@@ -110,11 +110,9 @@ namespace mcc::mesh {
     CHECK_GL(FATAL);
     glEnableVertexAttribArray(3);
     CHECK_GL(FATAL);
-    ibo_.Bind();
-    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), 0);
-    CHECK_GL(FATAL);
-    ibo_.Unbind();
-    vbo_.Unbind();
+
+    ibo::IboDrawScope ibo_scope(ibo_);
+    ibo_scope.Draw(Ibo::kTriangles);
   }
 
   std::string IndexedMesh::ToString() const {
@@ -132,7 +130,7 @@ namespace mcc::mesh {
     return new Mesh(vao, vertices);
   }
 
-  Mesh* NewMesh(Vao* vao, const VertexList& vertices, const u32::IndexList& indices) {
+  Mesh* NewMesh(Vao* vao, const VertexList& vertices, const UIntIbo::IndexList& indices) {
     VaoBindScope scope(vao);
     return new IndexedMesh(vao, vertices, indices);
   }
@@ -151,7 +149,7 @@ namespace mcc::mesh {
     VertexList vertices;
     vertices.reserve(total_vertices);
 
-    u32::IndexList indices;
+    UIntIbo::IndexList indices;
     indices.reserve(total_indices);
 
     uint64_t vertex, index;
@@ -225,7 +223,7 @@ namespace mcc::mesh {
       }
     }
 
-    u32::IndexList indices;
+    UIntIbo::IndexList indices;
     for(auto v = 0; v < total_vertices - ySize - 2; v++) {
       if((v + 1) % (ySize + 1) == 0)
         v++;
@@ -261,7 +259,7 @@ namespace mcc::mesh {
       }
     }
 
-    u32::IndexList indices;
+    UIntIbo::IndexList indices;
     for(auto v = 0; v < total_vertices - zSize - 2; v++) {
       if((v + 1) % (zSize + 1) == 0)
         v++;
@@ -360,7 +358,7 @@ namespace mcc::mesh {
     VertexList vertices;
     vertices.reserve(total_vertices);
 
-    u32::IndexList indices;
+    UIntIbo::IndexList indices;
     indices.reserve(total_indices);
 
     for(auto i = 0; i < kIcoVertexCount; i++) {
@@ -498,7 +496,7 @@ namespace mcc::mesh {
     { .pos = glm::vec3(-1.0f, -1.0f,  1.0f),  .uv = kBottomLeft,    .normal = kFrontNormal,   .color = kYellow, },
   };
 
-  static const u32::IndexList kCubeIndices = {
+  static const UIntIbo::IndexList kCubeIndices = {
     // Bottom face
     0, 1, 2, 
     3, 4, 5,

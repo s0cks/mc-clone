@@ -7,10 +7,10 @@
 
 #include <vector>
 #include "mcc/gfx.h"
-#include "mcc/vao/vao.h"
 #include "mcc/uri.h"
+#include "mcc/vao/vao.h"
+#include "mcc/ibo/ibo.h"
 #include "mcc/pipeline.h"
-#include "mcc/ibo/index_buffer.h"
 #include "mcc/vertex/vertex_buffer.h"
 #include "mcc/program/program_pipeline.h"
 
@@ -117,15 +117,15 @@ namespace mcc::d2 {
   class IndexedMesh : public Mesh {
     friend class Mesh;
   protected:
-    u32::IndexBuffer ibo_;
+    Ibo* ibo_;
   public:
     IndexedMesh(const Vertex* vertices, const uint64_t num_vertices,
-                const uint32_t* indices, const uint64_t num_indices):
+                const UIntIbo::Index* indices, const uint64_t num_indices):
       Mesh(vertices, num_vertices),
-      ibo_(indices, num_indices) {
+      ibo_(UIntIbo::New(indices, num_indices, ibo::kDynamicRead)) {
     }
     explicit IndexedMesh(const VertexList& vertices,
-                         const u32::IndexList& indices):
+                         const UIntIbo::IndexList& indices):
       IndexedMesh(&vertices[0], vertices.size(), &indices[0], indices.size()) {
     }
     virtual ~IndexedMesh() = default;
@@ -167,7 +167,7 @@ namespace mcc::d2 {
   };
 
   Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices);
-  Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices, const u32::Index* indices, const uint64_t num_indices);
+  Mesh* NewMesh(const Vertex* vertices, const uint64_t num_vertices, const UIntIbo::Index* indices, const uint64_t num_indices);
 
   static inline Mesh*
   NewMesh(const VertexList& vertices) {
@@ -175,7 +175,7 @@ namespace mcc::d2 {
   }
 
   static inline Mesh*
-  NewMesh(const VertexList& vertices, const u32::IndexList& indices) {
+  NewMesh(const VertexList& vertices, const UIntIbo::IndexList& indices) {
     return NewMesh(&vertices[0], vertices.size(), &indices[0], indices.size());
   }
 }

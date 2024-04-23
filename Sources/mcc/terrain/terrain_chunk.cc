@@ -5,6 +5,7 @@
 #include "mcc/renderer/renderer.h"
 
 #include "mcc/vao/vao_scope.h"
+#include "mcc/ibo/ibo_scope.h"
 
 namespace mcc::terrain {
   static Vao* kTerrainVao;
@@ -94,9 +95,9 @@ namespace mcc::terrain {
     TerrainVertexBuffer::PositionAttribute::Enable();
     TerrainVertexBuffer::UvAttribute::Enable();
     TerrainVertexBuffer::ColorAttribute::Enable();
-    IndexBufferScope ibo(ibo_);
-    glDrawElements(GL_TRIANGLES, ibo_.length(), ibo_.type(), (const GLvoid*) 0);
-    CHECK_GL(FATAL);
+
+    ibo::IboDrawScope ibo(ibo_);
+    ibo.Draw(Ibo::kTriangles);
   }
 
   class ApplyTerrainMaterialPipeline : public ApplyMaterialPipeline {

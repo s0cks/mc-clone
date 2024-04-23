@@ -4,9 +4,9 @@
 #include <cstdio>
 #include "mcc/gfx.h"
 #include "mcc/parser.h"
+#include "mcc/ibo/ibo.h"
 #include "mcc/platform.h"
 #include "mcc/mesh/vertex.h"
-#include "mcc/ibo/index_buffer.h"
 
 namespace mcc {
 #define FOR_EACH_OBJ_FILE_TOKEN_KEYWORD(V) \

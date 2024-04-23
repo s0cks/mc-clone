@@ -8,18 +8,33 @@ namespace mcc::ibo {
   public:
     typedef GLubyte Type;
     typedef std::vector<Type> List;
+
+    static inline constexpr const char*
+    GetName() {
+      return "UnsignedByte";
+    }
   };
 
   class UnsignedShortIndex {
   public:
     typedef GLushort Type;
     typedef std::vector<Type> List;
+
+    static inline constexpr const char*
+    GetName() {
+      return "UnsignedShort";
+    }
   };
 
   class UnsignedIntIndex {
   public:
     typedef GLuint Type;
     typedef std::vector<Type> List;
+
+    static inline constexpr const char*
+    GetName() {
+      return "UnsignedInt";
+    }
   };
 }
 

@@ -2,8 +2,8 @@
 #define MCC_TERRAIN_VERTEX_H
 
 #include "mcc/gfx.h"
+#include "mcc/ibo/ibo.h"
 #include "mcc/vertex/vertex_buffer.h"
-#include "mcc/ibo/index_buffer.h"
 
 namespace mcc::terrain {
   struct Vertex {
@@ -93,30 +93,6 @@ namespace mcc::terrain {
     stream << ")";
     return stream;
   }
-
-  class IndexBuffer : public IndexBufferTemplate<Index, GL_UNSIGNED_INT, mcc::kStaticUsage> {
-  public:
-    explicit IndexBuffer(const BufferObjectId id = kInvalidBufferObject):
-      IndexBufferTemplate(id) {
-    }
-    explicit IndexBuffer(const Index* indices, const uint64_t num_indices):
-      IndexBufferTemplate(indices, num_indices) {
-    }
-    explicit IndexBuffer(const IndexList& indices):
-      IndexBuffer(&indices[0], indices.size()) {
-    }
-    IndexBuffer(const IndexBuffer& rhs) = default;
-    ~IndexBuffer() override = default;
-    
-    void operator=(const IndexBuffer& rhs) {
-      IndexBufferTemplate::operator=(rhs);
-    }
-
-    void operator=(const BufferObjectId& rhs) {
-      BufferObject::operator=(rhs);
-    }
-  };
-  DEFINE_RESOURCE_SCOPE(IndexBuffer);
 }
 
 #endif //MCC_TERRAIN_VERTEX_H

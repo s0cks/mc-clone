@@ -3,18 +3,19 @@
 
 #include "mcc/gfx.h"
 #include "mcc/pipeline.h"
+#include "mcc/ibo/ibo.h"
 #include "mcc/terrain/terrain_vertex.h"
 
 namespace mcc::terrain {
   class TerrainChunk {
   protected:
     TerrainVertexBuffer vbo_;
-    IndexBuffer ibo_;
+    Ibo* ibo_;
 
     TerrainChunk(const VertexList& vertices, 
-                 const IndexList& indices):
+                 const UIntIbo::IndexList& indices):
       vbo_(vertices),
-      ibo_(indices) {
+      ibo_(UIntIbo::New(indices, ibo::kStaticDraw)) {
     }
 
     static void OnPreInit();
@@ -33,7 +34,7 @@ namespace mcc::terrain {
       return vbo_;
     }
 
-    IndexBuffer ibo() const {
+    const Ibo* ibo() const {
       return ibo_;
     }
   public:

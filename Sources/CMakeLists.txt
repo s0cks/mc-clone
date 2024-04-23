@@ -107,10 +107,11 @@ add_library(${PROJECT_NAME}
 # IBO
   mcc/ibo/ibo_id.h
   mcc/ibo/ibo_index.h
+  mcc/ibo/ibo_usage.h
   mcc/ibo/ibo_events.h mcc/ibo/ibo_events.cc
   mcc/ibo/ibo.h mcc/ibo/ibo.cc
-  mcc/ibo/ibo_builder.h mcc/ibo/ibo_builder.cc
-  mcc/ibo/index_buffer.h mcc/ibo/index_buffer.cc
+  mcc/ibo/ibo_factory.h mcc/ibo/ibo_factory.cc
+  mcc/ibo/ibo_scope.h
 # VAO
   mcc/vao/vao.h mcc/vao/vao.cc
   mcc/vao/vao_id.h

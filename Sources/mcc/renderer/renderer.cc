@@ -60,7 +60,7 @@ namespace mcc::render {
   CreateRenderQuadPipeline(const glm::mat4& projection, const glm::vec2& pos, const glm::vec2& size, const Color color) {
     const auto window = Window::Get();
     d2::VertexList vertices;
-    u32::IndexList indices;
+    UIntIbo::IndexList indices;
     shape::NewCenteredRect(vertices, indices, pos, size, color);
     const auto mesh = d2::NewMesh(vertices, indices);
     const auto apply_shader = program::ApplyProgramPipeline::New("colored_2d", [projection](const ProgramRef& shader) {

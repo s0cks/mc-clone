@@ -19,10 +19,11 @@ namespace mcc {
     GenerateIboId(const int num = 1) {
       return rx::observable<>::create<IboId>([num](rx::subscriber<IboId> s) {
         IboId ids[num];
-        glGenBuffers(num, ids);
+        glGenBuffers(num, &ids[0]);
+        CHECK_GL(FATAL);
         
         for(auto idx = 0; idx < num; idx++)
-          s.on_next(idx);
+          s.on_next(ids[idx]);
         s.on_completed();
       });
     }
