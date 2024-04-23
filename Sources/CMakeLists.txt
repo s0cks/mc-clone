@@ -176,6 +176,8 @@ add_library(${PROJECT_NAME}
   mcc/fbo/fbo_events.h mcc/fbo/fbo_events.cc
   mcc/fbo/fbo_factory.h mcc/fbo/fbo_factory.cc
   mcc/fbo/fbo_id.h
+  mcc/fbo/fbo_status.h
+  mcc/fbo/fbo_target.h
   mcc/fbo/fbo_attachment.h
   mcc/fbo/fbo_attachment_color.h mcc/fbo/fbo_attachment_color.cc
   mcc/fbo/fbo_attachment_depth.h mcc/fbo/fbo_attachment_depth.cc
