@@ -47,25 +47,34 @@ namespace mcc::ibo {
   }
 
   std::string UByteIbo::ToString() const {
+    using namespace units;
     std::stringstream ss;
     ss << "UByteIbo(";
     ss << "id=" << GetId();
+    ss << "length=" << GetLength() << ", ";
+    ss << "size=" << data::byte_t(GetSize());
     ss << ")";
     return ss.str();
   }
 
   std::string UShortIbo::ToString() const {
+    using namespace units;
     std::stringstream ss;
     ss << "UShortIbo(";
     ss << "id=" << GetId();
+    ss << "length=" << GetLength() << ", ";
+    ss << "size=" << data::byte_t(GetSize());
     ss << ")";
     return ss.str();
   }
 
   std::string UIntIbo::ToString() const {
+    using namespace units;
     std::stringstream ss;
     ss << "UIntIbo(";
-    ss << "id=" << GetId();
+    ss << "id=" << GetId() << ", ";
+    ss << "length=" << GetLength() << ", ";
+    ss << "size=" << data::byte_t(GetSize());
     ss << ")";
     return ss.str();
   }

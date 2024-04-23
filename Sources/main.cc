@@ -78,6 +78,14 @@ int main(int argc, char** argv) {
   // terrain::Terrain::Init();
   // camera::PerspectiveCameraComponent::Init();
 
+  ibo::OnIboCreatedEvent()
+    .subscribe([](ibo::IboCreatedEvent* event) {
+      DLOG(INFO) << "ibo created: " << event->GetIbo()->ToString();
+    });
+  ibo::OnIboDestroyedEvent()
+    .subscribe([](ibo::IboDestroyedEvent* event) {
+      DLOG(INFO) << "ibo destroyed: " << event->GetIbo()->ToString();
+    });
 
   const auto engine = engine::Engine::GetEngine();
   engine->OnPostInitEvent()

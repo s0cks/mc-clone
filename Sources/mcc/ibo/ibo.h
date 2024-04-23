@@ -38,6 +38,9 @@ namespace mcc {
     class IboScope;
     class Ibo {
       friend class IboScope;
+      friend class UByteIbo;
+      friend class UShortIbo;
+      friend class UIntIbo;
     public:
       struct IdComparator {
         bool operator() (const Ibo* lhs, const Ibo* rhs) const {
@@ -98,14 +101,11 @@ namespace mcc {
         id_(id),
         usage_(usage),
         length_(length) {
-        Publish<IboCreatedEvent>();
       }
 
       void Destroy();
     public:
-      virtual ~Ibo() {
-        Publish<IboDestroyedEvent>();
-      }
+      virtual ~Ibo() = default;
       virtual std::string ToString() const = 0;
       virtual uint64_t GetSize() const = 0;
       virtual GLenum GetType() const = 0;
@@ -227,7 +227,10 @@ namespace mcc {
     protected:
       static inline UByteIbo*
       New(const IboId id, const Usage usage, const uint64_t length) {
-        return new UByteIbo(id, usage, length);
+        const auto ibo = new UByteIbo(id, usage, length);
+        MCC_ASSERT(ibo);
+        PublishEvent<IboCreatedEvent>(ibo);
+        return ibo;
       }
     public:
       static inline const UByteIbo*
@@ -270,7 +273,10 @@ namespace mcc {
     protected:
       static inline UShortIbo*
       New(const IboId id, const Usage usage, const uint64_t length) {
-        return new UShortIbo(id, usage, length);
+        const auto ibo = new UShortIbo(id, usage, length);
+        MCC_ASSERT(ibo);
+        PublishEvent<IboCreatedEvent>(ibo);
+        return ibo;
       }
     public:
       static inline const UShortIbo*
@@ -313,7 +319,10 @@ namespace mcc {
     protected:
       static inline UIntIbo*
       New(const IboId id, const Usage usage, const uint64_t length) {
-        return new UIntIbo(id, usage, length);
+        const auto ibo = new UIntIbo(id, usage, length);
+        MCC_ASSERT(ibo);
+        PublishEvent<IboCreatedEvent>(ibo);
+        return ibo;
       }
     public:
       static inline const UIntIbo*
