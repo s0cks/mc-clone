@@ -2,14 +2,14 @@
 #define MCC_FRAMEBUFFER_EVENTS_H
 
 #include "mcc/event.h"
-#include "mcc/framebuffer/framebuffer_constants.h"
+#include "mcc/fbo/fbo_id.h"
 
-namespace mcc::framebuffer {
+namespace mcc::fbo {
 #define FOR_EACH_FRAMEBUFFER_EVENT(V) \
-  V(FrameBufferCreated)               \
-  V(FrameBufferDestroyed)
+  V(FboCreated)                       \
+  V(FboDestroyed)
 
-  class FrameBufferEvent;
+  class FboEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
   FOR_EACH_FRAMEBUFFER_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
@@ -19,31 +19,34 @@ namespace mcc::framebuffer {
     const char* GetName() const override { return #Name; }              \
     std::string ToString() const override;                              \
     static inline bool                                                  \
-    FilterBy(FrameBufferEvent* event) {                                 \
+    FilterBy(FboEvent* event) {                                         \
       MCC_ASSERT(event);                                                \
       return event->Is##Name##Event();                                  \
     }                                                                   \
     static inline Name##Event*                                          \
-    Cast(FrameBufferEvent* event) {                                     \
+    Cast(FboEvent* event) {                                             \
       MCC_ASSERT(event);                                                \
       MCC_ASSERT(event->Is##Name##Event());                             \
       return event->As##Name##Event();                                  \
     }
 
-  class FrameBufferEvent : public Event {
+  class Fbo;
+  class FboEvent : public Event {
   protected:
-    FrameBufferObjectId id_;
+    const Fbo* fbo_;
 
-    explicit FrameBufferEvent(const FrameBufferObjectId id):
+    explicit FboEvent(const Fbo* fbo):
       Event(),
-      id_(id) {
+      fbo_(fbo) {
     }
   public:
-    ~FrameBufferEvent() override = default;
+    ~FboEvent() override = default;
 
-    FrameBufferObjectId id() const {
-      return id_;
+    const Fbo* GetFbo() const {
+      return fbo_;
     }
+
+    FboId GetFboId() const;
 
 #define DEFINE_TYPE_CHECK(Name)                                           \
     virtual Name##Event* As##Name##Event() { return nullptr; }            \
@@ -52,22 +55,22 @@ namespace mcc::framebuffer {
 #undef DEFINE_TYPE_CHECK
   };
 
-  class FrameBufferCreatedEvent : public FrameBufferEvent {
+  class FboCreatedEvent : public FboEvent {
   public:
-    explicit FrameBufferCreatedEvent(const FrameBufferObjectId id):
-      FrameBufferEvent(id) {
+    explicit FboCreatedEvent(const Fbo* fbo):
+      FboEvent(fbo) {
     }
-    ~FrameBufferCreatedEvent() override = default;
-    DECLARE_FRAMEBUFFER_EVENT(FrameBufferCreated);
+    ~FboCreatedEvent() override = default;
+    DECLARE_FRAMEBUFFER_EVENT(FboCreated);
   };
 
-  class FrameBufferDestroyedEvent : public FrameBufferEvent {
+  class FboDestroyedEvent : public FboEvent {
   public:
-    explicit FrameBufferDestroyedEvent(const FrameBufferObjectId id):
-      FrameBufferEvent(id) {
+    explicit FboDestroyedEvent(const Fbo* fbo):
+      FboEvent(fbo) {
     }
-    ~FrameBufferDestroyedEvent() override = default;
-    DECLARE_FRAMEBUFFER_EVENT(FrameBufferDestroyed);
+    ~FboDestroyedEvent() override = default;
+    DECLARE_FRAMEBUFFER_EVENT(FboDestroyed);
   };
 }
 

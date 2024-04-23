@@ -172,16 +172,15 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_property.h
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
-# Framebuffer
-  mcc/framebuffer/framebuffer_events.h mcc/framebuffer/framebuffer_events.cc
-  mcc/framebuffer/framebuffer_factory.h mcc/framebuffer/framebuffer_factory.cc
-  mcc/framebuffer/framebuffer_constants.h
-  mcc/framebuffer/framebuffer_object.h mcc/framebuffer/framebuffer_object.cc
-  mcc/framebuffer/framebuffer_attachment.h
-  mcc/framebuffer/framebuffer_attachment_color.h mcc/framebuffer/framebuffer_attachment_color.cc
-  mcc/framebuffer/framebuffer_attachment_depth.h mcc/framebuffer/framebuffer_attachment_depth.cc
-  mcc/framebuffer/framebuffer_attachment_stencil.h mcc/framebuffer/framebuffer_attachment_stencil.cc
-  mcc/framebuffer/framebuffer.h mcc/framebuffer/framebuffer.cc
+# FBOs
+  mcc/fbo/fbo_events.h mcc/fbo/fbo_events.cc
+  mcc/fbo/fbo_factory.h mcc/fbo/fbo_factory.cc
+  mcc/fbo/fbo_id.h
+  mcc/fbo/fbo_attachment.h
+  mcc/fbo/fbo_attachment_color.h mcc/fbo/fbo_attachment_color.cc
+  mcc/fbo/fbo_attachment_depth.h mcc/fbo/fbo_attachment_depth.cc
+  mcc/fbo/fbo_attachment_stencil.h mcc/fbo/fbo_attachment_stencil.cc
+  mcc/fbo/fbo.h mcc/fbo/fbo.cc
 # Terrain
   mcc/terrain/terrain_flags.h
   mcc/terrain/terrain.h mcc/terrain/terrain.cc

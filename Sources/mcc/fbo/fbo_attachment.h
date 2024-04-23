@@ -1,22 +1,22 @@
-#ifndef MCC_FRAMEBUFFER_ATTACHMENT_H
-#define MCC_FRAMEBUFFER_ATTACHMENT_H
+#ifndef MCC_FBO_ATTACHMENT_H
+#define MCC_FBO_ATTACHMENT_H
 
 #include <vector>
 #include "mcc/texture/texture.h"
 
-namespace mcc::framebuffer {
-#define FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(V) \
+namespace mcc::fbo {
+#define FOR_EACH_FBO_ATTACHMENT_TYPE(V) \
   V(ColorBuffer)                                \
   V(RenderBuffer)                               \
   V(Picking)
 
 #define FORWARD_DECLARE(Name) class Name##Attachment;
-  FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(FORWARD_DECLARE)
+  FOR_EACH_FBO_ATTACHMENT_TYPE(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
   enum FrameBufferAttachmentType {
 #define DEFINE_TYPE(Name) k##Name##Attachment,
-    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE)
+    FOR_EACH_FBO_ATTACHMENT_TYPE(DEFINE_TYPE)
 #undef DEFINE_TYPE
     kNumberOfFrameBufferAttachmentTypes,
   };
@@ -50,26 +50,26 @@ namespace mcc::framebuffer {
 
 #define DEFINE_TYPE_CAST(Name) \
     virtual Name##Attachment* As##Name##Attachment() { return nullptr; }
-    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE_CAST)
+    FOR_EACH_FBO_ATTACHMENT_TYPE(DEFINE_TYPE_CAST)
 #undef DEFINE_TYPE_CAST
 
 #define DEFINE_TYPE_CHECK(Name) \
     inline bool Is##Name##Attachment() const { return type() == k##Name##Attachment; }
-    FOR_EACH_FRAMEBUFFER_ATTACHMENT_TYPE(DEFINE_TYPE_CHECK)
+    FOR_EACH_FBO_ATTACHMENT_TYPE(DEFINE_TYPE_CHECK)
 #undef DEFINE_TYPE_CHECK
   };
 
   typedef std::vector<FrameBufferAttachment*> FrameBufferAttachmentList;
 
-#define DEFINE_FRAMEBUFFER_ATTACHMENT(Name)                                                                     \
+#define DEFINE_FBO_ATTACHMENT(Name)                                                                     \
   public:                                                                                                       \
     const char* name() const override { return #Name; }                                                         \
     FrameBufferAttachmentType type() const override { return FrameBufferAttachmentType::k##Name##Attachment; }  \
     Name##Attachment* As##Name##Attachment() override { return this; }
 }
 
-#include "mcc/framebuffer/framebuffer_attachment_color.h"
-#include "mcc/framebuffer/framebuffer_attachment_depth.h"
-#include "mcc/framebuffer/framebuffer_attachment_stencil.h"
+#include "mcc/fbo/fbo_attachment_color.h"
+#include "mcc/fbo/fbo_attachment_depth.h"
+#include "mcc/fbo/fbo_attachment_stencil.h"
 
-#endif //MCC_FRAMEBUFFER_ATTACHMENT_H
+#endif //MCC_FBO_ATTACHMENT_H

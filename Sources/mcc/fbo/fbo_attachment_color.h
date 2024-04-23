@@ -1,13 +1,13 @@
-#ifndef MCC_FRAMEBUFFER_ATTACHMENT_H
-#error "Please #include <mcc/framebuffer/framebuffer_attachment.h> instead."
-#endif //MCC_FRAMEBUFFER_ATTACHMENT_H
+#ifndef MCC_FBO_ATTACHMENT_H
+#error "Please #include <mcc/fbo/fbo_attachment.h> instead."
+#endif //MCC_FBO_ATTACHMENT_H
 
-#ifndef MCC_FRAMEBUFFER_ATTACHMENT_COLOR_H
-#define MCC_FRAMEBUFFER_ATTACHMENT_COLOR_H
+#ifndef MCC_FBO_ATTACHMENT_COLOR_H
+#define MCC_FBO_ATTACHMENT_COLOR_H
 
-#include "mcc/framebuffer/framebuffer_attachment.h"
+#include "mcc/fbo/fbo_attachment.h"
 
-namespace mcc::framebuffer {
+namespace mcc::fbo {
   class ColorBufferAttachment : public FrameBufferAttachment {
   protected:
     TextureRef texture_;
@@ -18,7 +18,7 @@ namespace mcc::framebuffer {
     }
   public:
     ~ColorBufferAttachment() override = default;
-    DEFINE_FRAMEBUFFER_ATTACHMENT(ColorBuffer);
+    DEFINE_FBO_ATTACHMENT(ColorBuffer);
 
     TextureRef GetTexture() const {
       return texture_;
@@ -64,4 +64,4 @@ namespace mcc::framebuffer {
   };
 }
 
-#endif //MCC_FRAMEBUFFER_ATTACHMENT_COLOR_H
+#endif //MCC_FBO_ATTACHMENT_COLOR_H
