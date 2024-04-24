@@ -29,7 +29,7 @@ namespace mcc::vbo {
     CHECK_GL(FATAL);
   }
 
-  void Vbo::PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage) {
+  void Vbo::PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const VboUsage usage) {
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) num_bytes, bytes, usage);
     CHECK_GL(FATAL);
   }
@@ -49,5 +49,14 @@ namespace mcc::vbo {
     ss << "size=" << data::byte_t(GetSize());
     ss << ")";
     return ss.str();
+  }
+
+  Vbo* Vbo::New(const VboId id, const uint64_t length, const uint64_t vertex_size, const VboUsage usage) {
+    MCC_ASSERT(IsValidVboId(id));
+    MCC_ASSERT(length > 0);
+    MCC_ASSERT(vertex_size > 0);
+    const auto vbo = new Vbo(id, length, vertex_size, usage);
+    PublishEvent<VboCreatedEvent>(vbo);
+    return vbo;
   }
 }

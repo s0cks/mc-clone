@@ -15,7 +15,7 @@ namespace mcc::vbo {
   V(DynamicRead,  GL_DYNAMIC_READ)    \
   V(DynamicCopy,  GL_DYNAMIC_COPY)
 
-  enum Usage : GLenum {
+  enum VboUsage : GLenum {
 #define DEFINE_VBO_USAGE(Name, GlValue) k##Name = (GlValue),
     FOR_EACH_VBO_USAGE(DEFINE_VBO_USAGE)
 #undef DEFINE_VBO_USAGE

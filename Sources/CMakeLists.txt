@@ -107,7 +107,7 @@ add_library(${PROJECT_NAME}
 # VBOs
   mcc/vbo/vbo_id.h mcc/vbo/vbo_id.cc
   mcc/vbo/vbo_events.h mcc/vbo/vbo_events.cc
-  mcc/vbo/vbo_factory.h mcc/vbo/vbo_factory.cc
+  mcc/vbo/vbo_builder.h mcc/vbo/vbo_builder.cc
   mcc/vbo/vbo_scope.h mcc/vbo/vbo_scope.cc
   mcc/vbo/vbo.h mcc/vbo/vbo.cc
   mcc/vbo/vbo_layout.h

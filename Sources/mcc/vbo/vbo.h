@@ -30,10 +30,12 @@ namespace mcc {
     class Vbo {
       friend class VboScope;
       friend class VboBindScope;
+      friend class VboBuilderBase;
     private:
+      static void PublishEvent(VboEvent* event);
       static void BindVbo(const VboId id);
       static void DeleteVbos(const VboId* ids, const int num_ids);
-      static void PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage);
+      static void PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const VboUsage usage);
       static void UpdateVboData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes);
 
       static inline void
@@ -50,17 +52,32 @@ namespace mcc {
       BindDefaultVbo() {
         return BindVbo(kDefaultVboId);
       }
+
+      template<class E, typename... Args>
+      static inline void
+      PublishEvent(const Vbo* vbo, Args... args) {
+        E event(vbo, args...);
+        return PublishEvent((VboEvent*) &event);
+      }
     protected:
       VboId id_;
       uint64_t length_;
       uint64_t vertex_size_;
+      VboUsage usage_;
 
       explicit Vbo(const VboId id,
                    const uint64_t length,
-                   const uint64_t vertex_size):
+                   const uint64_t vertex_size,
+                   const VboUsage usage):
         id_(id),
         length_(length),
-        vertex_size_(vertex_size) {
+        vertex_size_(vertex_size),
+        usage_(usage) {
+      }
+
+      template<class E, typename... Args>
+      inline void Publish(Args... args) {
+        return PublishEvent<E>(this, args...);
       }
     public:
       virtual ~Vbo() = default;
@@ -81,6 +98,10 @@ namespace mcc {
       uint64_t GetSize() const {
         return GetLength() * GetVertexSize();
       }
+      
+      VboUsage GetUsage() const {
+        return usage_;
+      }
 
       rx::observable<VboEvent*> OnEvent() const {
         return OnVboEvent(GetId());
@@ -93,6 +114,8 @@ namespace mcc {
       }
       FOR_EACH_VBO_EVENT(DEFINE_ON_VBO_EVENT)
 #undef DEFINE_ON_VBO_EVENT
+    private:
+      static Vbo* New(const VboId id, const uint64_t length, const uint64_t vertex_size, const VboUsage usage);
     };
   }
   using vbo::Vbo;
