@@ -3,8 +3,7 @@
 
 #include "mcc/fbo/fbo_id.h"
 #include "mcc/fbo/fbo_events.h"
-
-#include "mcc/rbo/rbo.h"
+#include "mcc/fbo/fbo_attachment.h"
 
 namespace mcc {
   namespace fbo {
@@ -41,11 +40,20 @@ namespace mcc {
       }
 
       static void BindFbo(const FboId id);
-      static void DeleteFbo(const FboId id);
+      static void DeleteFbos(const FboId* ids, const int num_ids);
+      static void Attach(const Attachment::Type type,
+                         const texture::TextureTarget target,
+                         const texture::TextureId id,
+                         const int level = 0);
 
       static inline void
       BindDefaultFbo() {
         return BindFbo(kDefaultFboId);
+      }
+
+      static inline void
+      DeleteFbo(const FboId id) {
+        return DeleteFbos(&id, 1);
       }
     protected:
       FboId id_;

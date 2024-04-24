@@ -9,22 +9,25 @@
 #include "mcc/fbo/fbo_attachment.h"
 
 namespace mcc::fbo {
-  class FboColorAttachment : public FboAttachment {
+  using texture::Texture;
+  class ColorAttachment : public Attachment {
   protected:
-    TextureId id_;
+    Texture* texture_;
 
-    explicit FboColorAttachment(const TextureId id):
-      FboAttachment(),
-      id_(id) {
+    explicit ColorAttachment(Texture* texture):
+      Attachment(),
+      texture_(texture) {
     }
   public:
-    ~FboColorAttachment() override = default;
+    ~ColorAttachment() override = default;
 
-    TextureId GetTextureId() const {
-      return id_;
+    virtual Texture* GetTexture() const {
+      return texture_;
     }
+
+    DECLARE_FBO_ATTACHMENT(Color);
   public:
-    static FboColorAttachment* New(const glm::i32vec2& size);
+    static ColorAttachment* New(const glm::i32vec2& size);
   };
 }
 

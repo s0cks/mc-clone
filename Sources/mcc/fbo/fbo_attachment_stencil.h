@@ -8,7 +8,15 @@
 #include "mcc/fbo/fbo_attachment.h"
 
 namespace mcc::fbo {
-
+  class StencilAttachment : public Attachment {
+  protected:
+    StencilAttachment() = default;
+  public:
+    ~StencilAttachment() override = default;
+    DECLARE_FBO_ATTACHMENT(Stencil);
+  public:
+    static StencilAttachment* New();
+  };
 }
 
 #endif //MCC_FBO_ATTACHMENT_STENCIL_H

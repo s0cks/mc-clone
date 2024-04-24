@@ -39,4 +39,37 @@ namespace mcc::fbo {
     const auto& subscriber = events_.get_subscriber();
     return subscriber.on_next(event);
   }
+
+  static inline bool
+  IsValidTextureTarget(const texture::TextureTarget target) {
+    switch(target) {
+      case texture::k2D:
+        return true; //TODO: need to support cube maps at some point
+      default:
+        return false;
+    }
+  }
+
+  void Fbo::BindFbo(const FboId id) {
+    MCC_ASSERT(IsValidFboId(id));
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+    CHECK_GL(FATAL);
+  }
+
+  void Fbo::DeleteFbos(const FboId* ids, const int num_ids) {
+    MCC_ASSERT(num_ids >= 1);
+    glDeleteFramebuffers(num_ids, ids);
+    CHECK_GL(FATAL);
+  }
+
+  void Fbo::Attach(const Attachment::Type type,
+                   const texture::TextureTarget target,
+                   const texture::TextureId id,
+                   const int level) {
+    MCC_ASSERT(IsValidTextureTarget(target));
+    MCC_ASSERT(level == 0); // TODO: ??
+    MCC_ASSERT(IsValidTextureId(id));
+    glFramebufferTexture2D(GL_FRAMEBUFFER, type, target, id, level);
+    CHECK_GL(FATAL);
+  }
 }
