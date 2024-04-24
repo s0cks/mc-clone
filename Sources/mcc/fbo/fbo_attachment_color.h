@@ -11,9 +11,20 @@
 namespace mcc::fbo {
   class FboColorAttachment : public FboAttachment {
   protected:
-    FboColorAttachment() = default;
+    TextureId id_;
+
+    explicit FboColorAttachment(const TextureId id):
+      FboAttachment(),
+      id_(id) {
+    }
   public:
     ~FboColorAttachment() override = default;
+
+    TextureId GetTextureId() const {
+      return id_;
+    }
+  public:
+    static FboColorAttachment* New(const glm::i32vec2& size);
   };
 }
 
