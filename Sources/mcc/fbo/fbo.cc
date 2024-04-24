@@ -1,6 +1,8 @@
 #include "mcc/fbo/fbo.h"
 
 namespace mcc::fbo {
+  using namespace texture;
+
   rx::subject<FboEvent*> events_;
 
   rx::observable<FboEvent*> OnFboEvent() {
@@ -40,16 +42,6 @@ namespace mcc::fbo {
     return subscriber.on_next(event);
   }
 
-  static inline bool
-  IsValidTextureTarget(const texture::TextureTarget target) {
-    switch(target) {
-      case texture::k2D:
-        return true; //TODO: need to support cube maps at some point
-      default:
-        return false;
-    }
-  }
-
   void Fbo::BindFbo(const FboId id) {
     MCC_ASSERT(IsValidFboId(id));
     glBindFramebuffer(GL_FRAMEBUFFER, id);
@@ -62,14 +54,25 @@ namespace mcc::fbo {
     CHECK_GL(FATAL);
   }
 
-  void Fbo::Attach(const Attachment::Type type,
-                   const texture::TextureTarget target,
-                   const texture::TextureId id,
-                   const int level) {
-    MCC_ASSERT(IsValidTextureTarget(target));
+  static inline bool
+  IsValidTextureTarget(const texture::TextureTarget target) {
+    switch(target) {
+      case texture::k2D:
+        return true; //TODO: need to support cube maps at some point
+      default:
+        return false;
+    }
+  }
+
+  void Fbo::AttachTexture(const FboTarget target,
+                          const AttachmentPoint p,
+                          const TextureTarget textarget,
+                          const TextureId texid,
+                          const int level) {
+    MCC_ASSERT(IsValidTextureTarget(textarget));
     MCC_ASSERT(level == 0); // TODO: ??
-    MCC_ASSERT(IsValidTextureId(id));
-    glFramebufferTexture2D(GL_FRAMEBUFFER, type, target, id, level);
+    MCC_ASSERT(IsValidTextureId(texid));
+    glFramebufferTexture2D(target, p, textarget, texid, level);
     CHECK_GL(FATAL);
   }
 }

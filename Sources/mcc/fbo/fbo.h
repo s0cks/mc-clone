@@ -29,6 +29,7 @@ namespace mcc {
     class FboFactory;
     class Fbo {
       friend class FboFactory;
+      friend class ColorAttachment;
     private:
       static void PublishEvent(FboEvent* event);
 
@@ -41,10 +42,20 @@ namespace mcc {
 
       static void BindFbo(const FboId id);
       static void DeleteFbos(const FboId* ids, const int num_ids);
-      static void Attach(const Attachment::Type type,
-                         const texture::TextureTarget target,
-                         const texture::TextureId id,
-                         const int level = 0);
+
+      static void AttachTexture(const FboTarget target,
+                                const AttachmentPoint p,
+                                const texture::TextureTarget textarget,
+                                const texture::TextureId texid,
+                                const int level = 0);
+
+      static inline void
+      AttachTexture2D(const FboTarget target,
+                      const AttachmentPoint p,
+                      const texture::TextureId texid,
+                      const int level = 0) {
+        return AttachTexture(target, p, texture::k2D, texid, level);
+      }
 
       static inline void
       BindDefaultFbo() {
