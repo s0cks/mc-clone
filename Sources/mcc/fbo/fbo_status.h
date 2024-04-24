@@ -40,7 +40,7 @@ namespace mcc::fbo {
     FboTarget target_;
     Status status_;
   public:
-    FboStatus(const FboTarget target):
+    explicit FboStatus(const FboTarget target = kDefaultTarget):
       target_(target),
       status_(static_cast<Status>(glCheckFramebufferStatus(target))) {
     }

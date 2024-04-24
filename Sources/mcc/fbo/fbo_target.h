@@ -6,7 +6,8 @@
 namespace mcc::fbo {
 #define FOR_EACH_FBO_TARGET(V)      \
   V(Draw, GL_DRAW_FRAMEBUFFER)      \
-  V(Read, GL_READ_FRAMEBUFFER)
+  V(Read, GL_READ_FRAMEBUFFER)      \
+  V(Default, GL_FRAMEBUFFER)
 
   enum FboTarget : GLenum {
 #define DEFINE_FBO_TARGET(Name, GlValue) k##Name##Target = (GlValue),

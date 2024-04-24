@@ -1,5 +1,8 @@
 #include "mcc/fbo/fbo_factory.h"
 
+#include "mcc/fbo/fbo.h"
+#include "mcc/fbo/fbo_status.h"
+
 namespace mcc::fbo {
   rx::observable<Fbo*> FboFactory::Create(const int num) const {
     return GenerateFboId(num)
@@ -10,7 +13,12 @@ namespace mcc::fbo {
   }
 
   Fbo* FboFactory::CreateFbo(const FboId id) const {
-    NOT_IMPLEMENTED(FATAL);
-    return nullptr;
+    MCC_ASSERT(IsValidFboId(id));
+    Fbo::BindFbo(id);
+    //TODO: do attachments
+    FboStatus status;
+    LOG_IF(FATAL, !status) << "failed to initialize framebuffer: " << status;
+    Fbo::BindDefaultFbo();
+    return Fbo::New(id);
   }
 }
