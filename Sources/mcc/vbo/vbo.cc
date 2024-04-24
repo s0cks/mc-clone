@@ -1,5 +1,7 @@
 #include "mcc/vbo/vbo.h"
 
+#include <units.h>
+
 namespace mcc::vbo {
   static rx::subject<VboEvent*> events_;
 
@@ -35,5 +37,17 @@ namespace mcc::vbo {
   void Vbo::UpdateVboData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
     glBufferSubData(GL_ARRAY_BUFFER, (GLintptr) offset, (GLsizeiptr) num_bytes, (const GLvoid*) bytes);
     CHECK_GL(FATAL);
+  }
+
+  std::string Vbo::ToString() const {
+    using namespace units;
+    std::stringstream ss;
+    ss << "Vbo(";
+    ss << "id=" << GetId();
+    ss << "length=" << GetLength() << ", ";
+    ss << "vertex_size=" << data::byte_t(GetVertexSize()) << ", ";
+    ss << "size=" << data::byte_t(GetSize());
+    ss << ")";
+    return ss.str();
   }
 }

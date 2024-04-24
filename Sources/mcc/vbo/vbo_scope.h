@@ -50,6 +50,12 @@ namespace mcc {
         VboBindScope(vbo) {
       }
       ~VboDrawScope() override = default;
+      
+      void Draw(const GLenum mode, const int64_t first, const int64_t count) const;
+
+      inline void Draw(const GLenum mode, const int64_t first = 0) const { 
+        return Draw(mode, first, GetVbo()->GetLength());
+      }
     };
   }
 }

@@ -52,16 +52,34 @@ namespace mcc {
       }
     protected:
       VboId id_;
+      uint64_t length_;
+      uint64_t vertex_size_;
 
-      explicit Vbo(const VboId id):
-        id_(id) {
+      explicit Vbo(const VboId id,
+                   const uint64_t length,
+                   const uint64_t vertex_size):
+        id_(id),
+        length_(length),
+        vertex_size_(vertex_size) {
       }
     public:
       virtual ~Vbo() = default;
-      virtual std::string ToString() const = 0;
+      std::string ToString() const;
 
       VboId GetId() const {
         return id_;
+      }
+
+      uint64_t GetLength() const {
+        return length_;
+      }
+
+      uint64_t GetVertexSize() const {
+        return vertex_size_;
+      }
+
+      uint64_t GetSize() const {
+        return GetLength() * GetVertexSize();
       }
 
       rx::observable<VboEvent*> OnEvent() const {
@@ -75,15 +93,6 @@ namespace mcc {
       }
       FOR_EACH_VBO_EVENT(DEFINE_ON_VBO_EVENT)
 #undef DEFINE_ON_VBO_EVENT
-    };
-
-    template<typename Layout>
-    class VboTemplate : public Vbo {
-    protected:
-      VboTemplate() = default;
-    public:
-      ~VboTemplate() override = default;
-      std::string ToString() const override;
     };
   }
   using vbo::Vbo;
