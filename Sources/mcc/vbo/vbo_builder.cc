@@ -1,4 +1,4 @@
-#include "mcc/vbo/vbo_factory.h"
+#include "mcc/vbo/vbo_builder.h"
 
 namespace mcc::vbo {
   template<typename... Attributes>
