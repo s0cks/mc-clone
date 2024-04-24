@@ -104,7 +104,14 @@ add_library(${PROJECT_NAME}
   mcc/engine/engine_state_tick.h mcc/engine/engine_state_tick.cc
   mcc/engine/engine_state_terminated.h mcc/engine/engine_state_terminated.cc
   mcc/engine/engine_ticker.h mcc/engine/engine_ticker.cc
-# IBO
+# VBOs
+  mcc/vbo/vbo_id.h mcc/vbo/vbo_id.cc
+  mcc/vbo/vbo_events.h mcc/vbo/vbo_events.cc
+  mcc/vbo/vbo_factory.h mcc/vbo/vbo_factory.cc
+  mcc/vbo/vbo_scope.h
+  mcc/vbo/vbo.h mcc/vbo/vbo.cc
+  mcc/vbo/vbo_layout.h
+# IBOs
   mcc/ibo/ibo_id.h
   mcc/ibo/ibo_index.h
   mcc/ibo/ibo_usage.h
@@ -113,7 +120,7 @@ add_library(${PROJECT_NAME}
   mcc/ibo/ibo_factory.h mcc/ibo/ibo_factory.cc
   mcc/ibo/ibo_scope.h
   mcc/ibo/ibo_registry.h mcc/ibo/ibo_registry.cc
-# VAO
+# VAOs
   mcc/vao/vao.h mcc/vao/vao.cc
   mcc/vao/vao_id.h
   mcc/vao/vao_scope.h
@@ -234,6 +241,7 @@ add_library(${PROJECT_NAME}
   mcc/uv/uv_handle_idle.h
   mcc/uv/uv_handle_prepare.h
 # Misc
+  mcc/uv.h
   mcc/on_shutdown.h
   mcc/event.h
   mcc/state_machine.h
