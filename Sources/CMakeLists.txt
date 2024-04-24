@@ -172,6 +172,13 @@ add_library(${PROJECT_NAME}
   mcc/texture/texture_property.h
   mcc/texture/texture_options.h mcc/texture/texture_options.cc
   mcc/texture/texture.h mcc/texture/texture.cc
+# RBOs
+  mcc/rbo/rbo_events.h mcc/rbo/rbo_events.cc
+  mcc/rbo/rbo_factory.h mcc/rbo/rbo_factory.cc
+  mcc/rbo/rbo_id.h
+  mcc/rbo/rbo.h mcc/rbo/rbo.cc
+  mcc/rbo/rbo_format.h
+  mcc/rbo/rbo_size.h mcc/rbo/rbo_size.cc
 # FBOs
   mcc/fbo/fbo_events.h mcc/fbo/fbo_events.cc
   mcc/fbo/fbo_factory.h mcc/fbo/fbo_factory.cc

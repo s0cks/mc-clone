@@ -4,6 +4,8 @@
 #include "mcc/fbo/fbo_id.h"
 #include "mcc/fbo/fbo_events.h"
 
+#include "mcc/rbo/rbo.h"
+
 namespace mcc {
   namespace fbo {
     rx::observable<FboEvent*> OnFboEvent();
