@@ -89,12 +89,6 @@ add_library(${PROJECT_NAME}
   mcc/renderer/renderer_stats.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/renderer/render_ticker.h mcc/renderer/render_ticker.cc
-# Vertex
-  mcc/vertex/vertex_property.h
-  mcc/vertex/vertex.h mcc/vertex/vertex.cc
-  mcc/vertex/vertex_buffer.h
-  mcc/vertex/vertex_2d.h mcc/vertex/vertex_2d.cc
-  mcc/vertex/vertex_3d.h mcc/vertex/vertex_3d.cc
 # Engine
   mcc/engine/engine_event.h mcc/engine/engine_event.cc
   mcc/engine/engine.h mcc/engine/engine.cc

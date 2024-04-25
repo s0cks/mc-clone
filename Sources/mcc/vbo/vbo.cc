@@ -39,6 +39,12 @@ namespace mcc::vbo {
     CHECK_GL(FATAL);
   }
 
+  void Vbo::PublishEvent(VboEvent* event) {
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
+
   std::string Vbo::ToString() const {
     using namespace units;
     std::stringstream ss;
