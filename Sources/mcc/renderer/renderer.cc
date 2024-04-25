@@ -4,7 +4,6 @@
 #include "mcc/thread_local.h"
 #include "mcc/engine/engine.h"
 #include "mcc/window/window.h"
-#include "mcc/vertex/vertex.h"
 #include "mcc/camera/camera_ortho.h"
 
 #include "mcc/renderer/render_pass.h"
@@ -55,6 +54,11 @@ namespace mcc::render {
   GetThreadRenderer() {
     return renderer_.Get();
   }
+
+  struct Vertex {
+    glm::vec2 pos;
+    Color color;
+  };
 
   static inline Pipeline*
   CreateRenderQuadPipeline(const glm::mat4& projection, const glm::vec2& pos, const glm::vec2& size, const Color color) {

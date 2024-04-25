@@ -44,10 +44,6 @@ add_library(${PROJECT_NAME}
   mcc/shape.h
   mcc/glm.h
   mcc/flags.h mcc/flags.cc
-  mcc/mesh/vertex.h mcc/mesh/vertex.cc
-  mcc/mesh/mesh.h mcc/mesh/mesh.cc
-  mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
-  mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
   mcc/os_thread.h mcc/os_thread.cc
   mcc/os_thread_linux.h
   mcc/os_thread_osx.h mcc/os_thread_osx.cc
@@ -58,6 +54,12 @@ add_library(${PROJECT_NAME}
   mcc/series.h
   mcc/subscription_trie.h
   mcc/skybox.h mcc/skybox.cc
+# Meshes
+  mcc/mesh/mesh_events.h mcc/mesh/mesh_events.cc
+  mcc/mesh/vertex.h mcc/mesh/vertex.cc
+  mcc/mesh/mesh.h mcc/mesh/mesh.cc
+  mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
+  mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
 # Components
   mcc/component/component_id.h
   mcc/component/component_events.h mcc/component/component_events.cc
