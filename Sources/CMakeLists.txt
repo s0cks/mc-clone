@@ -53,13 +53,6 @@ add_library(${PROJECT_NAME}
   mcc/circular_buffer.h
   mcc/series.h
   mcc/subscription_trie.h
-  mcc/skybox.h mcc/skybox.cc
-# Meshes
-  mcc/mesh/mesh_events.h mcc/mesh/mesh_events.cc
-  mcc/mesh/vertex.h mcc/mesh/vertex.cc
-  mcc/mesh/mesh.h mcc/mesh/mesh.cc
-  mcc/mesh/mesh_loader.h mcc/mesh/mesh_loader.cc
-  mcc/mesh/obj_parser.h mcc/mesh/obj_parser.cc
 # Components
   mcc/component/component_id.h
   mcc/component/component_events.h mcc/component/component_events.cc
@@ -196,19 +189,6 @@ add_library(${PROJECT_NAME}
   mcc/fbo/fbo_attachment_depth.h mcc/fbo/fbo_attachment_depth.cc
   mcc/fbo/fbo_attachment_stencil.h mcc/fbo/fbo_attachment_stencil.cc
   mcc/fbo/fbo.h mcc/fbo/fbo.cc
-# Terrain
-  mcc/terrain/terrain_flags.h
-  mcc/terrain/terrain.h mcc/terrain/terrain.cc
-  mcc/terrain/terrain_vertex.h
-  mcc/terrain/terrain_chunk.h mcc/terrain/terrain_chunk.cc
-  mcc/murmur.h
-  mcc/settings.h mcc/settings.cc
-  mcc/bitfield.h
-  mcc/font/font.h mcc/font/font.cc
-  mcc/font/glyph.h mcc/font/glyph.cc
-  mcc/font/font_mesh.h mcc/font/font_mesh.cc
-  mcc/font/truetype.h
-  mcc/font/font_renderer.h mcc/font/font_renderer.cc
 # Camera
   mcc/camera/camera.h mcc/camera/camera.cc
   mcc/camera/perspective_camera.h mcc/camera/perspective_camera.cc
@@ -237,7 +217,16 @@ add_library(${PROJECT_NAME}
   mcc/uv/uv_handle_check.h
   mcc/uv/uv_handle_idle.h
   mcc/uv/uv_handle_prepare.h
+# Font
+  mcc/font/font.h mcc/font/font.cc
+  mcc/font/glyph.h mcc/font/glyph.cc
+  mcc/font/font_mesh.h mcc/font/font_mesh.cc
+  mcc/font/truetype.h
+  mcc/font/font_renderer.h mcc/font/font_renderer.cc
 # Misc
+  mcc/murmur.h
+  mcc/settings.h mcc/settings.cc
+  mcc/bitfield.h
   mcc/uv.h
   mcc/on_shutdown.h
   mcc/event.h

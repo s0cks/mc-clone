@@ -11,23 +11,19 @@
 #define NK_GLFW_GL3_IMPLEMENTATION
 
 #include "mcc/mcc.h"
-#include "mcc/entity/entity.h"
-#include "mcc/material/material.h"
-#include "mcc/font/font.h"
-#include "mcc/window/window.h"
-#include "mcc/camera/perspective_camera.h"
-#include "mcc/engine/engine.h"
-#include "mcc/renderer/renderer.h"
-#include "mcc/terrain/terrain.h"
-#include "mcc/shader/shader.h"
-
-#include "mcc/os_thread.h"
-#include "mcc/vertex/vertex.h"
 #include "mcc/ibo/ibo.h"
-#include "mcc/resource/resource.h"
-
+#include "mcc/font/font.h"
+#include "mcc/os_thread.h"
 #include "mcc/mouse/mouse.h"
+#include "mcc/entity/entity.h"
+#include "mcc/window/window.h"
+#include "mcc/engine/engine.h"
+#include "mcc/shader/shader.h"
+#include "mcc/renderer/renderer.h"
+#include "mcc/resource/resource.h"
 #include "mcc/keyboard/keyboard.h"
+#include "mcc/material/material.h"
+#include "mcc/camera/perspective_camera.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
@@ -75,8 +71,6 @@ int main(int argc, char** argv) {
   mouse::InitMouse();
   keyboard::InitKeyboard();
   render::Renderer::Init();
-  // terrain::Terrain::Init();
-  // camera::PerspectiveCameraComponent::Init();
 
   ibo::OnIboCreatedEvent()
     .subscribe([](ibo::IboCreatedEvent* event) {

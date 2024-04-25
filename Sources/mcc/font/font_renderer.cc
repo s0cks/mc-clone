@@ -1,4 +1,3 @@
-#include "mcc/mesh/vertex.h"
 #include "mcc/font/font_renderer.h"
 
 namespace mcc::font {

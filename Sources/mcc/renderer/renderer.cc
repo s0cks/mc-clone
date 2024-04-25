@@ -60,18 +60,18 @@ namespace mcc::render {
     Color color;
   };
 
-  static inline Pipeline*
-  CreateRenderQuadPipeline(const glm::mat4& projection, const glm::vec2& pos, const glm::vec2& size, const Color color) {
-    const auto window = Window::Get();
-    d2::VertexList vertices;
-    UIntIbo::IndexList indices;
-    shape::NewCenteredRect(vertices, indices, pos, size, color);
-    const auto mesh = d2::NewMesh(vertices, indices);
-    const auto apply_shader = program::ApplyProgramPipeline::New("colored_2d", [projection](const ProgramRef& shader) {
-      shader->SetMat4("projection", projection);
-    });
-    return new d2::RenderMeshPipeline(mesh, apply_shader);
-  }
+  // static inline Pipeline*
+  // CreateRenderQuadPipeline(const glm::mat4& projection, const glm::vec2& pos, const glm::vec2& size, const Color color) {
+  //   const auto window = Window::Get();
+  //   d2::VertexList vertices;
+  //   UIntIbo::IndexList indices;
+  //   shape::NewCenteredRect(vertices, indices, pos, size, color);
+  //   const auto mesh = d2::NewMesh(vertices, indices);
+  //   const auto apply_shader = program::ApplyProgramPipeline::New("colored_2d", [projection](const ProgramRef& shader) {
+  //     shader->SetMat4("projection", projection);
+  //   });
+  //   return new d2::RenderMeshPipeline(mesh, apply_shader);
+  // }
 
   class RendererPipeline : public Pipeline {
   private:
@@ -93,7 +93,7 @@ namespace mcc::render {
       const auto windowSize = window->GetSize();
       OrthoCamera camera(window);
       const auto& projection = camera.GetProjection();
-      AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
+      // AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
     }
     ~RendererPipeline() override = default;
 
