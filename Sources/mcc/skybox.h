@@ -6,7 +6,7 @@
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
 #include "mcc/vao/vao.h"
-#include "mcc/vertex/vertex_buffer.h"
+#include "mcc/vbo/vbo.h"
 
 #include "mcc/program/program.h"
 #include "mcc/texture/texture.h"
@@ -30,53 +30,9 @@ namespace mcc {
 
     typedef std::vector<Vertex> VertexList;
 
-    static inline std::ostream&
-    operator<<(std::ostream& stream, const VertexList& rhs) {
-      stream << "[";
-      for(auto idx = 0; idx < rhs.size(); idx++) {
-        stream << rhs[idx];
-        if((idx + 1) < rhs.size())
-          stream << ", ";
-      }
-      stream << "]";
-      return stream;
-    }
-
-    class VertexBuffer : public VertexBufferTemplate<Vertex, kStaticUsage> {
-      enum Layout {
-        kPositionOffset = offsetof(Vertex, pos),
-      };
-
-      DEFINE_VEC3F_VERTEX_BUFFER_ATTR(0, kPositionOffset, sizeof(Vertex), Position);
-    public:
-      explicit VertexBuffer(const BufferObjectId id = kInvalidBufferObject):
-        VertexBufferTemplate(id) {  
-      }
-      explicit VertexBuffer(const Vertex* vertices, const uint64_t num_vertices):
-        VertexBufferTemplate(vertices, num_vertices) {
-        PositionAttribute::Bind();
-      }
-      explicit VertexBuffer(const VertexList& vertices):
-        VertexBuffer(&vertices[0], vertices.size()) {  
-      }
-      VertexBuffer(const VertexBuffer& rhs):
-        VertexBufferTemplate(rhs) {
-      }
-      ~VertexBuffer() override = default;
-      
-      void operator=(const VertexBuffer& rhs) {
-        VertexBufferTemplate::operator=(rhs);
-      }
-
-      void operator=(const BufferObjectId& rhs) {
-        BufferObject::operator=(rhs);
-      }
-    };
-    DEFINE_RESOURCE_SCOPE(VertexBuffer);
-
     struct Skybox {
       Vao* vao;
-      VertexBuffer vbo;
+      Vbo* vbo;
       TextureRef texture;
       ProgramRef shader;
 
@@ -119,7 +75,7 @@ namespace mcc {
         // }));
         AddChild(new ApplyPipeline([this]() {
           VaoBindScope scope(skybox_->vao);
-          glDrawArrays(GL_TRIANGLES, 0, skybox_->vbo.length());
+          glDrawArrays(GL_TRIANGLES, 0, skybox_->vbo->GetLength());
           CHECK_GL(FATAL);
         }));
       }

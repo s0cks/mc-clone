@@ -7,9 +7,10 @@
 #include "mcc/renderer/renderer.h"
 
 namespace mcc::skybox {
-  static Vao* kSkyboxVao;
-  static ThreadLocal<Skybox> skybox_;
   static rxsub::subject<Skybox*> skybox_subject_;
+  static ThreadLocal<Skybox> skybox_;
+  static ThreadLocal<Vao> vao_;
+  static ThreadLocal<Vbo> vbo_;
 
   void Skybox::OnPostInit() {
     kSkyboxVao = Vao::New();
