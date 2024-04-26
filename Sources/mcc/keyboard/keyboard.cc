@@ -76,6 +76,17 @@ namespace mcc::keyboard {
       });
   }
 
+  void Keyboard::PublishEvent(KeyboardEvent* event) {
+    MCC_ASSERT(event);
+    DLOG(INFO) << "publishing: " << event->ToString();
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
+
+  rx::observable<KeyboardEvent*> Keyboard::OnEvent() const {
+    return events_.get_observable();
+  }
+
   bool HasKeyboard() {
     return keyboard_.Get() != nullptr;
   }

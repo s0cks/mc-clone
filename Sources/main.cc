@@ -83,14 +83,16 @@ int main(int argc, char** argv) {
       DLOG(INFO) << "ibo destroyed: " << event->GetIbo()->ToString();
     });
   
-  keyboard::OnCreated()
-    .subscribe([](keyboard::KeyboardCreatedEvent* event) {
-      event->keyboard()->OnPressed()
-        .filter(keyboard::KeyPressedEvent::FilterByCode(keyboard::kSpace))
-        .subscribe([](keyboard::KeyPressedEvent* event) {
-          DLOG(INFO) << "space pressed.";
-          const auto win = gui::Window::New();
-        });
+  const auto sub1 = keyboard::OnEvent()
+    .subscribe([](keyboard::KeyboardEvent* event) {
+      DLOG(INFO) << " - " << event->ToString();
+    });
+  const auto sub2 = keyboard::OnEvent()
+    .filter(keyboard::KeyPressedEvent::FilterBy(GLFW_KEY_SPACE))
+    .map(keyboard::KeyPressedEvent::Cast)
+    .subscribe([](keyboard::KeyPressedEvent* event) {
+      DLOG(INFO) << "space pressed.";
+      gui::Window::New();
     });
 
   const auto engine = engine::Engine::GetEngine();
@@ -107,7 +109,7 @@ int main(int argc, char** argv) {
   engine->Run();
 
   const auto keyboard = GetKeyboard();
-  keyboard->OnPressed(keyboard::kEscape)
+  keyboard->OnPressed(GLFW_KEY_ESCAPE)
     .subscribe([engine](keyboard::KeyPressedEvent* event) {
       engine->Shutdown();
     });

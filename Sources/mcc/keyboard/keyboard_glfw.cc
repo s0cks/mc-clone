@@ -9,38 +9,24 @@ namespace mcc::keyboard {
     return static_cast<KeyState>(glfwGetKey(window->handle(), static_cast<int>(code)));
   }
 
-  rx::observable<KeyboardEvent*> GlfwKeyboard::OnEvent() const {
-    return events_.get_observable();
-  }
-
-  static inline void
-  UpdateAll(Window* window, KeyStateSet& keys) {
-
-  }
-
   void GlfwKeyboard::Process() {
     //TODO: fix
-    const auto window = Window::Get()->handle();
-    KeyStateSet keys;
-    for(auto idx = 1; idx < kNumberOfKeyCodes; idx++) {
-      const auto key = static_cast<KeyCode>(idx);
-      const auto curr_state = keys.Get(key);
-      const auto new_state = static_cast<KeyState>(glfwGetKey(window, key));
+    for(const auto& key : keys_) {
+      const auto curr_state = states_.GetState(key).value_or(kKeyReleased);
+      const auto new_state = keys_.GetState(key);
       if(curr_state == new_state)
         continue;
-      
+
+      states_.PutState(key, new_state);
       switch(new_state) {
-        case kKeyPressed: {
-          KeyPressedEvent event(this, key);
-          events_.get_subscriber().on_next(&event);
-          break;
-        }
-        case kKeyReleased: {
-          KeyReleasedEvent event(this, key);
-          events_.get_subscriber().on_next(&event);
-          break;
-        }
-        default: continue;
+        case kKeyPressed:
+          Publish<KeyPressedEvent>(key);
+          continue;
+        case kKeyReleased:
+          Publish<KeyReleasedEvent>(key);
+          continue;
+        default:
+          continue;
       }
     }
   }

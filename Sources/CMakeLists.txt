@@ -58,9 +58,9 @@ add_library(${PROJECT_NAME}
   mcc/component/component_events.h mcc/component/component_events.cc
   mcc/component/component_state.h
   mcc/component/component.h mcc/component/component.cc
-# Task
 # Keyboard
-  mcc/keyboard/keyboard_constants.h
+  mcc/keyboard/key.h mcc/keyboard/key.cc
+  mcc/keyboard/key_state.h
   mcc/keyboard/key_state_set.h
   mcc/keyboard/keyboard_event.h mcc/keyboard/keyboard_event.cc
   mcc/keyboard/keyboard.h mcc/keyboard/keyboard.cc

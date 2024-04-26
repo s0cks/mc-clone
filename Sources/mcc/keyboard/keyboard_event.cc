@@ -16,18 +16,10 @@ namespace mcc::keyboard {
     return ss.str();
   }
 
-  std::string KeyEvent::ToString() const {
-    std::stringstream ss;
-    ss << "KeyEvent(";
-    ss << "code=" << code();
-    ss << ")";
-    return ss.str();
-  }
-
   std::string KeyPressedEvent::ToString() const {
     std::stringstream ss;
     ss << "KeyPressedEvent(";
-    ss << "code=" << code();
+    ss << "key=" << GetKey();
     ss << ")";
     return ss.str();
   }
@@ -35,7 +27,7 @@ namespace mcc::keyboard {
   std::string KeyReleasedEvent::ToString() const {
     std::stringstream ss;
     ss << "KeyReleasedEvent(";
-    ss << "code=" << code();
+    ss << "key=" << GetKey();
     ss << ")";
     return ss.str();
   }

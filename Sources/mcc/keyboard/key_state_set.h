@@ -1,55 +1,46 @@
 #ifndef MCC_KEY_STATE_MAP_H
 #define MCC_KEY_STATE_MAP_H
 
-#include "mcc/keyboard/keyboard_constants.h"
+#include <map>
+#include "mcc/keyboard/key.h"
+#include "mcc/keyboard/key_state.h"
 
 namespace mcc::keyboard {
   class KeyStateSet {
   protected:
-    KeyState* keys_;
-    uint32_t num_keys_;
+    std::map<Key, KeyState> states_;
   public:
-    explicit KeyStateSet(const uint32_t num_keys = kNumberOfKeyCodes):
-      keys_(nullptr),
-      num_keys_(0) {
-      if(num_keys <= 0) {
-        DLOG(ERROR) << "cannot initialize KeyStateSet w/ " << num_keys << " keys.";
-        return;
-      }
-
-      const auto data = malloc(sizeof(KeyState) * num_keys);
-      if(!data) {
-        LOG(ERROR) << "failed to initialize KeyStateSet w/ " << num_keys << " keys.";
-        return;
-      }
-      keys_ = (KeyState*) data;
-      num_keys_ = num_keys;
+    explicit KeyStateSet(const KeySet& keys):
+      states_() {
+      keys.GetAllStates()
+        .subscribe([this](const std::pair<Key, KeyState>& p) {
+        });
     }
-    virtual ~KeyStateSet() {
-      if(keys_)
-        free(keys_);
+    virtual ~KeyStateSet() = default;
+
+    std::optional<KeyState> GetState(const Key& k) {
+      const auto pos = states_.find(k);
+      if(pos == states_.end())
+        return std::nullopt;
+      return { pos->second };
     }
 
-    virtual void Set(const KeyCode code, const KeyState state = kKeyPressed) {
-      MCC_ASSERT(keys_);
-      keys_[code] = state;
+    inline std::optional<KeyState> GetState(const KeyCode code) {
+      return GetState(Key(code));
     }
 
-    virtual KeyState Get(const KeyCode code) const {
-      MCC_ASSERT(keys_);
-      return keys_[code];
+    void PutState(const std::pair<Key, KeyState>& p) {
+      const auto result = states_.insert(p);
+      if(!result.second)
+        states_[p.first] = p.second;
     }
 
-    uint32_t length() const {
-      return num_keys_;
-    }
-    
-    inline bool Test(const KeyCode code) const {
-      return Get(code) == kKeyPressed;
+    inline void PutState(const Key& key, const KeyState state) {
+      return PutState({ key, state });
     }
 
-    bool operator[](const KeyCode code) const {
-      return Test(code);
+    inline void PutState(const KeyCode code, const KeyState state) {
+      return PutState(Key(code), state);
     }
   };
 }

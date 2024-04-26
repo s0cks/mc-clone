@@ -3,8 +3,8 @@
 
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
+#include "mcc/keyboard/key_state.h"
 #include "mcc/keyboard/keyboard_event.h"
-#include "mcc/keyboard/keyboard_constants.h"
 
 namespace mcc {
   namespace engine {
@@ -15,11 +15,19 @@ namespace mcc {
     class Keyboard {
       friend class engine::Engine;
     protected:
+      static void PublishEvent(KeyboardEvent* event);
+    protected:
       Keyboard() = default;
       virtual void Process() = 0;
+
+      template<class E, typename... Args>
+      inline void Publish(Args... args) const {
+        E event(this, args...);
+        return PublishEvent(&event);
+      }
     public:
       virtual ~Keyboard() = default;
-      virtual rx::observable<KeyboardEvent*> OnEvent() const = 0;
+      rx::observable<KeyboardEvent*> OnEvent() const;
       virtual KeyState GetKey(const KeyCode code) const = 0;
 
       inline bool IsPressed(const KeyCode code) const {
@@ -32,25 +40,25 @@ namespace mcc {
 
       inline rx::observable<KeyPressedEvent*> OnPressed() const {
         return OnEvent()
-          .filter(KeyPressedEvent::FilterBy)
+          .filter(KeyPressedEvent::Filter)
           .map(KeyPressedEvent::Cast);
       }
 
       inline rx::observable<KeyPressedEvent*> OnPressed(const KeyCode code) const {
         return OnEvent()
-          .filter(KeyPressedEvent::FilterByCode(code))
+          .filter(KeyPressedEvent::FilterBy(code))
           .map(KeyPressedEvent::Cast);
       }
 
       inline rx::observable<KeyReleasedEvent*> OnReleased() const {
         return OnEvent()
-          .filter(KeyReleasedEvent::FilterBy)
+          .filter(KeyReleasedEvent::Filter)
           .map(KeyReleasedEvent::Cast);
       }
 
       inline rx::observable<KeyReleasedEvent*> OnReleased(const KeyCode code) const {
         return OnEvent()
-          .filter(KeyReleasedEvent::FilterByCode(code))
+          .filter(KeyReleasedEvent::FilterBy(code))
           .map(KeyReleasedEvent::Cast);
       }
     };
@@ -63,14 +71,14 @@ namespace mcc {
     static inline rx::observable<KeyboardCreatedEvent*>
     OnCreated() {
       return OnEvent()
-        .filter(KeyboardCreatedEvent::FilterBy)
+        .filter(KeyboardCreatedEvent::Filter)
         .map(KeyboardCreatedEvent::Cast);
     }
 
     static inline rx::observable<KeyboardDestroyedEvent*>
     OnDestroyed() {
       return OnEvent()
-        .filter(KeyboardDestroyedEvent::FilterBy)
+        .filter(KeyboardDestroyedEvent::Filter)
         .map(KeyboardDestroyedEvent::Cast);
     }
   }

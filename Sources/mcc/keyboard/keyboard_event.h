@@ -3,17 +3,17 @@
 
 #include "mcc/event.h"
 #include "mcc/common.h"
-#include "mcc/keyboard/keyboard_constants.h"
+#include "mcc/keyboard/key.h"
 
 namespace mcc::keyboard {
 #define FOR_EACH_KEYBOARD_EVENT(V) \
   V(KeyboardCreated)               \
   V(KeyboardDestroyed)             \
-  V(Key)                           \
   V(KeyPressed)                    \
   V(KeyReleased)
 
   class Keyboard;
+  class KeyEvent;
   class KeyboardEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
   FOR_EACH_KEYBOARD_EVENT(FORWARD_DECLARE)
@@ -21,30 +21,43 @@ namespace mcc::keyboard {
 
 #define DECLARE_KEYBOARD_EVENT(Name)                            \
   public:                                                       \
+    Name##Event* As##Name##Event() override { return this; }    \
     const char* GetName() const override { return #Name; }      \
     std::string ToString() const override;                      \
-  public:                                                       \
-    static inline bool FilterBy(KeyboardEvent* event) {         \
-      return event && event->Is##Name##Event();                 \
+    static inline bool                                          \
+    Filter(KeyboardEvent* event) {                              \
+      return event                                              \
+          && event->Is##Name##Event();                          \
     }                                                           \
-    static inline Name##Event* Cast(KeyboardEvent* event) {     \
-      MCC_ASSERT(event && event->Is##Name##Event());            \
+    static inline Name##Event*                                  \
+    Cast(KeyboardEvent* event) {                                \
+      MCC_ASSERT(event);                                        \
+      MCC_ASSERT(event->Is##Name##Event());                     \
       return event->As##Name##Event();                          \
     }
 
   class KeyboardEvent : public Event {
   protected:
-    Keyboard* keyboard_;
+    const Keyboard* keyboard_;
 
-    explicit KeyboardEvent(Keyboard* keyboard):
+    explicit KeyboardEvent(const Keyboard* keyboard):
       Event(),
       keyboard_(keyboard) {
     }
   public:
     ~KeyboardEvent() override = default;
 
-    Keyboard* keyboard() const {
+    const Keyboard* keyboard() const {
       return keyboard_;
+    }
+
+
+    virtual KeyEvent* AsKeyEvent() {
+      return nullptr;
+    }
+
+    bool IsKeyEvent() {
+      return AsKeyEvent() != nullptr;
     }
 
 #define DEFINE_TYPE_CHECK(Name)                                         \
@@ -56,7 +69,7 @@ namespace mcc::keyboard {
 
   class KeyboardCreatedEvent : public KeyboardEvent {
   public:
-    explicit KeyboardCreatedEvent(Keyboard* keyboard):
+    explicit KeyboardCreatedEvent(const Keyboard* keyboard):
       KeyboardEvent(keyboard) {
     }
     ~KeyboardCreatedEvent() override = default;
@@ -65,7 +78,7 @@ namespace mcc::keyboard {
 
   class KeyboardDestroyedEvent : public KeyboardEvent {
   public:
-    explicit KeyboardDestroyedEvent(Keyboard* keyboard):
+    explicit KeyboardDestroyedEvent(const Keyboard* keyboard):
       KeyboardEvent(keyboard) {
     }
     ~KeyboardDestroyedEvent() override = default;
@@ -74,55 +87,55 @@ namespace mcc::keyboard {
 
   class KeyEvent : public KeyboardEvent {
   protected:
-    KeyCode code_;
+    Key key_;
   public:
-    KeyEvent(Keyboard* keyboard, const KeyCode code):
+    KeyEvent(const Keyboard* keyboard, const Key& key):
       KeyboardEvent(keyboard),
-      code_(code) {
+      key_(key) {
     }
     ~KeyEvent() override = default;
 
-    KeyCode code() const {
-      return code_;
+    const Key& GetKey() const {
+      return key_;
     }
 
-    DECLARE_KEYBOARD_EVENT(Key);
+    KeyCode GetKeyCode() const {
+      return key_.GetCode();
+    }
+
+    KeyEvent* AsKeyEvent() override {
+      return this;
+    }
   };
+
+#define DECLARE_KEYBOARD_KEY_EVENT(Name)                            \
+  DECLARE_KEYBOARD_EVENT(Name)                                      \
+  public:                                                           \
+    static inline std::function<bool(KeyboardEvent*)>               \
+    FilterBy(const KeyCode code) {                                  \
+      return [code](KeyboardEvent* event) {                         \
+        return event                                                \
+            && event->Is##Name##Event()                             \
+            && event->As##Name##Event()->GetKeyCode() == code;      \
+      };                                                            \
+    }
   
   class KeyPressedEvent : public KeyEvent {
   public:
-    KeyPressedEvent(Keyboard* keyboard, const KeyCode code):
-      KeyEvent(keyboard, code) {
+    KeyPressedEvent(const Keyboard* keyboard, const Key& key):
+      KeyEvent(keyboard, key) {
     }
     ~KeyPressedEvent() override = default;
-    DECLARE_KEYBOARD_EVENT(KeyPressed);
-  public:
-    static inline std::function<bool(KeyboardEvent*)>
-    FilterByCode(const KeyCode code) {
-      return [code](KeyboardEvent* event) {
-        return event
-            && event->IsKeyPressedEvent()
-            && (event->AsKeyPressedEvent()->code() == code);
-      };
-    }
+    DECLARE_KEYBOARD_KEY_EVENT(KeyPressed);
   };
 
   class KeyReleasedEvent : public KeyEvent {
   public:
-    KeyReleasedEvent(Keyboard* keyboard, const KeyCode code):
-      KeyEvent(keyboard, code) {
+    KeyReleasedEvent(const Keyboard* keyboard, const Key& key):
+      KeyEvent(keyboard, key) {
     }
     ~KeyReleasedEvent() override = default;
-    DECLARE_KEYBOARD_EVENT(KeyReleased);
-  public:
-    static inline std::function<bool(KeyboardEvent*)>
-    FilterByCode(const KeyCode code) {
-      return [code](KeyboardEvent* event) {
-        return event
-            && event->IsKeyReleasedEvent()
-            && (event->AsKeyReleasedEvent()->code() == code);
-      };
-    }
+    DECLARE_KEYBOARD_KEY_EVENT(KeyReleased);
   };
 }
 
