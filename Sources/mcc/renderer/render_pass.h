@@ -32,6 +32,8 @@ namespace mcc::render {
 
     struct OrderComparator {
       bool operator()(RenderPass* lhs, RenderPass* rhs) const {
+        if(lhs->GetOrder() == rhs->GetOrder())
+          return strcmp(lhs->GetName(), rhs->GetName()) < 0;
         return lhs->GetOrder() < rhs->GetOrder();
       }
     };
@@ -52,6 +54,10 @@ namespace mcc::render {
   public:
     virtual ~RenderPass() = default;
     virtual const char* GetName() const = 0;
+
+    virtual bool ShouldSkip() const {
+      return false;
+    }
     
     virtual void Append(RenderPass* pass) {
       // do nothing
@@ -144,9 +150,14 @@ namespace mcc::render {
 
     void Append(RenderPass* child) override {
       MCC_ASSERT(child);
-      children_.insert(child);
+      const auto result = children_.insert(child);
+      DLOG_IF(ERROR, !result.second) << "failed to insert " << child->GetName();
     }
   };
+
+#define DECLARE_RENDER_PASS(Name)                               \
+  public:                                                       \
+    const char* GetName() const override { return #Name; }
 }
 
 #endif //MCC_RENDER_PASS_H

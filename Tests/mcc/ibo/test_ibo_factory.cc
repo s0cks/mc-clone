@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "mcc/mock_gl.h"
-#include "mcc/ibo/ibo_factory.h"
 
 namespace mcc::ibo {
   using namespace ::testing;

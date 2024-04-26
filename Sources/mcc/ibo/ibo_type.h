@@ -25,7 +25,7 @@ namespace mcc::ibo {
     }                                                           \
     static inline const uint64_t                                \
     GetSize() {                                                 \
-      return sizeof(uint64_t);                                  \
+      return sizeof(RawType);                                   \
     }                                                           \
     static inline const uint64_t                                \
     CalculateBufferSize(const uint64_t num_indices) {           \

@@ -19,6 +19,7 @@ namespace mcc::ibo {
 #define DEFINE_IBO_USAGE(Name, GlValue) k##Name = (GlValue),
     FOR_EACH_IBO_USAGE(DEFINE_IBO_USAGE)
 #undef DEFINE_IBO_USAGE
+    kDefaultUsage = kDynamicDraw,
   };
 
   static inline const char*

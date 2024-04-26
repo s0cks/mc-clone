@@ -41,6 +41,7 @@ namespace mcc {
       friend class UByteIbo;
       friend class UShortIbo;
       friend class UIntIbo;
+      friend class IboBuilder;
     public:
       struct IdComparator {
         bool operator() (const Ibo* lhs, const Ibo* rhs) const {
@@ -79,6 +80,12 @@ namespace mcc {
       }
 
       static void BindIbo(const IboId id);
+      static void InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage);
+
+      static inline void
+      InitBufferData(const uint64_t num_bytes, const Usage usage) {
+        return InitBufferData(NULL, num_bytes, usage);
+      }
       
       static inline void
       BindDefaultIbo() {
@@ -164,6 +171,11 @@ namespace mcc {
     public:
       typedef typename T::Type Index;
       typedef std::vector<Index> IndexList;
+      
+      static inline uint64_t
+      GetIndexSize() {
+        return T::GetSize();
+      }
 
       static inline constexpr const char*
       GetTypeName() {
@@ -215,6 +227,7 @@ namespace mcc {
     };
 
     class UByteIbo : public IboTemplate<UnsignedByte> {
+      friend class IboBuilder;
     protected:
       UByteIbo(const IboId id,
                const Usage usage,
@@ -261,6 +274,7 @@ namespace mcc {
     };
 
     class UShortIbo : public IboTemplate<UnsignedShort> {
+      friend class IboBuilder;
     protected:
       UShortIbo(const IboId id,
                 const Usage usage,
@@ -307,6 +321,7 @@ namespace mcc {
     };
 
     class UIntIbo : public IboTemplate<UnsignedInt> {
+      friend class IboBuilder;
     private:
       UIntIbo(const IboId id,
               const Usage usage,
@@ -316,7 +331,7 @@ namespace mcc {
     public:
       ~UIntIbo() override = default;
       std::string ToString() const override;
-    protected:
+    private:
       static inline UIntIbo*
       New(const IboId id, const Usage usage, const uint64_t length) {
         const auto ibo = new UIntIbo(id, usage, length);
@@ -331,6 +346,8 @@ namespace mcc {
         MCC_ASSERT(Filter(ibo));
         return (const UIntIbo*) ibo;
       }
+
+      static UIntIbo* New(const int32_t num_indices, const Usage usage);
 
       static UIntIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
       

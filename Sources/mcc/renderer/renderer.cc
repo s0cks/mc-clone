@@ -11,6 +11,7 @@
 #include "mcc/renderer/render_pass.h"
 #include "mcc/renderer/render_pass_2d.h"
 #include "mcc/renderer/render_pass_3d.h"
+#include "mcc/renderer/render_pass_guis.h"
 #include "mcc/renderer/renderer_stats.h"
 #include "mcc/renderer/render_pass_executor.h"
 
@@ -142,6 +143,7 @@ namespace mcc::render {
     window->OnOpened()
       .subscribe([renderer](WindowOpenedEvent* event) {
         renderer->GetPass()->Append(new RendererPipelinePass(renderer));
+        renderer->GetPass()->Append(new RenderPassGuis());
       });
   }
 

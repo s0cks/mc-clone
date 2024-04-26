@@ -24,13 +24,17 @@ namespace mcc::vbo {
 
     template<typename... Attributes>
     Vbo* CreateVbo(const VboId id);
+
+    template<typename... Attributes>
+    Vbo* CreateVbo(const VboId id, const int32_t num_vertices);
   public:
     virtual ~VboBuilderBase() = default;
     virtual uint64_t GetLength() const = 0;
     virtual uint64_t GetVertexLength() const = 0;
     virtual const uint8_t* GetVertexData() const = 0;
     virtual VboUsage GetUsage() const = 0;
-    virtual rx::observable<Vbo*> Build(const VboUsage usage, const int num = 1) const = 0;
+    virtual rx::observable<Vbo*> Build(const int num = 1) const = 0;
+    virtual rx::observable<Vbo*> Build(const int32_t num_vertices, const int32_t num = 1) const = 0;
   };
 
   template<class Vertex,
@@ -72,10 +76,10 @@ namespace mcc::vbo {
       data_.insert(std::end(data_), std::begin(vertices), std::end(vertices));
     }
 
-    rx::observable<Vbo*> Build(const VboUsage usage, const int num = 1) const override {
+    rx::observable<Vbo*> Build(const int num = 1) const override {
       return GenerateVboId(num)
         .filter(IsValidVboId)
-        .map([this,usage](VboId id) {
+        .map([this](VboId id) {
           return CreateVbo(id);
         });
     }

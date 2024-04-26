@@ -1,7 +1,7 @@
 #include "mcc/ibo/ibo.h"
 
 #include <sstream>
-#include "mcc/ibo/ibo_factory.h"
+#include "mcc/ibo/ibo_builder.h"
 #include "mcc/ibo/ibo_registry.h"
 
 namespace mcc::ibo {
@@ -16,6 +16,11 @@ namespace mcc::ibo {
 
   void Ibo::BindIbo(const IboId id) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+    CHECK_GL(FATAL);
+  }
+
+  void Ibo::InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage) {
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_bytes, bytes, usage);
     CHECK_GL(FATAL);
   }
 
@@ -80,32 +85,22 @@ namespace mcc::ibo {
   }
 
   UByteIbo* UByteIbo::New(const Index* indices, const uint64_t num_indices, const Usage usage) {
-    IboFactory<UnsignedByte> factory(indices, num_indices);
-    return factory.Create(usage)
-      .map([usage,num_indices](const IboId id) {
-        return UByteIbo::New(id, usage, num_indices);
-      })
-      .as_blocking()
-      .first();
+    NOT_IMPLEMENTED(FATAL);//TODO: implement
+    return nullptr;
   }
 
   UShortIbo* UShortIbo::New(const Index* indices, const uint64_t num_indices, const Usage usage) {
-    IboFactory<UnsignedShort> factory(indices, num_indices);
-    return factory.Create(usage)
-      .map([usage,num_indices](const IboId id) {
-        return UShortIbo::New(id, usage, num_indices);
-      })
-      .as_blocking()
-      .first();
+    NOT_IMPLEMENTED(FATAL);//TODO: implement
+    return nullptr;
+  }
+
+  UIntIbo* UIntIbo::New(const int32_t num_indices, const Usage usage) {
+    NOT_IMPLEMENTED(FATAL);//TODO: implement
+    return nullptr;
   }
 
   UIntIbo* UIntIbo::New(const UIntIbo::Index* indices, const uint64_t num_indices, const Usage usage) {
-    IboFactory<UnsignedInt> factory(indices, num_indices);
-    return factory.Create(usage)
-      .map([usage,num_indices](const IboId id) {
-        return UIntIbo::New(id, usage, num_indices);
-      })
-      .as_blocking()
-      .first();
+    NOT_IMPLEMENTED(FATAL);//TODO: implement
+    return nullptr;
   }
 }

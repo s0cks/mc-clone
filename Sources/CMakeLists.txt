@@ -84,6 +84,7 @@ add_library(${PROJECT_NAME}
   mcc/renderer/renderer_stats.h
   mcc/renderer/renderer.h mcc/renderer/renderer.cc
   mcc/renderer/render_ticker.h mcc/renderer/render_ticker.cc
+  mcc/renderer/render_pass_guis.h mcc/renderer/render_pass_guis.cc
 # Engine
   mcc/engine/engine_event.h mcc/engine/engine_event.cc
   mcc/engine/engine.h mcc/engine/engine.cc
@@ -105,9 +106,9 @@ add_library(${PROJECT_NAME}
   mcc/ibo/ibo_id.h
   mcc/ibo/ibo_index.h
   mcc/ibo/ibo_usage.h
+  mcc/ibo/ibo_builder.h mcc/ibo/ibo_builder.cc
   mcc/ibo/ibo_events.h mcc/ibo/ibo_events.cc
   mcc/ibo/ibo.h mcc/ibo/ibo.cc
-  mcc/ibo/ibo_factory.h mcc/ibo/ibo_factory.cc
   mcc/ibo/ibo_scope.h
   mcc/ibo/ibo_registry.h mcc/ibo/ibo_registry.cc
 # VAOs
@@ -223,6 +224,13 @@ add_library(${PROJECT_NAME}
   mcc/font/font_mesh.h mcc/font/font_mesh.cc
   mcc/font/truetype.h
   mcc/font/font_renderer.h mcc/font/font_renderer.cc
+# GUIs
+  mcc/gui/gui_context.h mcc/gui/gui_context.cc
+  mcc/gui/gui_component.h mcc/gui/gui_component.cc
+  mcc/gui/gui_window.h mcc/gui/gui_window.cc
+  mcc/gui/gui_events.h mcc/gui/gui_events.cc
+  mcc/gui/gui_constants.h
+  mcc/gui/gui_tree.h mcc/gui/gui_tree.cc
 # Misc
   mcc/murmur.h
   mcc/settings.h mcc/settings.cc
