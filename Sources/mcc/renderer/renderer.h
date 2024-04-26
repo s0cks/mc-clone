@@ -19,6 +19,8 @@ namespace mcc {
   }
 
   namespace render {
+    rx::observable<RenderEvent*> OnRenderEvent();
+
     class Renderer {
       friend class RenderTicker;
     public:

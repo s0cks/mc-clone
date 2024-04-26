@@ -9,13 +9,15 @@
 #include "mcc/thread_local.h"
 #include "mcc/vao/vao_scope.h"
 
+#include "mcc/ibo/ibo_scope.h"
+#include "mcc/vbo/vbo_scope.h"
 #include "mcc/vbo/vbo_builder.h"
 
-namespace mcc::render {
-  using namespace gui;
+#include "mcc/window/window.h"
 
+namespace mcc::render {
   bool RenderPassGuis::ShouldSkip() const {
-    return Tree::IsEmpty();
+    return gui::Tree::IsEmpty();
   }
 
   class ComponentRenderer : public gui::ComponentVisitor {
@@ -32,7 +34,7 @@ namespace mcc::render {
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      shape::NewCenteredRect(vertices_, indices_, window->GetPos(), window->GetSize());
+      shape::NewRect(vertices_, indices_, window->GetPos(), window->GetSize());
       return true;
     }
   };
@@ -97,7 +99,7 @@ namespace mcc::render {
     MCC_ASSERT(num_vertices >= 1);
     DLOG(INFO) << "creating gui vbo w/ " << num_vertices << " vertices....";
     vbo::VboBuilder<gui::Vertex,
-                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kDynamicDraw);
+                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kStaticDraw);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();
@@ -145,15 +147,23 @@ namespace mcc::render {
     return SetIbo(CreateIbo(num_indices));
   }
 
+  RenderPassGuis::RenderPassGuis():
+    RenderPass(),
+    prog_(Program::New("colored_2d")),
+    camera_(Window::Get()),
+    projection_(camera_.GetProjection()) {
+  }
+
   void RenderPassGuis::Render() {
     // compute vertices && indices for roots
     gui::VertexList vertices;
     UIntIbo::IndexList indices;
     ComponentRenderer renderer(vertices, indices);
-    const auto num_roots = Tree::GetNumberOfRoots();
+
+    const auto num_roots = gui::Tree::GetNumberOfRoots();
     DLOG(INFO) << "rendering " << num_roots << " root components.....";
     for(auto idx = 0; idx < num_roots; idx++) {
-      const auto root = Tree::GetRoot(idx);
+      const auto root = gui::Tree::GetRoot(idx);
       if(!root) {
         DLOG(WARNING) << "root #" << idx << " is null.";
         continue;
@@ -165,14 +175,17 @@ namespace mcc::render {
     // update vao, vbo, ibo data on gpu
     const auto vao = GetOrCreateVao();
     vao::VaoBindScope scope(vao);
-    const auto vbo = GetOrCreateVbo(512);
-    const auto ibo = GetOrCreateIbo(512);
+    const auto vbo = GetOrCreateVbo(128);
+    {
+      vbo::VboUpdateScope update(vbo);
+      update.Update(vertices);
+    }
 
-    // draw
-    // disable depth test & cull face
-    // bind vao
-    // bind & enable vbo
-    // bind ibo
-    // draw all root components
+    InvertedCullFaceScope cull_face;
+    vbo::VboDrawScope draw_scope(vbo);
+    prog_->Apply();
+    prog_->SetMat4("projection", projection_);
+    prog_->Apply();
+    draw_scope.Draw(GL_TRIANGLES);
   } 
 }

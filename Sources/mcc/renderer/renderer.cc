@@ -19,7 +19,7 @@ namespace mcc::render {
   static ThreadLocal<Renderer> renderer_;
   static rx::subject<RenderEvent*> events_;
 
-  rx::observable<RenderEvent*> OnEvent() {
+  rx::observable<RenderEvent*> OnRenderEvent() {
     return events_.get_observable();
   }
 
@@ -58,9 +58,11 @@ namespace mcc::render {
     return renderer_.Get();
   }
 
-  class RendererPipeline : public Pipeline {
-  private:
+  class RendererPipelinePass : public OrderedSequenceRenderPass {
+  protected:
     const Renderer* renderer_;
+    glm::mat4 projection_;
+    OrthoCamera camera_;
 
     inline const Renderer* GetRenderer() const {
       return renderer_;
@@ -69,18 +71,6 @@ namespace mcc::render {
     inline Renderer::Mode GetRenderMode() const {
       return GetRenderer()->GetMode();
     }
-  public:
-    RendererPipeline(const Renderer* renderer):
-      Pipeline(),
-      renderer_(renderer) {
-      MCC_ASSERT(renderer);
-      const auto window = Window::Get();
-      const auto windowSize = window->GetSize();
-      OrthoCamera camera(window);
-      const auto& projection = camera.GetProjection();
-      // AddChild(CreateRenderQuadPipeline(projection, window->GetCenterCoord(), glm::vec2(256), kGreen));
-    }
-    ~RendererPipeline() override = default;
 
     void Render() override {
       const auto window = Window::Get();
@@ -106,27 +96,13 @@ namespace mcc::render {
       CHECK_GL(FATAL);
       glClearColor(0.4, 0.3, 0.4, 1.0f);
       CHECK_GL(FATAL);
-
-      RenderChildren();
-
-      window->SwapBuffers();
-      //TODO:
-      // Renderer::ResetEntityCounter();
-      // Renderer::ResetVertexCounter();
-    }
-  };
-
-  class RendererPipelinePass : public RenderPass {
-  protected:
-    RendererPipeline pipeline_;
-
-    void Render() override {
-      pipeline_.Render();
     }
   public:
-    explicit RendererPipelinePass(const Renderer* renderer):
-      RenderPass(),
-      pipeline_(renderer) {
+    explicit RendererPipelinePass(Window* window, const Renderer* renderer):
+      OrderedSequenceRenderPass(),
+      renderer_(renderer),
+      camera_(window) {
+      MCC_ASSERT(renderer);
     }
     ~RendererPipelinePass() override = default;
 
@@ -141,9 +117,10 @@ namespace mcc::render {
     const auto renderer = new Renderer(engine->GetLoop());
     SetThreadRenderer(renderer);
     window->OnOpened()
-      .subscribe([renderer](WindowOpenedEvent* event) {
-        renderer->GetPass()->Append(new RendererPipelinePass(renderer));
-        renderer->GetPass()->Append(new RenderPassGuis());
+      .subscribe([renderer,window](WindowOpenedEvent* event) {
+        const auto pass = new RendererPipelinePass(window, renderer);
+        pass->Append(new RenderPassGuis());
+        renderer->GetPass()->Append(pass);
       });
   }
 
@@ -153,6 +130,7 @@ namespace mcc::render {
 
   void Renderer::Run(const uv_run_mode mode) {
     LOG(INFO) << "running....";
+
     const auto start_ns = uv::Now();
     render::RenderPassExecutor::Execute(GetPass());
     const auto stop_ns = uv::Now();

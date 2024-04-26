@@ -34,6 +34,22 @@ namespace mcc::ibo {
     }
   };
 
+  class IboUpdateScope : public IboScope {
+  public:
+    explicit IboUpdateScope(const Ibo* ibo):
+      IboScope(ibo) {
+    }
+    ~IboUpdateScope() override = default;
+
+    void Update(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
+      Ibo::UpdateBufferData(offset, bytes, num_bytes);
+    }
+
+    void Update(const uint8_t* bytes, const uint64_t num_bytes) {
+      return Update(0, bytes, num_bytes);
+    }
+  };
+
   class IboDrawScope : public IboScope {
   public:
     explicit IboDrawScope(const Ibo* ibo):

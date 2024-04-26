@@ -60,14 +60,14 @@ namespace mcc::vbo {
 
     static inline void
     BindAndEnable(const GLvoid* ptr) {
-      Bind(ptr);
       Enable();
+      Bind(ptr);
     }
 
     static inline void
     BindAndEnable() {
-      Bind();
       Enable();
+      Bind();
     }
   };
 

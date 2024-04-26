@@ -20,7 +20,6 @@ namespace mcc::keyboard {
     Window* window_;
     KeySet keys_;
     KeyStateSet states_;
-    rx::subscription pre_tick_sub_;
 
     inline Window* window() const {
       return window_;
@@ -30,22 +29,15 @@ namespace mcc::keyboard {
       return window_->handle();
     }
 
-    void Process() override;
+    void OnPreTick(engine::PreTickEvent* event) override;
   public:
     explicit GlfwKeyboard(engine::Engine* engine, Window* window):
-      Keyboard(),
+      Keyboard(engine),
       window_(window),
       keys_(this),
-      states_(keys_),
-      pre_tick_sub_() {
-      pre_tick_sub_ = engine->OnPreTickEvent()
-        .subscribe([this](engine::PreTickEvent* event) {
-          Process();
-        });
+      states_(keys_) {
     }
-    ~GlfwKeyboard() override {
-      pre_tick_sub_.unsubscribe();
-    }
+    ~GlfwKeyboard() override = default;
 
     KeyState GetKey(const KeyCode code) const override;
   };

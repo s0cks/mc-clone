@@ -9,7 +9,7 @@ namespace mcc::keyboard {
     return static_cast<KeyState>(glfwGetKey(window->handle(), static_cast<int>(code)));
   }
 
-  void GlfwKeyboard::Process() {
+  void GlfwKeyboard::OnPreTick(engine::PreTickEvent* event) {
     //TODO: fix
     for(const auto& key : keys_) {
       const auto curr_state = states_.GetState(key).value_or(kKeyReleased);

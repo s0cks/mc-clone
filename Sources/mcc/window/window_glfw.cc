@@ -30,6 +30,7 @@ namespace mcc {
     }
 
     void SwapBuffers() override {
+      DLOG(INFO) << "swapping buffers....";
       glfwSwapBuffers(handle());
       CHECK_GL(FATAL);
     }

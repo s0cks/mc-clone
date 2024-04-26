@@ -42,6 +42,7 @@ namespace mcc {
       friend class UShortIbo;
       friend class UIntIbo;
       friend class IboBuilder;
+      friend class IboUpdateScope;
     public:
       struct IdComparator {
         bool operator() (const Ibo* lhs, const Ibo* rhs) const {
@@ -81,6 +82,12 @@ namespace mcc {
 
       static void BindIbo(const IboId id);
       static void InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage);
+      static void UpdateBufferData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes);
+      
+      static inline void
+      UpdateBufferData(const uint8_t* bytes, const uint64_t num_bytes) {
+        return UpdateBufferData(0, bytes, num_bytes);
+      }
 
       static inline void
       InitBufferData(const uint64_t num_bytes, const Usage usage) {

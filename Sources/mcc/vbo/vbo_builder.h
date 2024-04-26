@@ -13,7 +13,7 @@ namespace mcc::vbo {
 
     template<typename A, typename B, typename... Tail>
     static inline void BindAndEnable() {
-      B::BindAndEnable();
+      B::BindAndEnable(0);
       BindAndEnable<A, Tail...>();
     }
 
@@ -27,8 +27,8 @@ namespace mcc::vbo {
       MCC_ASSERT(IsValidVboId(id));
       const auto total_size = GetLength() * GetVertexLength();
       Vbo::BindVbo(id);
-      Vbo::PutVboData(GetVertexData(), total_size, GetUsage());
       BindAndEnableAll<Attributes...>();
+      Vbo::PutVboData(GetVertexData(), total_size, GetUsage());
       Vbo::BindDefaultVbo();
       return Vbo::New(id, GetLength(), GetVertexLength(), GetUsage());
     }
@@ -67,9 +67,9 @@ namespace mcc::vbo {
     }
 
     uint64_t GetLength() const override {
-      return !data_.empty()
-           ? data_.size()
-           : length_;
+      return data_.empty()
+           ? length_
+           : data_.size();
     }
 
     uint64_t GetVertexLength() const override {

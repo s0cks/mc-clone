@@ -6,19 +6,22 @@
 #include "mcc/keyboard/key_state.h"
 #include "mcc/keyboard/keyboard_event.h"
 
+#include "mcc/engine/engine_event_listener.h"
+
 namespace mcc {
   namespace engine {
     class Engine;
   }
 
   namespace keyboard {
-    class Keyboard {
+    class Keyboard : public engine::PreTickEventListener {
       friend class engine::Engine;
     protected:
       static void PublishEvent(KeyboardEvent* event);
     protected:
-      Keyboard() = default;
-      virtual void Process() = 0;
+      explicit Keyboard(engine::Engine* engine):
+        PreTickEventListener(engine) {  
+      }
 
       template<class E, typename... Args>
       inline void Publish(Args... args) const {

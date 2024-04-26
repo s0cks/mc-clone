@@ -24,6 +24,11 @@ namespace mcc::ibo {
     CHECK_GL(FATAL);
   }
 
+  void Ibo::UpdateBufferData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, num_bytes, bytes);
+    CHECK_GL(FATAL);
+  }
+
   rx::observable<IboEvent*> OnIboEvent() {
     return events_.get_observable();
   }

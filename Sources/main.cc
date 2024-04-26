@@ -35,6 +35,16 @@ LogEvent() {
   };
 }
 
+class TestWindow : public mcc::gui::Window {
+public:
+  TestWindow():
+    Window() {
+    SetPos({ 0, 0 });
+    SetSize({ 128, 128 });
+  }
+  ~TestWindow() override = default;
+};
+
 int main(int argc, char** argv) {
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
@@ -92,7 +102,7 @@ int main(int argc, char** argv) {
     .map(keyboard::KeyPressedEvent::Cast)
     .subscribe([](keyboard::KeyPressedEvent* event) {
       DLOG(INFO) << "space pressed.";
-      gui::Window::New();
+      new TestWindow();
     });
 
   const auto engine = engine::Engine::GetEngine();

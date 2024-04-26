@@ -4,15 +4,26 @@
 #include "mcc/gui/gui_component.h"
 #include "mcc/renderer/render_pass.h"
 
+#include "mcc/program/program.h"
+#include "mcc/camera/camera_ortho.h"
+
 namespace mcc::render {
   class RenderPassGuis : public RenderPass {
+  protected:
+    ProgramRef prog_;
+    OrthoCamera camera_;
+    glm::mat4 projection_;
   public:
-    RenderPassGuis() = default;
+    RenderPassGuis();
     ~RenderPassGuis() override = default;
-    bool ShouldSkip() const override;
-    DECLARE_RENDER_PASS(Guis);
 
+    bool Accept(RenderPassVisitor* vis) override {
+      return vis->Visit(this);
+    }
+
+    bool ShouldSkip() const override;
     void Render() override;
+    DECLARE_RENDER_PASS(Guis);
   };
 }
 

@@ -30,6 +30,7 @@ namespace mcc {
     class Vbo {
       friend class VboScope;
       friend class VboBindScope;
+      friend class VboUpdateScope;
       friend class VboBuilderBase;
     private:
       static void PublishEvent(VboEvent* event);
@@ -79,9 +80,21 @@ namespace mcc {
       inline void Publish(Args... args) {
         return PublishEvent<E>(this, args...);
       }
+
+      void SetLength(const uint64_t length) {
+        length_ = length;
+      }
     public:
       virtual ~Vbo() = default;
       std::string ToString() const;
+
+      void Update(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
+        Vbo::UpdateVboData(bytes, num_bytes);
+      }
+
+      inline void Update(const uint8_t* bytes, const uint64_t num_bytes) {
+        return Update(0, bytes, num_bytes);
+      }
 
       VboId GetId() const {
         return id_;

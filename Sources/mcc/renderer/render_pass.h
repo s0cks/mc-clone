@@ -67,6 +67,10 @@ namespace mcc::render {
       return false;
     }
 
+    virtual bool VisitChildren(RenderPassVisitor* vis) {
+      return false;
+    }
+
     virtual bool HasChildren() const {
       return false;
     }
@@ -108,6 +112,12 @@ namespace mcc::render {
     }
 
     bool Accept(RenderPassVisitor* vis) override {
+      if(!vis->Visit(this))
+        return false;
+      return VisitChildren(vis);
+    }
+    
+    bool VisitChildren(RenderPassVisitor* vis) override {
       for(const auto& child : children_) {
         if(!vis->Visit(child))
           return false;

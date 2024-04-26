@@ -29,6 +29,14 @@ namespace mcc {
         .color = color,
       });
       vertices.push_back(Vertex {
+        .pos = topLeft,
+        .color = color,
+      });
+      vertices.push_back(Vertex {
+        .pos = bottomRight,
+        .color = color,
+      });
+      vertices.push_back(Vertex {
         .pos = topRight,
         .color = color,
       });
@@ -36,14 +44,14 @@ namespace mcc {
       const auto v2 = vertex_start + 1;
       const auto v3 = vertex_start + 2;
       const auto v4 = vertex_start + 3;
-      // triangle 1
-      indices.push_back(v1);
-      indices.push_back(v2);
-      indices.push_back(v3);
-      // triangle 2
-      indices.push_back(v1);
-      indices.push_back(v3);
-      indices.push_back(v4);
+      // // triangle 1
+      // indices.push_back(v1);
+      // indices.push_back(v2);
+      // indices.push_back(v3);
+      // // triangle 2
+      // indices.push_back(v1);
+      // indices.push_back(v3);
+      // indices.push_back(v4);
     }
 
 #define X pos.x

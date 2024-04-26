@@ -55,6 +55,17 @@ namespace mcc::engine {
     std::string ToString() const override;                                            \
     friend std::ostream& operator<<(std::ostream& stream, const Name##Event& rhs) {   \
       return stream << rhs.ToString();                                                \
+    }                                                                                 \
+    static inline bool                                                                \
+    Filter(EngineEvent* event) {                                                      \
+      return event                                                                    \
+          && event->Is##Name##Event();                                                \
+    }                                                                                 \
+    static inline Name##Event*                                                        \
+    Cast(EngineEvent* event) {                                                        \
+      MCC_ASSERT(event);                                                              \
+      MCC_ASSERT(event->Is##Name##Event());                                           \
+      return event->As##Name##Event();                                                \
     }
   
   class PreInitEvent : public EngineEvent {

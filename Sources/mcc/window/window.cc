@@ -5,7 +5,21 @@
 
 #include "mcc/os_thread.h"
 
+#include "mcc/renderer/renderer.h"
+
 namespace mcc {
+  Window::Window(WindowHandle* handle):
+    handle_(handle),
+    events_(),
+    sub_post_render_() {
+    sub_post_render_ = render::OnRenderEvent()
+      .filter(render::PostRenderEvent::Filter)
+      .map(render::PostRenderEvent::Cast)
+      .subscribe([this](render::PostRenderEvent* event) {
+        SwapBuffers();
+      });
+  }
+
   WindowSize Window::GetInitialSize() {
     return { FLAGS_width, FLAGS_height };
   }

@@ -87,6 +87,7 @@ add_library(${PROJECT_NAME}
   mcc/renderer/render_pass_guis.h mcc/renderer/render_pass_guis.cc
 # Engine
   mcc/engine/engine_event.h mcc/engine/engine_event.cc
+  mcc/engine/engine_event_listener.h mcc/engine/engine_event_listener.cc
   mcc/engine/engine.h mcc/engine/engine.cc
   mcc/engine/engine_stats.h
   mcc/engine/engine_state.h

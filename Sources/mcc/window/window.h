@@ -37,18 +37,19 @@ namespace mcc {
   protected:
     WindowHandle* handle_;
     rxsub::subject<WindowEvent*> events_;
+    rx::subscription sub_post_render_;
 
-    explicit Window(WindowHandle* handle):
-      handle_(handle),
-      events_() {
-    }
+    explicit Window(WindowHandle* handle);
 
     inline void SetHandle(WindowHandle* handle) {
       MCC_ASSERT(!HasHandle());
       handle_ = handle;
     }
   public:
-    virtual ~Window() = default;
+    virtual ~Window() {
+      if(sub_post_render_.is_subscribed())
+        sub_post_render_.unsubscribe();
+    }
 
     inline WindowHandle* handle() const {
       return handle_;
