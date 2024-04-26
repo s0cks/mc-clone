@@ -253,19 +253,11 @@ namespace mcc {
         return (const UByteIbo*) ibo;
       }
 
-      static UByteIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
-      
-      static inline UByteIbo*
-      New(const IndexList& indices, const Usage usage) {
-        return New(&indices[0], indices.size(), usage);
-      }
+      static UByteIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
+      static UByteIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
-      static inline UByteIbo*                                              \
-      New##Name(const Index* indices, const uint64_t num_indices) {       \
-        return New(indices, num_indices, k##Name);                        \
-      }                                                                   \
-      static inline UByteIbo*                                              \
+      static inline UByteIbo*                                             \
       New##Name(const IndexList& indices) {                               \
         return New(indices, k##Name);                                     \
       }
@@ -300,19 +292,11 @@ namespace mcc {
         return (const UShortIbo*) ibo;
       }
 
-      static UShortIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
-      
-      static inline UShortIbo*
-      New(const IndexList& indices, const Usage usage) {
-        return New(&indices[0], indices.size(), usage);
-      }
+      static UShortIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
+      static UShortIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
-      static inline UShortIbo*                                              \
-      New##Name(const Index* indices, const uint64_t num_indices) {       \
-        return New(indices, num_indices, k##Name);                        \
-      }                                                                   \
-      static inline UShortIbo*                                              \
+      static inline UShortIbo*                                            \
       New##Name(const IndexList& indices) {                               \
         return New(indices, k##Name);                                     \
       }
@@ -347,20 +331,10 @@ namespace mcc {
         return (const UIntIbo*) ibo;
       }
 
-      static UIntIbo* New(const int32_t num_indices, const Usage usage);
-
-      static UIntIbo* New(const Index* indices, const uint64_t num_indices, const Usage usage);
-      
-      static inline UIntIbo*
-      New(const IndexList& indices, const Usage usage) {
-        return New(&indices[0], indices.size(), usage);
-      }
+      static UIntIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
+      static UIntIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
-      static inline UIntIbo*                                              \
-      New##Name(const Index* indices, const uint64_t num_indices) {       \
-        return New(indices, num_indices, k##Name);                        \
-      }                                                                   \
       static inline UIntIbo*                                              \
       New##Name(const IndexList& indices) {                               \
         return New(indices, k##Name);                                     \

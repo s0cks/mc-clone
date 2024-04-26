@@ -23,10 +23,15 @@ namespace mcc::vbo {
     }
 
     template<typename... Attributes>
-    Vbo* CreateVbo(const VboId id);
-
-    template<typename... Attributes>
-    Vbo* CreateVbo(const VboId id, const int32_t num_vertices);
+    Vbo* InitVbo(const VboId id) const {
+      MCC_ASSERT(IsValidVboId(id));
+      const auto total_size = GetLength() * GetVertexLength();
+      Vbo::BindVbo(id);
+      Vbo::PutVboData(GetVertexData(), total_size, GetUsage());
+      BindAndEnableAll<Attributes...>();
+      Vbo::BindDefaultVbo();
+      return Vbo::New(id, GetLength(), GetVertexLength(), GetUsage());
+    }
   public:
     virtual ~VboBuilderBase() = default;
     virtual uint64_t GetLength() const = 0;
@@ -34,25 +39,37 @@ namespace mcc::vbo {
     virtual const uint8_t* GetVertexData() const = 0;
     virtual VboUsage GetUsage() const = 0;
     virtual rx::observable<Vbo*> Build(const int num = 1) const = 0;
-    virtual rx::observable<Vbo*> Build(const int32_t num_vertices, const int32_t num = 1) const = 0;
   };
 
   template<class Vertex,
            class... Attributes>
-  class VboBuilder : public VboBuilderBase {
-  public:
+  class VboBuilderTemplate : public VboBuilderBase {
+  private:
     typedef std::vector<Vertex> VertexList;
   protected:
-    VboUsage usage_;
     VertexList data_;
-  public:
-    explicit VboBuilder(const VboUsage usage):
+    uint64_t length_;
+    VboUsage usage_;
+
+    VboBuilderTemplate(const VertexList& data, 
+                       const uint64_t length,
+                       const VboUsage usage):
+      VboBuilderBase(),
+      data_(data),
+      length_(length),
       usage_(usage) {
     }
-    ~VboBuilder() override = default;
+  public:
+    ~VboBuilderTemplate() override = default;
+
+    VboUsage GetUsage() const override {
+      return usage_;
+    }
 
     uint64_t GetLength() const override {
-      return data_.size();
+      return !data_.empty()
+           ? data_.size()
+           : length_;
     }
 
     uint64_t GetVertexLength() const override {
@@ -60,11 +77,9 @@ namespace mcc::vbo {
     }
 
     const uint8_t* GetVertexData() const override {
-      return (const uint8_t*) &data_[0];
-    }
-
-    VboUsage GetUsage() const override {
-      return usage_;
+      return data_.empty()
+           ? NULL
+           : (const uint8_t*) &data_[0];
     }
 
     void Append(const Vertex& vertex) {
@@ -79,10 +94,25 @@ namespace mcc::vbo {
     rx::observable<Vbo*> Build(const int num = 1) const override {
       return GenerateVboId(num)
         .filter(IsValidVboId)
-        .map([this](VboId id) {
-          return CreateVbo(id);
+        .map([this](const VboId id) {
+          return VboBuilderBase::InitVbo<Attributes...>(id);
         });
     }
+  };
+
+  template<class Vertex,
+           class... Attributes>
+  class VboBuilder : public VboBuilderTemplate<Vertex, Attributes...> {
+  public:
+    typedef std::vector<Vertex> VertexList;
+  public:
+    VboBuilder(const VertexList& vertices, const VboUsage usage):
+      VboBuilderTemplate<Vertex, Attributes...> (vertices, 0, usage) {
+    }
+    explicit VboBuilder(const uint64_t num_vertices = 0, const VboUsage usage = kDefaultVboUsage):
+      VboBuilderTemplate<Vertex, Attributes...> (VertexList{}, num_vertices, usage) {
+    }
+    ~VboBuilder() override = default;
   };
 }
 

@@ -36,7 +36,7 @@ namespace mcc::gui {
     Component() = default;
   public:
     virtual ~Component() = default;
-    virtual const Point& GetPosition() const = 0;
+    virtual const Point& GetPos() const = 0;
     virtual const Size& GetSize() const = 0;
     virtual int32_t GetNumberOfChildren() const = 0;
     virtual Component* GetChildAt(const int32_t idx) const = 0;
@@ -80,7 +80,7 @@ namespace mcc::gui {
 
     ComponentBase();
 
-    void SetPosition(const Point& rhs) {
+    void SetPos(const Point& rhs) {
       pos_ = rhs;
     }
 
@@ -104,7 +104,7 @@ namespace mcc::gui {
       on_mouse_event_.unsubscribe();
     }
 
-    const Point& GetPosition() const override {
+    const Point& GetPos() const override {
       return pos_;
     }
 

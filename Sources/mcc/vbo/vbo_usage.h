@@ -19,6 +19,9 @@ namespace mcc::vbo {
 #define DEFINE_VBO_USAGE(Name, GlValue) k##Name = (GlValue),
     FOR_EACH_VBO_USAGE(DEFINE_VBO_USAGE)
 #undef DEFINE_VBO_USAGE
+
+    kTotalNumberOfVboUsages,
+    kDefaultVboUsage = kDynamicRead,
   };
 }
 

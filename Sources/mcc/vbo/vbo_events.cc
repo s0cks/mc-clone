@@ -4,6 +4,10 @@
 #include "mcc/vbo/vbo.h"
 
 namespace mcc::vbo {
+  VboId VboEvent::GetVboId() const {
+    return GetVbo()->GetId();
+  }
+
   std::string VboCreatedEvent::ToString() const {
     std::stringstream ss;
     ss << "VboDestroyedEvent(";

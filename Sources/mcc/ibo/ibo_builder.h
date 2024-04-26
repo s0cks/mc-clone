@@ -40,16 +40,25 @@ namespace mcc {
     class IboBuilderTemplate : public IboBuilder {
     protected:
       typename T::IndexList data_;
+      uint64_t length_;
+
+      explicit IboBuilderTemplate(const uint64_t length = 0):
+        IboBuilder(),
+        data_(),
+        length_(length) {
+      }
     public:
       ~IboBuilderTemplate() override = default;
-      virtual rx::observable<T*> Build() const = 0;
+      virtual rx::observable<T*> Build(const int num = 1) const = 0;
 
       uint64_t GetIndexSize() const override {
         return T::GetIndexSize();
       }
 
       uint64_t GetLength() const override {
-        return data_.size();
+        return data_.empty()
+             ? length_
+             : data_.size();
       }
 
       const uint8_t* GetData() const override {
@@ -57,27 +66,42 @@ namespace mcc {
             ? NULL
             : (const uint8_t*) &data_[0];
       }
+
+      void Append(const typename T::Index value) {
+        data_.push_back(value);
+      }
+
+      template<typename C>
+      void Append(const C& values) {
+        data_.insert(std::end(data_), std::begin(values), std::end(values));
+      }
     };
 
     class UByteIboBuilder : public IboBuilderTemplate<UByteIbo> {
     public:
-      UByteIboBuilder() = default;
+      explicit UByteIboBuilder(const uint64_t length = 0):
+        IboBuilderTemplate<UByteIbo>(length) {
+      }
       ~UByteIboBuilder() override = default;
-      rx::observable<UByteIbo*> Build() const override;
+      rx::observable<UByteIbo*> Build(const int num = 1) const override;
     };
 
     class UShortIboBuilder : public IboBuilderTemplate<UShortIbo> {
     public:
-      UShortIboBuilder() = default;
+      explicit UShortIboBuilder(const uint64_t length = 0):
+        IboBuilderTemplate<UShortIbo>(length) {
+      }
       ~UShortIboBuilder() override = default;
-      rx::observable<UShortIbo*> Build() const override;
+      rx::observable<UShortIbo*> Build(const int num = 1) const override;
     };
 
     class UIntIboBuilder : public IboBuilderTemplate<UIntIbo> {
     public:
-      UIntIboBuilder() = default;
+      explicit UIntIboBuilder(const uint64_t length = 0):
+        IboBuilderTemplate<UIntIbo>(length) {   
+      }
       ~UIntIboBuilder() override = default;
-      rx::observable<UIntIbo*> Build() const override;
+      rx::observable<UIntIbo*> Build(const int num = 1) const override;
     };
   }
 }

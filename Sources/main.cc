@@ -25,6 +25,8 @@
 #include "mcc/material/material.h"
 #include "mcc/camera/perspective_camera.h"
 
+#include "mcc/gui/gui_window.h"
+
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
 LogEvent() {
@@ -79,6 +81,16 @@ int main(int argc, char** argv) {
   ibo::OnIboDestroyedEvent()
     .subscribe([](ibo::IboDestroyedEvent* event) {
       DLOG(INFO) << "ibo destroyed: " << event->GetIbo()->ToString();
+    });
+  
+  keyboard::OnCreated()
+    .subscribe([](keyboard::KeyboardCreatedEvent* event) {
+      event->keyboard()->OnPressed()
+        .filter(keyboard::KeyPressedEvent::FilterByCode(keyboard::kSpace))
+        .subscribe([](keyboard::KeyPressedEvent* event) {
+          DLOG(INFO) << "space pressed.";
+          const auto win = gui::Window::New();
+        });
     });
 
   const auto engine = engine::Engine::GetEngine();

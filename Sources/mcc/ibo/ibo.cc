@@ -84,23 +84,54 @@ namespace mcc::ibo {
     return ss.str();
   }
 
-  UByteIbo* UByteIbo::New(const Index* indices, const uint64_t num_indices, const Usage usage) {
-    NOT_IMPLEMENTED(FATAL);//TODO: implement
-    return nullptr;
+  UByteIbo* UByteIbo::New(const IndexList& indices, const Usage usage) {
+    UByteIboBuilder builder;
+    builder.SetUsage(usage);
+    builder.Append(indices);
+    return builder.Build()
+      .as_blocking()
+      .first();
   }
 
-  UShortIbo* UShortIbo::New(const Index* indices, const uint64_t num_indices, const Usage usage) {
-    NOT_IMPLEMENTED(FATAL);//TODO: implement
-    return nullptr;
+  UByteIbo* UByteIbo::New(const uint64_t num_indices, const Usage usage) {
+    UByteIboBuilder builder(num_indices);
+    builder.SetUsage(usage);
+    return builder.Build()
+      .as_blocking()
+      .first();
   }
 
-  UIntIbo* UIntIbo::New(const int32_t num_indices, const Usage usage) {
-    NOT_IMPLEMENTED(FATAL);//TODO: implement
-    return nullptr;
+  UShortIbo* UShortIbo::New(const IndexList& indices, const Usage usage) {
+    UShortIboBuilder builder;
+    builder.SetUsage(usage);
+    builder.Append(indices);
+    return builder.Build()
+      .as_blocking()
+      .first();
   }
 
-  UIntIbo* UIntIbo::New(const UIntIbo::Index* indices, const uint64_t num_indices, const Usage usage) {
-    NOT_IMPLEMENTED(FATAL);//TODO: implement
-    return nullptr;
+  UShortIbo* UShortIbo::New(const uint64_t num_indices, const Usage usage) {
+    UShortIboBuilder builder(num_indices);
+    builder.SetUsage(usage);
+    return builder.Build()
+      .as_blocking()
+      .first();
+  }
+
+  UIntIbo* UIntIbo::New(const uint64_t num_indices, const Usage usage) {
+    UIntIboBuilder builder(num_indices);
+    builder.SetUsage(usage);
+    return builder.Build()
+      .as_blocking()
+      .first();
+  }
+
+  UIntIbo* UIntIbo::New(const IndexList& indices, const Usage usage) {
+    UIntIboBuilder builder;
+    builder.SetUsage(usage);
+    builder.Append(indices);
+    return builder.Build()
+      .as_blocking()
+      .first();
   }
 }

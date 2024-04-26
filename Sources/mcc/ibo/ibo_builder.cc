@@ -9,22 +9,22 @@ namespace mcc::ibo {
     return IboType::New(id, GetUsage(), GetLength());
   }
 
-  rx::observable<UByteIbo*> UByteIboBuilder::Build() const {
-    return GenerateIboId()
+  rx::observable<UByteIbo*> UByteIboBuilder::Build(const int num) const {
+    return GenerateIboId(num)
       .map([this](const IboId id) {
         return InitIbo<UByteIbo>(id);
       });
   }
 
-  rx::observable<UShortIbo*> UShortIboBuilder::Build() const {
-    return GenerateIboId()
+  rx::observable<UShortIbo*> UShortIboBuilder::Build(const int num) const {
+    return GenerateIboId(num)
       .map([this](const IboId id) {
         return InitIbo<UShortIbo>(id);
       });
   }
 
-  rx::observable<UIntIbo*> UIntIboBuilder::Build() const {
-    return GenerateIboId()
+  rx::observable<UIntIbo*> UIntIboBuilder::Build(const int num) const {
+    return GenerateIboId(num)
       .map([this](const IboId id) {
         return InitIbo<UIntIbo>(id);
       });

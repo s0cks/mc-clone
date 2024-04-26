@@ -27,9 +27,10 @@ namespace mcc::keyboard {
       window_(window),
       events_(),
       pre_tick_sub_() {
-      pre_tick_sub_ = engine->OnPreTickEvent().subscribe([this](engine::PreTickEvent* event) {
-        Process();
-      });
+      pre_tick_sub_ = engine->OnPreTickEvent()
+        .subscribe([this](engine::PreTickEvent* event) {
+          Process();
+        });
     }
     ~GlfwKeyboard() override = default;
 

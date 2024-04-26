@@ -27,6 +27,11 @@ namespace mcc::gui {
     NOT_IMPLEMENTED(ERROR); //TODO: implement
   }
 
+  void Tree::RemoveRoot(Component* root) {
+    MCC_ASSERT(root);
+    NOT_IMPLEMENTED(ERROR);//TODO: implement
+  }
+
   void Tree::Publish(RootComponentEvent* event) {
     MCC_ASSERT(event);
     const auto& subscriber = events_.get_subscriber();

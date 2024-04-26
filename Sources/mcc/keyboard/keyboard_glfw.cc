@@ -15,16 +15,33 @@ namespace mcc::keyboard {
 
   static inline void
   UpdateAll(Window* window, KeyStateSet& keys) {
-    for(auto idx = 0; idx < kNumberOfKeyCodes; idx++) {
-      const auto key = static_cast<KeyCode>(idx);
-      const auto curr_state = keys.Get(key);
-      const auto new_state = static_cast<KeyState>(glfwGetKey(window->handle(), key));
-      keys.Set(key, new_state);
-    }
+
   }
 
   void GlfwKeyboard::Process() {
-    // KeyStateSet keys;
-    // UpdateAll(window(), keys);
+    //TODO: fix
+    const auto window = Window::Get()->handle();
+    KeyStateSet keys;
+    for(auto idx = 1; idx < kNumberOfKeyCodes; idx++) {
+      const auto key = static_cast<KeyCode>(idx);
+      const auto curr_state = keys.Get(key);
+      const auto new_state = static_cast<KeyState>(glfwGetKey(window, key));
+      if(curr_state == new_state)
+        continue;
+      
+      switch(new_state) {
+        case kKeyPressed: {
+          KeyPressedEvent event(this, key);
+          events_.get_subscriber().on_next(&event);
+          break;
+        }
+        case kKeyReleased: {
+          KeyReleasedEvent event(this, key);
+          events_.get_subscriber().on_next(&event);
+          break;
+        }
+        default: continue;
+      }
+    }
   }
 }
