@@ -4,7 +4,7 @@
 #include "mcc/gfx.h"
 
 namespace mcc::texture {
-  typedef glm::u32vec2 TextureSize;
+  typedef glm::i32vec2 TextureSize;
   typedef glm::u32vec2 TextureCoord;
   typedef uint32_t Pixel;
 }

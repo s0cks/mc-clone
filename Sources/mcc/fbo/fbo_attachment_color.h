@@ -7,6 +7,7 @@
 
 #include "mcc/texture/texture.h"
 #include "mcc/fbo/fbo_attachment.h"
+#include "mcc/texture/texture_format.h"
 
 namespace mcc::fbo {
   using texture::Texture;
@@ -46,7 +47,7 @@ namespace mcc::fbo {
 
     DECLARE_FBO_ATTACHMENT(Color);
   public:
-    static ColorAttachment* New(const glm::i32vec2& size);
+    static ColorAttachment* New(const texture::TextureFormat format, const texture::TextureSize& size, const Level level);
   };
 }
 

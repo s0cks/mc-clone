@@ -25,6 +25,21 @@ namespace mcc::texture {
     subscriber.on_next(event);
   }
 
+  void Texture::BindTexture(const TextureTarget target, const TextureId id) {
+    glBindTexture(target, id);
+    CHECK_GL(FATAL);
+  }
+
+  void Texture::DeleteTextures(const TextureId* ids, const uint64_t num_ids) {
+    glDeleteTextures(num_ids, ids);
+    CHECK_GL(FATAL);
+  }
+
+  void Texture::ActiveTexture(const int32_t slot) {
+    glActiveTexture(GL_TEXTURE0 + slot);
+    CHECK_GL(FATAL);
+  }
+
   rx::observable<TextureId> Texture::GenerateTextureId(const int num) {
     MCC_ASSERT(num >= 1);
     return rx::observable<>::create<TextureId>([num](rx::subscriber<TextureId> s) {

@@ -52,6 +52,8 @@ namespace mcc {
 
     class Texture : public gfx::Resource,
                     public res::ResourceTemplate<res::kTextureType>  {
+      friend class TextureBindScope;
+      friend class TextureBuilder;
     public:
       static rx::observable<TextureId> GenerateTextureId(const int num = 1);
     protected:
@@ -65,6 +67,20 @@ namespace mcc {
       void Publish(Args... args) const {
         E event(GetTextureId(), args...);
         return Publish(&event);
+      }
+
+      static void BindTexture(const TextureTarget target, const TextureId id);
+      static void DeleteTextures(const TextureId* ids, const uint64_t num_ids);
+      static void ActiveTexture(const int32_t slot);
+
+      static inline void
+      DeleteTexture(const TextureId id) {
+        return DeleteTextures(&id, 1);
+      }
+      
+      static inline void
+      UnbindTexture(const TextureTarget target) {
+        return BindTexture(target, kInvalidTextureId);
       }
     public:
       Texture() = default;
@@ -230,51 +246,10 @@ namespace mcc {
         return New(uri::Uri(uri));
       }
     };
-
-    template<const uint32_t Slot, const texture::TextureTarget Target = texture::k2D>
-    class TextureBindScope { //TODO: move to mcc::texture
-    private:
-      texture::TextureId id_; //TODO: need to hold reference to this texture
-
-      inline void Bind() const {
-        glBindTexture(Target, id_);
-        CHECK_GL(FATAL);
-        glActiveTexture(GL_TEXTURE0 + Slot);
-        CHECK_GL(FATAL);
-      }
-
-      void Unbind() const {
-        glBindTexture(Target, kInvalidTextureId);
-        CHECK_GL(FATAL);
-      }
-    public:
-      explicit TextureBindScope(const texture::TextureId id):
-        id_(id) {
-        Bind();
-      }
-      explicit TextureBindScope(const texture::Texture* texture):
-        TextureBindScope(texture->GetTextureId()) {
-      }
-      explicit TextureBindScope(const TextureRef& ref):
-        TextureBindScope(ref->GetTextureId()) {
-      }
-      ~TextureBindScope() {
-        Unbind();
-      }
-
-      texture::TextureId id() const {
-        return id_;
-      }
-
-      uint32_t slot() const {
-        return Slot;
-      }
-    };
   }
   using texture::Texture2D;
   using texture::Texture3D;
   using texture::CubeMap;
-  using texture::TextureBindScope;
 }
 
 #endif //MCC_TEXTURE_H

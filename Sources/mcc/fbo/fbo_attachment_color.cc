@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "mcc/fbo/fbo.h"
+#include "mcc/texture/texture_builder.h"
 #include "mcc/texture/texture_factory.h"
 
 namespace mcc::fbo {
@@ -18,8 +19,18 @@ namespace mcc::fbo {
     Fbo::AttachTexture2D(target, GetAttachmentPoint(), GetTexture()->GetTextureId());
   }
 
-  ColorAttachment* ColorAttachment::New(const glm::i32vec2& size) {
-    NOT_IMPLEMENTED(FATAL); //TODO: implement
-    return nullptr;
+  ColorAttachment* ColorAttachment::New(const texture::TextureFormat format,
+                                        const texture::TextureSize& size,
+                                        const Level level) {
+    using namespace texture;
+    TextureBuilder builder(k2D);
+    builder.SetFormat(format);
+    builder.SetInternalFormat(format);
+    builder.SetSize(size);
+    const auto texture = builder.Build()
+      .as_blocking()
+      .first();
+    MCC_ASSERT(texture);
+    return new ColorAttachment(texture, level);
   }
 }
