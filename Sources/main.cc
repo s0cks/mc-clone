@@ -31,7 +31,7 @@ template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
 LogEvent() {
   return [](Event* event) {
-    LOG_AT_LEVEL(Severity) << (*event);
+    LOG_AT_LEVEL(Severity) << event->ToString();
   };
 }
 
@@ -93,17 +93,8 @@ int main(int argc, char** argv) {
       DLOG(INFO) << "ibo destroyed: " << event->GetIbo()->ToString();
     });
   
-  const auto sub1 = keyboard::OnEvent()
-    .subscribe([](keyboard::KeyboardEvent* event) {
-      DLOG(INFO) << " - " << event->ToString();
-    });
-  const auto sub2 = keyboard::OnEvent()
-    .filter(keyboard::KeyPressedEvent::FilterBy(GLFW_KEY_SPACE))
-    .map(keyboard::KeyPressedEvent::Cast)
-    .subscribe([](keyboard::KeyPressedEvent* event) {
-      DLOG(INFO) << "space pressed.";
-      new TestWindow();
-    });
+  const auto sub1 = mouse::OnMouseEvent()
+    .subscribe(LogEvent<mouse::MouseEvent>());
 
   const auto engine = engine::Engine::GetEngine();
   engine->OnPostInitEvent()

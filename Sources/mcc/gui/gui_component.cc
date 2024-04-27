@@ -9,9 +9,7 @@ namespace mcc::gui {
     pos_(),
     size_(),
     on_mouse_event_() {
-    const auto mouse = mouse::GetMouse();
-    MCC_ASSERT(mouse);
-    on_mouse_event_ = mouse->OnEvent()
+    on_mouse_event_ = mouse::OnMouseEvent()
       .subscribe([this](mouse::MouseEvent* event) {
         return OnMouseEvent(event);
       });

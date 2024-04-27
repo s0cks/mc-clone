@@ -42,13 +42,13 @@ namespace mcc::camera {
       .subscribe([this](engine::TickEvent* event) {
         return OnTick(event);
       });
-    on_mouse_init_ = mouse::OnInitialized()
-      .subscribe([this](mouse::MouseInitializedEvent* event) {
-        return OnMouseInit(event);
+    on_mouse_init_ = mouse::OnMouseCreatedEvent()
+      .subscribe([this](mouse::MouseCreatedEvent* event) {
+        return OnMouseCreated(event);
       });
-    on_mouse_deinit_ = mouse::OnDeinitialized()
-      .subscribe([this](mouse::MouseDeinitializedEvent* event) {
-        return OnMouseDeinit(event);
+    on_mouse_deinit_ = mouse::OnMouseDestroyedEvent()
+      .subscribe([this](mouse::MouseDestroyedEvent* event) {
+        return OnMouseDestroyed(event);
       });
   }
 
@@ -94,17 +94,16 @@ namespace mcc::camera {
     }
   }
 
-  void PerspectiveCameraComponent::OnMouseInit(mouse::MouseInitializedEvent* event) {
+  void PerspectiveCameraComponent::OnMouseCreated(mouse::MouseCreatedEvent* event) {
     if(on_mouse_move_.is_subscribed())
       on_mouse_move_.unsubscribe();
-    const auto mouse = event->mouse();
-    on_mouse_move_ = mouse->OnMouseMove()
+    on_mouse_move_ = mouse::OnMouseMoveEvent()
       .subscribe([this](mouse::MouseMoveEvent* event) {
         return OnMouseMove(event);
       });
   }
 
-  void PerspectiveCameraComponent::OnMouseDeinit(mouse::MouseDeinitializedEvent* event) {
+  void PerspectiveCameraComponent::OnMouseDestroyed(mouse::MouseDestroyedEvent* event) {
     if(on_mouse_move_.is_subscribed())
       on_mouse_move_.unsubscribe();
   }

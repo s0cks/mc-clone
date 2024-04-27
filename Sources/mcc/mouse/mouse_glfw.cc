@@ -7,52 +7,15 @@
 
 namespace mcc::mouse {
   GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
-    Mouse(),
-    engine_(engine),
+    Mouse(engine),
     window_(window),
+    buttons_(),
+    states_(),
     pos_(),
     last_pos_(),
-    delta_(),
-    buttons_(),
-    events_(),
-    pre_tick_sub_() {
-    pre_tick_sub_ = engine->OnPreTickEvent().subscribe([this](engine::PreTickEvent* event) {
-      Process();
-    });
-  }
-
-  std::optional<Entity> GlfwMouse::CastRayTo(const float diff) const {
-    //TODO:
-    // std::optional<Entity> result = std::nullopt;
-    // const auto ray = CastRay();
-    // DLOG(INFO) << "ray: " << glm::to_string(ray);
-    // const auto transform = TransformComponent::Get();
-    // transform->Visit([&result,&ray,&diff](const Entity& e, const ComponentState<Transform>& transform) {
-    //   const auto& pos = (*transform).position;
-    //   DLOG(INFO) << e << " pos: " << glm::to_string(pos);
-    //   const auto distance = ray - pos;
-    //   DLOG(INFO) << "distance: " << glm::to_string(distance);
-    //   if(abs(distance.x) <= diff && abs(distance.y) <= diff && abs(distance.z) <= diff) {
-    //     result = std::optional<Entity>{ e };
-    //     return false;
-    //   }
-    //   return true;
-    // });
-    // return result;
-    return {};
-  }
-
-  glm::vec3 GlfwMouse::CastRay() const {
-    //TODO:
-    // auto ndc = GetNormalizedPosition();
-    // const auto camera = camera::PerspectiveCameraBehavior::GetCameraComponent();
-    // const auto projection = (*camera)->GetProjectionMatrix();
-    // const auto view = (*camera)->GetViewMatrix();
-    // const auto screen_pos = glm::vec4(ndc.x, -ndc.y, 1.0f, 1.0f);
-    // const auto inverse_vp = glm::inverse(projection * view);
-    // const auto world_pos = inverse_vp * screen_pos;
-    // return glm::normalize(glm::vec3(world_pos));
-    return {};
+    delta_() {
+    for(auto idx = 0; idx < kNumberOfMouseButtons; idx++)
+      buttons_.insert(MouseButton(idx));
   }
 
   glm::vec2 GlfwMouse::GetNormalizedPosition() const {
@@ -77,26 +40,34 @@ namespace mcc::mouse {
     return !HasNoMotion(delta);
   }
 
-  void GlfwMouse::Process() {
+  GLFWwindow* GlfwMouse::GetWindowHandle() const {
+    return GetWindow()->handle();
+  }
+
+  void GlfwMouse::OnPreTick(engine::PreTickEvent* event) {
     const auto handle = Window::Get()->handle();
     pos_ = GetCursorPosition();
     delta_ = (pos_ - last_pos_);
-    if(HasMotion(delta_)) {
-      Publish<MouseMoveEvent>(pos_, last_pos_, delta_);
-    }
+    if(HasMotion(delta_))
+      PublishEvent<MouseMoveEvent>(this, pos_, last_pos_, delta_);
     last_pos_ = pos_;
 
-    for(auto idx = 0; idx < kNumberOfMouseButtons; idx++) {
-      const auto btn = static_cast<MouseButton>(idx);
-      const auto& last_state = buttons_[btn];
-      const auto new_state = GetButton(btn);
-      if(new_state != last_state)
-        Publish<MouseButtonEvent>(btn, last_state, new_state);
-      buttons_[btn] = new_state;
+    for(const auto& btn : buttons_) {
+      const auto current_state = states_[btn];
+      const auto new_state = btn.GetState(GetWindowHandle());
+      if(new_state != current_state) {
+        states_[btn] = new_state;
+        switch(new_state) {
+          case MouseButton::kPressed:
+            PublishEvent<MouseButtonPressedEvent>(this, btn);
+            continue;
+          case MouseButton::kReleased:
+            PublishEvent<MouseButtonReleasedEvent>(this, btn);
+            continue;
+          default:
+            continue;
+        }
+      }
     }
-  }
-
-  MouseButtonState GlfwMouse::GetButton(const MouseButton btn) const {
-    return static_cast<MouseButtonState>(glfwGetMouseButton(window()->handle(), btn));
   }
 }

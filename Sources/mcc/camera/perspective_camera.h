@@ -59,8 +59,8 @@ namespace mcc::camera {
 
     PerspectiveCameraComponent();
     void OnMouseMove(mouse::MouseMoveEvent* event);
-    void OnMouseInit(mouse::MouseInitializedEvent* event);
-    void OnMouseDeinit(mouse::MouseDeinitializedEvent* event);
+    void OnMouseCreated(mouse::MouseCreatedEvent* event);
+    void OnMouseDestroyed(mouse::MouseDestroyedEvent* event);
     void OnTick(engine::TickEvent* event);
   public:
     ~PerspectiveCameraComponent() override {

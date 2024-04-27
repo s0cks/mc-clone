@@ -67,9 +67,10 @@ add_library(${PROJECT_NAME}
   mcc/keyboard/keyboard_glfw.h mcc/keyboard/keyboard_glfw.cc
 # Mouse
   mcc/mouse/mouse_constants.h
-  mcc/mouse/mouse_event.h mcc/mouse/mouse_event.cc
+  mcc/mouse/mouse_events.h mcc/mouse/mouse_events.cc
   mcc/mouse/mouse.h mcc/mouse/mouse.cc
   mcc/mouse/mouse_glfw.h mcc/mouse/mouse_glfw.cc
+  mcc/mouse/mouse_button.h mcc/mouse/mouse_button.cc
 # Camera
   mcc/camera/camera_ortho.h mcc/camera/camera_ortho.cc
 # Render

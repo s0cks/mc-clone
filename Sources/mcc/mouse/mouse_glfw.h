@@ -6,6 +6,7 @@
 #define MCC_MOUSE_GLFW_H
 
 #include <optional>
+
 #include "mcc/mouse/mouse.h"
 
 namespace mcc {
@@ -16,22 +17,20 @@ namespace mcc::mouse {
   class GlfwMouse : public Mouse {
     friend class Engine;
   protected:
-    engine::Engine* engine_;
     Window* window_;
-    MouseEventSubject events_;
+    MouseButtonSet buttons_;
+    MouseButtonStateSet states_;
     glm::vec2 pos_;
     glm::vec2 last_pos_;
     glm::vec2 delta_;
-    MouseButtonState buttons_[kNumberOfMouseButtons];
-    rx::subscription pre_tick_sub_;
 
-    template<class E, typename... Args>
-    inline void Publish(Args... args) {
-      E event(this, args...);
-      return events_.get_subscriber().on_next(&event);
+    void OnPreTick(engine::PreTickEvent* event) override;
+
+    inline Window* GetWindow() const {
+      return window_;
     }
 
-    void Process() override;
+    GLFWwindow* GetWindowHandle() const;
   public:
     explicit GlfwMouse(engine::Engine* engine, Window* window);
     ~GlfwMouse() override = default;
@@ -39,12 +38,6 @@ namespace mcc::mouse {
     inline Window* window() const {
       return window_;
     }
-
-    rx::observable<MouseEvent*> OnEvent() const override {
-      return events_.get_observable();
-    }
-
-    MouseButtonState GetButton(const MouseButton btn) const override;
 
     glm::vec2 GetPosition() const override {
       return pos_;
@@ -56,8 +49,17 @@ namespace mcc::mouse {
 
     glm::vec2 GetCursorPosition() const override;
     glm::vec2 GetNormalizedPosition() const override;
-    glm::vec3 CastRay() const override;
-    std::optional<Entity> CastRayTo(const float diff = 0.5f) const override;
+
+    rx::observable<MouseButton> GetAllButtons() const override {
+      return rx::observable<>::iterate(buttons_);
+    }
+
+    rx::observable<std::pair<MouseButton, MouseButton::State>> GetAllButtonStates() const override {
+      return GetAllButtons()
+        .map([this](const MouseButton& btn) {
+          return std::make_pair(btn, btn.GetState(GetWindowHandle()));
+        });
+    }
   };
 }
 
