@@ -32,8 +32,16 @@ namespace mcc::gui {
 
   class Component {
     friend class Window;
+    friend class OnMouseEnterEvent;
   protected:
     Component() = default;
+    virtual void Publish(GuiEvent* event) = 0;
+
+    template<class E, typename... Args>
+    inline void Publish(Args... args) {
+      E event(args...);
+      return Publish((GuiEvent*) &event);
+    }
   public:
     virtual ~Component() = default;
     virtual const Point& GetPos() const = 0;
@@ -68,11 +76,6 @@ namespace mcc::gui {
   };
 
   class ComponentBase : public Component {
-  private:
-    bool entered_;
-    rx::subscription on_mouse_event_;
-
-    void OnMouseEvent(mouse::MouseEvent* event);
   protected:
     rx::subject<GuiEvent*> events_;
     Point pos_;
@@ -88,21 +91,13 @@ namespace mcc::gui {
       size_ = rhs;
     }
 
-    void Publish(GuiEvent* event) {
+    void Publish(GuiEvent* event) override {
       MCC_ASSERT(event);
       const auto& subscriber = events_.get_subscriber();
       subscriber.on_next(event);
     }
-
-    template<class E, typename... Args>
-    void Publish(Args... args) {
-      E event(args...);
-      return Publish((GuiEvent*) &event);
-    }
   public:
-    ~ComponentBase() override {
-      on_mouse_event_.unsubscribe();
-    }
+    ~ComponentBase() override = default;
 
     const Point& GetPos() const override {
       return pos_;

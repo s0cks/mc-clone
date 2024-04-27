@@ -7,25 +7,6 @@ namespace mcc::gui {
     Component(),
     events_(),
     pos_(),
-    size_(),
-    on_mouse_event_() {
-    on_mouse_event_ = mouse::OnMouseEvent()
-      .subscribe([this](mouse::MouseEvent* event) {
-        return OnMouseEvent(event);
-      });
-  }
-
-  void ComponentBase::OnMouseEvent(mouse::MouseEvent* event) {
-    if(event->IsMouseMoveEvent()) {
-      const auto& pos = event->AsMouseMoveEvent()->pos();
-      Point point(pos[0], pos[1]);
-      if(Contains(point)) {
-        entered_ = true;
-        Publish<MouseEnterEvent>(point);
-      } else if(!(entered_ && Contains(point))) {
-        entered_ = false;
-        Publish<MouseExitEvent>(point);
-      }
-    }
+    size_() {
   }
 }

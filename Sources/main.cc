@@ -26,6 +26,7 @@
 #include "mcc/camera/perspective_camera.h"
 
 #include "mcc/gui/gui_window.h"
+#include "mcc/gui/gui_on_mouseenter.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
@@ -35,10 +36,16 @@ LogEvent() {
   };
 }
 
-class TestWindow : public mcc::gui::Window {
+class TestWindow : public mcc::gui::Window,
+                   public mcc::gui::OnMouseEnterEvent {
+protected:
+  void OnMouseEnter(mcc::gui::MouseEnterEvent* event) override {
+    DLOG(INFO) << "mouse-enter: " << event->ToString();
+  }
 public:
   TestWindow():
-    Window() {
+    Window(),
+    OnMouseEnterEvent(this) {
     SetPos({ 0, 0 });
     SetSize({ 128, 128 });
   }

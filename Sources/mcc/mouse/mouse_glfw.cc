@@ -27,7 +27,7 @@ namespace mcc::mouse {
     const auto window = Window::Get();
     double xPos, yPos;
     glfwGetCursorPos(window->handle(), &xPos, &yPos);
-    return glm::vec2(xPos, yPos);
+    return glm::vec2(static_cast<float>(xPos), static_cast<float>(yPos));
   }
   
   static inline bool

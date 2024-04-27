@@ -34,7 +34,7 @@ namespace mcc {
     }
     
     glm::mat4 CalculateProjection() const {
-      return glm::ortho(0.0f, size_[0] * 1.0f, 0.0f, size_[1] * 1.0f, -1000.0f, 1000.0f);
+      return glm::ortho(0.0f, size_[0] * 1.0f, size_[1] * 1.0f, 0.0f, -1000.0f, 1000.0f);
     }
   public:
     OrthoCamera(const glm::vec2 size, const float aspect = 2.0f):

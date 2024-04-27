@@ -33,6 +33,9 @@ namespace mcc::mouse {
   std::string MouseMoveEvent::ToString() const {
     std::stringstream ss;
     ss << "MouseMoveEvent(";
+    ss << "pos=" << glm::to_string(pos()) << ", ";
+    ss << "last=" << glm::to_string(last_pos()) << ", ";
+    ss << "delta=" << glm::to_string(delta());
     ss << ")";
     return ss.str();
   }
