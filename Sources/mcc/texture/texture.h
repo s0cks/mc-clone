@@ -7,7 +7,7 @@
 #include "mcc/resource/resource.h"
 
 #include "mcc/texture/texture_id.h"
-#include "mcc/texture/texture_event.h"
+#include "mcc/texture/texture_events.h"
 #include "mcc/texture/texture_options.h"
 #include "mcc/texture/texture_constants.h"
 
