@@ -83,14 +83,17 @@ int main(int argc, char** argv) {
   mouse::InitMouse();
   keyboard::InitKeyboard();
   render::Renderer::Init();
-  
-  const auto engine = engine::Engine::GetEngine();
-  engine->Run();
 
+  const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
   keyboard->OnPressed(GLFW_KEY_ESCAPE)
     .subscribe([engine](keyboard::KeyPressedEvent* event) {
       engine->Shutdown();
     });
+  keyboard->OnPressed(GLFW_KEY_SPACE)
+    .subscribe([](keyboard::KeyPressedEvent* event) {
+      new TestWindow();
+    });  
+  engine->Run();
   return EXIT_SUCCESS;
 }
