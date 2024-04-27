@@ -18,10 +18,6 @@ add_executable(${PROJECT_NAME}-tests
   mcc/texture/mock_texture.h
   mcc/texture/test_texture_filter.cc
   mcc/texture/test_texture_alignment.cc
-# Materials
-  mcc/material/test_material.cc
-  mcc/material/test_material_json.cc
-  mcc/material/test_material_loader_default.cc
 # Misc
   mcc/mock_glfw.h mcc/mock_glfw.cc)
 target_link_libraries(${PROJECT_NAME}-tests

@@ -83,30 +83,8 @@ int main(int argc, char** argv) {
   mouse::InitMouse();
   keyboard::InitKeyboard();
   render::Renderer::Init();
-
-  ibo::OnIboCreatedEvent()
-    .subscribe([](ibo::IboCreatedEvent* event) {
-      DLOG(INFO) << "ibo created: " << event->GetIbo()->ToString();
-    });
-  ibo::OnIboDestroyedEvent()
-    .subscribe([](ibo::IboDestroyedEvent* event) {
-      DLOG(INFO) << "ibo destroyed: " << event->GetIbo()->ToString();
-    });
   
-  const auto sub1 = mouse::OnMouseEvent()
-    .subscribe(LogEvent<mouse::MouseEvent>());
-
   const auto engine = engine::Engine::GetEngine();
-  engine->OnPostInitEvent()
-    .subscribe([](engine::PostInitEvent* event) {
-      DLOG(INFO) << "all registered ibos:";
-      const auto& registry = ibo::GetRegistry();
-      registry.GetAllIbos()
-        .as_blocking()
-        .subscribe([](const Ibo* ibo) {
-          DLOG(INFO) << " - " << ibo->ToString();
-        });
-    });
   engine->Run();
 
   const auto keyboard = GetKeyboard();
