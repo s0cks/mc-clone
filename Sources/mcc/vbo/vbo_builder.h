@@ -13,7 +13,7 @@ namespace mcc::vbo {
 
     template<typename A, typename B, typename... Tail>
     static inline void BindAndEnable() {
-      B::BindAndEnable(0);
+      B::BindAndEnable();
       BindAndEnable<A, Tail...>();
     }
 

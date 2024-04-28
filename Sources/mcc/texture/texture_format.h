@@ -22,7 +22,7 @@ namespace mcc::texture {
       case k##Name: return #Name;
       FOR_EACH_TEXTURE_FORMAT(DEFINE_TO_STRING)
 #undef DEFINE_TO_STRING
-      default: "Unknown TextureFormat";
+      default: return "Unknown TextureFormat";
     }
   }
 

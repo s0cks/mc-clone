@@ -17,27 +17,27 @@ namespace mcc {
                  const Color& color = kBlack) {
       const auto vertex_start = vertices.size();
       vertices.push_back(Vertex {
-        .pos = topLeft,
+        .pos = glm::vec3(topLeft, 0.0f),
         .color = color,
       });
       vertices.push_back(Vertex {
-        .pos = bottomLeft,
+        .pos = glm::vec3(bottomLeft, 0.0f),
         .color = color,
       });
       vertices.push_back(Vertex {
-        .pos = bottomRight,
+        .pos = glm::vec3(bottomRight, 0.0f),
         .color = color,
       });
       vertices.push_back(Vertex {
-        .pos = topLeft,
+        .pos = glm::vec3(topLeft, 0.0f),
         .color = color,
       });
       vertices.push_back(Vertex {
-        .pos = bottomRight,
+        .pos = glm::vec3(bottomRight, 0.0f),
         .color = color,
       });
       vertices.push_back(Vertex {
-        .pos = topRight,
+        .pos = glm::vec3(topRight, 0.0f),
         .color = color,
       });
       const auto v1 = vertex_start + 0;

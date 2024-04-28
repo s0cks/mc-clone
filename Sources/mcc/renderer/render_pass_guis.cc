@@ -100,7 +100,7 @@ namespace mcc::render {
     MCC_ASSERT(num_vertices >= 1);
     DLOG(INFO) << "creating gui vbo w/ " << num_vertices << " vertices....";
     vbo::VboBuilder<gui::Vertex,
-                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kStaticDraw);
+                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kStreamDraw);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();
@@ -189,15 +189,15 @@ namespace mcc::render {
           DLOG(INFO) << " - " << vertex;
         });
     }
-
-    InvertedDepthTestScope depth_test;
-    InvertedCullFaceScope cull_face;
+    
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
+    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+    CHECK_GL(FATAL);
+
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
     prog_->SetMat4("projection", projection_);
-    prog_->Apply();
     draw_scope.Draw(GL_TRIANGLES);
   } 
 }

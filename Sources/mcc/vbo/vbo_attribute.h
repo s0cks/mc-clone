@@ -72,23 +72,23 @@ namespace mcc::vbo {
   };
 
   template<const AttributeIndex Index, 
-           const AttributeOffset Offset,
-           const AttributeStride Stride>
+           const AttributeStride Stride,
+           const AttributeOffset Offset>
   class Vec2fAttribute : public Attribute<Index, 2, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
-  template<const AttributeIndex Index,
-           const AttributeOffset Offset,
-           const AttributeStride Stride>
+  template<const AttributeIndex Index, 
+           const AttributeStride Stride,
+           const AttributeOffset Offset>
   class Vec3fAttribute : public Attribute<Index, 3, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
-  template<const AttributeIndex Index,
-           const AttributeOffset Offset,
-           const AttributeStride Stride>
+  template<const AttributeIndex Index, 
+           const AttributeStride Stride,
+           const AttributeOffset Offset>
   class Vec4fAttribute : public Attribute<Index, 4, GL_FLOAT, GL_FALSE, Stride, Offset>{};
 
   template<const AttributeIndex Index,
-           const AttributeOffset Offset,
-           const AttributeStride Stride>
+           const AttributeStride Stride,
+           const AttributeOffset Offset>
   class ColorAttribute : public Attribute<Index, 4, GL_UNSIGNED_BYTE, GL_TRUE, Stride, Offset>{};
 }
 

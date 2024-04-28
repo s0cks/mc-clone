@@ -12,7 +12,7 @@
 
 namespace mcc::gui {
   struct Vertex {
-    glm::vec2 pos;
+    glm::vec3 pos;
     Color color;
     
     Vertex() = default;
@@ -32,8 +32,8 @@ namespace mcc::gui {
 
   typedef std::vector<Vertex> VertexList;
 
-  class PosAttr : public vbo::Vec2fAttribute<0, offsetof(Vertex, pos), sizeof(Vertex)>{};
-  class ColorAttr : public vbo::ColorAttribute<1, offsetof(Vertex, color), sizeof(Vertex)>{};
+  class PosAttr : public vbo::Vec3fAttribute<0, sizeof(Vertex), offsetof(Vertex, pos)>{};
+  class ColorAttr : public vbo::ColorAttribute<1, sizeof(Vertex), offsetof(Vertex, color)>{};
 
   class Context {
     friend class ContextScope;

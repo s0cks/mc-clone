@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/test_rapidjson.h mcc/test_rapidjson.cc
   mcc/mock_gl.h mcc/mock_gl.cc
   mcc/mock_subscription.h
+  mcc/test_color.cc
 # IBOs
   mcc/ibo/test_ibo_factory.cc
 # Shaders
