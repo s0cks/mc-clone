@@ -28,6 +28,7 @@
 #include "mcc/gui/gui_window.h"
 #include "mcc/gui/gui_on_mouseenter.h"
 #include "mcc/gui/gui_on_mouseexit.h"
+#include "mcc/gui/gui_on_mouseclick.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
@@ -39,7 +40,8 @@ LogEvent() {
 
 class TestWindow : public mcc::gui::Window,
                    public mcc::gui::OnMouseEnterEvent,
-                   public mcc::gui::OnMouseExitEvent {
+                   public mcc::gui::OnMouseExitEvent,
+                   public mcc::gui::OnMouseClickEvent {
 protected:
   void OnMouseEnter(mcc::gui::MouseEnterEvent* event) override {
     DLOG(INFO) << "enter.";
@@ -50,11 +52,16 @@ protected:
     DLOG(INFO) << "exit.";
     SetBackground(mcc::kBlack);
   }
+  
+  void OnMouseClick(mcc::gui::MouseClickEvent* event) override {
+    DLOG(INFO) << "clicked.";
+  }
 public:
   TestWindow():
     Window(),
     OnMouseEnterEvent(this),
-    OnMouseExitEvent(this) {
+    OnMouseExitEvent(this),
+    OnMouseClickEvent(this) {
     SetPos({ 0, 0 });
     SetSize({ 128, 128 });
     SetBackground(mcc::kBlack);

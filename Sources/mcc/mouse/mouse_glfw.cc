@@ -59,10 +59,10 @@ namespace mcc::mouse {
         states_[btn] = new_state;
         switch(new_state) {
           case MouseButton::kPressed:
-            PublishEvent<MouseButtonPressedEvent>(this, btn);
+            PublishEvent<MouseButtonPressedEvent>(this, pos_, btn);
             continue;
           case MouseButton::kReleased:
-            PublishEvent<MouseButtonReleasedEvent>(this, btn);
+            PublishEvent<MouseButtonReleasedEvent>(this, pos_, btn);
             continue;
           default:
             continue;

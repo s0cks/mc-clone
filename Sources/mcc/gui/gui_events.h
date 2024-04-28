@@ -5,6 +5,7 @@
 #include "mcc/common.h"
 
 #include "mcc/gui/gui_constants.h"
+#include "mcc/mouse/mouse_button.h"
 
 namespace mcc::gui {
 #define FOR_EACH_GUI_EVENT(V)       \
@@ -13,7 +14,8 @@ namespace mcc::gui {
   V(WindowOpened)                   \
   V(WindowClosed)                   \
   V(MouseEnter)                     \
-  V(MouseExit)
+  V(MouseExit)                      \
+  V(MouseClick)
 
   class GuiEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
@@ -151,6 +153,23 @@ namespace mcc::gui {
     const Point& GetPos() const {
       return pos_;
     }
+  };
+
+  class MouseClickEvent : public MouseEvent {
+  protected:
+    mouse::MouseButton button_;
+  public:
+    MouseClickEvent(const Point& pos, const mouse::MouseButton button):
+      MouseEvent(pos),
+      button_(button) {
+    }
+    ~MouseClickEvent() override = default;
+
+    mouse::MouseButton GetButton() const {
+      return button_;
+    }
+
+    DECLARE_GUI_EVENT(MouseClick);
   };
 
   class MouseEnterEvent : public MouseEvent {

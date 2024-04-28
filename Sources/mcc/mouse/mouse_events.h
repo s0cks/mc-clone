@@ -100,17 +100,24 @@ namespace mcc::mouse {
 
   class MouseButtonEvent : public MouseEvent {
   protected:
+    glm::vec2 pos_;
     MouseButton button_;
     MouseButton::State state_;
   public:
     MouseButtonEvent(Mouse* mouse,
+                     const glm::vec2& pos,
                      const MouseButton button,
                      const MouseButton::State state):
       MouseEvent(mouse),
+      pos_(pos),
       button_(button),
       state_(state) {
     }
     ~MouseButtonEvent() override = default;
+
+    const glm::vec2& GetPos() const {
+      return pos_;
+    }
 
     MouseButton GetButton() const {
       return button_;
@@ -128,8 +135,8 @@ namespace mcc::mouse {
 
   class MouseButtonPressedEvent : public MouseButtonEvent {
   public:
-    MouseButtonPressedEvent(Mouse* mouse, const MouseButton button):
-      MouseButtonEvent(mouse, button, MouseButton::kPressed) {
+    MouseButtonPressedEvent(Mouse* mouse, const glm::vec2& pos, const MouseButton button):
+      MouseButtonEvent(mouse, pos, button, MouseButton::kPressed) {
     }
     ~MouseButtonPressedEvent() override = default;
     DECLARE_MOUSE_EVENT(MouseButtonPressed);
@@ -137,8 +144,8 @@ namespace mcc::mouse {
 
   class MouseButtonReleasedEvent : public MouseButtonEvent {
   public:
-    MouseButtonReleasedEvent(Mouse* mouse, const MouseButton button):
-      MouseButtonEvent(mouse, button, MouseButton::kReleased) {
+    MouseButtonReleasedEvent(Mouse* mouse, const glm::vec2& pos, const MouseButton button):
+      MouseButtonEvent(mouse, pos, button, MouseButton::kReleased) {
     }
     ~MouseButtonReleasedEvent() override = default;
     DECLARE_MOUSE_EVENT(MouseButtonReleased);

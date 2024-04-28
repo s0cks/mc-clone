@@ -34,6 +34,7 @@ namespace mcc::gui {
     friend class Window;
     friend class OnMouseExitEvent;
     friend class OnMouseEnterEvent;
+    friend class OnMouseClickEvent;
   protected:
     Component() = default;
     virtual void Publish(GuiEvent* event) = 0;

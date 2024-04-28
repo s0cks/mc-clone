@@ -36,6 +36,14 @@ namespace mcc::gui {
     return ss.str();
   }
 
+  std::string MouseClickEvent::ToString() const {
+    std::stringstream ss;
+    ss << "MouseClickEvent(";
+    ss << "pos=" << glm::to_string(GetPos());
+    ss << ")";
+    return ss.str();
+  }
+
   std::string RootComponentRegisteredEvent::ToString() const {
     std::stringstream ss;
     ss << "RootComponentRegisteredEvent(";
@@ -44,7 +52,7 @@ namespace mcc::gui {
     return ss.str();
   }
 
-    std::string RootComponentRemovedEvent::ToString() const {
+  std::string RootComponentRemovedEvent::ToString() const {
     std::stringstream ss;
     ss << "RootComponentRemovedEvent(";
     ss << "component=" << GetComponent();
