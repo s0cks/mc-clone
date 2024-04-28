@@ -45,4 +45,13 @@ namespace mcc::gui {
   rx::observable<RootComponentEvent*> Tree::OnEvent() {
     return events_.get_observable();
   }
+
+  bool Tree::VisitAllRoots(ComponentVisitor* vis) {
+    MCC_ASSERT(vis);
+    for(const auto& root : roots_) {
+      if(!root->Accept(vis))
+        return false;
+    }
+    return true;
+  }
 }

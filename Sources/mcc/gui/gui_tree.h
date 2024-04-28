@@ -24,6 +24,7 @@ namespace mcc::gui {
     static Component* GetRoot(const int32_t idx);
     static rx::observable<Component*> GetAllRoots();
     static rx::observable<RootComponentEvent*> OnEvent();
+    static bool VisitAllRoots(ComponentVisitor* vis);
 
     static inline bool
     HasRoots() {

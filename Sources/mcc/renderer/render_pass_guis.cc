@@ -100,7 +100,7 @@ namespace mcc::render {
     MCC_ASSERT(num_vertices >= 1);
     DLOG(INFO) << "creating gui vbo w/ " << num_vertices << " vertices....";
     vbo::VboBuilder<gui::Vertex,
-                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kStreamDraw);
+                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kDynamicDraw);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();
@@ -160,17 +160,13 @@ namespace mcc::render {
     gui::VertexList vertices;
     UIntIbo::IndexList indices;
     ComponentRenderer renderer(vertices, indices);
-
     const auto num_roots = gui::Tree::GetNumberOfRoots();
     DLOG(INFO) << "rendering " << num_roots << " root components.....";
-    for(auto idx = 0; idx < num_roots; idx++) {
-      const auto root = gui::Tree::GetRoot(idx);
-      if(!root) {
-        DLOG(WARNING) << "root #" << idx << " is null.";
-        continue;
-      }
+    LOG_IF(ERROR, !gui::Tree::VisitAllRoots(&renderer)) << "failed to render tree.";
 
-      LOG_IF(ERROR, !root->Accept(&renderer)) << "failed to render root: " << root;
+    if(vertices.empty()) {
+      LOG(WARNING) << "no vertices to render.";
+      return;
     }
 
     // update vao, vbo, ibo data on gpu
@@ -181,23 +177,15 @@ namespace mcc::render {
       vbo::VboUpdateScope update(vbo);
       update.Update(vertices);
     }
-    {
-      DLOG(INFO) << "vertices (gpu):";
-      vbo::VboReadScope<gui::Vertex> read(vbo);
-      read.ReadAll()
-        .subscribe([](const gui::Vertex& vertex) {
-          DLOG(INFO) << " - " << vertex;
-        });
-    }
     
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
-    glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-    CHECK_GL(FATAL);
 
+    BlendTestScope blend(gfx::kSrcAlpha, gfx::kOneMinusSrcAlpha, gfx::kAddFunc);
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
     prog_->SetMat4("projection", projection_);
+    prog_->Apply();
     draw_scope.Draw(GL_TRIANGLES);
   } 
 }

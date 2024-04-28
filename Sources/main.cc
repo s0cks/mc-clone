@@ -43,7 +43,7 @@ class TestWindow : public mcc::gui::Window,
 protected:
   void OnMouseEnter(mcc::gui::MouseEnterEvent* event) override {
     DLOG(INFO) << "enter.";
-    SetBackground(mcc::kRed);
+    SetBackground(mcc::Color(255, 0, 0, 255 / 2));
   }
 
   void OnMouseExit(mcc::gui::MouseExitEvent* event) override {
@@ -57,6 +57,7 @@ public:
     OnMouseExitEvent(this) {
     SetPos({ 0, 0 });
     SetSize({ 128, 128 });
+    SetBackground(mcc::kBlack);
   }
   ~TestWindow() override = default;
 };
