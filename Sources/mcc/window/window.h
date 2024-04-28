@@ -16,8 +16,7 @@ namespace mcc {
     
     static void CloseWindow(WindowHandle* handle);
     static void SetWindowPos(WindowHandle* handle, const WindowPos& pos);
-    static void SetWindowSize(WindowHandle* handle, const WindowSize& size);
-    
+    static void SetWindowSize(WindowHandle* handle, const WindowSize& size);    
     static void SetWindowTitle(WindowHandle* handle, const char* title);
     
     static inline void
@@ -26,6 +25,7 @@ namespace mcc {
     }
 
     static WindowSize GetWindowSize(WindowHandle* handle);
+    static WindowSize GetWindowFramebufferSize(WindowHandle* handle);
     static WindowPos GetWindowPos(WindowHandle* handle);
   private:
     static void OnPreInit();
@@ -62,10 +62,22 @@ namespace mcc {
     virtual void Open() = 0;
     virtual void Close() = 0;
     virtual void SwapBuffers() = 0;
-    virtual glm::vec2 GetFramebufferSize() const = 0;
 
     inline WindowSize GetSize() const {
       return GetWindowSize(handle());
+    }
+
+    inline WindowSize GetFramebufferSize() const {
+      return GetWindowFramebufferSize(handle());
+    }
+
+    inline glm::vec2 GetFramebufferScale() const {
+      const auto size = GetSize();
+      const auto fb_size = GetFramebufferSize();
+      return {
+        fb_size[0] / size[0],
+        fb_size[1] / size[1],
+      };
     }
 
     inline uint32_t GetWidth() const {
