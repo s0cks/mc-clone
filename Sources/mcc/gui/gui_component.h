@@ -32,6 +32,7 @@ namespace mcc::gui {
 
   class Component {
     friend class Window;
+    friend class OnMouseExitEvent;
     friend class OnMouseEnterEvent;
   protected:
     Component() = default;

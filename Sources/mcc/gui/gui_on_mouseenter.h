@@ -9,7 +9,8 @@
 namespace mcc::gui {
   class OnMouseEnterEvent {
   private:
-    rx::subscription sub_;
+    rx::subscription sub_mouse_move_;
+    rx::subscription sub_mouse_enter_;
     bool entered_;
     Component* component_;
 
@@ -19,8 +20,10 @@ namespace mcc::gui {
     virtual void OnMouseEnter(gui::MouseEnterEvent* event) = 0;
   public:
     virtual ~OnMouseEnterEvent() {
-      if(sub_.is_subscribed())
-        sub_.unsubscribe();
+      if(sub_mouse_move_.is_subscribed())
+        sub_mouse_move_.unsubscribe();
+      if(sub_mouse_enter_.is_subscribed())
+        sub_mouse_enter_.unsubscribe();
     }
   };
 }

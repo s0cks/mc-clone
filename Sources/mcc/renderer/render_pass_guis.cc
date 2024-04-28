@@ -34,7 +34,8 @@ namespace mcc::render {
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      shape::NewRect(vertices_, indices_, window->GetPos(), window->GetSize());
+      DLOG(INFO) << "background: " << glm::to_string(window->GetBackground());
+      shape::NewRect(vertices_, indices_, window->GetPos(), window->GetSize(), window->GetBackground());
       return true;
     }
   };
@@ -180,8 +181,19 @@ namespace mcc::render {
       vbo::VboUpdateScope update(vbo);
       update.Update(vertices);
     }
+    {
+      DLOG(INFO) << "vertices (gpu):";
+      vbo::VboReadScope<gui::Vertex> read(vbo);
+      read.ReadAll()
+        .subscribe([](const gui::Vertex& vertex) {
+          DLOG(INFO) << " - " << vertex;
+        });
+    }
 
+    InvertedDepthTestScope depth_test;
     InvertedCullFaceScope cull_face;
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    CHECK_GL(FATAL);
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
     prog_->SetMat4("projection", projection_);

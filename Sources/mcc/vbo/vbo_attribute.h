@@ -89,7 +89,7 @@ namespace mcc::vbo {
   template<const AttributeIndex Index,
            const AttributeOffset Offset,
            const AttributeStride Stride>
-  class ColorAttribute : public Attribute<Index, 4, GL_UNSIGNED_BYTE, GL_FALSE, Stride, Offset>{};
+  class ColorAttribute : public Attribute<Index, 4, GL_UNSIGNED_BYTE, GL_TRUE, Stride, Offset>{};
 }
 
 #endif //MCC_VBO_ATTRIBUTE_H

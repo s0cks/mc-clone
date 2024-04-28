@@ -1,31 +1,31 @@
-#include "mcc/gui/gui_on_mouseenter.h"
+#include "mcc/gui/gui_on_mouseexit.h"
 
 #include "mcc/mouse/mouse.h"
 #include "mcc/gui/gui_component.h"
 
 namespace mcc::gui {
-  OnMouseEnterEvent::OnMouseEnterEvent(Component* component):
+  OnMouseExitEvent::OnMouseExitEvent(Component* component):
     sub_mouse_move_(),
-    sub_mouse_enter_(),
+    sub_mouse_exit_(),
     entered_(false),
     component_(component) {
     sub_mouse_move_ = mouse::OnMouseMoveEvent()
-      .subscribe([this](mouse::MouseMoveEvent* event) {
+      .subscribe([this,component](mouse::MouseMoveEvent* event) {
         return OnMouseMove(event);
       });
-    sub_mouse_enter_ = component_->OnMouseEnter()
-      .subscribe([this,component](MouseEnterEvent* event) {
-        return OnMouseEnter(event);
+    sub_mouse_exit_ = component->OnMouseExit()
+      .subscribe([this,component](MouseExitEvent* event) {
+        return OnMouseExit(event);
       });
   }
 
-  void OnMouseEnterEvent::OnMouseMove(mouse::MouseMoveEvent* event) {
+  void OnMouseExitEvent::OnMouseMove(mouse::MouseMoveEvent* event) {
     const auto& pos = event->pos();
     if(!entered_ && component_->Contains(pos)) {
       entered_ = true;
-      component_->Publish<MouseEnterEvent>(pos);
     } else if(entered_ && !component_->Contains(pos)) {
       entered_ = false;
+      component_->Publish<MouseExitEvent>(pos);
     }
   }
 }
