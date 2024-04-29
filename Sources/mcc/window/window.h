@@ -1,13 +1,26 @@
 #ifndef MCC_WINDOW_H
 #define MCC_WINDOW_H
 
-#include "mcc/rx.h"
 #include "mcc/window/monitor.h"
-#include "mcc/window/window_event.h"
 #include "mcc/window/window_glfw.h"
+#include "mcc/window/window_events.h"
 
 namespace mcc {
   typedef glm::u32vec2 WindowSize;
+
+  namespace window {
+    rx::observable<WindowEvent*> OnWindowEvent();
+
+#define DEFINE_ON_WINDOW_EVENT(Name)                            \
+    static inline rx::observable<Name##Event*>                  \
+    On##Name##Event() {                                         \
+      return OnWindowEvent()                                    \
+        .filter(Name##Event::Filter)                            \
+        .map(Name##Event::Cast);                                \
+    }
+    FOR_EACH_WINDOW_EVENT(DEFINE_ON_WINDOW_EVENT)
+#undef DEFINE_ON_WINDOW_EVENT
+  }
 
   class Window {
     friend class GlfwWindow;
@@ -36,7 +49,6 @@ namespace mcc {
     static void Set(Window* window);
   protected:
     WindowHandle* handle_;
-    rxsub::subject<WindowEvent*> events_;
     rx::subscription sub_post_render_;
 
     explicit Window(WindowHandle* handle);
@@ -44,6 +56,15 @@ namespace mcc {
     inline void SetHandle(WindowHandle* handle) {
       MCC_ASSERT(!HasHandle());
       handle_ = handle;
+    }
+
+    static void Publish(WindowEvent* event);
+
+    template<class E, typename... Args>
+    static inline void
+    Publish(Args... args) {
+      E event(args...);
+      return Publish((WindowEvent*) &event);
     }
   public:
     virtual ~Window() {
@@ -94,52 +115,6 @@ namespace mcc {
       return GetWindowPos(handle());
     }
 
-    rx::observable<WindowEvent*> OnEvent() const {
-      return events_.get_observable();
-    }
-
-    inline rx::observable<WindowOpenedEvent*> OnOpened() const {
-      return OnEvent()
-        .filter([](WindowEvent* event) {
-          return event->IsWindowOpenedEvent();
-        })
-        .map([](WindowEvent* event) {
-          return event->AsWindowOpenedEvent();
-        });
-    }
-
-    inline rx::observable<WindowClosedEvent*> OnClosed() const {
-      return OnEvent()
-        .filter([](WindowEvent* event) {
-          return event->IsWindowClosedEvent();
-        })
-        .map([](WindowEvent* event) {
-          return event->AsWindowClosedEvent();
-        });
-    }
-
-    inline rx::observable<WindowFocusEvent*> OnFocused() const {
-      return OnEvent()
-        .filter([](WindowEvent* event) {
-          return event->IsWindowFocusEvent()
-              && event->AsWindowFocusEvent()->focused();
-        })
-        .map([](WindowEvent* event) {
-          return event->AsWindowFocusEvent();
-        });
-    }
-
-    inline rx::observable<WindowFocusEvent*> OnUnfocused() const {
-      return OnEvent()
-        .filter([](WindowEvent* event) {
-          return event->IsWindowFocusEvent()
-              && !event->AsWindowFocusEvent()->focused();
-        })
-        .map([](WindowEvent* event) {
-          return event->AsWindowFocusEvent();
-        });
-    }
-
     inline float GetAspectRatio() {
       const auto size = GetSize();
       return size[0] / size[1];
@@ -148,14 +123,6 @@ namespace mcc {
     inline glm::vec2 GetCenterCoord() {
       const auto size = GetSize();
       return glm::vec2(size[0] / 2, size[1] / 2);
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const Window& rhs) {
-      stream << "Window(";
-      stream << "size=" << glm::to_string(rhs.GetSize()) << ", ";
-      stream << "pos=" << glm::to_string(rhs.GetPos());
-      stream << ")";
-      return stream;
     }
   public:
     static void Init();

@@ -34,7 +34,6 @@ namespace mcc::render {
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      DLOG(INFO) << "background: " << glm::to_string(window->GetBackground());
       shape::NewRect(vertices_, indices_, window->GetPos(), window->GetSize(), window->GetBackground());
       return true;
     }
@@ -180,11 +179,16 @@ namespace mcc::render {
     
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
+    glClearColor(0.4, 0.1, 0.5, 1.0f);
+    CHECK_GL(FATAL);
+    
+    // const auto scale = camera_.GetScale();
+    // auto model = glm::mat4(1.0f);
+    // model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
 
-    BlendTestScope blend(gfx::kSrcAlpha, gfx::kOneMinusSrcAlpha, gfx::kAddFunc);
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
-    prog_->SetMat4("projection", projection_);
+    prog_->SetMat4("projection", camera_.GetProjection());
     prog_->Apply();
     draw_scope.Draw(GL_TRIANGLES);
   } 

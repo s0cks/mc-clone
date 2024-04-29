@@ -163,17 +163,22 @@ namespace mcc {
         return glGetUniformBlockIndex(GetProgramId(), name.c_str());
       }
 
-      virtual void SetVec4(const std::string& name, const glm::vec4 value) const {
+      virtual void SetVec4(const std::string& name, const glm::vec4& value) const {
         glUniform4fv(GetUniformLocation(name), 1, &value[0]);
         CHECK_GL(FATAL);
       }
 
-      virtual void SetVec3(const std::string& name, const glm::vec3 value) const {
+      virtual void SetVec3(const std::string& name, const glm::vec3& value) const {
         glUniform3fv(GetUniformLocation(name), 1, &value[0]);
         CHECK_GL(FATAL);
       }
 
-      virtual void SetMat4(const std::string& name, const glm::mat4 value) const {
+      virtual void SetVec2(const std::string& name, const glm::vec2& value) const {
+        glUniform2fv(GetUniformLocation(name), 1, glm::value_ptr(value));
+        CHECK_GL(FATAL);
+      }
+
+      virtual void SetMat4(const std::string& name, const glm::mat4& value) const {
         glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
         CHECK_GL(FATAL);
       }

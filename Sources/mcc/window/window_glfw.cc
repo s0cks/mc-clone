@@ -8,21 +8,75 @@
 namespace mcc {
   class GlfwWindow : public Window {
   public:
+    static inline GlfwWindow*
+    GetGlfwWindow(WindowHandle* handle) {
+      return (GlfwWindow*) glfwGetWindowUserPointer(handle);
+    }
+
+    static inline void
+    OnWindowClosed(WindowHandle* handle) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowClosedEvent>(window);
+    }
+
+    static inline void
+    OnWindowPos(WindowHandle* handle, const int xPos, const int yPos) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowPosEvent>(window, xPos, yPos);
+    }
+
+    static inline void
+    OnWindowSize(WindowHandle* handle, const int width, const int height) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowSizeEvent>(window, width, height);
+    }
+
+    static inline void
+    OnWindowFocus(WindowHandle* handle, int focused) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowFocusEvent>(window, static_cast<bool>(focused));
+    }
+
+    static inline void
+    OnWindowIconify(WindowHandle* handle, int iconified) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowIconifyEvent>(window, static_cast<bool>(iconified));
+    }
+
+    static inline void
+    OnWindowRefresh(WindowHandle* handle) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowRefreshEvent>(window);
+    }
+    
+    static inline void
+    OnWindowMaximize(WindowHandle* handle, int maximized) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowMaximizeEvent>(window, static_cast<bool>(maximized));
+    }
+
+    static inline void
+    OnWindowContentScale(WindowHandle* handle, float xScale, float yScale) {
+      const auto window = GetGlfwWindow(handle);
+      MCC_ASSERT(window);
+      return window->Publish<WindowContentScaleEvent>(window, xScale, yScale);
+    }
+  public:
     explicit GlfwWindow(WindowHandle* handle):
       Window(handle) {
       glfwSetWindowUserPointer(handle, this);
     }
     ~GlfwWindow() override = default;
 
-    template<class E, typename... Args>
-    inline void Publish(Args... args) {
-      E event(this, args...);
-      DLOG(INFO) << "publishing " << event << "....";
-      events_.get_subscriber().on_next(&event);
-    }
-
     void Open() override {
-      Publish<WindowOpenedEvent>();
+      Publish<WindowOpenedEvent>(this);
     }
 
     void Close() override {
@@ -35,51 +89,6 @@ namespace mcc {
       CHECK_GL(FATAL);
     }
   };
-
-  static inline GlfwWindow*
-  GetGlfwWindow(WindowHandle* handle) {
-    return (GlfwWindow*) glfwGetWindowUserPointer(handle);
-  }
-
-  static inline void
-  OnWindowClosed(WindowHandle* handle) {
-    return GetGlfwWindow(handle)->Publish<WindowClosedEvent>();
-  }
-
-  static inline void
-  OnWindowPos(WindowHandle* handle, const int xPos, const int yPos) {
-    return GetGlfwWindow(handle)->Publish<WindowPosEvent>(xPos, yPos);
-  }
-
-  static inline void
-  OnWindowSize(WindowHandle* handle, const int width, const int height) {
-    return GetGlfwWindow(handle)->Publish<WindowSizeEvent>(width, height);
-  }
-
-  static inline void
-  OnWindowFocus(WindowHandle* handle, int focused) {
-    return GetGlfwWindow(handle)->Publish<WindowFocusEvent>(static_cast<bool>(focused));
-  }
-
-  static inline void
-  OnWindowIconify(WindowHandle* handle, int iconified) {
-    return GetGlfwWindow(handle)->Publish<WindowIconifyEvent>(static_cast<bool>(iconified));
-  }
-
-  static inline void
-  OnWindowRefresh(WindowHandle* handle) {
-    return GetGlfwWindow(handle)->Publish<WindowRefreshEvent>();
-  }
-  
-  static inline void
-  OnWindowMaximize(WindowHandle* handle, int maximized) {
-    return GetGlfwWindow(handle)->Publish<WindowMaximizeEvent>(static_cast<bool>(maximized));
-  }
-
-  static inline void
-  OnWindowContentScale(WindowHandle* handle, float xScale, float yScale) {
-    return GetGlfwWindow(handle)->Publish<WindowContentScaleEvent>(xScale, yScale);
-  }
 
   WindowHandle* NewWindowHandle(const WindowSize size,
                                 const std::string& title,
@@ -104,14 +113,14 @@ namespace mcc {
       // glfwSetWindowPos(handle, centered[0], centered[1]);
     }
     
-    glfwSetWindowCloseCallback(handle, &OnWindowClosed);
-    glfwSetWindowPosCallback(handle, &OnWindowPos);
-    glfwSetWindowSizeCallback(handle, &OnWindowSize);
-    glfwSetWindowFocusCallback(handle, &OnWindowFocus);
-    glfwSetWindowIconifyCallback(handle, &OnWindowIconify);
-    glfwSetWindowRefreshCallback(handle, &OnWindowRefresh);
-    glfwSetWindowMaximizeCallback(handle, &OnWindowMaximize);
-    glfwSetWindowContentScaleCallback(handle, &OnWindowContentScale);
+    glfwSetWindowCloseCallback(handle, &GlfwWindow::OnWindowClosed);
+    glfwSetWindowPosCallback(handle, &GlfwWindow::OnWindowPos);
+    glfwSetWindowSizeCallback(handle, &GlfwWindow::OnWindowSize);
+    glfwSetWindowFocusCallback(handle, &GlfwWindow::OnWindowFocus);
+    glfwSetWindowIconifyCallback(handle, &GlfwWindow::OnWindowIconify);
+    glfwSetWindowRefreshCallback(handle, &GlfwWindow::OnWindowRefresh);
+    glfwSetWindowMaximizeCallback(handle, &GlfwWindow::OnWindowMaximize);
+    glfwSetWindowContentScaleCallback(handle, &GlfwWindow::OnWindowContentScale);
     glfwMakeContextCurrent(handle);
     glfwSwapInterval(0);
     return handle;

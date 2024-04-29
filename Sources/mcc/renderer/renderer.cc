@@ -116,7 +116,7 @@ namespace mcc::render {
     const auto engine = engine::Engine::GetEngine();
     const auto renderer = new Renderer(engine->GetLoop());
     SetThreadRenderer(renderer);
-    window->OnOpened()
+    window::OnWindowOpenedEvent()
       .subscribe([renderer,window](WindowOpenedEvent* event) {
         const auto pass = new RendererPipelinePass(window, renderer);
         pass->Append(new RenderPassGuis());

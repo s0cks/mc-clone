@@ -46,13 +46,13 @@ namespace mcc::mouse {
       return;
     }
 
-    window->OnOpened()
-      .subscribe([](WindowEvent* event) {
+    window::OnWindowOpenedEvent()
+      .subscribe([](WindowOpenedEvent* event) {
         const auto engine = engine::Engine::GetEngine();
         SetMouse(CreateMouse(engine, event->window()));
       });
-    window->OnClosed()
-      .subscribe([](WindowEvent* event) {
+    window::OnWindowClosedEvent()
+      .subscribe([](WindowClosedEvent* event) {
         //TODO: delete mouse
       });
   }

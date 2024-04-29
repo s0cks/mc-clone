@@ -69,8 +69,8 @@ namespace mcc::keyboard {
       return;
     }
 
-    window->OnOpened()
-      .subscribe([](WindowEvent* event) {
+    window::OnWindowOpenedEvent()
+      .subscribe([](WindowOpenedEvent* event) {
         const auto engine = engine::Engine::GetEngine();
         CreateKeyboard(engine, event->window());
       });

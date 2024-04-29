@@ -1,16 +1,28 @@
 #include "mcc/window/window.h"
 
-#include "mcc/flags.h"
-#include "mcc/engine/engine.h"
-
 #include "mcc/os_thread.h"
-
+#include "mcc/engine/engine.h"
 #include "mcc/renderer/renderer.h"
+#include "mcc/window/window_flags.h"
 
 namespace mcc {
+  namespace window {
+    static rx::subject<WindowEvent*> events_;
+
+    rx::observable<WindowEvent*> OnWindowEvent() {
+      return events_.get_observable();
+    }
+  }
+
+  void Window::Publish(WindowEvent* event) {
+    using window::events_;
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
+
   Window::Window(WindowHandle* handle):
     handle_(handle),
-    events_(),
     sub_post_render_() {
     sub_post_render_ = render::OnRenderEvent()
       .filter(render::PostRenderEvent::Filter)
@@ -20,8 +32,31 @@ namespace mcc {
       });
   }
 
+  static constexpr const auto kInitialMonitorResolutionScale = 0.75;
+  static inline int32_t
+  GetInitialWidth(const Resolution& monitor_resolution) {
+    switch(FLAGS_window_width) {
+      case 0:
+        return static_cast<int32_t>(monitor_resolution[0] * kInitialMonitorResolutionScale);
+      default:
+        return FLAGS_window_width;
+    }
+  }
+
+  static inline int32_t
+  GetInitialHeight(const Resolution& monitor_resolution) {
+    switch(FLAGS_window_height) {
+      case 0:
+        return static_cast<int32_t>(monitor_resolution[1] * kInitialMonitorResolutionScale);
+      default:
+        return FLAGS_window_height;
+    }
+  }
+
   WindowSize Window::GetInitialSize() {
-    return { FLAGS_width, FLAGS_height };
+    Monitor monitor;
+    const auto resolution = monitor.GetResolution();
+    return { GetInitialWidth(resolution), GetInitialHeight(resolution) };
   }
 
   bool Window::IsFullscreen() {
@@ -47,20 +82,12 @@ namespace mcc {
   void Window::OnPreInit() {
     DLOG(INFO) << "[" << GetCurrentThreadName() << "] pre-init....";
     const auto window = Window::Get();
-    window->OnClosed().subscribe([&window](WindowClosedEvent* event) {
-      DLOG(INFO) << "shutting down engine on thread: " << GetCurrentThreadName();
-      const auto engine = engine::Engine::GetEngine();
-      engine->Shutdown();
-    });
-    window->OnFocused().subscribe([](WindowFocusEvent* event) {
-      DLOG(INFO) << "window focused.";
-    });
-    window->OnUnfocused().subscribe([](WindowFocusEvent* event) {
-      DLOG(INFO) << "window unfocused.";
-    });
-    window->OnOpened().subscribe([](WindowOpenedEvent* event) {
-      DLOG(INFO) << "window opened.";
-    });
+    window::OnWindowClosedEvent()
+      .subscribe([](WindowClosedEvent* event) {
+        DLOG(INFO) << "shutting down engine on thread: " << GetCurrentThreadName();
+        const auto engine = engine::Engine::GetEngine();
+        engine->Shutdown();
+      });
   }
 
   void Window::OnPostInit() {

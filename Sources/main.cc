@@ -108,6 +108,9 @@ int main(int argc, char** argv) {
   keyboard::InitKeyboard();
   render::Renderer::Init();
 
+  mouse::OnMouseMoveEvent()
+    .subscribe(LogEvent<mouse::MouseMoveEvent>());
+
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
   keyboard->OnPressed(GLFW_KEY_ESCAPE)
