@@ -11,8 +11,6 @@ namespace mcc::render {
   class RenderPassGuis : public RenderPass {
   protected:
     ProgramRef prog_;
-    OrthoCamera camera_;
-    glm::mat4 projection_;
   public:
     RenderPassGuis();
     ~RenderPassGuis() override = default;

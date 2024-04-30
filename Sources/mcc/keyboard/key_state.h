@@ -21,7 +21,7 @@ namespace mcc::keyboard {
 #define DEFINE_TO_STRING(Name, GlValue) \
       case kKey##Name: return #Name;
       FOR_EACH_KEY_STATE(DEFINE_TO_STRING)
-#undef DEFINE_KEY_STATE
+#undef DEFINE_TO_STRING
       default: return "Unknown KeyState";
     }
   }

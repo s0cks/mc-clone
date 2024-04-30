@@ -23,7 +23,6 @@
 #include "mcc/resource/resource.h"
 #include "mcc/keyboard/keyboard.h"
 #include "mcc/material/material.h"
-#include "mcc/camera/perspective_camera.h"
 
 #include "mcc/gui/gui_window.h"
 #include "mcc/gui/gui_on_mouseenter.h"
@@ -108,8 +107,8 @@ int main(int argc, char** argv) {
   keyboard::InitKeyboard();
   render::Renderer::Init();
 
-  mouse::OnMouseMoveEvent()
-    .subscribe(LogEvent<mouse::MouseMoveEvent>());
+  mouse::OnMouseEvent()
+    .subscribe(LogEvent<mouse::MouseEvent>());
 
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();

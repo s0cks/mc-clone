@@ -3,7 +3,6 @@
 #include "mcc/transform.h"
 #include "mcc/window/window.h"
 #include "mcc/engine/engine.h"
-#include "mcc/camera/perspective_camera.h"
 
 namespace mcc::mouse {
   GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
@@ -18,9 +17,20 @@ namespace mcc::mouse {
       buttons_.insert(MouseButton(idx));
   }
 
+  static inline glm::vec2
+  CalculateNDC(const glm::vec2 pos) {
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    const auto size = window->GetSize();
+    const auto mX = pos.x / (size[0] / 2) - 1;
+    const auto mY = -1 * (pos.y / (size[1] / 2)) - 1;
+    const auto ndc = glm::vec2(mX, mY);
+    DLOG(INFO) << glm::to_string(pos) << " (pos) => " << glm::to_string(ndc) << " (ndc).";
+    return ndc;
+  }
+
   glm::vec2 GlfwMouse::GetNormalizedPosition() const {
-    const auto size = Window::Get()->GetSize();
-    return glm::vec2(2.0f * pos_.x / size[0] - 1.0f, 1.0f - 2.0f * pos_.y / size[1]);
+    return CalculateNDC(GetCursorPosition());
   }
 
   glm::vec2 GlfwMouse::GetCursorPosition() const {
@@ -49,7 +59,7 @@ namespace mcc::mouse {
     pos_ = GetCursorPosition();
     delta_ = (pos_ - last_pos_);
     if(HasMotion(delta_))
-      PublishEvent<MouseMoveEvent>(this, pos_, last_pos_, delta_);
+      PublishEvent<MouseMoveEvent>(this, CalculateNDC(pos_), CalculateNDC(last_pos_), delta_);
     last_pos_ = pos_;
 
     for(const auto& btn : buttons_) {
@@ -59,10 +69,10 @@ namespace mcc::mouse {
         states_[btn] = new_state;
         switch(new_state) {
           case MouseButton::kPressed:
-            PublishEvent<MouseButtonPressedEvent>(this, pos_, btn);
+            PublishEvent<MouseButtonPressedEvent>(this, CalculateNDC(pos_), btn);
             continue;
           case MouseButton::kReleased:
-            PublishEvent<MouseButtonReleasedEvent>(this, pos_, btn);
+            PublishEvent<MouseButtonReleasedEvent>(this, CalculateNDC(pos_), btn);
             continue;
           default:
             continue;

@@ -1,99 +1,123 @@
 #ifndef MCC_CAMERA_ORTHO_H
 #define MCC_CAMERA_ORTHO_H
 
-#include <glog/logging.h>
+#include <utility>
+#include "mcc/keyboard/key.h"
+#include "mcc/camera/camera.h"
 
-#include "mcc/glm.h"
-#include "mcc/window/window.h"
-
-namespace mcc {
-  class Window;
-  class OrthoCamera {
+namespace mcc::camera {
+  struct OrthoCameraData {
+    friend class OrthoCamera;
   public:
-    static constexpr const glm::vec3 kDefaultPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    static constexpr const glm::vec3 kDefaultEyePos = glm::vec3(0.0f, 0.0f, 0.0f);
-    static constexpr const glm::vec3 kDefaultUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec4 viewport;
+    glm::vec3 eye;
+    glm::vec3 up;
+    glm::vec3 pos;
+    glm::mat4 projection;
+    glm::mat4 view;
+
+    OrthoCameraData() = default;
+    OrthoCameraData(const OrthoCameraData& rhs) = default;
+    ~OrthoCameraData() = default;
+
+    float GetViewportWidth() const {
+      return viewport[2];
+    }
+
+    float GetViewportHeight() const {
+      return viewport[3];
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const OrthoCameraData& rhs) {
+      return stream;
+    }
+  private:
+    OrthoCameraData(const glm::vec2& viewport_size,
+                    const glm::vec3& e,
+                    const glm::vec3& p,
+                    const glm::vec3& u):
+      viewport(0, 0, viewport_size),
+      eye(e),
+      pos(p),
+      up(u),
+      projection(CalculateProjection()),
+      view(CalculateView()) {
+    }
+
+    glm::mat4 CalculateView() const;
+    glm::mat4 CalculateProjection() const;
+  };
+
+  class OrthoCamera : public Camera {
+    friend class GlfwMouse;
+  public:
+    static constexpr const auto kDefaultUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    static constexpr const auto kDefaultPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    static constexpr const auto kFront = glm::vec3(0.0f, 0.0f, -1.0f);
   protected:
-    glm::vec3 eye_;
-    glm::vec3 pos_;
-    glm::vec3 up_;
-    glm::vec2 size_;
-    glm::mat4 projection_;
-    glm::mat4 view_;
-    glm::mat4 viewprojection_;
+    OrthoCameraData data_;
 
-    virtual void Update() {
-      projection_ = CalculateProjection();
-      view_ = CalculateView();
-      viewprojection_ = projection_ * view_;
+    glm::vec2 CalculateMouseNDC(const glm::vec3& pos, const glm::mat4& model = glm::mat4(1.0f)) const;
+
+    inline glm::vec2
+    CalculateMouseNDC(const glm::vec2& pos, const glm::mat4& model = glm::mat4(1.0f)) const {
+      return CalculateMouseNDC(glm::vec3(pos, 0.0f), model);
     }
 
-    virtual void SetPosition(const glm::vec3 pos) {
-      pos_ = pos;
-      Update();
+    inline OrthoCameraData& data() {
+      return data_;
     }
 
-    inline void SetSize(const glm::vec2& size) {
-      size_ = size;
-      Update();
+    inline const OrthoCameraData& data() const {
+      return data_;
     }
 
-    virtual glm::mat4 CalculateView() const {
-      return glm::lookAt(eye_, pos_, up_);
-    }
-    
-    glm::mat4 CalculateProjection() const {
-      return glm::ortho(0.0f, size_[0] * 1.0f, size_[1] * 1.0f, 0.0f, -1000.0f, 1000.0f);
-    }
+    void MoveCamera(const glm::vec3& dir);
+    void OnKeyPressed(const keyboard::KeyCode code);
   public:
-    OrthoCamera(const glm::vec2 size, const float aspect = 2.0f):
-      eye_(kDefaultEyePos),
-      pos_(kDefaultPos),
-      up_(kDefaultUp),
-      size_(size),
-      projection_(CalculateProjection()),
-      view_(CalculateView()),
-      viewprojection_(projection_ * view_) {
-      window::OnWindowSizeEvent()
-        .subscribe([this](WindowSizeEvent* event) {
-          SetSize(event->size());
-        });
+    OrthoCamera(const glm::vec3& eye,
+                const glm::vec3& pos,
+                const glm::vec3& up,
+                const glm::vec2& viewport_size);
+    OrthoCamera(const glm::vec3& eye,
+                const glm::vec3& pos,
+                const glm::vec3& up);
+    OrthoCamera(const glm::vec3& pos = kDefaultPos,
+                const glm::vec3& up = kDefaultUp):
+      OrthoCamera(pos, pos, up) {
     }
-    OrthoCamera(Window* window);
-    virtual ~OrthoCamera() = default;
+    ~OrthoCamera() override = default;
 
-    const glm::vec2& GetSize() const {
-      return size_;
+    const glm::vec4& GetViewport() const {
+      return data_.viewport;
     }
 
-    const glm::vec3& GetPos() const {
-      return pos_;
-    }
-
-    const glm::vec3& GetEyePos() const {
-      return eye_;
+    const glm::vec3& GetEye() const {
+      return data_.eye;
     }
 
     const glm::vec3& GetUp() const {
-      return up_;
+      return data_.up;
     }
 
-    float GetScale() const {
-      return 1.0f / size_[0];
+    const glm::vec3& GetPos() const {
+      return data_.pos;
     }
 
     const glm::mat4& GetProjection() const {
-      return projection_;
+      return data_.projection;
     }
-
+    
     const glm::mat4& GetView() const {
-      return view_;
+      return data_.view;
     }
 
-    const glm::mat4& GetViewProjection() const {
-      return viewprojection_;
-    }
+    std::pair<glm::vec3, glm::vec3> CastRay(const glm::vec2& mpos, const float distance = 15) const;
+    glm::vec3 CastRayAt(const glm::vec2& mpos) const;
   };
+
+  OrthoCamera* GetOrthoCamera();
+  void SetOrthoCamera(OrthoCamera* camera);
 }
 
 #endif //MCC_CAMERA_ORTHO_H

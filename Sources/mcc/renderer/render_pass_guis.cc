@@ -34,7 +34,7 @@ namespace mcc::render {
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      shape::NewRect(vertices_, indices_, window->GetPos(), window->GetSize(), window->GetBackground());
+      shape::NewCenteredRect(vertices_, indices_, glm::vec2(0, 0), glm::vec2(1, 1), window->GetBackground());
       return true;
     }
   };
@@ -149,9 +149,7 @@ namespace mcc::render {
 
   RenderPassGuis::RenderPassGuis():
     RenderPass(),
-    prog_(Program::New("colored_2d")),
-    camera_(Window::Get()),
-    projection_(camera_.GetProjection()) {
+    prog_(Program::New("colored_2d")) {
   }
 
   void RenderPassGuis::Render() {
@@ -182,13 +180,16 @@ namespace mcc::render {
     glClearColor(0.4, 0.1, 0.5, 1.0f);
     CHECK_GL(FATAL);
     
-    // const auto scale = camera_.GetScale();
-    // auto model = glm::mat4(1.0f);
-    // model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
+    const auto camera = camera::GetOrthoCamera();
+    MCC_ASSERT(camera);
 
+    InvertedCullFaceScope cull_face;
+    auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
-    prog_->SetMat4("projection", camera_.GetProjection());
+    prog_->SetMat4("projection", camera->GetProjection());
+    prog_->SetMat4("view", camera->GetView());
+    prog_->SetMat4("model", model);
     prog_->Apply();
     draw_scope.Draw(GL_TRIANGLES);
   } 

@@ -62,7 +62,6 @@ namespace mcc::render {
   protected:
     const Renderer* renderer_;
     glm::mat4 projection_;
-    OrthoCamera camera_;
 
     inline const Renderer* GetRenderer() const {
       return renderer_;
@@ -74,9 +73,6 @@ namespace mcc::render {
 
     void Render() override {
       const auto window = Window::Get();
-      const auto fb_size = window->GetFramebufferSize();
-      glViewport(0, 0, fb_size[0], fb_size[1]);
-      CHECK_GL(FATAL);
       glfwPollEvents();
       CHECK_GL(FATAL);
       //TODO: remove chunk
@@ -100,8 +96,7 @@ namespace mcc::render {
   public:
     explicit RendererPipelinePass(Window* window, const Renderer* renderer):
       OrderedSequenceRenderPass(),
-      renderer_(renderer),
-      camera_(window) {
+      renderer_(renderer) {
       MCC_ASSERT(renderer);
     }
     ~RendererPipelinePass() override = default;

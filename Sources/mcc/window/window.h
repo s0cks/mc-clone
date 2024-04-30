@@ -92,6 +92,11 @@ namespace mcc {
       return GetWindowFramebufferSize(handle());
     }
 
+    inline float GetFramebufferAspectRatio() const {
+      const auto fb_size = GetFramebufferSize();
+      return fb_size[0] / fb_size[1];
+    }
+
     inline glm::vec2 GetFramebufferScale() const {
       const auto size = GetSize();
       const auto fb_size = GetFramebufferSize();

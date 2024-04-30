@@ -19,6 +19,11 @@ namespace mcc::keyboard {
     Insert(GLFW_KEY_PERIOD);
     Insert(GLFW_KEY_SLASH);
     Insert(GLFW_KEY_0);
+    Insert(GLFW_KEY_ESCAPE);
+    Insert(GLFW_KEY_A);
+    Insert(GLFW_KEY_S);
+    Insert(GLFW_KEY_D);
+    Insert(GLFW_KEY_W);
   }
 
   GLFWwindow* KeySet::GetWindowHandle() const {
