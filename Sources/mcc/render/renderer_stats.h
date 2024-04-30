@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "mcc/series.h"
-#include "mcc/renderer/renderer_state.h"
+#include "mcc/render/renderer_state.h"
 
 namespace mcc::renderer {
   class RendererStats {

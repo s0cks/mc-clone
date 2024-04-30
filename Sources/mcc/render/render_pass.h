@@ -6,7 +6,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/common.h"
-#include "mcc/renderer/render_pass_stats.h"
+#include "mcc/render/render_pass_stats.h"
 
 namespace mcc::render {
   class RenderPass;

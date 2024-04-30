@@ -30,8 +30,8 @@ file(GLOB MCC_SHADER_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/shader/*.cc")
 
 file(GLOB MCC_RENDER_SOURCE_FILES
-  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/renderer/*.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/renderer/*.cc")
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/render/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/render/*.cc")
 
 file(GLOB MCC_GUI_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/gui/*.h"

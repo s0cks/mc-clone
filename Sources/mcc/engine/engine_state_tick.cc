@@ -3,7 +3,7 @@
 #include "mcc/engine/engine.h"
 #include "mcc/engine/engine_event.h"
 
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/renderer.h"
 
 namespace mcc::engine {
   TickState::TickState(Engine* engine):

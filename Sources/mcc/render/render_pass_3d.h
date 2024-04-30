@@ -2,7 +2,7 @@
 #define MCC_RENDER_PASS_3D_H
 
 #include "mcc/pipeline.h"
-#include "mcc/renderer/render_pass.h"
+#include "mcc/render/render_pass.h"
 
 namespace mcc::render {
   class RenderPass3d : public SequenceRenderPass {

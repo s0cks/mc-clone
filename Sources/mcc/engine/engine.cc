@@ -2,7 +2,7 @@
 
 #include "mcc/common.h"
 #include "mcc/thread_local.h"
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/renderer.h"
 
 #include "mcc/keyboard/keyboard.h"
 

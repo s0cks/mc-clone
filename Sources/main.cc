@@ -19,7 +19,7 @@
 #include "mcc/window/window.h"
 #include "mcc/engine/engine.h"
 #include "mcc/shader/shader.h"
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/renderer.h"
 #include "mcc/resource/resource.h"
 #include "mcc/keyboard/keyboard.h"
 #include "mcc/material/material.h"

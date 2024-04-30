@@ -2,7 +2,7 @@
 #define MCC_RENDER_PASS_GUIS_H
 
 #include "mcc/gui/gui_component.h"
-#include "mcc/renderer/render_pass.h"
+#include "mcc/render/render_pass.h"
 
 #include "mcc/program/program.h"
 #include "mcc/camera/camera_ortho.h"

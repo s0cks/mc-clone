@@ -2,7 +2,7 @@
 
 #include "mcc/os_thread.h"
 #include "mcc/engine/engine.h"
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/renderer.h"
 #include "mcc/window/window_flags.h"
 
 namespace mcc {

@@ -1,6 +1,5 @@
-#include "mcc/renderer/render_ticker.h"
-
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/render_ticker.h"
+#include "mcc/render/renderer.h"
 
 namespace mcc::render {
   void RenderTicker::OnPreTick() {

@@ -6,7 +6,7 @@
 #define MCC_ENGINE_STATE_TICK_H
 
 #include "mcc/engine/engine_ticker.h"
-#include "mcc/renderer/render_ticker.h"
+#include "mcc/render/render_ticker.h"
 
 #include "mcc/on_shutdown.h"
 

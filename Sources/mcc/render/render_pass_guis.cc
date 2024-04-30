@@ -1,5 +1,5 @@
 
-#include "mcc/renderer/render_pass_guis.h"
+#include "mcc/render/render_pass_guis.h"
 
 #include "mcc/shape.h"
 #include "mcc/gui/gui_tree.h"

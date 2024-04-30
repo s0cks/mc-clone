@@ -1,7 +1,7 @@
 #ifndef MCC_RENDER_PASS_EXECUTOR_H
 #define MCC_RENDER_PASS_EXECUTOR_H
 
-#include "mcc/renderer/render_pass.h"
+#include "mcc/render/render_pass.h"
 
 namespace mcc::render {
   class RenderPassExecutor : public RenderPassVisitor {

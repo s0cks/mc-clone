@@ -1,4 +1,4 @@
-#include "mcc/renderer/renderer.h"
+#include "mcc/render/renderer.h"
 
 #include "mcc/shape.h"
 #include "mcc/thread_local.h"
@@ -8,12 +8,12 @@
 
 #include "mcc/ibo/ibo.h"
 
-#include "mcc/renderer/render_pass.h"
-#include "mcc/renderer/render_pass_2d.h"
-#include "mcc/renderer/render_pass_3d.h"
-#include "mcc/renderer/render_pass_guis.h"
-#include "mcc/renderer/renderer_stats.h"
-#include "mcc/renderer/render_pass_executor.h"
+#include "mcc/render/render_pass.h"
+#include "mcc/render/render_pass_2d.h"
+#include "mcc/render/render_pass_3d.h"
+#include "mcc/render/render_pass_guis.h"
+#include "mcc/render/renderer_stats.h"
+#include "mcc/render/render_pass_executor.h"
 
 namespace mcc::render {
   static ThreadLocal<Renderer> renderer_;

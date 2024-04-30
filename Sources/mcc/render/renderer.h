@@ -8,10 +8,10 @@
 #include "mcc/gfx.h"
 #include "mcc/uv/uv_tick.h"
 #include "mcc/relaxed_atomic.h"
-#include "mcc/renderer/render_pass.h"
-#include "mcc/renderer/render_events.h"
-#include "mcc/renderer/renderer_state.h"
-#include "mcc/renderer/renderer_stats.h"
+#include "mcc/render/render_pass.h"
+#include "mcc/render/render_events.h"
+#include "mcc/render/renderer_state.h"
+#include "mcc/render/renderer_stats.h"
 
 namespace mcc {
   namespace engine {
