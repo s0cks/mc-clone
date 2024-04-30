@@ -29,6 +29,7 @@ namespace mcc {
     class FboFactory;
     class Fbo {
       friend class FboFactory;
+      friend class FboBindScope;
       friend class ColorAttachment;
     private:
       static void PublishEvent(FboEvent* event);
