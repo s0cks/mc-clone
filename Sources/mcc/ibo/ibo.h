@@ -37,11 +37,13 @@ namespace mcc {
     class UIntIbo;
     class IboScope;
     class Ibo {
-      friend class IboScope;
       friend class UByteIbo;
       friend class UShortIbo;
       friend class UIntIbo;
       friend class IboBuilder;
+      
+      friend class IboBindScope;
+      friend class IboReadScope;
       friend class IboUpdateScope;
     public:
       struct IdComparator {
@@ -52,23 +54,6 @@ namespace mcc {
         bool operator() (Ibo* lhs, Ibo* rhs) const {
           return lhs->GetId() < rhs->GetId();
         }
-      };
-
-      enum DrawMode : GLenum {
-        kPoints = GL_POINTS,
-        kLineStrip = GL_LINE_STRIP,
-        kLineLoop = GL_LINE_LOOP,
-        kLines = GL_LINES,
-        kLineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
-        kLinesAdjacency = GL_LINES_ADJACENCY,
-        kTriangleStrip = GL_TRIANGLE_STRIP,
-        kTriangleFan = GL_TRIANGLE_FAN,
-        kTriangles = GL_TRIANGLES,
-        kTriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
-        kTrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
-        kPatches = GL_PATCHES,
-
-        kNumberOfDrawModes = 12,
       };
     private:
       static void PublishEvent(IboEvent* event);

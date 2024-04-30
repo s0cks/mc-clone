@@ -154,6 +154,7 @@ add_library(${PROJECT_NAME}
   mcc/transform.h mcc/transform.cc
   mcc/gfx.h
   mcc/gfx_bind_scope.h
+  mcc/gfx_draw_mode.h
   mcc/buffer_object.h
   mcc/uniform_buffer.h
   mcc/renderbuffer.h
