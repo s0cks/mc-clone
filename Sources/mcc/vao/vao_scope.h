@@ -23,20 +23,9 @@ namespace mcc {
 
       VaoId GetVaoId() const;
     };
-
-    class VaoBindScope : public VaoScope,
-                         public gfx::BindScope {
-    public:
-      explicit VaoBindScope(Vao* vao):
-        VaoScope(vao),
-        gfx::BindScope() {
-      }
-
-      void Bind() const override;
-      void Unbind() const override;
-    };
   }
-  using vao::VaoBindScope;
 }
+
+#include "mcc/vao/vao_scope_bind.h"
 
 #endif //MCC_VAO_SCOPE_H
