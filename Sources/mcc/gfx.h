@@ -127,13 +127,12 @@ GetGlError() {
         }
         CHECK_GL(FATAL);
       }
+
+      bool IsInverted() const {
+        return Inverted;
+      }
     };
     
-    template<const bool Inverted = false>
-    class CullFaceCapabilityScope : public CapabilityScope<GL_CULL_FACE, Inverted>{};
-    typedef CullFaceCapabilityScope<false> CullFaceScope;
-    typedef CullFaceCapabilityScope<true> InvertedCullFaceScope;
-
     enum GlFunction : GLenum {
       kNever = GL_NEVER,
       kLess = GL_LESS,
@@ -270,8 +269,6 @@ GetGlError() {
       virtual ~Renderable() = default;
     };
   }
-  using gfx::CullFaceScope;
-  using gfx::InvertedCullFaceScope;
 
   using gfx::DepthTestScope;
   using gfx::InvertedDepthTestScope;

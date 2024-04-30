@@ -15,6 +15,8 @@
 
 #include "mcc/window/window.h"
 
+#include "mcc/cull_face_scope.h"
+
 namespace mcc::render {
   bool RenderPassGuis::ShouldSkip() const {
     return gui::Tree::IsEmpty();

@@ -148,6 +148,7 @@ add_library(${PROJECT_NAME}
   mcc/pipeline.h mcc/pipeline.cc
   mcc/parser.h
   mcc/resolution.h mcc/resolution.cc
+  mcc/cull_face_scope.h mcc/cull_face_scope.cc
   mcc/reference.h
   mcc/aabb.h mcc/aabb.cc
   mcc/transform.h mcc/transform.cc
