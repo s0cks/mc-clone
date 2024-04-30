@@ -97,6 +97,10 @@ file(GLOB MCC_MATERIAL_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/material/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/material/*.cc")
 
+file(GLOB MCC_SETTINGS_SOURCE_FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/settings/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/settings/*.cc")
+
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   ${MCC_COMPONENT_SOURCE_FILES}
@@ -121,9 +125,9 @@ add_library(${PROJECT_NAME}
   ${MCC_LIBUV_SOURCE_FILES}
   ${MCC_FONT_SOURCE_FILES}
   ${MCC_UBO_SOURCE_FILES}
+  ${MCC_SETTINGS_SOURCE_FILES}
 # Misc
   mcc/murmur.h
-  mcc/settings.h mcc/settings.cc
   mcc/bitfield.h
   mcc/uv.h
   mcc/on_shutdown.h
