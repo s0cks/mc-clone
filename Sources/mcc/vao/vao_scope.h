@@ -1,47 +1,39 @@
 #ifndef MCC_VAO_SCOPE_H
 #define MCC_VAO_SCOPE_H
 
-#include "mcc/vao/vao.h"
+#include "mcc/vao/vao_id.h"
+#include "mcc/gfx_bind_scope.h"
 
 namespace mcc {
   namespace vao {
-    class VaoBindScope {
-    private:
-      VaoId target_;
+    class Vao;
+    class VaoScope {
+    protected:
+      Vao* vao_;
 
-      static inline void
-      BindVao(const VaoId id) {
-        glBindVertexArray(id);
-        CHECK_GL(FATAL);
-      }
-
-      static inline void
-      UnbindVao() {
-        return BindVao(kDefaultVaoId);
-      }
+      explicit VaoScope(Vao* vao):
+        vao_(vao) {
+      } 
     public:
-      explicit VaoBindScope(const VaoId target):
-        target_(target) {
-        Bind();
-      }
-      explicit VaoBindScope(const Vao* vao):
-        VaoBindScope(vao->GetId()) {
-      }
-      ~VaoBindScope() {
-        Unbind();
+      virtual ~VaoScope() = default;
+
+      Vao* GetVao() const {
+        return vao_;
       }
 
-      VaoId GetTargetVaoId() const {
-        return target_;
+      VaoId GetVaoId() const;
+    };
+
+    class VaoBindScope : public VaoScope,
+                         public gfx::BindScope {
+    public:
+      explicit VaoBindScope(Vao* vao):
+        VaoScope(vao),
+        gfx::BindScope() {
       }
 
-      void Bind() {
-        BindVao(GetTargetVaoId());
-      }
-
-      void Unbind() {
-        UnbindVao();
-      }
+      void Bind() const override;
+      void Unbind() const override;
     };
   }
   using vao::VaoBindScope;

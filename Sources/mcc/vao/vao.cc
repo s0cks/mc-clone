@@ -25,6 +25,19 @@ namespace mcc::vao {
 
   }
 
+  void Vao::BindVao(const VaoId id) {
+    MCC_ASSERT(IsValidVaoId(id));
+    glBindVertexArray(id);
+    CHECK_GL(FATAL);
+  }
+
+  void Vao::DeleteVaos(const VaoId* ids, const uint64_t num_ids) {
+    MCC_ASSERT(ids != nullptr);
+    MCC_ASSERT(num_ids >= 1);
+    glDeleteVertexArrays(num_ids, ids);
+    CHECK_GL(FATAL);
+  }
+
   void Vao::Publish(VaoEvent* event) {
     MCC_ASSERT(event);
     const auto& subscriber = events_.get_subscriber();

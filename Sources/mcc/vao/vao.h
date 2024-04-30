@@ -20,6 +20,7 @@ namespace mcc {
 #undef DEFINE_ON_VAO_EVENT
 
     class Vao {
+      friend class VaoBindScope;
     public:
       struct VaoIdComparator {
         bool operator() (Vao* lhs, Vao* rhs) const {
@@ -38,6 +39,19 @@ namespace mcc {
       Publish(Args... args) {
         E event(args...);
         return Publish((VaoEvent*) &event);
+      }
+
+      static void BindVao(const VaoId id);
+      static void DeleteVaos(const VaoId* ids, const uint64_t num_ids);
+
+      static inline void
+      DeleteVao(const VaoId id) {
+        return DeleteVaos(&id, 1);
+      }
+      
+      static inline void
+      UnbindVao() {
+        return BindVao(kInvalidVaoId);
       }
     public:
       ~Vao();

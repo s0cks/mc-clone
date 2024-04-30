@@ -153,6 +153,7 @@ add_library(${PROJECT_NAME}
   mcc/aabb.h mcc/aabb.cc
   mcc/transform.h mcc/transform.cc
   mcc/gfx.h
+  mcc/gfx_bind_scope.h
   mcc/buffer_object.h
   mcc/uniform_buffer.h
   mcc/renderbuffer.h

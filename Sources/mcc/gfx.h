@@ -244,30 +244,6 @@ GetGlError() {
     };
     typedef BlendTestCapabilityScope<false> BlendTestScope;
     typedef BlendTestCapabilityScope<true> InvertedBlendTestScope;
-
-    template<class R>
-    class BindScope {
-      DEFINE_NON_COPYABLE_TYPE(BindScope);
-    private:
-      const R& resource_;
-    public:
-      BindScope() = delete;
-      explicit BindScope(const R& resource):
-        resource_(resource) {
-        resource_.Bind();
-      }
-      ~BindScope() {
-        resource_.Unbind();
-      }
-    };
-
-    class Renderable {
-    protected:
-      Renderable() = default;
-      virtual void Render();
-    public:
-      virtual ~Renderable() = default;
-    };
   }
 
   using gfx::DepthTestScope;
