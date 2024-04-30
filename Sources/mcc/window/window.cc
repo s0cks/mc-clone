@@ -37,7 +37,7 @@ namespace mcc {
   GetInitialWidth(const Resolution& monitor_resolution) {
     switch(FLAGS_window_width) {
       case 0:
-        return static_cast<int32_t>(monitor_resolution[0] * kInitialMonitorResolutionScale);
+        return static_cast<int32_t>(monitor_resolution.width() * kInitialMonitorResolutionScale);
       default:
         return FLAGS_window_width;
     }
@@ -47,7 +47,7 @@ namespace mcc {
   GetInitialHeight(const Resolution& monitor_resolution) {
     switch(FLAGS_window_height) {
       case 0:
-        return static_cast<int32_t>(monitor_resolution[1] * kInitialMonitorResolutionScale);
+        return static_cast<int32_t>(monitor_resolution.height() * kInitialMonitorResolutionScale);
       default:
         return FLAGS_window_height;
     }

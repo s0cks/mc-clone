@@ -45,6 +45,11 @@ namespace mcc::settings {
 #undef DEFINE_ON_SETTING_EVENT
   };
 
+#define DECLARE_SETTING(Name)                                     \
+  public:                                                         \
+    std::string ToString() const override;                        \
+    const char* GetName() const override { return #Name; }
+
   template<typename T>
   class SettingTemplate : public Setting {
   private:

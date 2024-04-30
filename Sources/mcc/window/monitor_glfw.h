@@ -2,6 +2,7 @@
 #define MCC_MONITOR_GLFW_H
 
 #include "mcc/gfx.h"
+#include "mcc/resolution.h"
 #include "mcc/window/monitor_constants.h"
 
 namespace mcc {

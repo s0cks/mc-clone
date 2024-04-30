@@ -29,6 +29,8 @@
 #include "mcc/gui/gui_on_mouseexit.h"
 #include "mcc/gui/gui_on_mouseclick.h"
 
+#include "mcc/render/render_settings.h"
+
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
 LogEvent() {
@@ -119,7 +121,10 @@ int main(int argc, char** argv) {
   keyboard->OnPressed(GLFW_KEY_SPACE)
     .subscribe([](keyboard::KeyPressedEvent* event) {
       new TestWindow();
-    });  
+    });
+
+  DLOG(INFO) << "rendering at: " << render::GetResolution();
+  
   engine->Run();
   return EXIT_SUCCESS;
 }

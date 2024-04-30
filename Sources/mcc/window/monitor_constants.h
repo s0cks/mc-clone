@@ -5,8 +5,6 @@
 
 namespace mcc {
   typedef glm::u32vec2 MonitorSize;
-  
-  typedef glm::u32vec2 Resolution;
 }
 
 #endif //MCC_MONITOR_CONSTANTS_H

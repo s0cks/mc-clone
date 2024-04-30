@@ -147,6 +147,7 @@ add_library(${PROJECT_NAME}
   mcc/timestamp.h mcc/timestamp.cc
   mcc/pipeline.h mcc/pipeline.cc
   mcc/parser.h
+  mcc/resolution.h mcc/resolution.cc
   mcc/reference.h
   mcc/aabb.h mcc/aabb.cc
   mcc/transform.h mcc/transform.cc

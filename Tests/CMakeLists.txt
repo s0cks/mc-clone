@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/texture/test_texture_filter.cc
   mcc/texture/test_texture_alignment.cc
 # Misc
+  mcc/test_resolution.cc
   mcc/mock_glfw.h mcc/mock_glfw.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}

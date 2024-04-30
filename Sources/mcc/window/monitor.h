@@ -2,7 +2,7 @@
 #define MCC_MONITOR_H
 
 #include "mcc/common.h"
-
+#include "mcc/resolution.h"
 #include "mcc/window/monitor_glfw.h"
 
 namespace mcc {
@@ -27,7 +27,7 @@ namespace mcc {
     friend std::ostream& operator<<(std::ostream& stream, const Monitor& rhs) {
       stream << "Monitor(";
       stream << "handle=" << rhs.handle();
-      stream << "resolution=" << glm::to_string(rhs.GetResolution());
+      stream << "resolution=" << rhs.GetResolution();
       stream << ")";
       return stream;
     }
