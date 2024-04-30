@@ -49,6 +49,10 @@ file(GLOB MCC_IBO_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/ibo/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/ibo/*.cc")
 
+file(GLOB MCC_UBO_SOURCE_FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/ubo/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/ubo/*.cc")
+
 file(GLOB MCC_ENGINE_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/engine/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/engine/*.cc")
@@ -95,6 +99,38 @@ file(GLOB MCC_MATERIAL_SOURCE_FILES
 
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
+  ${MCC_COMPONENT_SOURCE_FILES}
+  ${MCC_KEYBOARD_SOURCE_FILES}
+  ${MCC_MOUSE_SOURCE_FILES}
+  ${MCC_CAMERA_SOURCE_FILES}
+  ${MCC_ENGINE_SOURCE_FILES}
+  ${MCC_VAO_SOURCE_FILES}
+  ${MCC_VBO_SOURCE_FILES}
+  ${MCC_IBO_SOURCE_FILES}
+  ${MCC_PROGRAM_SOURCE_FILES}
+  ${MCC_RENDER_SOURCE_FILES}
+  ${MCC_SHADER_SOURCE_FILES}
+  ${MCC_WINDOW_SOURCE_FILES}
+  ${MCC_IMAGE_SOURCE_FILES}
+  ${MCC_TEXTURE_SOURCE_FILES}
+  ${MCC_RBO_SOURCE_FILES}
+  ${MCC_FBO_SOURCE_FILES}
+  ${MCC_ENTITY_SOURCE_FILES}
+  ${MCC_GUI_SOURCE_FILES}
+  ${MCC_RESOURCE_SOURCE_FILES}
+  ${MCC_LIBUV_SOURCE_FILES}
+  ${MCC_FONT_SOURCE_FILES}
+  ${MCC_UBO_SOURCE_FILES}
+# Misc
+  mcc/murmur.h
+  mcc/settings.h mcc/settings.cc
+  mcc/bitfield.h
+  mcc/uv.h
+  mcc/on_shutdown.h
+  mcc/event.h
+  mcc/state_machine.h
+  mcc/bitset.h
+  mcc/uri.h mcc/uri.cc
   mcc/json.h mcc/json.cc
   mcc/atomic_linked_list.h
   mcc/wsq.h
@@ -127,42 +163,8 @@ add_library(${PROJECT_NAME}
   mcc/trie.h
   mcc/circular_buffer.h
   mcc/series.h
-  mcc/subscription_trie.h
-  ${MCC_COMPONENT_SOURCE_FILES}
-  ${MCC_KEYBOARD_SOURCE_FILES}
-  ${MCC_MOUSE_SOURCE_FILES}
-  ${MCC_CAMERA_SOURCE_FILES}
-  ${MCC_ENGINE_SOURCE_FILES}
-  ${MCC_VAO_SOURCE_FILES}
-  ${MCC_VBO_SOURCE_FILES}
-  ${MCC_IBO_SOURCE_FILES}
-  ${MCC_PROGRAM_SOURCE_FILES}
-  ${MCC_RENDER_SOURCE_FILES}
-  ${MCC_SHADER_SOURCE_FILES}
-  ${MCC_WINDOW_SOURCE_FILES}
-  ${MCC_IMAGE_SOURCE_FILES}
-  ${MCC_TEXTURE_SOURCE_FILES}
-  ${MCC_RBO_SOURCE_FILES}
-  ${MCC_FBO_SOURCE_FILES}
-  ${MCC_ENTITY_SOURCE_FILES}
-  ${MCC_GUI_SOURCE_FILES}
-  ${MCC_RESOURCE_SOURCE_FILES}
-  ${MCC_LIBUV_SOURCE_FILES}
-  ${MCC_FONT_SOURCE_FILES}
-# Misc
-  mcc/murmur.h
-  mcc/settings.h mcc/settings.cc
-  mcc/bitfield.h
-  mcc/uv.h
-  mcc/on_shutdown.h
-  mcc/event.h
-  mcc/state_machine.h
-  mcc/bitset.h
-  mcc/uri.h mcc/uri.cc)
+  mcc/subscription_trie.h)
 target_link_libraries(${PROJECT_NAME}
-  Threads::Threads
-  glog::glog
-  ${GFLAGS_LIBRARIES}
   PNG::PNG
   JPEG::JPEG
   ${LEVELDB_LIBRARIES}

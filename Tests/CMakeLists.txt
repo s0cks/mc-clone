@@ -23,10 +23,5 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mock_glfw.h mcc/mock_glfw.cc)
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}
-  Threads::Threads
   GTest::gtest
-  GTest::gmock
-  glog::glog
-  ${LIBUV_LIBRARIES}
-  ${GFLAGS_LIBRARIES}
-  ${LEVELDB_LIBRARIES})
+  GTest::gmock)

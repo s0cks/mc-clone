@@ -50,8 +50,11 @@ include_directories(${RX_INCLUDE_DIRS})
 include_directories(${RAPIDJSON_INCLUDE_DIRS})
 include_directories(${NK_INCLUDE_DIRS})
 
-link_libraries(glog::glog
-    ${GFLAGS_LIBRARIES})
+message(STATUS "mcc libraries: " ${MCC_LIBRARIES})
+
+link_libraries(Threads::Threads
+               glog::glog
+               ${GFLAGS_LIBRARIES})
 
 add_subdirectory(Tests)
 add_subdirectory(Sources)
