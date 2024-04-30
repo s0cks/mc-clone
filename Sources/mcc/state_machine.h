@@ -1,35 +1,30 @@
 #ifndef MCC_STATE_MACHINE_H
 #define MCC_STATE_MACHINE_H
 
-#include "mcc/common.h"
-#include "mcc/relaxed_atomic.h"
+#include "mcc/series.h"
+#include "mcc/counter.h"
 
 namespace mcc {
-
-#define DECLARE_STATE_MACHINE(Name)                   \
-  DEFINE_NON_INSTANTIABLE_TYPE(Name);                 \
-  private:                                            \
-    static void SetState(const Name##State state);    \
-  public:                                             \
-    static Name##State GetState();
-
-  template<typename State>
-  class StateMachine {
+  static constexpr const auto kDefaultStateSeriesCapacity = 10;
+  class State {
+    typedef TimeSeries<kDefaultStateSeriesCapacity> DurationSeries;
+  private:
+    DurationSeries duration_;
   protected:
-    RelaxedAtomic<State> state_;
+    State() = default;
 
-    explicit StateMachine(const State& init_state):
-      state_(init_state) {
-    }
+    virtual void Run() = 0;
+    virtual void Stop() = 0;
 
-    void SetState(const State& state) {
-      state_ = state;
+    void AppendDuration(const uint64_t value) {
+      duration_.Append(value);
     }
   public:
-    virtual ~StateMachine() = default;
+    virtual ~State() = default;
+    virtual const char* GetName() const = 0;
 
-    State GetState() const {
-      return (State) state_;
+    const DurationSeries& GetDurationSeries() const {
+      return duration_;
     }
   };
 }

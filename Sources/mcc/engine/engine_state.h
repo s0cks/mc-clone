@@ -6,6 +6,7 @@
 #include <glog/logging.h>
 
 #include "mcc/series.h"
+#include "mcc/state_machine.h"
 
 namespace mcc::engine {
 #define FOR_EACH_ENGINE_STATE(V) \
@@ -14,61 +15,40 @@ namespace mcc::engine {
   V(Terminated)
 
   class Engine;
-  class State;
+  class EngineState;
 #define FORWARD_DECLARE_STATE(Name) class Name##State;
   FOR_EACH_ENGINE_STATE(FORWARD_DECLARE_STATE)
 #undef FORWARD_DECLARE_STATE
 
-  enum StateId : uint8_t {
-    kUninitialized = 0,
-#define DEFINE_STATE_ID(Name) k##Name,
-    FOR_EACH_ENGINE_STATE(DEFINE_STATE_ID)
-#undef DEFINE_STATE
-  };
+#define DECLARE_ENGINE_STATE(Name)                                              \
+  protected:                                                                    \
+    void Run() override;                                                        \
+    void Stop() override;                                                       \
+  public:                                                                       \
+    const char* GetName() const override { return #Name; }                      \
+    Name##State* As##Name##State() override { return this; }
 
-  static inline std::ostream&
-  operator<<(std::ostream& stream, const StateId& rhs) {
-    switch(rhs) {
-      case StateId::kUninitialized: return stream << "Uninitialized";
-#define DEFINE_TOSTRING(Name) case StateId::k##Name: return stream << #Name;
-      FOR_EACH_ENGINE_STATE(DEFINE_TOSTRING)
-#undef DEFINE_TOSTRING
-      default: return stream << "Unknown";
-    }
-  }
-
-#define DECLARE_STATE(Name)                                             \
-  protected:                                                            \
-    void Apply() override;                                              \
-  public:                                                               \
-    StateId GetId() const override { return StateId::k##Name; }         \
-    const char* GetName() const override { return #Name; }              \
-
-  class State {
+  class EngineState : public State {
     friend class Engine;
   protected:
     Engine* engine_;
-    TimeSeries<10> duration_;
 
-    explicit State(Engine* engine):
-      engine_(engine),
-      duration_() {
+    explicit EngineState(Engine* engine):
+      State(),
+      engine_(engine) {
     }
+  public:
+    ~EngineState() override = default;
 
-    inline Engine* engine() const {
+    inline Engine* GetEngine() const {
       return engine_;
     }
 
-    virtual void Apply() = 0;
-    virtual void Shutdown() { }
-  public:
-    virtual ~State() = default;
-    virtual StateId GetId() const = 0;
-    virtual const char* GetName() const = 0;
-
-    const TimeSeries<10> GetDuration() const {
-      return duration_;
-    }
+#define DEFINE_TYPE_CHECK(Name)                                                 \
+    virtual Name##State* As##Name##State() { return nullptr; }                  \
+    bool Is##Name##State() { return As##Name##State() != nullptr;  }
+    FOR_EACH_ENGINE_STATE(DEFINE_TYPE_CHECK)
+#undef DEFINE_TYPE_CHECK
   };
 }
 

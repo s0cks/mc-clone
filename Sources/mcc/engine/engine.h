@@ -18,15 +18,15 @@ namespace mcc::engine {
   protected:
     uv_loop_t* loop_;
     RelaxedAtomic<bool> running_;
-    State* current_state_;
-    State* previous_state_;
+    EngineState* current_state_;
+    EngineState* previous_state_;
     rx::subject<EngineEvent*> events_;
 
     virtual void SetRunning(const bool running = true) {
       running_ = running;
     }
 
-    inline void SetState(State* state) {
+    inline void SetState(EngineState* state) {
       previous_state_ = current_state_;
       current_state_ = state;
     }
@@ -41,8 +41,8 @@ namespace mcc::engine {
     inline void RunState(State* state) {
       DLOG(INFO) << state->GetName() << " running.....";
       SetState(state);
-      state->Apply();
-      const TimeSeries<10>& duration = state->GetDuration();
+      state->Run();
+      const auto& duration = state->GetDurationSeries();
       using namespace units::time;
       DLOG(INFO) << state->GetName() << " done in " << nanosecond_t(duration.last()) << ", avg=" << nanosecond_t(duration.average()) << ", max=" << nanosecond_t(duration.max()) << ", min=" << nanosecond_t(duration.min());
     }
@@ -86,11 +86,11 @@ namespace mcc::engine {
       return loop_;
     }
 
-    virtual State* GetCurrentState() const {
+    virtual EngineState* GetCurrentState() const {
       return current_state_;
     }
 
-    virtual State* GetPreviousState() const {
+    virtual EngineState* GetPreviousState() const {
       return previous_state_;
     }
 

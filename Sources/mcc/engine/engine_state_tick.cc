@@ -7,34 +7,30 @@
 
 namespace mcc::engine {
   TickState::TickState(Engine* engine):
-    State(engine),
+    EngineState(engine),
     ticker_(engine->events(), engine->GetLoop()),
     render_ticker_(engine->GetLoop()),
     shutdown_(engine->GetLoop(), this) {
   }
 
-  void TickState::Stop() {
-    ticker_.Stop();
-    render_ticker_.Stop();
-    const auto loop = engine()->GetLoop();
-    uv_stop(loop);
-  }
-
-  void TickState::Apply() {
+  void TickState::Run() {
     const auto start_ns = uv_hrtime();
-    engine()->SetRunning(true);
-    uv_run(engine()->GetLoop(), UV_RUN_DEFAULT);
-    engine()->SetRunning(false);
+    GetEngine()->SetRunning(true);
+    uv_run(GetEngine()->GetLoop(), UV_RUN_DEFAULT);
+    GetEngine()->SetRunning(false);
     const auto stop_ns = uv_hrtime();
     const auto total_ns = (stop_ns - start_ns);
-    duration_.Append(total_ns);
+    AppendDuration(total_ns);
   }
 
-  void TickState::Shutdown() {
+  void TickState::Stop() {
     shutdown_.Call();
   }
 
   void TickState::OnShutdown() {
-    Stop();
+    ticker_.Stop();
+    render_ticker_.Stop();
+    const auto loop = GetEngine()->GetLoop();
+    uv_stop(loop);
   }
 }

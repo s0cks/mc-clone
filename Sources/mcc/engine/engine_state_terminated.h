@@ -6,15 +6,15 @@
 #define MCC_ENGINE_STATE_TERMINATED_H
 
 namespace mcc::engine {
-  class TerminatedState : public State {
+  class TerminatedState : public EngineState {
     friend class Engine;
   protected:
     explicit TerminatedState(Engine* engine):
-      State(engine) {
+      EngineState(engine) {
     }
   public:
     ~TerminatedState() override = default;
-    DECLARE_STATE(Terminated);
+    DECLARE_ENGINE_STATE(Terminated);
   };
 }
 

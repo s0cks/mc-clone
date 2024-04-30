@@ -15,7 +15,7 @@ namespace mcc::render {
 }
 
 namespace mcc::engine {
-  class TickState : public State,
+  class TickState : public EngineState,
                     public ShutdownListener {
     friend class Engine;
     friend class render::Renderer;
@@ -31,8 +31,6 @@ namespace mcc::engine {
     GetState(T* handle) {
       return (TickState*) uv_handle_get_data((uv_handle_t*) handle);
     }
-  private:
-    void Stop();
   protected:
     EngineTicker ticker_;
     render::RenderTicker render_ticker_;
@@ -40,7 +38,6 @@ namespace mcc::engine {
 
     explicit TickState(Engine* engine);
 
-    void Shutdown() override;
     void OnShutdown() override;
   public:
     ~TickState() override = default;
@@ -53,7 +50,7 @@ namespace mcc::engine {
       return ticker_.GetTicksPerSecond();
     }
 
-    DECLARE_STATE(Tick);
+    DECLARE_ENGINE_STATE(Tick);
   };
 }
 

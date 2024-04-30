@@ -4,8 +4,13 @@
 #include "mcc/engine/engine_event.h"
 
 namespace mcc::engine {
-  void TerminatedState::Apply() {
-    engine()->Publish<TerminatingEvent>();
-    engine()->Publish<TerminatedEvent>();
+  void TerminatedState::Run() {
+    GetEngine()->Publish<TerminatingEvent>();
+    // do stuffs?
+    GetEngine()->Publish<TerminatedEvent>();
+  }
+
+  void TerminatedState::Stop() {
+    // do stuffs?
   }
 }

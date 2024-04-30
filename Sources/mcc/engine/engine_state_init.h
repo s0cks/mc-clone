@@ -6,15 +6,15 @@
 #define MCC_ENGINE_STATE_INIT_H
 
 namespace mcc::engine {
-  class InitState : public State {
+  class InitState : public EngineState {
     friend class Engine;
   protected:
     explicit InitState(Engine* engine):
-      State(engine) {
+      EngineState(engine) {
     }
   public:
     ~InitState() override = default;
-    DECLARE_STATE(Init);
+    DECLARE_ENGINE_STATE(Init);
   };
 }
 

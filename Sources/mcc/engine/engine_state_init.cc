@@ -4,10 +4,14 @@
 #include "mcc/engine/engine_event.h"
 
 namespace mcc::engine {
-  void InitState::Apply() {
-    engine()->Publish<PreInitEvent>();
+  void InitState::Run() {
+    GetEngine()->Publish<PreInitEvent>();
     DLOG(INFO) << "initializing engine....";
     // do stuffs?
-    engine()->Publish<PostInitEvent>();
+    GetEngine()->Publish<PostInitEvent>();
+  }
+
+  void InitState::Stop() {
+    // do stuffs?
   }
 }

@@ -15,7 +15,7 @@ namespace mcc::engine {
 
   void Engine::Shutdown() {
     if(current_state_)
-      current_state_->Shutdown();
+      current_state_->Stop();
   }
 
   static ThreadLocal<Engine> engine_;
