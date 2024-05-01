@@ -19,6 +19,7 @@ namespace mcc::uv {
     uint64_t current_;
     uint64_t last_;
     TickDurationSeries duration_;
+    uv::Tick tick_;
 
     virtual void OnPreTick() = 0;
     virtual void OnTick(const Tick& tick) = 0;
@@ -31,15 +32,14 @@ namespace mcc::uv {
     void OnPrepare() override {
       last_ = current_;
       current_ = uv::Now();
-      const auto tick = Tick((uint64_t) count_, current_, last_);
-      count_.Increment(1, current_);
-      return OnTick(tick);
+      tick_ = uv::Tick(((uint64_t) count_), current_, last_);
+      return OnTick(tick_);
     }
 
     void OnCheck() override {
-      const auto tick = Tick(((uint64_t) count_) - 1, current_, last_);
-      duration_.Append(tick.delta);
-      return OnPostTick(tick);
+      count_.Increment(1, current_);
+      duration_.Append(tick_.delta);
+      return OnPostTick(tick_);
     }
   public:
     explicit Ticker(uv_loop_t* loop, const bool start = true):
@@ -54,6 +54,10 @@ namespace mcc::uv {
     }
     ~Ticker() override {
       Stop();
+    }
+
+    const Tick& GetCurrentTick() const {
+      return tick_;
     }
 
     uint64_t GetTotalTicks() const {

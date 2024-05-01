@@ -41,6 +41,10 @@ namespace mcc::engine {
     void OnShutdown() override;
   public:
     ~TickState() override = default;
+    
+    const uv::Tick& GetCurrentTick() const {
+      return ticker_.GetCurrentTick();
+    }
 
     const uv::TickDurationSeries& GetTickDurationSeries() const {
       return ticker_.GetTickDurationSeries();
