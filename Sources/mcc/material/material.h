@@ -13,8 +13,24 @@
 #include "mcc/texture/texture.h"
 #include "mcc/pipeline.h"
 
+#include "mcc/material/material_events.h"
+#include "mcc/material/material_registry.h"
+
 namespace mcc {
   namespace material {
+    const MaterialRegistry& GetRegistry();
+    rx::observable<MaterialEvent*> OnMaterialEvent();
+
+#define DEFINE_ON_MATERIAL_EVENT(Name)                        \
+    static inline rx::observable<Name##Event*>                \
+    On##Name##Event() {                                       \
+      return OnMaterialEvent()                                \
+        .filter(Name##Event::Filter)                          \
+        .map(Name##Event::Cast);                              \
+    }
+    FOR_EACH_MATERIAL_EVENT(DEFINE_ON_MATERIAL_EVENT)
+#undef DEFINE_ON_MATERIAL_EVENT
+
     struct Material;
     typedef std::shared_ptr<Material> MaterialPtr;
 

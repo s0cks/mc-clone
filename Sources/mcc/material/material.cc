@@ -7,9 +7,13 @@
 #include "mcc/material/material_loader.h"
 
 namespace mcc {
-  std::vector<std::string> all_materials_;
-
   namespace material {
+    static rx::subject<MaterialEvent*> events_;
+
+    rx::observable<MaterialEvent*> OnMaterialEvent() {
+      return events_.get_observable();
+    }
+
     Material* Material::LoadFrom(const std::string& filename) {
       return JsonMaterialLoader::LoadMaterial(filename);
     }
