@@ -1,8 +1,6 @@
 #ifndef MCC_SHADER_STATUS_H
 #define MCC_SHADER_STATUS_H
 
-#include "mcc/shader/shader_constants.h"
-
 namespace mcc::shader {
   class ShaderStatus {
   protected:
