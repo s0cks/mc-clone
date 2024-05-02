@@ -1,8 +1,8 @@
 #include "mcc/shader/shader_code.h"
 
 #include <fmt/format.h>
-
 #include "mcc/flags.h"
+#include "mcc/sha256.h"
 
 namespace mcc::shader {
   ShaderCode* ShaderCode::FromFile(const uri::Uri& uri) {
@@ -19,5 +19,9 @@ namespace mcc::shader {
       return nullptr;
     }
     return FromFile(*type, uri);
+  }
+
+  uint256 ShaderCode::GetSHA256() const {
+    return sha256::Of(data_->data(), data_->write_pos());
   }
 }

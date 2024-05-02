@@ -108,7 +108,6 @@ namespace mcc {
     }
 
     bool WriteTo(std::fstream& stream) const {
-      DLOG(INFO) << "writing " << wpos_ << " bytes to fstream";
       stream.write((char*)&data_[rpos_], wpos_);
       stream.flush();
       return true;
@@ -141,7 +140,6 @@ namespace mcc {
         DLOG(ERROR) << "cannot read " << nbytes << " from file, buffer is full.";
         return false;
       }
-      DLOG(INFO) << "reading " << nbytes << " from file.";
       stream.read((char*) &data_[pos], sizeof(uint8_t) * nbytes);
       wpos_ = pos + nbytes;
       return true;

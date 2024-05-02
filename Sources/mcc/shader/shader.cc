@@ -48,7 +48,6 @@ namespace mcc::shader {
     const auto code = shader::ShaderCode::FromFile(uri);
     if(!code)
       return ShaderRef();
-    shader::ShaderCompiler compiler;
-    return New(compiler.Compile(code));
+    return New(ShaderCompiler::Compile(code));
   }
 }

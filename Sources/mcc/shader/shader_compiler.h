@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 
 #include "mcc/rx.h"
+#include "mcc/series.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/shader_code.h"
 
@@ -11,31 +12,43 @@ namespace mcc::shader {
   class ShaderCompiler {
     DEFINE_NON_COPYABLE_TYPE(ShaderCompiler);
   public:
+    typedef TimeSeries<10> DurationSeries;
+  protected:
+    DurationSeries duration_;
+  public:
     ShaderCompiler() = default;
     virtual ~ShaderCompiler() = default;
     virtual ShaderId CompileShaderCode(ShaderCode* source);
-  public:
-    static inline ShaderId
-    Compile(ShaderCode* code) {
-      MCC_ASSERT(code);
-      MCC_ASSERT(!code->IsEmpty());
-      ShaderCompiler compiler;
-      return compiler.CompileShaderCode(code);
-    }
 
+    const DurationSeries& GetDurationSeries() const {
+      return duration_;
+    }
+  private:
+    static inline uri::Uri
+    FormatBasicUri(const uri::basic_uri& uri) {
+      if(!(StartsWith(uri, "shader:") || StartsWith(uri, "file:"))) {
+        if(StartsWith(uri, "/"))
+          return uri::Uri(fmt::format("file://{0:s}", uri));
+        return uri::Uri(fmt::format("shader:{0:s}", uri));
+      }
+      return uri::Uri(uri);
+    }
+  public:
+    static ShaderCompiler* GetCompiler();
+    static ShaderId Compile(ShaderCode* code);
     static ShaderId Compile(const uri::Uri& uri);
 
     static inline ShaderId
     Compile(const uri::basic_uri& uri) {
-      auto target = uri;
-      if(!(StartsWith(target, "shader:") || StartsWith(target, "file:"))) {
-        if(StartsWith(target, "/")) {
-          target = fmt::format("file://{0:s}", target);
-        } else {
-          target = fmt::format("shader:{0:s}", target);
-        }
-      }
-      return Compile(uri::Uri(target));
+      return Compile(FormatBasicUri(uri));
+    }
+
+    static rx::observable<ShaderId> CompileAsync(ShaderCode* code);
+    static rx::observable<ShaderId> CompileAsync(const uri::Uri& uri);
+
+    static inline rx::observable<ShaderId>
+    CompileAsync(const uri::basic_uri& uri) {
+      return CompileAsync(FormatBasicUri(uri));
     }
   };
 }

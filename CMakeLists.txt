@@ -7,6 +7,7 @@ project(minecraft)
 # option(BUILD_TESTS "Build test programs" OFF)
 option(VMEMORY_PROFILING "Enable video memory profiling" ON)
 
+set(MCC_RESOURCE_HASH_ALGORITHM "SHA256" CACHE STRING "The hash algorithm to use for resources.")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")

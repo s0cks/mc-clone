@@ -2,7 +2,9 @@
 #define MCC_SHADER_CODE_H
 
 #include <ostream>
+
 #include "mcc/buffer.h"
+#include "mcc/uint256.h"
 #include "mcc/shader/shader_type.h"
 
 namespace mcc::shader {
@@ -40,6 +42,8 @@ namespace mcc::shader {
     bool IsEmpty() const {
       return data_->empty();
     }
+
+    uint256 GetSHA256() const;
 
     operator std::string () const {
       return std::string((const char*) data(), length());
