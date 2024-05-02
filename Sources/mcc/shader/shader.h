@@ -82,6 +82,13 @@ namespace mcc {
         return id_;
       }
 
+#define DEFINE_TYPE_CHECK(Name, Ext, GlValue)       \
+      inline bool Is##Name##Shader() const {        \
+        return GetType() == k##Name##Shader;        \
+      }
+      FOR_EACH_SHADER_TYPE(DEFINE_TYPE_CHECK)
+#undef DEFINE_TYPE_CHECK
+
       rx::observable<ShaderEvent*> OnEvent() const {
         return shader::OnEvent(GetId());
       }
