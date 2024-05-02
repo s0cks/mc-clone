@@ -41,6 +41,15 @@ namespace mcc::shader {
     rx::observable<ShaderCompilerEvent*> OnEvent() const {
       return events_.get_observable();
     }
+
+#define DEFINE_ON_SHADER_COMPILER_EVENT(Name)                   \
+    rx::observable<Name##Event*> On##Name##Event() const {      \
+      return OnEvent()                                          \
+        .filter(Name##Event::Filter)                            \
+        .map(Name##Event::Cast);                                \
+    }
+    FOR_EACH_SHADER_COMPILER_EVENT(DEFINE_ON_SHADER_COMPILER_EVENT)
+#undef DEFINE_ON_SHADER_COMPILER_EVENT
   private:
     static inline uri::Uri
     FormatBasicUri(const uri::basic_uri& uri) {
