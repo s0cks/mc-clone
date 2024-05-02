@@ -7,9 +7,14 @@
 
 namespace mcc::shader {
   static rx::subject<ShaderEvent*> events_;
+  static ShaderRegistry shaders_(events_);
 
   rx::observable<ShaderEvent*> OnEvent() {
     return events_.get_observable();
+  }
+
+  const ShaderRegistry& GetRegistry() {
+    return shaders_;
   }
 
   void Shader::Publish(ShaderEvent* event) {

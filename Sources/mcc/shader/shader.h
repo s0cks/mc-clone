@@ -9,6 +9,8 @@
 #include "mcc/shader/shader_type.h"
 #include "mcc/shader/shader_events.h"
 
+#include "mcc/shader/shader_registry.h"
+
 namespace mcc {
   namespace shader {
     class Shader;
@@ -21,6 +23,7 @@ namespace mcc {
   using res::ShaderRef;
 
   namespace shader {
+    const ShaderRegistry& GetRegistry();
     rx::observable<ShaderEvent*> OnEvent();
     
     static inline rx::observable<ShaderEvent*>
