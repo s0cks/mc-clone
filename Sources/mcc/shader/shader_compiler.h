@@ -7,6 +7,7 @@
 #include "mcc/series.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/shader_code.h"
+#include "mcc/shader/shader_compiler_events.h"
 
 namespace mcc::shader {
   class ShaderCompiler {
@@ -15,6 +16,19 @@ namespace mcc::shader {
     typedef TimeSeries<10> DurationSeries;
   protected:
     DurationSeries duration_;
+    rx::subject<ShaderCompilerEvent*> events_;
+
+    inline void Publish(ShaderCompilerEvent* event) {
+      MCC_ASSERT(event);
+      const auto& subscriber = events_.get_subscriber();
+      return subscriber.on_next(event);
+    }
+
+    template<class E, typename... Args>
+    inline void Publish(Args... args) {
+      E event(args...);
+      return Publish((ShaderCompilerEvent*) &event);
+    }
   public:
     ShaderCompiler() = default;
     virtual ~ShaderCompiler() = default;
@@ -22,6 +36,10 @@ namespace mcc::shader {
 
     const DurationSeries& GetDurationSeries() const {
       return duration_;
+    }
+
+    rx::observable<ShaderCompilerEvent*> OnEvent() const {
+      return events_.get_observable();
     }
   private:
     static inline uri::Uri

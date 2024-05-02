@@ -60,7 +60,7 @@ namespace mcc::shader {
 
     if(!status)
       return kInvalidShaderId; //TODO: cleanup shader id
-    Shader::Publish<ShaderCompiledEvent>(id, total_ns);  
+    //TODO: Shader::Publish<ShaderCompiledEvent>(id, total_ns);  
     return id;
   }
 

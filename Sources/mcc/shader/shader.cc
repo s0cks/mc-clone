@@ -16,12 +16,13 @@ namespace mcc::shader {
     events_.get_subscriber().on_next(event);
   }
 
-  Shader::Shader(const ShaderId id):
-    id_(id) {
-    Publish<ShaderCreatedEvent>(id);
-  }
-
 #define DEFINE_NEW_SHADER(Name, Ext, GlValue)                         \
+  Name##Shader* Name##Shader::New(const ShaderId id) {                \
+    MCC_ASSERT(IsValidShaderId(id));                                  \
+    const auto shader = new Name##Shader(id);                         \
+    Shader::Publish<ShaderCreatedEvent>(shader);                      \
+    return shader;                                                    \
+  }                                                                   \
   Name##Shader* Name##Shader::New(const uri::Uri& uri) {              \
     MCC_ASSERT(uri.HasScheme("shader"));                              \
     const auto code = shader::ShaderCode::FromFile(uri);              \

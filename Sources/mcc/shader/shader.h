@@ -26,7 +26,10 @@ namespace mcc {
     static inline rx::observable<ShaderEvent*>
     OnEvent(const ShaderId id) {
       return OnEvent()
-        .filter(ShaderEvent::FilterBy(id));
+        .filter([id](ShaderEvent* event) {
+          return event
+              && event->GetShaderId() == id;
+        });
     }
 
 #define DEFINE_ON_SHADER_EVENT(Name)                              \
@@ -47,6 +50,12 @@ namespace mcc {
 
     class ShaderCompiler;
     class Shader {
+      friend class VertexShader;
+      friend class FragmentShader;
+      friend class GeometryShader;
+      friend class TessEvalShader;
+      friend class TessControlShader;
+      
       friend class ShaderCompiler;
     private:
       static void Publish(ShaderEvent* event);
@@ -60,7 +69,9 @@ namespace mcc {
     protected:
       ShaderId id_;
 
-      explicit Shader(const ShaderId id);
+      explicit Shader(const ShaderId id):
+        id_(id) {
+      }
     public:
       virtual ~Shader() = default;
       virtual bool Equals(const Shader* rhs) const = 0;
@@ -106,9 +117,7 @@ namespace mcc {
     public:                                                       \
       std::string ToString() const override;                      \
     private:                                                      \
-      static Name##Shader* New(const ShaderId id) {               \
-        return new Name##Shader(id);                              \
-      }                                                           \
+      static Name##Shader* New(const ShaderId id);                \
     public:                                                       \
       static Name##Shader* New(const uri::Uri& uri);              \
       static inline Name##Shader*                                 \

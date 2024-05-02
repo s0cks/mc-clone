@@ -1,18 +1,17 @@
-#include "mcc/shader/shader_events.h"
 #include <sstream>
 
+#include "mcc/shader/shader_events.h"
+#include "mcc/shader/shader.h"
+
 namespace mcc::shader {
+  ShaderId ShaderEvent::GetShaderId() const {
+    return GetShader()->GetId();
+  }
+
   std::string ShaderCreatedEvent::ToString() const {
     std::stringstream ss;
     ss << "ShaderCreatedEvent(";
     ss << "id=" << GetShaderId();
-    ss << ")";
-    return ss.str();
-  }
-
-  std::string ShaderCompiledEvent::ToString() const {
-    std::stringstream ss;
-    ss << "ShaderCompiledEvent(";
     ss << ")";
     return ss.str();
   }
