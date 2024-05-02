@@ -17,9 +17,18 @@ namespace mcc::material {
 
   class MaterialEvent : public Event {
   protected:
-    MaterialEvent() = default;
+    const Material* material_;
+
+    explicit MaterialEvent(const Material* material):
+      Event(),
+      material_(material) {
+    }
   public:
     ~MaterialEvent() override = default;
+
+    const Material* GetMaterial() const {
+      return material_;
+    }
 
 #define DEFINE_TYPE_CHECK(Name)                                         \
     virtual Name##Event* As##Name##Event() { return nullptr; }          \
@@ -47,14 +56,18 @@ namespace mcc::material {
 
   class MaterialCreatedEvent : public MaterialEvent {
   public:
-    MaterialCreatedEvent() = default;
+    explicit MaterialCreatedEvent(const Material* material):
+      MaterialEvent(material) {
+    }
     ~MaterialCreatedEvent() override = default;
     DECLARE_MATERIAL_EVENT(MaterialCreated);
   };
 
   class MaterialDestroyedEvent : public MaterialEvent {
   public:
-    MaterialDestroyedEvent() = default;
+    explicit MaterialDestroyedEvent(const Material* material):
+      MaterialEvent(material) {
+    }
     ~MaterialDestroyedEvent() override = default;
     DECLARE_MATERIAL_EVENT(MaterialDestroyed);
   };

@@ -126,6 +126,7 @@ add_library(${PROJECT_NAME}
   ${MCC_LIBUV_SOURCE_FILES}
   ${MCC_FONT_SOURCE_FILES}
   ${MCC_SETTINGS_SOURCE_FILES}
+  ${MCC_MATERIAL_SOURCE_FILES}
 # Misc
   mcc/murmur.h
   mcc/bitfield.h

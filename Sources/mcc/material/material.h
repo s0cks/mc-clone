@@ -68,6 +68,10 @@ namespace mcc {
       }
       virtual ~Material() = default;
 
+      const std::string& GetName() const {
+        return name_;
+      }
+
       std::string name() const {
         return name_;
       }
@@ -104,6 +108,8 @@ namespace mcc {
         normal_->Bind(kNormalTextureSlot);
         roughness_->Bind(kRoughnessTextureSlot);
       }
+
+      virtual std::string ToString() const;
     public:
       static Material* LoadFrom(const std::string& filename);
     };
@@ -118,9 +124,6 @@ namespace mcc {
 
   using resource::MaterialRef;
 
-  bool RegisterMaterial(const std::string& name);
-  uint64_t GetNumberOfMaterials();
-  bool VisitAllMaterials(std::function<bool(const std::string&)> vis);
   MaterialRef GetMaterial(const uri::Uri& uri);
 
   static inline MaterialRef

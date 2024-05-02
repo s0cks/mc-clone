@@ -6,6 +6,8 @@
 #include "mcc/texture/texture.h"
 #include "mcc/material/material_loader.h"
 
+#include "mcc/material/material_spec.h"
+
 namespace mcc {
   namespace material {
     static rx::subject<MaterialEvent*> events_;
@@ -17,23 +19,6 @@ namespace mcc {
     Material* Material::LoadFrom(const std::string& filename) {
       return JsonMaterialLoader::LoadMaterial(filename);
     }
-  }
-
-  bool RegisterMaterial(const std::string& name) {
-    all_materials_.push_back(name);
-    return true;
-  }
-
-  uint64_t GetNumberOfMaterials() {
-    return all_materials_.size();
-  }
-
-  bool VisitAllMaterials(std::function<bool(const std::string&)>vis) {
-    for(const auto& material : all_materials_) {
-      if(!vis(material))
-        return false;
-    }
-    return true;
   }
 
   static inline std::string
@@ -88,5 +73,13 @@ namespace mcc {
       return material;
 
     return MaterialRef();
+  }
+
+  std::string Material::ToString() const {
+    std::stringstream ss;
+    ss << "Material(";
+    ss << "name=" << GetName();
+    ss << ")";
+    return ss.str();
   }
 }
