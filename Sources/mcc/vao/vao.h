@@ -51,7 +51,7 @@ namespace mcc {
       
       static inline void
       UnbindVao() {
-        return BindVao(kInvalidVaoId);
+        return BindVao(kDefaultVaoId);
       }
     public:
       ~Vao();

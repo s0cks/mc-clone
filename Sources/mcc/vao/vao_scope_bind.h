@@ -15,6 +15,10 @@ namespace mcc::vao {
     explicit VaoBindScope(Vao* vao):
       VaoScope(vao),
       gfx::BindScope() {
+      Bind();
+    }
+    ~VaoBindScope() override {
+      Unbind();
     }
 
     void Bind() const override;
