@@ -2,9 +2,9 @@
 
 #include "mcc/flags.h"
 #include "mcc/uv/utils.h"
-#include "mcc/shader/shader_status.h"
-
 #include "mcc/thread_local.h"
+
+#include "mcc/shader/shader_compiler_status.h"
 
 namespace mcc::shader {
   static inline void
@@ -43,14 +43,14 @@ namespace mcc::shader {
     duration_.Append(total_ns);
     compiled_ += 1;
     DLOG(INFO) << "compilation finished (" << nanosecond_t(total_ns) << ").";
-    const auto status = ShaderCompileStatus(id);
+    const auto status = ShaderCompilerStatus(id);
 #ifdef MCC_DEBUG
     const auto severity = status ? google::INFO : google::ERROR;
     LOG_AT_LEVEL(severity) << "Shader: " << id;
     if(status) {
       LOG_AT_LEVEL(severity) << "Status: Compiled.";
     } else {
-      LOG_AT_LEVEL(severity) << "Status: " << (status.HasMessage() ? status.message() : " None.");
+      LOG_AT_LEVEL(severity) << "Status: " << status;
     }
     const auto hash = code->GetSHA256();
     LOG_AT_LEVEL(severity) << "Hash: " << hash.ToHexString();
