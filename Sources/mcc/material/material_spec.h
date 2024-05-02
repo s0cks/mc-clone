@@ -21,6 +21,32 @@ namespace mcc {
       virtual const MaterialComponentSet& GetComponents() const = 0;
     };
 
+    class MaterialSpecBase : public MaterialSpec {
+    protected:
+      std::string name_;
+      MaterialComponentSet components_;
+
+      MaterialSpecBase(const std::string& name,
+                       const MaterialComponentSet& components):
+        MaterialSpec(),
+        name_(name),
+        components_(components) {
+      }
+      explicit MaterialSpecBase(const std::string& name):
+        MaterialSpecBase(name, {}) {
+      }
+    public:
+      ~MaterialSpecBase() override = default;
+
+      std::string GetName() const override {
+        return name_;
+      }
+
+      const MaterialComponentSet& GetComponents() const override {
+        return components_;
+      }
+    };
+
     class MaterialSpecBuilder {
     protected:
       std::string name_;

@@ -1,37 +1,22 @@
 #ifndef MCC_MATERIAL_DOCUMENT_H
 #define MCC_MATERIAL_DOCUMENT_H
 
+#include <optional>
+
 #include "mcc/uri.h"
 #include "mcc/json.h"
 #include "mcc/common.h"
 
 namespace mcc::material {
-#define FOR_EACH_MATERIAL_DOCUMENT_PROPERTY(V)            \
-  V(Name)
-
   class MaterialDocument {
+    typedef const json::Value& Property;
   public:
-#define DEFINE_PROPERTY(Name)                   \
-    struct Name##Property {                     \
-      friend class MaterialDocument;            \
-    public:                                     \
-      static constexpr const char*              \
-      GetName() {                               \
-        return #Name;                           \
-      }                                         \
-    private:                                    \
-      static inline bool                        \
-      Contains(const json::Document& doc) {     \
-        return doc.HasMember(GetName());        \
-      }                                         \
-      static inline const json::Value&          \
-      Get(const json::Document& doc) {          \
-        MCC_ASSERT(Contains(doc));              \
-        return doc[GetName()];                  \
-      }                                         \
-    };
-    FOR_EACH_MATERIAL_DOCUMENT_PROPERTY(DEFINE_PROPERTY);
-#undef DEFINE_PROPERTY
+    static constexpr const auto kAlbedoPropertyName = "albedo";
+    static constexpr const auto kAoPropertyName = "ao";
+    static constexpr const auto kHeightPropertyName = "height";
+    static constexpr const auto kMetallicPropertyName = "metallic";
+    static constexpr const auto kNormalPropertyName = "normal";
+    static constexpr const auto kRoughnessPropertyName = "roughness";
   protected:
     uri::Uri uri_;
     json::Document doc_;
@@ -43,15 +28,29 @@ namespace mcc::material {
       return uri_;
     }
 
-#define DEFINE_PROPERTY_FUNCTIONS(Name)                             \
-    virtual bool Has##Name##Property() const {                      \
-      return Name##Property::Contains(doc_);                        \
-    }                                                               \
-    virtual const json::Value& Get##Name##Property() const {        \
-      return Name##Property::Get(doc_);                             \
+    Property GetAlbedoProperty() const {
+      return doc_[kAlbedoPropertyName];
     }
-    FOR_EACH_MATERIAL_DOCUMENT_PROPERTY(DEFINE_PROPERTY_FUNCTIONS)
-#undef DEFINE_PROPERTY_FUNCTIONS
+
+    Property GetAoProperty() const {
+      return doc_[kAoPropertyName];
+    }
+
+    Property GetHeightProperty() const {
+      return doc_[kHeightPropertyName];
+    }
+
+    Property GetMetallicProperty() const {
+      return doc_[kMetallicPropertyName];
+    }
+
+    Property GetNormalProperty() const {
+      return doc_[kNormalPropertyName];
+    }
+
+    Property GetRoughnessProperty() const {
+      return doc_[kRoughnessPropertyName];
+    }
   };
 }
 

@@ -101,6 +101,12 @@ file(GLOB MCC_SETTINGS_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/settings/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/settings/*.cc")
 
+file(GLOB MCC_MISC_SOURCE_FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.cc")
+list(REMOVE_ITEM MCC_MISC_SOURCE_FILES "mcc/mcc.h.in" "mcc/mcc.cc")
+
+
 add_library(${PROJECT_NAME}
   ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
   ${MCC_COMPONENT_SOURCE_FILES}
@@ -127,51 +133,7 @@ add_library(${PROJECT_NAME}
   ${MCC_FONT_SOURCE_FILES}
   ${MCC_SETTINGS_SOURCE_FILES}
   ${MCC_MATERIAL_SOURCE_FILES}
-# Misc
-  mcc/murmur.h
-  mcc/bitfield.h
-  mcc/uv.h
-  mcc/on_shutdown.h
-  mcc/event.h
-  mcc/state_machine.h
-  mcc/bitset.h
-  mcc/uri.h mcc/uri.cc
-  mcc/json.h mcc/json.cc
-  mcc/atomic_linked_list.h
-  mcc/wsq.h
-  mcc/predicate.h
-  mcc/file_resolver.h
-  mcc/common.h
-  mcc/platform.h
-  mcc/buffer.h mcc/buffer.cc
-  mcc/cache.h mcc/cache.cc
-  mcc/timestamp.h mcc/timestamp.cc
-  mcc/pipeline.h mcc/pipeline.cc
-  mcc/parser.h
-  mcc/resolution.h mcc/resolution.cc
-  mcc/cull_face_scope.h mcc/cull_face_scope.cc
-  mcc/reference.h
-  mcc/aabb.h mcc/aabb.cc
-  mcc/transform.h mcc/transform.cc
-  mcc/gfx.h
-  mcc/gfx_bind_scope.h
-  mcc/gfx_draw_mode.h
-  mcc/buffer_object.h
-  mcc/renderbuffer.h
-  mcc/rx.h
-  mcc/color.h mcc/color.cc
-  mcc/shape.h
-  mcc/glm.h
-  mcc/flags.h mcc/flags.cc
-  mcc/os_thread.h mcc/os_thread.cc
-  mcc/os_thread_linux.h
-  mcc/os_thread_osx.h mcc/os_thread_osx.cc
-  mcc/thread_local.h
-  mcc/relaxed_atomic.h
-  mcc/trie.h
-  mcc/circular_buffer.h
-  mcc/series.h
-  mcc/subscription_trie.h)
+  ${MCC_MISC_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
   PNG::PNG
   JPEG::JPEG

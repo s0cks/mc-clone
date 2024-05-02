@@ -8,34 +8,25 @@
 #include "mcc/material/material_spec.h"
 #include "mcc/material/material_document.h"
 
+#include "mcc/texture/texture_spec.h"
+
 namespace mcc::material {
   class JsonMaterialSpec : public MaterialSpec {
-  protected:
-    MaterialDocument doc_;
-    std::string name_;
-    MaterialComponentSet components_;
-
-    static inline std::string
-    GetNameProperty(const MaterialDocument& doc) {
-      const auto& name = doc.GetNameProperty();
-      MCC_ASSERT(name.IsString());
-      return std::string(name.GetString(), name.GetStringLength());
-    }
   public:
-    explicit JsonMaterialSpec(const uri::Uri& uri):
-      MaterialSpec(),
-      doc_(uri),
-      name_(GetNameProperty(doc_)),
-      components_() {
+    static constexpr const auto kAlbedoPropertyName = "albedo";
+  protected:
+    const json::ConstObject& doc_;
+  public:
+    explicit JsonMaterialSpec(const json::ConstObject& doc):
+      doc_(doc) {
+    }
+    explicit JsonMaterialSpec(const json::Value& doc):
+      JsonMaterialSpec(doc.GetObject()) {
     }
     ~JsonMaterialSpec() override = default;
-    
-    std::string GetName() const override {
-      return name_;
-    }
 
-    const MaterialComponentSet& GetComponents() const override {
-      return components_;
+    const json::Value& GetAlbedoProperty() const {
+      return doc_[kAlbedoPropertyName];
     }
   };
 }
