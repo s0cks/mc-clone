@@ -6,6 +6,8 @@
 #include "mcc/texture/texture_builder.h"
 #include "mcc/texture/texture_factory.h"
 
+#include "mcc/render/render_settings.h"
+
 namespace mcc::fbo {
   std::string ColorAttachment::ToString() const {
     std::stringstream ss;
@@ -27,10 +29,18 @@ namespace mcc::fbo {
     builder.SetFormat(format);
     builder.SetInternalFormat(format);
     builder.SetSize(size);
+    builder.SetFilter(texture::kLinearFilter);
+    builder.SetWrap(texture::kClampToEdgeWrap);
+    builder.SetType(GL_UNSIGNED_BYTE);
     const auto texture = builder.Build()
       .as_blocking()
       .first();
     MCC_ASSERT(texture);
     return new ColorAttachment(texture, level);
+  }
+
+  ColorAttachment* ColorAttachment::NewDefaultResolution(const Level level) {
+    const auto resolution = render::GetResolution();
+    return New(texture::kRGB, texture::TextureSize(resolution.width(), resolution.height()), level);
   }
 }

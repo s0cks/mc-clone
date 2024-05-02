@@ -47,7 +47,10 @@ namespace mcc::fbo {
 
     DECLARE_FBO_ATTACHMENT(Color);
   public:
-    static ColorAttachment* New(const texture::TextureFormat format, const texture::TextureSize& size, const Level level);
+    static ColorAttachment* New(const texture::TextureFormat format,
+                                const texture::TextureSize& size,
+                                const Level level = k0);
+    static ColorAttachment* NewDefaultResolution(const Level level = k0);
   };
 }
 

@@ -9,11 +9,21 @@ namespace mcc::fbo {
     struct AttachmentComparator {
       bool operator() (Attachment* lhs, Attachment* rhs) const;
     };
+
+    typedef std::set<Attachment*, AttachmentComparator> Attachments;
   protected:
-    std::set<Attachment*, AttachmentComparator> attachments_;
+    Attachments attachments_;
   public:
     AttachmentSet() = default;
     virtual ~AttachmentSet() = default;
+
+    Attachments::const_iterator begin() const {
+      return std::begin(attachments_);
+    }
+
+    Attachments::const_iterator end() const {
+      return std::end(attachments_);
+    }
 
     virtual void Insert(Attachment* attachment);
     virtual void Remove(Attachment* attachment);

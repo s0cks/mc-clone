@@ -31,6 +31,8 @@
 #include "mcc/gui/gui_on_mouseexit.h"
 #include "mcc/gui/gui_on_mouseclick.h"
 
+#include "mcc/fbo/fbo.h"
+#include "mcc/fbo/fbo_factory.h"
 #include "mcc/render/render_settings.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
@@ -113,7 +115,7 @@ int main(int argc, char** argv) {
 
   mouse::OnMouseEvent()
     .subscribe(LogEvent<mouse::MouseEvent>());
-
+    
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
   keyboard->OnPressed(GLFW_KEY_ESCAPE)

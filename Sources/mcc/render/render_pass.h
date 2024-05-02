@@ -29,6 +29,7 @@ namespace mcc::render {
     
     typedef uint32_t Order;
     static constexpr const Order kDefaultOrder = 1000;
+    static constexpr const Order kLast = 1000000000;
 
     struct OrderComparator {
       bool operator()(RenderPass* lhs, RenderPass* rhs) const {

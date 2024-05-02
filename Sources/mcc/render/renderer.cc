@@ -84,8 +84,7 @@ namespace mcc::render {
       CHECK_GL(FATAL);
       glDepthFunc(GL_LEQUAL);
       CHECK_GL(FATAL);
-      
-      glClearColor(0.4, 0.3, 0.4, 1.0f);
+      glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
       CHECK_GL(FATAL);
     }
   public:

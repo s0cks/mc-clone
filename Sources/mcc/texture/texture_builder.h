@@ -25,7 +25,10 @@ namespace mcc::texture {
       internal_format_(kDefaultTextureFormat),
       filter_(kLinearFilter),
       wrap_(kClampToEdgeWrap),
-      size_(0) {
+      size_(0),
+      level_(0),
+      border_(0),
+      type_(GL_UNSIGNED_BYTE) {
     }
     virtual ~TextureBuilder() = default;
 

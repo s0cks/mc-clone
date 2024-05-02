@@ -15,16 +15,15 @@ namespace mcc::fbo {
   Fbo* FboFactory::CreateFbo(const FboId id) const {
     MCC_ASSERT(IsValidFboId(id));
     Fbo::BindFbo(id);
-    
     DLOG(INFO) << "attaching " << attachments_.GetNumberOfAttachments() << " attachments....";
-    attachments_.ToObservable()
-      .subscribe([](Attachment* att) {
-        att->AttachTo();
-      });
+    for(const auto& attachment : attachments_) {
+      DLOG(INFO) << "attaching " << attachment->ToString() << "....";
+      attachment->AttachTo();
+    }
 
     FboStatus status;
     LOG_IF(FATAL, !status) << "failed to initialize framebuffer: " << status;
     Fbo::BindDefaultFbo();
-    return Fbo::New(id);
+    return Fbo::New(id, attachments_);
   }
 }

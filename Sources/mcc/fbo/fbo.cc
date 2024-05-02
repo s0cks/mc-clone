@@ -29,8 +29,8 @@ namespace mcc::fbo {
     return ss.str();
   }
 
-  Fbo* Fbo::New(const FboId id) {
-    const auto fbo = new Fbo(id);
+  Fbo* Fbo::New(const FboId id, const AttachmentSet& attachments) {
+    const auto fbo = new Fbo(id, attachments);
     MCC_ASSERT(fbo);
     PublishEvent<FboCreatedEvent>(fbo);
     return fbo;

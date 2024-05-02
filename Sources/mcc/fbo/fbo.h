@@ -4,6 +4,7 @@
 #include "mcc/fbo/fbo_id.h"
 #include "mcc/fbo/fbo_events.h"
 #include "mcc/fbo/fbo_attachment.h"
+#include "mcc/fbo/fbo_attachments.h"
 
 namespace mcc {
   namespace fbo {
@@ -69,11 +70,13 @@ namespace mcc {
       }
     protected:
       FboId id_;
+      AttachmentSet attachments_;
 
       virtual void Destroy();
     private:
-      explicit Fbo(const FboId id):
-        id_(id) {
+      explicit Fbo(const FboId id, const AttachmentSet& attachments):
+        id_(id),
+        attachments_(attachments) {
       }
     public:
       virtual ~Fbo() = default;
@@ -81,6 +84,10 @@ namespace mcc {
 
       FboId GetId() const {
         return id_;
+      }
+
+      const AttachmentSet& GetAttachments() const {
+        return attachments_;
       }
 
       inline rx::observable<FboEvent*>
@@ -96,7 +103,7 @@ namespace mcc {
       FOR_EACH_FBO_EVENT(DEFINE_ON_FBO_EVENT)
 #undef DEFINE_ON_FBO_EVENT
     private:
-      static Fbo* New(const FboId id);
+      static Fbo* New(const FboId id, const AttachmentSet& attachments);
     public:
       static Fbo* New();
     };
