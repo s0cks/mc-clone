@@ -40,7 +40,8 @@ namespace mcc::shader {
       AttachAndCompile(id, code);
     const auto stop_ns = uv_hrtime();
     const auto total_ns = (stop_ns - start_ns);
-
+    duration_.Append(total_ns);
+    compiled_ += 1;
     DLOG(INFO) << "compilation finished (" << nanosecond_t(total_ns) << ").";
     const auto status = ShaderCompileStatus(id);
 #ifdef MCC_DEBUG
@@ -51,16 +52,18 @@ namespace mcc::shader {
     } else {
       LOG_AT_LEVEL(severity) << "Status: " << (status.HasMessage() ? status.message() : " None.");
     }
-    const auto& duration = GetDurationSeries();
-    LOG_AT_LEVEL(severity) << "Duration: " << nanosecond_t(total_ns) << "; stats (avg/min/max): " << nanosecond_t(duration.average()) << ", " << nanosecond_t(duration.min()) << ", " << nanosecond_t(duration.max());
     const auto hash = code->GetSHA256();
     LOG_AT_LEVEL(severity) << "Hash: " << hash.ToHexString();
+    LOG_AT_LEVEL(severity) << "Stats:";
+    LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
+    const auto& duration = GetDurationSeries();
+    LOG_AT_LEVEL(severity) << " - Duration: " << nanosecond_t(total_ns) << "; (Avg/Min/Max): " << nanosecond_t(duration_.average()) << ", " << nanosecond_t(duration_.min()) << ", " << nanosecond_t(duration_.min());
     LOG_AT_LEVEL(severity) << "Code (" << byte_t(code->length()) << "):" << std::endl << (*code);
 #endif //MCC_DEBUG
 
     if(!status)
       return kInvalidShaderId; //TODO: cleanup shader id
-    //TODO: Shader::Publish<ShaderCompiledEvent>(id, total_ns);  
+    Publish<ShaderCompiledEvent>(id);
     return id;
   }
 

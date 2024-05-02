@@ -5,6 +5,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/series.h"
+#include "mcc/counter.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/shader_code.h"
 #include "mcc/shader/shader_compiler_events.h"
@@ -14,7 +15,9 @@ namespace mcc::shader {
     DEFINE_NON_COPYABLE_TYPE(ShaderCompiler);
   public:
     typedef TimeSeries<10> DurationSeries;
+    typedef Counter<uint64_t> CompiledCounter;
   protected:
+    CompiledCounter compiled_;
     DurationSeries duration_;
     rx::subject<ShaderCompilerEvent*> events_;
 
@@ -36,6 +39,10 @@ namespace mcc::shader {
 
     const DurationSeries& GetDurationSeries() const {
       return duration_;
+    }
+
+    const CompiledCounter& GetCompiled() const {
+      return compiled_;
     }
 
     rx::observable<ShaderCompilerEvent*> OnEvent() const {
