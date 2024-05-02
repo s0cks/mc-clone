@@ -14,6 +14,11 @@ namespace mcc::shader {
   V(TessControl, tesc, GL_TESS_EVALUATION_SHADER)           \
   V(TessEval, tese, GL_TESS_CONTROL_SHADER)
 
+  class Shader;
+#define FORWARD_DECLARE(Name, Ext, GlValue) class Name##Shader;
+  FOR_EACH_SHADER_TYPE(FORWARD_DECLARE)
+#undef FORWARD_DECLARE
+
   enum ShaderType : GLenum {
 #define DEFINE_SHADER_TYPE(Name, Ext, GlValue) k##Name##Shader = (GlValue),
     FOR_EACH_SHADER_TYPE(DEFINE_SHADER_TYPE)

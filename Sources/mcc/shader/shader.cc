@@ -1,3 +1,4 @@
+#include <sstream>
 #include <unordered_map>
 
 #include "mcc/flags.h"
@@ -16,38 +17,56 @@ namespace mcc::shader {
   }
 
   Shader::Shader(const ShaderId id):
-    res::ResourceTemplate<res::kShaderType>(),
     id_(id) {
     Publish<ShaderCreatedEvent>(id);
   }
 
-  int Shader::GetShaderiv(const Property property) const {
-    GLint value;
-    glGetShaderiv(GetId(), property, &value);
-    CHECK_GL(FATAL);
-    return static_cast<int>(value);
+#define DEFINE_NEW_SHADER(Name, Ext, GlValue)                         \
+  Name##Shader* Name##Shader::New(const uri::Uri& uri) {              \
+    MCC_ASSERT(uri.HasScheme("shader"));                              \
+    const auto code = shader::ShaderCode::FromFile(uri);              \
+    return code ? New(ShaderCompiler::Compile(code)) : nullptr;       \
   }
+  FOR_EACH_SHADER_TYPE(DEFINE_NEW_SHADER)
+#undef DEFINE_NEW_SHADER
 
-  void Shader::Destroy() {
-    const auto id = GetId();
-    glDeleteShader(id);
-    CHECK_GL(FATAL);
-    Publish<ShaderDestroyedEvent>(id);
-  }
-
-  std::string Shader::ToString() const {
+  std::string VertexShader::ToString() const {
     std::stringstream ss;
-    ss << "Shader(";
+    ss << "VertexShader(";
     ss << "id=" << GetId();
     ss << ")";
     return ss.str();
   }
 
-  ShaderRef Shader::New(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("shader"));
-    const auto code = shader::ShaderCode::FromFile(uri);
-    if(!code)
-      return ShaderRef();
-    return New(ShaderCompiler::Compile(code));
+  std::string FragmentShader::ToString() const {
+    std::stringstream ss;
+    ss << "FragmentShader(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
+  }
+
+  std::string GeometryShader::ToString() const {
+    std::stringstream ss;
+    ss << "GeometryShader(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
+  }
+
+  std::string TessEvalShader::ToString() const {
+    std::stringstream ss;
+    ss << "TessEvalShader(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
+  }
+
+  std::string TessControlShader::ToString() const {
+    std::stringstream ss;
+    ss << "TessControlShader(";
+    ss << "id=" << GetId();
+    ss << ")";
+    return ss.str();
   }
 }

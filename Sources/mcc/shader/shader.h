@@ -21,10 +21,6 @@ namespace mcc {
   using res::ShaderRef;
 
   namespace shader {
-#define FOR_EACH_SHADER_PROPERTY(V)                 \
-  V(Type, GL_SHADER_TYPE)                           \
-  V(SourceLength, GL_SHADER_SOURCE_LENGTH)
-
     rx::observable<ShaderEvent*> OnEvent();
     
     static inline rx::observable<ShaderEvent*>
@@ -50,15 +46,9 @@ namespace mcc {
 #undef DEFINE_ON_SHADER_EVENT
 
     class ShaderCompiler;
-    class Shader : public res::ResourceTemplate<res::kShaderType> {
+    class Shader {
       friend class ShaderCompiler;
     private:
-      enum Property : GLenum {
-#define DEFINE_SHADER_PROPERTY(Name, GlValue) k##Name##Property = (GlValue),
-        FOR_EACH_SHADER_PROPERTY(DEFINE_SHADER_PROPERTY)
-#undef DEFINE_SHADER_PROPERTY
-      };
-
       static void Publish(ShaderEvent* event);
 
       template<typename E, typename... Args>
@@ -71,49 +61,111 @@ namespace mcc {
       ShaderId id_;
 
       explicit Shader(const ShaderId id);
-      int GetShaderiv(const Property property) const;
-
-      void Destroy() override;
     public:
-      ~Shader() override = default;//TODO: delete
-
-      virtual ShaderId GetId() const {
+      virtual ~Shader() = default;
+      virtual bool Equals(const Shader* rhs) const = 0;
+      virtual ShaderType GetType() const = 0;
+      virtual std::string ToString() const = 0;
+      
+      ShaderId GetId() const {
         return id_;
       }
 
-      virtual int GetSourceLength() const {
-        return GetShaderiv(kSourceLengthProperty);
-      }
-
-      virtual ShaderType GetType() const {
-        return static_cast<ShaderType>(GetShaderiv(kTypeProperty));
-      }
-
-      inline rx::observable<ShaderEvent*> OnEvent() const {
+      rx::observable<ShaderEvent*> OnEvent() const {
         return shader::OnEvent(GetId());
       }
 
 #define DEFINE_ON_SHADER_EVENT(Name)                                  \
-      inline rx::observable<Name##Event*> On##Name##Event() const {   \
+      rx::observable<Name##Event*> On##Name##Event() const {          \
         return shader::On##Name##Event(GetId());                      \
       }
       FOR_EACH_SHADER_EVENT(DEFINE_ON_SHADER_EVENT)
 #undef DEFINE_ON_SHADER_EVENT
+    };
 
-      std::string ToString() const;
+    template<const ShaderType Type>
+    class ShaderTemplate : public Shader {
+    protected:
+      explicit ShaderTemplate(const ShaderId id):
+        Shader(id) {
+      }
     public:
-      static inline ShaderRef
-      New(const ShaderId id) {
-        return ShaderRef(new Shader(id));
+      ~ShaderTemplate() override = default;
+
+      ShaderType GetType() const override {
+        return Type;
       }
 
-      static ShaderRef New(const uri::Uri& uri);
-
-      static inline ShaderRef
-      New(const uri::basic_uri& uri) {
-        return New(uri::Uri(uri));
+      bool Equals(const Shader* rhs) const override {
+        return GetType() == rhs->GetType()
+            && GetId() == rhs->GetId();
       }
     };
+
+#define DECLARE_SHADER_TYPE(Name)                                 \
+    public:                                                       \
+      std::string ToString() const override;                      \
+    private:                                                      \
+      static Name##Shader* New(const ShaderId id) {               \
+        return new Name##Shader(id);                              \
+      }                                                           \
+    public:                                                       \
+      static Name##Shader* New(const uri::Uri& uri);              \
+      static inline Name##Shader*                                 \
+      New(const uri::basic_uri& uri) {                            \
+        return New(uri::Uri(uri));                                \
+      }
+
+    class VertexShader : public ShaderTemplate<kVertexShader> {
+    protected:
+      explicit VertexShader(const ShaderId id):
+        ShaderTemplate<kVertexShader>(id) {  
+      }
+    public:
+      ~VertexShader() override = default;
+      DECLARE_SHADER_TYPE(Vertex);
+    };
+
+    class FragmentShader : public ShaderTemplate<kFragmentShader> {
+    protected:
+      explicit FragmentShader(const ShaderId id):
+        ShaderTemplate<kFragmentShader>(id) {  
+      }
+    public:
+      ~FragmentShader() override = default;
+      DECLARE_SHADER_TYPE(Fragment);
+    };
+
+    class GeometryShader : public ShaderTemplate<kGeometryShader> {
+    protected:
+      explicit GeometryShader(const ShaderId id):
+        ShaderTemplate<kGeometryShader>(id) {
+      }
+    public:
+      ~GeometryShader() override = default;
+      DECLARE_SHADER_TYPE(Geometry);
+    };
+
+    class TessEvalShader : public ShaderTemplate<kTessEvalShader> {
+    protected:
+      explicit TessEvalShader(const ShaderId id):
+        ShaderTemplate<kTessEvalShader>(id) {  
+      }
+    public:
+      ~TessEvalShader() override = default;
+      DECLARE_SHADER_TYPE(TessEval);
+    };
+
+    class TessControlShader : public ShaderTemplate<kTessControlShader> {
+    protected:
+      explicit TessControlShader(const ShaderId id):
+        ShaderTemplate<kTessControlShader>(id) {
+      }
+    public:
+      ~TessControlShader() override = default;
+      DECLARE_SHADER_TYPE(TessControl);
+    };
+#undef DECLARE_SHADER_TYPE
   }
 }
 
