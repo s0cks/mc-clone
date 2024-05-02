@@ -101,6 +101,14 @@ GetGlError() {
   }
 
   namespace gfx {
+    static inline int
+    GetContextFlags() {
+      int flags;
+      glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+      CHECK_GL(FATAL);
+      return flags;
+    }
+
     struct Resource {
       Resource() = default;
       virtual ~Resource() = default;

@@ -24,6 +24,8 @@
 #include "mcc/keyboard/keyboard.h"
 #include "mcc/material/material.h"
 
+#include "mcc/gfx_debug.h"
+
 #include "mcc/gui/gui_window.h"
 #include "mcc/gui/gui_on_mouseenter.h"
 #include "mcc/gui/gui_on_mouseexit.h"
@@ -89,7 +91,7 @@ int main(int argc, char** argv) {
   glfwWindowHintString(GLFW_COCOA_FRAME_NAME, "Hello");
   glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GLFW_TRUE);
 #endif
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+  mcc::gfx::EnableDebug();
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
