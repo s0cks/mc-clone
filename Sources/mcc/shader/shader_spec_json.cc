@@ -1,30 +1,30 @@
 #include "mcc/shader/shader_spec.h"
 
 namespace mcc::shader {
-  std::string JsonShaderSpec::GetShaderNameProperty() const {
-    const auto& name = doc().GetNameProperty();
-    MCC_ASSERT(name.IsString());
-    return std::string(name.GetString(), name.GetStringLength());
+  std::string JsonShaderSpec::GetShaderName() const {
+    return doc_->GetName();
   }
 
-  ShaderType JsonShaderSpec::GetShaderTypeProperty() const {
-    const auto& typeProperty = doc().GetTypeProperty();
-    const auto type = ParseShaderType(typeProperty);
+  ShaderType JsonShaderSpec::GetShaderType() const {
+    const auto spec = doc_->GetSpec();
+    MCC_ASSERT(spec);
+    const auto type = ParseShaderType(spec->GetTypeProperty());
     MCC_ASSERT(type);
-    return *type;
+    return type.value();
   }
 
   ShaderCode* JsonShaderSpec::GetShaderCode() const {
-    if(doc().HasCodeProperty()) {
-      const auto& code = doc().GetCodeProperty();
-      MCC_ASSERT(code.IsString());
-      return ShaderCode::New(GetShaderType(), code);
-    } else if(doc().HasFileProperty()) {
-      const auto& file = doc().GetFileProperty();
-      MCC_ASSERT(file.IsString());
-      std::string abs_path(file.GetString(), file.GetStringLength());
-      return ShaderCode::FromFile(GetShaderType(), abs_path);
+    const auto spec = doc_->GetSpec();
+    MCC_ASSERT(spec);
+    const auto& source = spec->GetSourceProperty();
+    MCC_ASSERT(source.IsString());
+    const auto type = GetShaderType();
+    const auto src = std::string(source.GetString(), source.GetStringLength());
+    if(StartsWith(src, "file://")) {
+      return ShaderCode::FromFile(type, src);
+    } else if(StartsWith(src, "shader://")) {
+
     }
-    return nullptr;
+    return ShaderCode::New(type, src);
   }
 }

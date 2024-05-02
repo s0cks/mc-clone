@@ -1,57 +1,35 @@
 #ifndef MCC_SHADER_DOCUMENT_H
 #define MCC_SHADER_DOCUMENT_H
 
-#include "mcc/uri.h"
-#include "mcc/json.h"
+#include "mcc/spec.h"
 #include "mcc/shader/shader_type.h"
 
-namespace mcc::shader {
-#define FOR_EACH_SHADER_DOCUMENT_PROPERTY(V) \
-  V(Name)                                    \
-  V(Type)                                    \
-  V(File)                                    \
-  V(Code)
-
-  class ShaderDocument {
-#define DEFINE_SHADER_DOCUMENT_PROPERTY_NAME(Name)         \
-    static constexpr const auto k##Name##Property = #Name;
-    FOR_EACH_SHADER_DOCUMENT_PROPERTY(DEFINE_SHADER_DOCUMENT_PROPERTY_NAME)
-#undef DEFINE_SHADER_DOCUMENT_PROPERTY
+namespace mcc::json {
+  class ShaderSpec;
+  typedef SpecDocument<ShaderSpec> ShaderSpecDocument;
+  class ShaderSpec {
+    static constexpr const auto kTypeProperty = "type";
+    static constexpr const auto kSourceProperty = "source";
   protected:
-    uri::Uri uri_;
-    json::Document doc_;
+    const json::ConstObject& doc_;
+  public:
+    explicit ShaderSpec(const json::ConstObject& doc):
+      doc_(doc) {
+    }
+    explicit ShaderSpec(const json::Value& doc):
+      ShaderSpec(doc.GetObject()) {
+    }
+    virtual ~ShaderSpec() = default;
 
-    inline json::Document& doc() {
-      return doc_;
+    const json::Value& GetTypeProperty() const {
+      return doc_[kTypeProperty];
     }
 
-    inline const json::Document& doc() const {
-      return doc_;
+    const json::Value& GetSourceProperty() const {
+      return doc_[kSourceProperty];
     }
   public:
-    explicit ShaderDocument(const uri::Uri& uri):
-      uri_(uri),
-      doc_() {
-      MCC_ASSERT(uri.HasScheme("file"));
-      MCC_ASSERT(uri.HasExtension(".json"));
-      LOG_IF(ERROR, !json::ParseJson(uri, doc_)) << "failed to parse ShaderDocument from: " << uri;
-    }
-    virtual ~ShaderDocument() = default;
-
-    uri::Uri uri() const {
-      return uri_;
-    }
-
-#define DEFINE_GET_SHADER_DOCUMENT_PROPERTY(Name)                 \
-    inline bool Has##Name##Property() const {                     \
-      return doc().HasMember(k##Name##Property);                  \
-    }                                                             \
-    inline const json::Value& Get##Name##Property() const {       \
-      MCC_ASSERT(Has##Name##Property());                          \
-      return doc()[k##Name##Property];                            \
-    }
-    FOR_EACH_SHADER_DOCUMENT_PROPERTY(DEFINE_GET_SHADER_DOCUMENT_PROPERTY)
-#undef DEFINE_GET_SHADER_DOCUMENT_PROPERTY
+    static ShaderSpecDocument* New(const uri::Uri& uri);
   };
 }
 

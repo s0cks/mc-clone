@@ -11,37 +11,16 @@
 namespace mcc::shader {
   class JsonShaderSpec : public ShaderSpec {
   protected:
-    ShaderDocument doc_;
-    std::string name_;
-    ShaderType type_;
-
-    inline ShaderDocument& doc() {
-      return doc_;
-    }
-
-    inline const ShaderDocument& doc() const {
-      return doc_;
-    }
-
-    std::string GetShaderNameProperty() const;
-    ShaderType GetShaderTypeProperty() const;
+    json::ShaderSpecDocument* doc_;
   public:
     explicit JsonShaderSpec(const uri::Uri& uri):
       ShaderSpec(),
-      doc_(uri),
-      name_(GetShaderNameProperty()),
-      type_(GetShaderTypeProperty()) {
+      doc_(json::ShaderSpecDocument::New(uri)) {
+      MCC_ASSERT(doc_);
     }
     ~JsonShaderSpec() override = default;
-
-    std::string GetShaderName() const override {
-      return name_;
-    }
-    
-    ShaderType GetShaderType() const override {
-      return type_;
-    }
-
+    std::string GetShaderName() const override;
+    ShaderType GetShaderType() const override;
     ShaderCode* GetShaderCode() const override;
   };
 }

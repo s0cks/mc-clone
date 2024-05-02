@@ -81,6 +81,11 @@ namespace mcc::shader {
       return new ShaderCode(type, Buffer::FromFile(uri));
     }
 
+    static inline ShaderCode*
+    FromFile(const ShaderType type, const uri::basic_uri& uri) {
+      return FromFile(type, uri::Uri(uri));
+    }
+
     static ShaderCode* FromFile(const uri::Uri& uri);
   };
 }

@@ -1,6 +1,7 @@
 #ifndef MCC_SPEC_H
 #define MCC_SPEC_H
 
+#include <memory>
 #include "mcc/json.h"
 
 namespace mcc {
@@ -19,17 +20,26 @@ namespace mcc {
 #define DECLARE_SPEC_PROPERTY(Name, Type) \
   virtual std::optional<Type> Get##Name() const = 0;
 
+  template<class T>
   class SpecDocument {
     DEFINE_NON_COPYABLE_TYPE(SpecDocument);
   public:
     static constexpr const auto kNameProperty = "name";
     static constexpr const auto kTypeProperty = "type";
-    static constexpr const auto kDataProperty = "data";
+    static constexpr const auto kSpecProperty = "spec";
   private:
     uri::Uri uri_;
     json::Document doc_;
+    std::shared_ptr<T> spec_;
   protected:
-    explicit SpecDocument(const uri::Uri& uri);
+    explicit SpecDocument(const uri::Uri& uri):
+      uri_(uri),
+      doc_(),
+      spec_() {
+      MCC_ASSERT(uri.HasScheme("file"));
+      MCC_ASSERT(uri.HasExtension(".json"));
+      LOG_IF(ERROR, !json::ParseJson(uri, doc_)) << "failed to parse SpecDocument from: " << uri;
+    }
   public:
     virtual ~SpecDocument() = default;
 
@@ -57,20 +67,19 @@ namespace mcc {
       return std::string(type.GetString(), type.GetStringLength());
     }
 
-    const json::Value& GetDataProperty() const {
-      return doc_[kDataProperty];
+    const json::Value& GetSpecProperty() const {
+      return doc_[kSpecProperty];
     }
-  };
 
-  template<class T>
-  class SpecDocumentTemplate : public SpecDocument {
-  protected:
-    SpecDocumentTemplate() = default;
+    std::shared_ptr<T> GetSpec() {
+      if(!spec_)
+        spec_ = std::make_shared<T>(GetSpecProperty());
+      return spec_;
+    }
   public:
-    ~SpecDocumentTemplate() override = default;
-
-    virtual T* GetData() const {
-      return new T(GetDataProperty());
+    static inline SpecDocument<T>*
+    New(const uri::Uri& uri) {
+      return new SpecDocument<T>(uri);
     }
   };
 }
