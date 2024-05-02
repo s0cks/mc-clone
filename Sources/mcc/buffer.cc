@@ -40,7 +40,6 @@ namespace mcc {
       LOG_IF(FATAL, !data) << "failed to reallocate " << (*this) << " to " << new_cap << " bytes.";
       data_ = data;
       capacity_ = new_cap;
-      DLOG(INFO) << "resized " << (*this) << " to " << new_cap << " bytes.";
     }
   public:
     HeapBuffer() = delete;
@@ -104,7 +103,6 @@ namespace mcc {
   }
 
   BufferPtr Buffer::FromFile(const std::string& filename) {
-    DLOG(INFO) << "reading buffer from: " << filename;
     std::ifstream stream(filename, std::ios::in);
     stream.seekg(0, std::ios::end);
     const auto length = stream.tellg();
