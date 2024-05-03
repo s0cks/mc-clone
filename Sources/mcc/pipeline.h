@@ -61,6 +61,8 @@ namespace mcc {
       }
 
       virtual bool Apply() = 0;
+
+      bool Execute();
     };
 
     class ApplyPipeline : public Pipeline {
