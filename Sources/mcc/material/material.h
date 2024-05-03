@@ -134,6 +134,13 @@ namespace mcc {
   class ApplyMaterialPipeline : public Pipeline {
   protected:
     MaterialRef material_;
+
+    bool Apply() override {
+      if(!material_.valid())
+        return false;
+      material_->Bind();
+      return true;
+    }
   public:
    explicit ApplyMaterialPipeline(MaterialRef material):
       Pipeline(),
@@ -143,14 +150,6 @@ namespace mcc {
 
     inline MaterialRef material() const {
       return material_;
-    }
-
-    void Render() override {
-      if(!material_.valid())
-        return;
-        
-      RenderChildren();
-      material_->Bind();
     }
   };
 }

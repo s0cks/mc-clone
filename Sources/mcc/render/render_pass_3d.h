@@ -10,7 +10,7 @@ namespace mcc::render {
     Pipeline* pipeline_;
 
     void Render() override {
-      pipeline_->Render();
+      LOG_IF(ERROR, !pipeline_->Apply()) << "failed to apply pipeline.";
     }
   public:
     explicit RenderPass3d(Pipeline* pipeline):

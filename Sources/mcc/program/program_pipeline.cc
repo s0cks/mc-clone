@@ -5,9 +5,10 @@ namespace mcc::program {
     // do nothing.
   };
 
-  void ApplyProgramPipeline::Render() {
+  bool ApplyProgramPipeline::Apply() {
     GetProgramRef()->Apply();
     set_uniforms_(GetProgramRef());
     GetProgramRef()->Apply();
+    return true;
   }
 }

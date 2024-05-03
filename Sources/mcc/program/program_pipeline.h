@@ -39,7 +39,11 @@ namespace mcc::program {
   public:
     ~ApplyProgramPipeline() override = default;
 
-    void Render() override;
+    const char* GetName() const override {
+      return "ApplyProgram";
+    }
+
+    bool Apply() override;
   public:
     static inline ApplyProgramPipeline*
     New(const ProgramRef& ref, SetUniformsCallback callback = kDoNothing) {

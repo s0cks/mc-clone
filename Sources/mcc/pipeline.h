@@ -5,106 +5,178 @@
 #include "mcc/gfx.h"
 
 namespace mcc {
-  class Pipeline {
-  protected:
-    Pipeline* parent_;
-    std::vector<Pipeline*> children_;
-  public:
-    explicit Pipeline(Pipeline* parent = nullptr):
-      parent_(nullptr),
-      children_() {
-    }
-  protected:
-    void RenderChildren() {
-      for(const auto& child : children_)
-        child->Render();
-    }
-  public:
-    virtual ~Pipeline() {
-      for(const auto& child : children_)
-        delete child;
-      children_.clear();
-      parent_ = nullptr;
-    }
+  namespace pipeline {
+    class Pipeline;
+    class PipelineVisitor {
+      friend class Pipeline;
+    protected:
+      PipelineVisitor() = default;
+      virtual bool Visit(Pipeline* pipeline) = 0;
+    public:
+      virtual ~PipelineVisitor() = default;
+    };
 
-    virtual void Render() = 0;
+    class Pipeline {
+    protected:
+      Pipeline* parent_;
 
-    void SetParent(Pipeline* pipeline) {
-      parent_ = pipeline;
-    }
-
-    Pipeline* GetParent() const {
-      return parent_;
-    }
-
-    bool HasParent() const {
-      return parent_ != nullptr;
-    }
-
-    bool HasChildren() const {
-      return !children_.empty();
-    }
-
-    uint64_t GetNumberOfChildren() const {
-      return children_.size();
-    }
-
-    void AddChild(Pipeline* pipeline) {
-      children_.push_back(pipeline);
-    }
-
-    Pipeline* GetChildAt(const uint64_t idx) const {
-      return children_[idx];
-    }
-
-    void SetChildAt(const uint64_t idx, Pipeline* pipeline) {
-      children_[idx] = pipeline;
-    }
-  };
-
-  class ApplyPipeline : public Pipeline {
-  protected:
-    std::function<void()> apply_;
-  public:
-    ApplyPipeline(std::function<void()> apply):
-      Pipeline(),
-      apply_(apply) {
-    }
-    ~ApplyPipeline() override = default;
-
-    void Render() override {
-      apply_();
-    }
-  };
-
-  template<typename Mesh>
-  class RenderMeshPipeline : public Pipeline {
-  private:
-    Mesh* mesh_;
-    bool children_first_;
-  public:
-    explicit RenderMeshPipeline(Mesh* mesh,
-                                const bool children_first = true):
-      Pipeline(),
-      mesh_(mesh),
-      children_first_(children_first) {
-    }
-    ~RenderMeshPipeline() override = default;
-
-    inline Mesh* mesh() const {
-      return mesh_;
-    }
-
-    void Render() override {
-      if(children_first_) {
-        RenderChildren();
-        mesh()->Render();
-      } else {
-        mesh()->Render();
-        RenderChildren();
+      explicit Pipeline(Pipeline* parent = nullptr):
+        parent_(parent) {
       }
-    }
-  };
+
+      virtual void Append(Pipeline* child) {
+        // do nothing
+      }
+
+      virtual void SetChildAt(const uint64_t idx, Pipeline* child) {
+        // do nothing
+      }
+    public:
+      virtual ~Pipeline() = default;
+      virtual const char* GetName() const = 0;
+
+      virtual Pipeline* GetParent() const {
+        return parent_;
+      }
+
+      virtual Pipeline* GetChildAt(const uint64_t idx) const  {
+        return nullptr;
+      }
+
+      virtual uint64_t GetNumberOfChildren() const {
+        return 0;
+      }
+
+      virtual bool HasChildren() const {
+        return false;
+      }
+
+      virtual bool Accept(PipelineVisitor* vis) {
+        MCC_ASSERT(vis);
+        return vis->Visit(this);
+      }
+
+      virtual bool HasParent() const {
+        return GetParent() != nullptr;
+      }
+
+      virtual bool Apply() = 0;
+    };
+
+    class ApplyPipeline : public Pipeline {
+    public:
+      typedef std::function<bool()> ApplyFunc;
+    protected:
+      std::string name_;
+      ApplyFunc apply_;
+
+      bool Apply() override {
+        return apply_();
+      }
+    public:
+      ApplyPipeline(Pipeline* parent,
+                    const std::string& name,
+                    const ApplyFunc& func):
+        Pipeline(parent),
+        name_(name),
+        apply_(func) {
+      }
+      ApplyPipeline(Pipeline* parent,
+                    const ApplyFunc& func):
+        ApplyPipeline(parent, "apply", func) {
+      }
+      ApplyPipeline(const std::string& name, const ApplyFunc& func):
+        ApplyPipeline(nullptr, name, func) {
+      }
+      explicit ApplyPipeline(const ApplyFunc& func):
+        ApplyPipeline(nullptr, func) {
+      }
+      ~ApplyPipeline() override = default;
+
+      const char* GetName() const override {
+        return name_.data();
+      }
+
+      const ApplyFunc& GetApplyFunc() const {
+        return apply_;
+      }
+    };
+
+    template<typename Sequence>
+    class SequencePipelineTemplate : public Pipeline {
+    protected:
+      std::string name_;
+      Sequence children_;
+
+      SequencePipelineTemplate(Pipeline* parent,
+                               const std::string& name,
+                               const Sequence& children):
+        Pipeline(parent),
+        name_(name),
+        children_(children) {
+      }
+
+      bool Apply() override {
+        for(const auto& child : children_) {
+          if(child && !child->Apply())
+            return false;
+        }
+        return true;
+      }
+    public:
+      ~SequencePipelineTemplate() override = default;
+
+      uint64_t GetNumberOfChildren() const override {
+        return children_.size();
+      }
+      
+      bool HasChildren() const override {
+        return !children_.empty();
+      }
+    };
+
+    typedef std::vector<Pipeline*> PipelineSequence;
+    class SequencePipeline : public SequencePipelineTemplate<PipelineSequence> {
+    protected:
+      void Append(Pipeline* child) override {
+        children_.push_back(child);
+      }
+      
+      void SetChildAt(const uint64_t idx, Pipeline* child) override {
+        MCC_ASSERT(idx >= 0 && idx <= GetNumberOfChildren());
+        children_[idx] = child;
+      }
+    public:
+      SequencePipeline(Pipeline* parent,
+                       const std::string& name,
+                       const PipelineSequence& children):
+        SequencePipelineTemplate<PipelineSequence>(parent, name, children) {
+      }
+      SequencePipeline(Pipeline* parent,
+                      const PipelineSequence& children):
+        SequencePipeline(parent, "sequence", children) {  
+      }
+      SequencePipeline(const std::string& name,
+                       const PipelineSequence& children = {}):
+        SequencePipeline(nullptr, name, children) {
+      }
+      SequencePipeline(const PipelineSequence& children = {}):
+        SequencePipeline(nullptr, children) {
+      }
+      ~SequencePipeline() override = default;
+
+      const char* GetName() const override {
+        return name_.data();
+      }
+
+      Pipeline* GetChildAt(const uint64_t idx) const override {
+        MCC_ASSERT(idx >= 0 && idx <= GetNumberOfChildren());
+        return children_[idx];
+      }
+    };
+  }
+  using pipeline::Pipeline;
+  using pipeline::ApplyPipeline;
 }
 
 #endif //MCC_PIPELINE_H

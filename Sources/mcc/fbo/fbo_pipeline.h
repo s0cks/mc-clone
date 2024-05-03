@@ -35,9 +35,13 @@ namespace mcc {
         FboPipeline(fbo) {
       }
 
-      void Render() override;
+      bool Apply() override;
     public:
       ~RenderFboPipeline() override = default;
+      
+      const char* GetName() const override {
+        return "RenderFbo";
+      }
     public:
       static RenderFboPipeline* New(const Fbo* fbo);
     };
