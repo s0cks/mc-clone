@@ -69,7 +69,7 @@ namespace mcc::render {
   }
 
   void RenderFboPass::Render() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo_->GetId());
     CHECK_GL(FATAL);
 
     DLOG(INFO) << "rendering " << fbo_->ToString() << "....";
@@ -79,27 +79,29 @@ namespace mcc::render {
 
     InvertedCullFaceScope cull_face;
     InvertedDepthTestScope depth_test;
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.1f);
-    CHECK_GL(FATAL);
-
+    
     const auto attachments = fbo_->GetAttachments();
     const auto attachment = attachments.GetAllColorAttachments()
       .as_blocking()
       .first()->AsColorAttachment();
     MCC_ASSERT(attachment);
     const auto texture = attachment->GetTexture();
-    texture->Bind();
+    texture->Bind0();
 
-    const auto camera = camera::GetOrthoCamera();
-    MCC_ASSERT(camera);
+    fbo::FboBindScope fbo(fbo_);
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    
+    const auto projection = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, 0.1f, 1000.0f);
+    const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
     program_->Apply();
     program_->SetInt("tex", 0);
-    program_->SetMat4("projection", camera->GetProjection());
-    program_->SetMat4("view", camera->GetView());
+    program_->SetMat4("projection", projection);
+    program_->SetMat4("view", view);
     program_->SetMat4("model", model);
     program_->Apply();
     draw_scope.Draw(GL_TRIANGLES);

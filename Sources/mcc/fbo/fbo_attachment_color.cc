@@ -36,11 +36,11 @@ namespace mcc::fbo {
       .as_blocking()
       .first();
     MCC_ASSERT(texture);
-    return new ColorAttachment(texture, level);
+    return new ColorAttachment(texture, size, level);
   }
 
   ColorAttachment* ColorAttachment::NewDefaultResolution(const Level level) {
     const auto resolution = render::GetResolution();
-    return New(texture::kRGB, texture::TextureSize(resolution.width(), resolution.height()), level);
+    return New(texture::kRGBA, texture::TextureSize(resolution.width(), resolution.height()), level);
   }
 }

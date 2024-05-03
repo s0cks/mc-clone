@@ -17,10 +17,6 @@
 
 #include "mcc/cull_face_scope.h"
 
-#include "mcc/fbo/fbo.h"
-#include "mcc/fbo/fbo_scope.h"
-#include "mcc/fbo/fbo_factory.h"
-
 #include "mcc/render/renderer.h"
 #include "mcc/render/render_fbo_pass.h"
 
@@ -51,7 +47,6 @@ namespace mcc::render {
   static ThreadLocal<Vao> vao_;
   static ThreadLocal<Vbo> vbo_;
   static ThreadLocal<UIntIbo> ibo_;
-  static ThreadLocal<Fbo> fbo_;
 
   static inline Vao*
   SetVao(Vao* vao) {
@@ -157,48 +152,6 @@ namespace mcc::render {
     return SetIbo(CreateIbo(num_indices));
   }
 
-  static inline Fbo*
-  GetFbo() {
-    return fbo_.Get();
-  }
-
-  static inline bool
-  HasFbo() {
-    return GetFbo() != nullptr;
-  }
-
-  static inline Fbo*
-  SetFbo(Fbo* fbo) {
-    MCC_ASSERT(fbo);
-    fbo_.Set(fbo);
-    return fbo;
-  }
-
-  static inline Fbo*
-  CreateFbo() {
-    using namespace fbo;
-    FboFactory factory;
-    factory.Attach(ColorAttachment::NewDefaultResolution());
-    const auto fbo = factory.Create()
-      .as_blocking()
-      .first();
-    MCC_ASSERT(fbo);
-    return fbo;
-  }
-
-  static inline Fbo*
-  GetOrCreateFbo() {
-    if(HasFbo())
-      return GetFbo();
-    const auto fbo = CreateFbo();
-    const auto renderer = render::Renderer::Get();
-    MCC_ASSERT(renderer);
-    const auto root_pass = renderer->GetPass();
-    MCC_ASSERT(root_pass);
-    root_pass->Append(new RenderFboPass(fbo));
-    return SetFbo(fbo);
-  }
-
   RenderPassGuis::RenderPassGuis():
     RenderPass(),
     prog_(Program::New("colored_2d")) {
@@ -217,9 +170,6 @@ namespace mcc::render {
       LOG(WARNING) << "no vertices to render.";
       return;
     }
-
-    const auto fbo = GetOrCreateFbo();
-    fbo::FboBindScope fbo_scope(fbo);
     const auto vao = GetOrCreateVao();
     vao::VaoBindScope scope(vao);
     const auto vbo = GetOrCreateVbo(128);
@@ -227,13 +177,14 @@ namespace mcc::render {
       vbo::VboUpdateScope update(vbo);
       update.Update(vertices);
     }
-    
+
     InvertedCullFaceScope cull_face;
     InvertedDepthTestScope depth_test;
-    glClearColor(0.1f, 0.1f, 0.1f, 0.75f);
-    CHECK_GL(FATAL);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+    CHECK_GL(FATAL);
+
     const auto camera = camera::GetOrthoCamera();
     MCC_ASSERT(camera);
     auto model = glm::mat4(1.0f);

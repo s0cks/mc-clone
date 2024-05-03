@@ -21,11 +21,13 @@ namespace mcc::fbo {
     };
   protected:
     Texture* texture_;
+    texture::TextureSize size_;
     Level level_;
 
-    explicit ColorAttachment(Texture* texture, const Level level):
+    explicit ColorAttachment(Texture* texture, const texture::TextureSize& size, const Level level):
       Attachment(),
       texture_(texture),
+      size_(size),
       level_(level) {
     }
 
@@ -39,6 +41,10 @@ namespace mcc::fbo {
 
     virtual Level GetLevel() const {
       return level_;
+    }
+
+    const texture::TextureSize& GetSize() const {
+      return size_;
     }
 
     AttachmentPoint GetAttachmentPoint() const override {
