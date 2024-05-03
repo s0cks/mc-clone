@@ -15,23 +15,6 @@ namespace mcc::component {
   FOR_EACH_COMPONENT_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
-#define DEFINE_COMPONENT_EVENT(Name)                                        \
-  public:                                                                   \
-    Name##Event* As##Name##Event() override { return this; }                \
-    const char* GetName() const override { return #Name; }                  \
-    std::string ToString() const override;                                  \
-    static inline bool                                                      \
-    Filter(ComponentEvent* event) {                                         \
-      MCC_ASSERT(event);                                                    \
-      return event->Is##Name##Event();                                      \
-    }                                                                       \
-    static inline Name##Event*                                              \
-    Cast(ComponentEvent* event) {                                           \
-      MCC_ASSERT(event);                                                    \
-      MCC_ASSERT(event->Is##Name##Event());                                 \
-      return event->As##Name##Event();                                      \
-    }
-
   class Component;
   class ComponentEvent : public Event {
   protected:
@@ -52,12 +35,11 @@ namespace mcc::component {
       return false;
     }
 
-#define DEFINE_TYPE_CHECK(Name)                                             \
-    virtual Name##Event* As##Name##Event() { return nullptr; }              \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_COMPONENT_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_COMPONENT_EVENT);
   };
+
+#define DEFINE_COMPONENT_EVENT(Name)          \
+  DECLARE_EVENT_TYPE(ComponentEvent, Name)
 
   class ComponentRegisteredEvent : public ComponentEvent {
   public:

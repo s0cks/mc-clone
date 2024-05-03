@@ -33,38 +33,19 @@ namespace mcc::program {
     ProgramId GetProgramId() const {
       return id_;
     }
-
-#define DEFINE_TYPE_CHECK(Name)                                               \
-    virtual Name##Event* As##Name##Event() { return nullptr; }                \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_PROGRAM_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_PROGRAM_EVENT);
   };
 
-#define DEFINE_PROGRAM_EVENT(Name) \
-  public:                                                                     \
-    const char* GetName() const override { return #Name; }                    \
-    std::string ToString() const override;                                    \
-    Name##Event* As##Name##Event() override { return this; }                  \
-    static inline Name##Event*                                                \
-    Cast(ProgramEvent* event) {                                               \
-      MCC_ASSERT(event);                                                      \
-      MCC_ASSERT(event->Is##Name##Event());                                   \
-      return event->As##Name##Event();                                        \
-    }                                                                         \
-    static inline bool                                                        \
-    Filter(ProgramEvent* event) {                                             \
-      return event                                                            \
-          && event->Is##Name##Event();                                        \
-    }                                                                         \
-    static inline std::function<bool(ProgramEvent*)>                          \
-    FilterBy(const ProgramId id) {                                            \
-      return [id](ProgramEvent* event) {                                      \
-        return event                                                          \
-            && event->Is##Name##Event()                                       \
-            && event->GetProgramId() == id;                                   \
-      };                                                                      \
-    }
+#define DEFINE_PROGRAM_EVENT(Name)                        \
+  DECLARE_EVENT_TYPE(ProgramEvent, Name)                  \
+  static inline std::function<bool(ProgramEvent*)>        \
+  FilterBy(const ProgramId id) {                          \
+    return [id](ProgramEvent* event) {                    \
+      return event                                        \
+          && event->Is##Name##Event()                     \
+          && event->GetProgramId() == id;                 \
+    };                                                    \
+  }
 
   class ProgramCreatedEvent : public ProgramEvent {
   public:

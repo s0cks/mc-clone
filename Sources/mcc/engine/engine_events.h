@@ -37,36 +37,11 @@ namespace mcc::engine {
       return engine_;
     }
 
-#define DEFINE_TYPE_CHECK(Name)                                                \
-    virtual Name##Event* As##Name##Event() { return nullptr; }                 \
-    virtual bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_ENGINE_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
-
-    friend std::ostream& operator<<(std::ostream& stream, const EngineEvent& rhs) {
-      return stream << rhs.ToString();
-    }
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_ENGINE_EVENT);
   };
 
-#define DECLARE_ENGINE_EVENT(Name)                                                    \
-  public:                                                                             \
-    const char* GetName() const override { return #Name; }                            \
-    Name##Event* As##Name##Event() override { return this; }                          \
-    std::string ToString() const override;                                            \
-    friend std::ostream& operator<<(std::ostream& stream, const Name##Event& rhs) {   \
-      return stream << rhs.ToString();                                                \
-    }                                                                                 \
-    static inline bool                                                                \
-    Filter(EngineEvent* event) {                                                      \
-      return event                                                                    \
-          && event->Is##Name##Event();                                                \
-    }                                                                                 \
-    static inline Name##Event*                                                        \
-    Cast(EngineEvent* event) {                                                        \
-      MCC_ASSERT(event);                                                              \
-      MCC_ASSERT(event->Is##Name##Event());                                           \
-      return event->As##Name##Event();                                                \
-    }
+#define DECLARE_ENGINE_EVENT(Name)        \
+  DECLARE_EVENT_TYPE(EngineEvent, Name)
   
   class PreInitEvent : public EngineEvent {
   public:

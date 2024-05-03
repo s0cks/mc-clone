@@ -31,30 +31,11 @@ namespace mcc::vbo {
     }
 
     VboId GetVboId() const;
-
-#define DEFINE_TYPE_CHECK(Name)                                           \
-    virtual Name##Event* As##Name##Event() { return nullptr; }            \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_VBO_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_VBO_EVENT);
   };
 
 #define DECLARE_VBO_EVENT(Name)                                     \
-  public:                                                           \
-    std::string ToString() const override;                          \
-    Name##Event* As##Name##Event() override { return this; }        \
-    const char* GetName() const override { return #Name; }          \
-    static inline Name##Event*                                      \
-    Cast(VboEvent* event) {                                         \
-      MCC_ASSERT(event);                                            \
-      MCC_ASSERT(event->Is##Name##Event());                         \
-      return event->As##Name##Event();                              \
-    }                                                               \
-    static inline bool                                              \
-    Filter(VboEvent* event) {                                       \
-      return event                                                  \
-          && event->Is##Name##Event();                              \
-    }                                                               \
+    DECLARE_EVENT_TYPE(VboEvent, Name)                              \
     static inline std::function<bool(VboEvent*)>                    \
     FilterBy(const VboId id) {                                      \
       return [id](VboEvent* event) {                                \

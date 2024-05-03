@@ -14,30 +14,6 @@ namespace mcc::fbo {
   FOR_EACH_FBO_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
-#define DECLARE_FRAMEBUFFER_EVENT(Name)                                 \
-  public:                                                               \
-    const char* GetName() const override { return #Name; }              \
-    std::string ToString() const override;                              \
-    static inline bool                                                  \
-    Filter(FboEvent* event) {                                           \
-      return event                                                      \
-          && event->Is##Name##Event();                                  \
-    }                                                                   \
-    static inline std::function<bool(FboEvent*)>                        \
-    FilterBy(const FboId id) {                                          \
-      return [id](FboEvent* event) {                                    \
-        return event                                                    \
-            && event->Is##Name##Event()                                 \
-            && event->GetFboId() == id;                                 \
-      };                                                                \
-    }                                                                   \
-    static inline Name##Event*                                          \
-    Cast(FboEvent* event) {                                             \
-      MCC_ASSERT(event);                                                \
-      MCC_ASSERT(event->Is##Name##Event());                             \
-      return event->As##Name##Event();                                  \
-    }
-
   class Fbo;
   class FboEvent : public Event {
   protected:
@@ -55,13 +31,19 @@ namespace mcc::fbo {
     }
 
     FboId GetFboId() const;
-
-#define DEFINE_TYPE_CHECK(Name)                                           \
-    virtual Name##Event* As##Name##Event() { return nullptr; }            \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_FBO_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_FBO_EVENT);
   };
+
+#define DECLARE_FRAMEBUFFER_EVENT(Name)                               \
+  DECLARE_EVENT_TYPE(FboEvent, Name)                                  \
+  static inline std::function<bool(FboEvent*)>                        \
+  FilterBy(const FboId id) {                                          \
+    return [id](FboEvent* event) {                                    \
+      return event                                                    \
+          && event->Is##Name##Event()                                 \
+          && event->GetFboId() == id;                                 \
+    };                                                                \
+  }
 
   class FboCreatedEvent : public FboEvent {
   public:

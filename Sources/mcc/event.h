@@ -22,6 +22,7 @@ namespace mcc {
   Types(DEFINE_EVENT_PROTOTYPE_TYPE_CHECK)
 
 #define DECLARE_EVENT_TYPE(Proto, Name)                                   \
+    DEFINE_NON_COPYABLE_TYPE(Name##Event);                                \
   public:                                                                 \
     std::string ToString() const override;                                \
     const char* GetName() const override { return #Name; }                \

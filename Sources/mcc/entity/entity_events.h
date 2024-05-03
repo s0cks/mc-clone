@@ -39,38 +39,20 @@ namespace mcc::entity {
     EntityId id() const {
       return id_;
     }
-
-#define DEFINE_TYPE_CHECK(Name)                                                       \
-    virtual Name##Event* As##Name##Event() { return nullptr; }                        \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_ENTITY_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_ENTITY_EVENT);
   };
 
-#define DEFINE_ENTITY_EVENT(Name)                                                     \
-  public:                                                                             \
-    const char* GetName() const override { return #Name; }                            \
-    std::string ToString() const override;                                            \
-    Name##Event* As##Name##Event() override { return this; }                          \
-    static inline bool                                                                \
-    Filter(EntityEvent* event) {                                                      \
-      MCC_ASSERT(event);                                                              \
-      return event->Is##Name##Event();                                                \
-    }                                                                                 \
-    static inline std::function<bool(EntityEvent*)>                                   \
-    FilterBy(const EntityId id) {                                                     \
-      return [id](EntityEvent* event) {                                               \
-        return event                                                                  \
-            && event->Is##Name##Event()                                               \
-            && event->id() == id;                                                     \
-      };                                                                              \
-    }                                                                                 \
-    static inline Name##Event*                                                        \
-    Cast(EntityEvent* event) {                                                        \
-      MCC_ASSERT(event);                                                              \
-      MCC_ASSERT(event->Is##Name##Event());                                           \
-      return event->As##Name##Event();                                                \
-    }
+#define DEFINE_ENTITY_EVENT(Name)                                 \
+  DECLARE_EVENT_TYPE(EntityEvent, Name)                           \
+  static inline std::function<bool(EntityEvent*)>                 \
+  FilterBy(const EntityId id) {                                   \
+    return [id](EntityEvent* event) {                             \
+      return event                                                \
+          && event->Is##Name##Event()                             \
+          && event->id() == id;                                   \
+    };                                                            \
+  }
 
   class EntityCreatedEvent : public EntityEvent {
   public:

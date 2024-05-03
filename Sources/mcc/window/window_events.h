@@ -37,32 +37,12 @@ namespace mcc {
     Window* window() const {
       return window_;
     }
-
-#define DEFINE_TYPE_CHECK(Name)                                               \
-    virtual Name##Event* As##Name##Event() { return nullptr; }                \
-    virtual bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_WINDOW_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_WINDOW_EVENT);
   };
 
-#define DECLARE_WINDOW_EVENT(Name)                                                                  \
-    DEFINE_NON_COPYABLE_TYPE(Name##Event);                                                          \
-  public:                                                                                           \
-    Name##Event() = delete;                                                                         \
-    const char* GetName() const override { return #Name; }                                          \
-    std::string ToString() const override;                                                          \
-    Name##Event* As##Name##Event() override { return this; }                                        \
-    static inline bool                                                                              \
-    Filter(WindowEvent* event) {                                                                    \
-      return event                                                                                  \
-          && event->Is##Name##Event();                                                              \
-    }                                                                                               \
-    static inline Name##Event*                                                                      \
-    Cast(WindowEvent* event) {                                                                      \
-      MCC_ASSERT(event);                                                                            \
-      MCC_ASSERT(event->Is##Name##Event());                                                         \
-      return event->As##Name##Event();                                                              \
-    }
+#define DECLARE_WINDOW_EVENT(Name)        \
+  DECLARE_EVENT_TYPE(WindowEvent, Name)
 
   class WindowOpenedEvent : public WindowEvent {
   public:

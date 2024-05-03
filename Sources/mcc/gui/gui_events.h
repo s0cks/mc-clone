@@ -35,30 +35,11 @@ namespace mcc::gui {
     virtual bool IsMouseEvent() const {
       return false;
     }
-
-#define DEFINE_TYPE_CHECK(Name)                                               \
-    virtual Name##Event* As##Name##Event() { return nullptr; }                \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_GUI_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_GUI_EVENT);
   };
 
 #define DECLARE_GUI_EVENT(Name)                                               \
-  public:                                                                     \
-    std::string ToString() const override;                                    \
-    const char* GetName() const override { return #Name; }                    \
-    Name##Event* As##Name##Event() override { return this; }                  \
-    static inline Name##Event*                                                \
-    Cast(GuiEvent* event) {                                                   \
-      MCC_ASSERT(event);                                                      \
-      MCC_ASSERT(event->Is##Name##Event());                                   \
-      return event->As##Name##Event();                                        \
-    }                                                                         \
-    static inline bool                                                        \
-    Filter(GuiEvent* event) {                                                 \
-      return event                                                            \
-          && event->Is##Name##Event();                                        \
-    }
+  DECLARE_EVENT_TYPE(GuiEvent, Name)
   
   class Component;
   class RootComponentEvent : public GuiEvent {

@@ -34,37 +34,19 @@ namespace mcc::shader {
     }
 
     ShaderId GetShaderId() const;
-
-#define DEFINE_TYPE_CHECK(Name)                                         \
-    virtual Name##Event* As##Name##Event() { return nullptr; }          \
-    bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_SHADER_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_SHADER_EVENT);
   };
 
-#define DECLARE_SHADER_EVENT(Name)                                  \
-  public:                                                           \
-    const char* GetName() const override { return #Name; }          \
-    std::string ToString() const override;                          \
-    Name##Event* As##Name##Event() override { return this; }        \
-  public:                                                           \
-    static inline Name##Event*                                      \
-    Cast(ShaderEvent* event) {                                      \
-      return event ? event->As##Name##Event() : nullptr;            \
-    }                                                               \
-    static inline bool                                              \
-    Filter(ShaderEvent* event) {                                    \
-      return event                                                  \
-          && event->Is##Name##Event();                              \
-    }                                                               \
-    static inline std::function<bool(ShaderEvent*)>                 \
-    FilterBy(const ShaderId id) {                                   \
-      return [id](ShaderEvent* event) {                             \
-        return event                                                \
-            && event->Is##Name##Event()                             \
-            && event->GetShaderId() == id;                          \
-      };                                                            \
-    }
+#define DECLARE_SHADER_EVENT(Name)                    \
+  DECLARE_EVENT_TYPE(ShaderEvent, Name)               \
+  static inline std::function<bool(ShaderEvent*)>     \
+  FilterBy(const ShaderId id) {                       \
+    return [id](ShaderEvent* event) {                 \
+      return event                                    \
+          && event->Is##Name##Event()                 \
+          && event->GetShaderId() == id;              \
+    };                                                \
+  }
 
   class ShaderCreatedEvent : public resource::ResourceCreatedEvent,
                              public ShaderEvent {

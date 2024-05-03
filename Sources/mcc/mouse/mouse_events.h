@@ -48,37 +48,11 @@ namespace mcc::mouse {
     bool IsMouseButtonEvent() {
       return AsMouseButtonEvent() != nullptr;
     }
-
-#define DEFINE_TYPE_CHECK(Name) \
-    virtual Name##Event* As##Name##Event() { return nullptr; } \
-    virtual bool Is##Name##Event() { return As##Name##Event() != nullptr; }
-    FOR_EACH_MOUSE_EVENT(DEFINE_TYPE_CHECK)
-#undef DEFINE_TYPE_CHECK
-
-    friend std::ostream& operator<<(std::ostream& stream, const MouseEvent& rhs) {
-      stream << "MouseEvent(";
-      stream << "mouse=" << rhs.mouse();
-      stream << ")";
-      return stream;
-    }
+    DEFINE_EVENT_PROTOTYPE(FOR_EACH_MOUSE_EVENT);
   };
 
-#define DECLARE_MOUSE_EVENT(Name)                                 \
-  public:                                                         \
-    Name##Event* As##Name##Event() override { return this; }      \
-    const char* GetName() const override { return #Name; }        \
-    std::string ToString() const override;                        \
-    static inline bool                                            \
-    Filter(MouseEvent* event) {                                   \
-      return event                                                \
-          && event->Is##Name##Event();                            \
-    }                                                             \
-    static inline Name##Event*                                    \
-    Cast(MouseEvent* event) {                                     \
-      MCC_ASSERT(event);                                          \
-      MCC_ASSERT(event->Is##Name##Event());                       \
-      return event->As##Name##Event();                            \
-    }
+#define DECLARE_MOUSE_EVENT(Name)         \
+  DECLARE_EVENT_TYPE(MouseEvent, Name)
 
   class MouseCreatedEvent : public MouseEvent {
   public:
