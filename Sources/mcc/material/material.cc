@@ -6,9 +6,8 @@
 #include "mcc/spec.h"
 #include "mcc/texture/texture.h"
 #include "mcc/material/material.h"
-#include "mcc/material/material_spec.h"
 #include "mcc/material/material_builder.h"
-#include "mcc/material/material_document.h"
+#include "mcc/material/material_spec_loader.h"
 
 namespace mcc {
   namespace material {
@@ -87,50 +86,6 @@ namespace mcc {
       return { std::string(type.GetString(), type.GetStringLength()) };
     }
 
-    static inline Material*
-    LoadMaterialFromJsonFile(const uri::Uri& uri) {
-      MCC_ASSERT(uri.HasScheme("file"));
-      MCC_ASSERT(uri.HasExtension(".json"));
-      MCC_ASSERT(FileExists(uri));
-      DLOG(INFO) << "loading material from json " << uri << "....";
-
-      json::Document doc;
-      if(!json::ParseJson(uri, doc)) {
-        LOG(ERROR) << "failed to parse material json from: " << uri;
-        return nullptr;
-      }
-
-      json::SpecDocument spec(doc);
-      const auto n = GetMaterialName(spec);
-      const auto name = n ? n.value() : CreateMaterialName(uri);
-      const auto type = GetMaterialType(spec);
-      MCC_ASSERT(type);
-      MCC_ASSERT(EqualsIgnoreCase(*type, "material"));
-      MaterialComponentSet components;
-
-      json::MaterialDocument material(spec.GetSpecProperty());
-      if(material.HasAlbedoProperty()) {
-        components.insert(MaterialComponent {
-          .type = MaterialComponent::kAlbedo,
-          .texture = nullptr, //TODO: implement
-        });
-      }
-
-      if(material.HasAoProperty()) {
-        components.insert(MaterialComponent {
-          .type = MaterialComponent::kAo,
-          .texture = nullptr, //TODO: implement
-        });
-      }
-
-      return Material::New(name, components);
-    }
-
-    static inline Material*
-    LoadMaterialFromJsonFile(const uri::basic_uri& uri) {
-      return LoadMaterialFromJsonFile(uri::Uri(uri));
-    }
-
     Material* Material::New(const uri::Uri& uri) {
       MCC_ASSERT(uri.HasScheme("material"));
       const auto base_path = fmt::format("{0:s}/materials", FLAGS_resources);
@@ -141,26 +96,19 @@ namespace mcc {
           return nullptr;
         }
         const auto new_uri = fmt::format("file://{0:s}", base_uri_path);
-        return LoadMaterialFromJsonFile(new_uri);
+        return MaterialSpecLoader::Load(new_uri);
       }
 
       // check for .json file
       {
         const auto json_path = fmt::format("{0:s}.json", base_uri_path);
         if(FileExists(json_path))
-          return LoadMaterialFromJsonFile(json_path);
+          return MaterialSpecLoader::Load(fmt::format("file://{0:s}", json_path));
       }
 
       const auto name = CreateMaterialName(uri);
       const auto root_path = GetMaterialRoot(uri);
-      MaterialComponentSet components;
-      ResolveMaterialComponents(components, root_path);
-      if(components.empty()) {
-        LOG(ERROR) << "failed to find components for material " << uri << " in " << root_path;
-        return nullptr;
-      }
-      DLOG(INFO) << "resolved " << components.size() << " material components in " << root_path << ".";
-      return New(name, components);
+      return MaterialDirectoryLoader::LoadAny(name, root_path);
     }
   }
 }
