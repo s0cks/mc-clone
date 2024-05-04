@@ -1,3 +1,4 @@
+#include <optional>
 #include <fmt/format.h>
 #include <unordered_map>
 #include <unordered_set>
@@ -68,24 +69,60 @@ namespace mcc {
       NOT_IMPLEMENTED(FATAL); //TODO: implement
     }
 
+    static inline std::optional<std::string>
+    GetMaterialName(const json::SpecDocument& spec) {
+      if(!spec.HasNameProperty())
+        return std::nullopt;
+      const auto& name = spec.GetNameProperty();
+      MCC_ASSERT(name.IsString());
+      return { std::string(name.GetString(), name.GetStringLength()) };
+    }
+
+    static inline std::optional<std::string>
+    GetMaterialType(const json::SpecDocument& spec) {
+      if(!spec.HasTypeProperty())
+        return std::nullopt;
+      const auto& type = spec.GetTypeProperty();
+      MCC_ASSERT(type.IsString());
+      return { std::string(type.GetString(), type.GetStringLength()) };
+    }
+
     static inline Material*
     LoadMaterialFromJsonFile(const uri::Uri& uri) {
       MCC_ASSERT(uri.HasScheme("file"));
       MCC_ASSERT(uri.HasExtension(".json"));
       MCC_ASSERT(FileExists(uri));
       DLOG(INFO) << "loading material from json " << uri << "....";
-      SpecDocument spec(uri);
-      const auto type = spec.GetType();
-      MCC_ASSERT(!type.empty());
-      MCC_ASSERT(EqualsIgnoreCase(type, "material"));
-      const auto name = spec.GetName();
-      MCC_ASSERT(!name.empty());
 
+      json::Document doc;
+      if(!json::ParseJson(uri, doc)) {
+        LOG(ERROR) << "failed to parse material json from: " << uri;
+        return nullptr;
+      }
+
+      json::SpecDocument spec(doc);
+      const auto n = GetMaterialName(spec);
+      const auto name = n ? n.value() : CreateMaterialName(uri);
+      const auto type = GetMaterialType(spec);
+      MCC_ASSERT(type);
+      MCC_ASSERT(EqualsIgnoreCase(*type, "material"));
       MaterialComponentSet components;
+
       json::MaterialDocument material(spec.GetSpecProperty());
       if(material.HasAlbedoProperty()) {
-        const auto& albedo = material.GetAlbedoProperty();
+        components.insert(MaterialComponent {
+          .type = MaterialComponent::kAlbedo,
+          .texture = nullptr, //TODO: implement
+        });
       }
+
+      if(material.HasAoProperty()) {
+        components.insert(MaterialComponent {
+          .type = MaterialComponent::kAo,
+          .texture = nullptr, //TODO: implement
+        });
+      }
+
       return Material::New(name, components);
     }
 
