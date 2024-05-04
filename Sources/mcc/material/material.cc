@@ -7,7 +7,8 @@
 #include "mcc/texture/texture.h"
 #include "mcc/material/material.h"
 #include "mcc/material/material_builder.h"
-#include "mcc/material/material_spec_loader.h"
+#include "mcc/material/material_loader_dir.h"
+#include "mcc/material/material_loader_spec.h"
 
 namespace mcc {
   namespace material {

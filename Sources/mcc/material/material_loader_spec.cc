@@ -1,4 +1,4 @@
-#include "mcc/material/material_spec_loader.h"
+#include "mcc/material/material_loader_spec.h"
 
 #include "mcc/material/material.h"
 #include "mcc/material/material_document.h"
