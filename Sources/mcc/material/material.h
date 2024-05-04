@@ -85,6 +85,13 @@ namespace mcc {
 #undef DEFINE_ON_MATERIAL_EVENT
 
       virtual std::string ToString() const;
+    public:
+      static inline Material* 
+      New(const std::string& name, const MaterialComponentSet& components) {
+        return new Material(name, components);
+      }
+      
+      static Material* New(const uri::Uri& uri);
     };
   }
 

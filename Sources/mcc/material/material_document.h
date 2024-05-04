@@ -40,12 +40,27 @@ namespace mcc {
       inline const ConstObject& doc() const {
         return doc_;
       }
+    private:
+      static inline const ConstObject&
+      ToConstObject(const Value& doc) {
+        MCC_ASSERT(doc.IsObject());
+        return doc.GetObject();
+      }
+
+      static inline const ConstObject&
+      ToConstObject(const Document& doc) {
+        MCC_ASSERT(doc.IsObject());
+        return doc.GetObject();
+      }
     public:
       explicit MaterialDocument(const ConstObject& doc):
         doc_(doc) {
       }
+      explicit MaterialDocument(const Value& doc):
+        MaterialDocument(ToConstObject(doc)) {
+      }
       explicit MaterialDocument(const Document& doc):
-        MaterialDocument(doc.GetObject()) {  
+        MaterialDocument(ToConstObject(doc)) {  
       }
       ~MaterialDocument() = default;
 

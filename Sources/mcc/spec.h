@@ -20,7 +20,6 @@ namespace mcc {
 #define DECLARE_SPEC_PROPERTY(Name, Type) \
   virtual std::optional<Type> Get##Name() const = 0;
 
-  template<class T>
   class SpecDocument {
     DEFINE_NON_COPYABLE_TYPE(SpecDocument);
   public:
@@ -30,17 +29,14 @@ namespace mcc {
   private:
     uri::Uri uri_;
     json::Document doc_;
-    std::shared_ptr<T> spec_;
-  protected:
+  public:
     explicit SpecDocument(const uri::Uri& uri):
       uri_(uri),
-      doc_(),
-      spec_() {
+      doc_() {
       MCC_ASSERT(uri.HasScheme("file"));
       MCC_ASSERT(uri.HasExtension(".json"));
-      LOG_IF(ERROR, !json::ParseJson(uri, doc_)) << "failed to parse SpecDocument from: " << uri;
+      LOG_IF(FATAL, !json::ParseJson(uri, doc_)) << "failed to parse SpecDocument from: " << uri;
     }
-  public:
     virtual ~SpecDocument() = default;
 
     const uri::Uri& GetUri() const {
@@ -69,17 +65,6 @@ namespace mcc {
 
     const json::Value& GetSpecProperty() const {
       return doc_[kSpecProperty];
-    }
-
-    std::shared_ptr<T> GetSpec() {
-      if(!spec_)
-        spec_ = std::make_shared<T>(GetSpecProperty());
-      return spec_;
-    }
-  public:
-    static inline SpecDocument<T>*
-    New(const uri::Uri& uri) {
-      return new SpecDocument<T>(uri);
     }
   };
 }
