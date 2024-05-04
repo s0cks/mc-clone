@@ -29,6 +29,9 @@ namespace mcc::material {
     const Material* GetMaterial() const {
       return material_;
     }
+
+    const std::string& GetMaterialName() const;
+
     DEFINE_EVENT_PROTOTYPE(FOR_EACH_MATERIAL_EVENT);
   };
 

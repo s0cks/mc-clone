@@ -1,0 +1,8 @@
+{
+  "name": "example-material",
+  "type": "material",
+  "material": {
+    "albedo": "",
+    "ao": ""
+  }
+}

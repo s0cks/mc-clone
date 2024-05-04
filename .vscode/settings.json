@@ -92,6 +92,7 @@
     "numeric": "cpp",
     "*.tcc": "cpp",
     "charconv": "cpp",
-    "format": "cpp"
+    "format": "cpp",
+    "random": "cpp"
   }
 }

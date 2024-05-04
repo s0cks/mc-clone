@@ -14,6 +14,7 @@
 
 #include "mcc/material/material_events.h"
 #include "mcc/material/material_registry.h"
+#include "mcc/material/material_component.h"
 
 namespace mcc {
   namespace material {
@@ -30,92 +31,45 @@ namespace mcc {
     FOR_EACH_MATERIAL_EVENT(DEFINE_ON_MATERIAL_EVENT)
 #undef DEFINE_ON_MATERIAL_EVENT
 
-    struct Material;
-    typedef std::shared_ptr<Material> MaterialPtr;
-
     class Material {
-    public:
-      static constexpr const auto kAlbedoTextureSlot = 0;
-      static constexpr const auto kAoTextureSlot = 1;
-      static constexpr const auto kHeightTextureSlot = 2;
-      static constexpr const auto kMetallicTextureSlot = 3;
-      static constexpr const auto kNormalTextureSlot = 4;
-      static constexpr const auto kRoughnessTextureSlot = 5;
+      friend class MaterialBuilder;
     protected:
       std::string name_;
-      TextureRef albedo_;
-      TextureRef ao_;
-      TextureRef height_;
-      TextureRef metallic_;
-      TextureRef normal_;
-      TextureRef roughness_;
-    public:
+      MaterialComponentSet components_;
+
       Material(const std::string& name,
-               TextureRef albedo,
-               TextureRef ao,
-               TextureRef height,
-               TextureRef metallic,
-               TextureRef normal,
-               TextureRef roughness):
+               const MaterialComponentSet& components):
         name_(name),
-        albedo_(albedo),
-        ao_(ao),
-        height_(height),
-        metallic_(metallic),
-        normal_(normal),
-        roughness_(roughness) {
+        components_(components) {
+        MCC_ASSERT(!name.empty());
+        MCC_ASSERT(!components.empty());
       }
+    public:
       virtual ~Material() = default;
 
       const std::string& GetName() const {
         return name_;
       }
 
-      std::string name() const {
-        return name_;
+      const MaterialComponentSet& GetComponents() const {
+        return components_;
       }
 
-      TextureRef albedo() const {
-        return albedo_;
+      rx::observable<MaterialEvent*> OnEvent() const {
+        return OnMaterialEvent()
+          .filter([this](MaterialEvent* event) {
+            return event
+                && EqualsIgnoreCase(GetName(), event->GetMaterialName());
+          });
       }
-
-      TextureRef ao() const {
-        return ao_;
-      }
-
-      TextureRef height() const {
-        return height_;
-      }
-
-      TextureRef metallic() const {
-        return metallic_;
-      }
-
-      TextureRef normal() const {
-        return normal_;
-      }
-
-      TextureRef roughness() const {
-        return roughness_;
-      }
-
-      virtual void Bind() const {
-        albedo_->Bind(kAlbedoTextureSlot);
-        ao_->Bind(kAoTextureSlot);
-        height_->Bind(kHeightTextureSlot);
-        metallic_->Bind(kMetallicTextureSlot);
-        normal_->Bind(kNormalTextureSlot);
-        roughness_->Bind(kRoughnessTextureSlot);
-      }
+#define DEFINE_ON_MATERIAL_EVENT(Name)                        \
+      rx::observable<
 
       virtual std::string ToString() const;
-    public:
-      static Material* LoadFrom(const std::string& filename);
     };
   }
 
   using material::Material;
-  using material::MaterialPtr;
 
   namespace resource {
     typedef Reference<Material> MaterialRef;
@@ -129,28 +83,6 @@ namespace mcc {
   GetMaterial(const uri::basic_uri& uri) {
     return GetMaterial(uri::Uri(uri));
   }
-  
-  class ApplyMaterialPipeline : public Pipeline {
-  protected:
-    MaterialRef material_;
-
-    bool Apply() override {
-      if(!material_.valid())
-        return false;
-      material_->Bind();
-      return true;
-    }
-  public:
-   explicit ApplyMaterialPipeline(MaterialRef material):
-      Pipeline(),
-      material_(material) {
-    }
-    ~ApplyMaterialPipeline() override = default;
-
-    inline MaterialRef material() const {
-      return material_;
-    }
-  };
 }
 
 #endif //MCC_MATERIAL_H

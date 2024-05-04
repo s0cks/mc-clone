@@ -86,6 +86,7 @@ namespace mcc::material {
     }
   };
 
+  typedef std::vector<MaterialComponent> MaterialComponentList;
   typedef std::set<MaterialComponent, MaterialComponent::TypeComparator> MaterialComponentSet;
 }
 
