@@ -79,7 +79,6 @@ int main(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);
-
   LOG_IF(FATAL, !mcc::SetCurrentThreadName("main")) << "failed to set main thread name.";
   glfwSetErrorCallback(&mcc::OnGlfwError);
   LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
@@ -88,9 +87,8 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-  glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHintString(GLFW_COCOA_FRAME_NAME, "Hello");
+  glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GLFW_TRUE);
 #endif
   mcc::gfx::EnableDebug();
@@ -125,10 +123,7 @@ int main(int argc, char** argv) {
   keyboard->OnPressed(GLFW_KEY_SPACE)
     .subscribe([](keyboard::KeyPressedEvent* event) {
       new TestWindow();
-    });
-
-  DLOG(INFO) << "rendering at: " << render::GetResolution();
-  
+    });  
   engine->Run();
   return EXIT_SUCCESS;
 }
