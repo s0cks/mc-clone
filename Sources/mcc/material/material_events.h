@@ -15,6 +15,8 @@ namespace mcc::material {
   FOR_EACH_MATERIAL_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
+  typedef std::function<bool(MaterialEvent*)> MaterialEventFilter;
+
   class MaterialEvent : public Event {
   protected:
     const Material* material_;
@@ -36,7 +38,14 @@ namespace mcc::material {
   };
 
 #define DECLARE_MATERIAL_EVENT(Name)                                    \
-  DECLARE_EVENT_TYPE(MaterialEvent, Name)
+  DECLARE_EVENT_TYPE(MaterialEvent, Name)                               \
+  static inline MaterialEventFilter                                     \
+  FilterByName(const std::string& name) {                               \
+    return [name](MaterialEvent* event) {                               \
+      return event                                                      \
+          && EqualsIgnoreCase(event->GetMaterialName(), name);          \
+    };                                                                  \
+  }
 
   class MaterialCreatedEvent : public MaterialEvent {
   public:

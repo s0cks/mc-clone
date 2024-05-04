@@ -21,11 +21,26 @@ namespace mcc {
     const MaterialRegistry& GetRegistry();
     rx::observable<MaterialEvent*> OnMaterialEvent();
 
+    static inline rx::observable<MaterialEvent*>
+    OnMaterialEvent(const std::string& name) {
+      return OnMaterialEvent()
+        .filter([name](MaterialEvent* event) {
+          return event
+              && EqualsIgnoreCase(event->GetMaterialName(), name);
+        });
+    }
+
 #define DEFINE_ON_MATERIAL_EVENT(Name)                        \
     static inline rx::observable<Name##Event*>                \
     On##Name##Event() {                                       \
       return OnMaterialEvent()                                \
         .filter(Name##Event::Filter)                          \
+        .map(Name##Event::Cast);                              \
+    }                                                         \
+    static inline rx::observable<Name##Event*>                \
+    On##Name##Event(const std::string& name) {                \
+      return OnMaterialEvent()                                \
+        .filter(Name##Event::FilterByName(name))              \
         .map(Name##Event::Cast);                              \
     }
     FOR_EACH_MATERIAL_EVENT(DEFINE_ON_MATERIAL_EVENT)
@@ -38,14 +53,18 @@ namespace mcc {
       MaterialComponentSet components_;
 
       Material(const std::string& name,
-               const MaterialComponentSet& components):
-        name_(name),
-        components_(components) {
-        MCC_ASSERT(!name.empty());
-        MCC_ASSERT(!components.empty());
+               const MaterialComponentSet& components);
+
+      static void Publish(MaterialEvent* event);
+
+      template<class E, typename... Args>
+      static inline void
+      Publish(Args... args) {
+        E event(args...);
+        return Publish((MaterialEvent*) &event);
       }
     public:
-      virtual ~Material() = default;
+      virtual ~Material();
 
       const std::string& GetName() const {
         return name_;
@@ -55,15 +74,15 @@ namespace mcc {
         return components_;
       }
 
-      rx::observable<MaterialEvent*> OnEvent() const {
-        return OnMaterialEvent()
-          .filter([this](MaterialEvent* event) {
-            return event
-                && EqualsIgnoreCase(GetName(), event->GetMaterialName());
-          });
+      inline rx::observable<MaterialEvent*> OnEvent() const {
+        return OnMaterialEvent(GetName());
       }
-#define DEFINE_ON_MATERIAL_EVENT(Name)                        \
-      rx::observable<
+#define DEFINE_ON_MATERIAL_EVENT(Name)                                  \
+      inline rx::observable<Name##Event*> On##Name##Event() const {     \
+        return material::On##Name##Event(GetName());                    \
+      }
+      FOR_EACH_MATERIAL_EVENT(DEFINE_ON_MATERIAL_EVENT)
+#undef DEFINE_ON_MATERIAL_EVENT
 
       virtual std::string ToString() const;
     };
