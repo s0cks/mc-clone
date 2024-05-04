@@ -1,6 +1,6 @@
-configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/mcc/mcc.h)
+configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/Sources/mcc/mcc.h)
+configure_file(mcc/gfx.h.in ${PROJECT_BINARY_DIR}/Sources/mcc/gfx.h)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${PROJECT_BINARY_DIR})
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${UTF8_INCLUDE_DIRS})
@@ -104,11 +104,10 @@ file(GLOB MCC_SETTINGS_SOURCE_FILES
 file(GLOB MCC_MISC_SOURCE_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.cc")
-list(REMOVE_ITEM MCC_MISC_SOURCE_FILES "mcc/mcc.h.in" "mcc/mcc.cc")
-
 
 add_library(${PROJECT_NAME}
-  ${PROJECT_BINARY_DIR}/mcc/mcc.h mcc/mcc.cc
+  ${PROJECT_BINARY_DIR}/Sources/mcc/mcc.h mcc/mcc.cc
+  ${PROJECT_BINARY_DIR}/Sources/mcc/gfx.h
   ${MCC_COMPONENT_SOURCE_FILES}
   ${MCC_KEYBOARD_SOURCE_FILES}
   ${MCC_MOUSE_SOURCE_FILES}

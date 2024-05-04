@@ -47,11 +47,13 @@ set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 0)
 
+set(PROJECT_GLFW_CONTEXT_VERSION_MAJOR 4)
+set(PROJECT_GLFW_CONTEXT_VERSION_MINOR 1)
+
+include_directories(${NK_INCLUDE_DIRS})
 include_directories(${RX_INCLUDE_DIRS})
 include_directories(${RAPIDJSON_INCLUDE_DIRS})
-include_directories(${NK_INCLUDE_DIRS})
-
-message(STATUS "mcc libraries: " ${MCC_LIBRARIES})
+include_directories(${PROJECT_BINARY_DIR}/Sources/)
 
 link_libraries(Threads::Threads
                glog::glog
@@ -60,7 +62,6 @@ link_libraries(Threads::Threads
 add_subdirectory(Tests)
 add_subdirectory(Sources)
 add_subdirectory(Benchmarks)
-
 add_subdirectory(lib/units)
 add_subdirectory(lib/semver)
 add_subdirectory(lib/fmt)

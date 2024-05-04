@@ -82,8 +82,8 @@ int main(int argc, char** argv) {
   LOG_IF(FATAL, !mcc::SetCurrentThreadName("main")) << "failed to set main thread name.";
   glfwSetErrorCallback(&mcc::OnGlfwError);
   LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, MCC_GLFW_CTX_VERSION_MAJOR);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MCC_GLFW_CTX_VERSION_MINOR);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);

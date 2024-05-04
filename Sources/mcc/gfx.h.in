@@ -24,6 +24,9 @@
 #include "mcc/gfx_error.h"
 #include "mcc/gfx_misc.h"
 
+#define MCC_GLFW_CTX_VERSION_MAJOR @PROJECT_GLFW_CONTEXT_VERSION_MAJOR@
+#define MCC_GLFW_CTX_VERSION_MINOR @PROJECT_GLFW_CONTEXT_VERSION_MINOR@
+
 #ifdef M_PI
 #define PI M_PI
 #endif //M_PI

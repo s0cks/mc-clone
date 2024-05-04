@@ -7,7 +7,6 @@
 #include "mcc/gfx.h"
 #include "mcc/flags.h"
 #include "mcc/buffer.h"
-#include "mcc/materials_generated.h"
 
 #include "mcc/json.h"
 #include "mcc/texture/texture.h"
