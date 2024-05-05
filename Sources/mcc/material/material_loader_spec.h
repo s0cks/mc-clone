@@ -9,20 +9,25 @@ namespace mcc::material {
   class Material;
   class MaterialSpecLoader : public MaterialLoader {
   protected:
-    const uri::Uri& uri_;
+    json::SpecDocument doc_;
+
+    std::string GetMaterialName() const override;
+    rx::observable<MaterialComponent> GetMaterialComponents() const override;
   public:
-    explicit MaterialSpecLoader(const uri::Uri& uri):
-      uri_(uri) {
-      MCC_ASSERT(uri.HasScheme("file"));
-      MCC_ASSERT(uri.HasExtension(".json"));
-      MCC_ASSERT(FileExists(uri));
+    explicit MaterialSpecLoader(const json::Object& doc):
+      doc_(doc) {
     }
     ~MaterialSpecLoader() = default;
-    Material* LoadMaterial() const override;
   public:
     static inline Material*
     Load(const uri::Uri& uri) {
-      MaterialSpecLoader loader(uri);
+      json::Document doc;
+      if(!json::ParseJson(uri, doc)) {
+        LOG(ERROR) << "failed to parse json document from: " << uri;
+        return nullptr;
+      }
+      const auto spec = doc.GetObject();
+      MaterialSpecLoader loader(spec);
       return loader.LoadMaterial();
     }
 
@@ -34,10 +39,18 @@ namespace mcc::material {
     static inline rx::observable<Material*>
     LoadAsync(const uri::Uri& uri) {
       return rx::observable<>::create<Material*>([uri](rx::subscriber<Material*> s) {
-        MaterialSpecLoader loader(uri);
+        json::Document doc;
+        if(!json::ParseJson(uri, doc)) {
+          const auto err = fmt::format("failed to parse json document from: {0:s}", (const std::string&) uri);
+          return s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+        }
+        const auto spec = doc.GetObject();
+        MaterialSpecLoader loader(spec);
         const auto material = loader.LoadMaterial();
-        if(!material)
-          return s.on_error(rx::util::make_error_ptr(std::runtime_error("Failed to create material.")));
+        if(!material) {
+          const auto err = "failed to create material.";
+          return s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+        }
         s.on_next(material);
         s.on_completed();
       });

@@ -13,35 +13,35 @@ namespace mcc::json {
     static constexpr const auto kMetallicPropertyName = "metallic";
     static constexpr const auto kRoughnessPropertyName = "roughness";
   public:
-    explicit MaterialSpec(const ConstObject& value):
+    explicit MaterialSpec(const json::Object& value):
       SpecObject(value) {
     }
     ~MaterialSpec() override = default;
 
     bool HasAlbedoProperty() const {
-      return value().HasMember(kAlbedoPropertyName);
+      return value_.HasMember(kAlbedoPropertyName);
     }
 
     const Value& GetAlbedoProperty() const {
       MCC_ASSERT(HasAlbedoProperty());
-      return value()[kAlbedoPropertyName];
+      return value_[kAlbedoPropertyName];
     }
 
     bool HasAoProperty() const {
-      return value().HasMember(kAoPropertyName);
+      return value_.HasMember(kAoPropertyName);
     }
 
     const Value& GetAoProperty() const {
       MCC_ASSERT(HasAoProperty());
-      return value()[kAoPropertyName];
+      return value_[kAoPropertyName];
     }
 
     bool HasHeightProperty() const {
-      return value().HasMember(kHeightPropertyName);
+      return value_.HasMember(kHeightPropertyName);
     }
 
     const Value& GetHeightProperty() const {
-      return value()[kHeightPropertyName];
+      return value_[kHeightPropertyName];
     }
   };
 }

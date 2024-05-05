@@ -19,36 +19,32 @@ namespace mcc {
 
     class MaterialDocument {
     public:
-#define DEFINE_PROPERTY(Name, value)                          \
-      class Name##Property {                                  \
-        friend class MaterialDocument;                        \
-        static constexpr const auto kName = #value;           \
-        static inline bool                                    \
-        Has(const ConstObject& doc) {                         \
-          return doc.HasMember(kName);                        \
-        }                                                     \
-        static inline const Value&                            \
-        Get(const ConstObject& doc) {                         \
-          MCC_ASSERT(Has(doc));                               \
-          return doc[kName];                                  \
-        }                                                     \
+#define DEFINE_PROPERTY(Name, value)                                              \
+      class Name##Property {                                                      \
+        friend class MaterialDocument;                                            \
+        static constexpr const auto kName = #value;                               \
+        template<const bool Const>                                                \
+        static inline bool                                                        \
+        Has(const json::GenericObject<Const, json::Document::ValueType>& doc) {   \
+          return doc.HasMember(kName);                                            \
+        }                                                                         \
+        template<const bool Const>                                                \
+        static inline const Value&                                                \
+        Get(const json::GenericObject<Const, json::Document::ValueType>& doc) {   \
+          MCC_ASSERT(Has(doc));                                                   \
+          return doc[kName];                                                      \
+        }                                                                         \
       };
       FOR_EACH_MATERIAL_DOCUMENT_PROPERTY(DEFINE_PROPERTY)
     protected:
-      const ConstObject& doc_;
+      const json::ConstObject& doc_;
 
-      inline const ConstObject& doc() const {
+      inline const json::ConstObject& doc() const {
         return doc_;
       }
     public:
-      explicit MaterialDocument(const ConstObject& doc):
+      explicit MaterialDocument(const json::ConstObject& doc):
         doc_(doc) {
-      }
-      explicit MaterialDocument(const Value& doc): //TODO: assert doc is object
-        MaterialDocument(doc.GetObject()) {
-      }
-      explicit MaterialDocument(const Document& doc):
-        MaterialDocument(doc.GetObject()) { //TODO: assert that doc is object
       }
       ~MaterialDocument() = default;
 

@@ -9,9 +9,11 @@ namespace mcc::material {
   class MaterialLoader {
   protected:
     MaterialLoader() = default;
+    virtual std::string GetMaterialName() const = 0;
+    virtual rx::observable<MaterialComponent> GetMaterialComponents() const = 0;
   public:
     virtual ~MaterialLoader() = default;
-    virtual Material* LoadMaterial() const = 0;
+    virtual Material* LoadMaterial() const;
   };
 }
 

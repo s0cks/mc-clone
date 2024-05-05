@@ -92,6 +92,11 @@ namespace mcc {
       }
       
       static Material* New(const uri::Uri& uri);
+
+      static inline Material*
+      New(const uri::basic_uri& uri) {
+        return New(uri::Uri(uri));
+      }
     };
   }
 

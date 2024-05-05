@@ -32,37 +32,29 @@ namespace mcc::material {
     return { std::string(type.GetString(), type.GetStringLength()) };
   }
 
-  Material* MaterialSpecLoader::LoadMaterial() const {
-    DLOG(INFO) << "loading material from json " << uri_ << "....";
-    json::Document doc;
-    if(!json::ParseJson(uri_, doc)) {
-      LOG(ERROR) << "failed to parse material json from: " << uri_;
-      return nullptr;
-    }
+  std::string MaterialSpecLoader::GetMaterialName() const {
+    const auto& name = doc_.GetNameProperty();
+    MCC_ASSERT(name.IsString());
+    return std::string(name.GetString(), name.GetStringLength());
+  }
 
-    json::SpecDocument spec(doc);
-    const auto n = GetMaterialName(spec);
-    const auto name = n ? n.value() : CreateMaterialName(uri_);
-    const auto type = GetMaterialType(spec);
-    MCC_ASSERT(type);
-    MCC_ASSERT(EqualsIgnoreCase(*type, "material"));
-    MaterialComponentSet components;
-
-    json::MaterialDocument material(spec.GetSpecProperty());
-    if(material.HasAlbedoProperty()) {
-      components.insert(MaterialComponent {
-        .type = MaterialComponent::kAlbedo,
-        .texture = nullptr, //TODO: implement
-      });
-    }
-
-    if(material.HasAoProperty()) {
-      components.insert(MaterialComponent {
-        .type = MaterialComponent::kAo,
-        .texture = nullptr, //TODO: implement
-      });
-    }
-
-    return Material::New(name, components);
+  rx::observable<MaterialComponent> MaterialSpecLoader::GetMaterialComponents() const {
+    return rx::observable<>::create<MaterialComponent>([this](rx::subscriber<MaterialComponent> s) {
+      const auto& spec = doc_.GetSpecProperty();
+      MCC_ASSERT(spec.IsObject());
+      const auto spec_obj = spec.GetObject();
+      json::MaterialDocument material(spec_obj);
+      if(material.HasAlbedoProperty())
+        s.on_next(MaterialComponent {
+          .type = MaterialComponent::kAlbedo,
+          .texture = nullptr, //TODO: implement
+        });
+      if(material.HasAoProperty())
+        s.on_next(MaterialComponent {
+          .type = MaterialComponent::kAo,
+          .texture = nullptr, //TODO: implement
+        });
+      s.on_completed();
+    });
   }
 }

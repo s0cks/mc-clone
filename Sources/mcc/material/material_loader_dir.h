@@ -8,13 +8,28 @@ namespace mcc::material {
   protected:
     std::string name_;
     std::string root_;
-    MaterialComponentSet components_;
+
+    std::string GetMaterialName() const override {
+      return name_;
+    }
+
+    rx::observable<MaterialComponent> GetMaterialComponents() const override;
+    
+    static inline std::string
+    CreateMaterialName(const std::string& dir) {
+      const auto slashpos = dir.find_last_of('/');
+      if(slashpos == std::string::npos)
+        return dir;
+      return dir.substr(slashpos);
+    }
   public:
     MaterialDirectoryLoader(const std::string& name, const std::string& root):
       MaterialLoader(),
       name_(name),
-      root_(root),
-      components_() {
+      root_(root) {
+    }
+    explicit MaterialDirectoryLoader(const std::string& root):
+      MaterialDirectoryLoader(CreateMaterialName(root), root) {
     }
     ~MaterialDirectoryLoader() override = default;
 
@@ -25,12 +40,6 @@ namespace mcc::material {
     const std::string& GetRoot() const {
       return root_;
     }
-
-    const MaterialComponentSet& GetComponents() const {
-      return components_;
-    }
-
-    Material* LoadMaterial() const override;
   public:
     static inline Material*
     LoadAny(const std::string& name, const std::string& root) {

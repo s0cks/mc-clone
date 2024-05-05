@@ -1,11 +1,12 @@
 #include "mcc/material/material_loader_dir.h"
 #include "mcc/material/material.h"
 
-namespace mcc::material {
-  Material* MaterialDirectoryLoader::LoadMaterial() const {
-    DLOG(INFO) << "resolving material components in " << GetRoot() << "....";
+#include "mcc/file_resolver.h"
 
-    DLOG(INFO) << "resolved " << components_.size() << " material components in " << GetRoot() << ".";
-    return Material::New(name_, components_);
+namespace mcc::material {
+  rx::observable<MaterialComponent> MaterialDirectoryLoader::GetMaterialComponents() const {
+    return rx::observable<>::create<MaterialComponent>([this](rx::subscriber<MaterialComponent> s) {
+      DLOG(INFO) << "resolving material components from " << GetRoot() << "....";
+    });
   }
 }

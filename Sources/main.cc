@@ -122,8 +122,8 @@ int main(int argc, char** argv) {
     });
   keyboard->OnPressed(GLFW_KEY_SPACE)
     .subscribe([](keyboard::KeyPressedEvent* event) {
-      new TestWindow();
-    });  
+      const auto material = Material::New("material:example.material.json");
+    });
   engine->Run();
   return EXIT_SUCCESS;
 }

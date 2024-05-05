@@ -6,58 +6,55 @@
 namespace mcc::json {
   class SpecObject {
   protected:
-    const ConstObject& value_;
+    const json::Object& value_;
 
-    explicit SpecObject(const ConstObject& value):
+    explicit SpecObject(const json::Object& value):
       value_(value) {
     }
 
-    inline const ConstObject&
+    inline const json::Object&
     value() const {
       return value_;
     }
   public:
     virtual ~SpecObject() = default;
   };
-  
+
   class SpecDocument : public SpecObject {
   public:
     static constexpr const auto kTypePropertyName = "type";
     static constexpr const auto kNamePropertyName = "name";
     static constexpr const auto kSpecPropertyName = "spec";
   public:
-    explicit SpecDocument(const ConstObject& value):
+    explicit SpecDocument(const json::Object& value):
       SpecObject(value) {
-    }
-    explicit SpecDocument(const Document& value):
-      SpecDocument(value.GetObject()) {
     }
     ~SpecDocument() override = default;
 
     bool HasTypeProperty() const {
-      return value().HasMember(kTypePropertyName);
+      return value_.HasMember(kTypePropertyName);
     }
 
     const Value& GetTypeProperty() const {
       MCC_ASSERT(HasTypeProperty());
-      return value()[kTypePropertyName];
+      return value_[kTypePropertyName];
     }
 
     bool HasNameProperty() const {
-      return value().HasMember(kNamePropertyName);
+      return value_.HasMember(kNamePropertyName);
     }
 
     const Value& GetNameProperty() const {
-      return value()[kNamePropertyName];
+      return value_[kNamePropertyName];
     }
 
     bool HasSpecProperty() const {
-      return value().HasMember(kSpecPropertyName);
+      return value_.HasMember(kSpecPropertyName);
     }
 
     const Value& GetSpecProperty() const {
       MCC_ASSERT(HasSpecProperty());
-      return value()[kSpecPropertyName];
+      return value_[kSpecPropertyName];
     }
   };
 }
