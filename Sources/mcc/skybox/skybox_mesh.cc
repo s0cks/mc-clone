@@ -1,8 +1,9 @@
 #include "mcc/skybox/skybox_mesh.h"
 
 #include "mcc/thread_local.h"
+#include "mcc/vao/vao_scope.h"
+#include "mcc/vbo/vbo_scope.h"
 #include "mcc/vbo/vbo_builder.h"
-#include "mcc/skybox/skybox_vertex.h"
 
 namespace mcc::skybox {
   static ThreadLocal<Vao> skybox_vao_;
@@ -34,7 +35,14 @@ namespace mcc::skybox {
     return ss.str();
   }
 
+  void SkyboxMesh::Update(const VertexList& vertices) {
+    vbo::VboUpdateScope update(vbo_);
+    update.Update(vertices);
+  }
+
   SkyboxMesh* SkyboxMesh::New() {
-    return new SkyboxMesh(GetSkyboxVao(), CreateSkyboxVbo());
+    const auto vao = GetSkyboxVao();
+    vao::VaoBindScope scope(vao);
+    return new SkyboxMesh(vao, CreateSkyboxVbo());
   }
 }

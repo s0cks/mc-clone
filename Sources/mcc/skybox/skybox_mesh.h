@@ -3,6 +3,7 @@
 
 #include "mcc/vao/vao.h"
 #include "mcc/vbo/vbo.h"
+#include "mcc/skybox/skybox_vertex.h"
 
 namespace mcc::skybox {
   static constexpr const auto kSkyboxMeshVboBytes = 256;
@@ -29,6 +30,8 @@ namespace mcc::skybox {
     Vbo* GetVbo() const {
       return vbo_;
     }
+
+    void Update(const VertexList& vertices);
   public:
     static SkyboxMesh* New();
   };

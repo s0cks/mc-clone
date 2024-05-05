@@ -1,4 +1,7 @@
 #include "mcc/camera/camera_perspective.h"
+
+#include <sstream>
+#include "mcc/thread_local.h"
 #include "mcc/window/window.h"
 
 namespace mcc::camera {
@@ -79,5 +82,29 @@ namespace mcc::camera {
 
   void PerspectiveCamera::OnMouseMoved(const mouse::MouseMoveEvent* event) {
 
+  }
+
+  std::string PerspectiveCamera::ToString() const {
+    std::stringstream ss;
+    ss << "PerspectiveCamera(";
+    ss << "data=" << data_;
+    ss << ")";
+    return ss.str();
+  }
+
+  static ThreadLocal<PerspectiveCamera> camera_;
+
+  static inline PerspectiveCamera*
+  CreatePerspectiveCamera() {
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
+  }
+
+  PerspectiveCamera* GetPerspectiveCamera() {
+    if(camera_)
+      return camera_.Get();
+    const auto camera = CreatePerspectiveCamera();
+    camera_.Set(camera);
+    return camera;
   }
 }

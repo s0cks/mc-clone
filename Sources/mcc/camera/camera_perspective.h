@@ -60,7 +60,9 @@ namespace mcc::camera {
     void OnMouseMoved(const mouse::MouseMoveEvent* event);
   public:
     explicit PerspectiveCamera(const PerspectiveCameraData& data);
+    PerspectiveCamera();
     ~PerspectiveCamera() override;
+    std::string ToString() const override;
 
     const PerspectiveCameraData& GetData() const {
       return data_;
@@ -85,7 +87,17 @@ namespace mcc::camera {
     float GetZoom() const {
       return data_.zoom;
     }
+
+    const glm::mat4& GetProjection() const override {
+      return data_.projection;
+    }
+
+    const glm::mat4& GetView() const override {
+      return data_.view;
+    }
   };
+  
+  PerspectiveCamera* GetPerspectiveCamera();
 }
 
 #endif //MCC_CAMERA_PERSPECTIVE_H

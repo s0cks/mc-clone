@@ -88,6 +88,8 @@ namespace mcc::camera {
     }
     ~OrthoCamera() override = default;
 
+    std::string ToString() const override;
+
     const glm::vec4& GetViewport() const {
       return data_.viewport;
     }
@@ -104,11 +106,11 @@ namespace mcc::camera {
       return data_.pos;
     }
 
-    const glm::mat4& GetProjection() const {
+    const glm::mat4& GetProjection() const override {
       return data_.projection;
     }
     
-    const glm::mat4& GetView() const {
+    const glm::mat4& GetView() const override {
       return data_.view;
     }
 

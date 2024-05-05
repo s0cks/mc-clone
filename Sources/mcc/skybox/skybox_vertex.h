@@ -37,6 +37,8 @@ namespace mcc::skybox {
     stream << "]";
     return stream;
   }
+
+  void GenerateSkyboxVertices(VertexList& vertices);
 }
 
 #endif //MCC_SKYBOX_VERTEX_H

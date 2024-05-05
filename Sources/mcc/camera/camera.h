@@ -9,6 +9,9 @@ namespace mcc::camera {
     Camera() = default;
   public:
     virtual ~Camera() = default;
+    virtual std::string ToString() const = 0;
+    virtual const glm::mat4& GetProjection() const = 0;
+    virtual const glm::mat4& GetView() const = 0;
   };
 }
 

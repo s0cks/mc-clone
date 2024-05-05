@@ -16,8 +16,9 @@ namespace mcc {
     FOR_EACH_SKYBOX_EVENT(DEFINE_ON_SKYBOX_EVENT)
 #undef DEFINE_ON_SKYBOX_EVENT
 
+    class SkyboxMesh;
     class Skybox {
-    protected:
+    private:
       static void Publish(SkyboxEvent* event);
 
       template<class E, typename... Args>
@@ -26,8 +27,11 @@ namespace mcc {
         E event(args...);
         return Publish((SkyboxEvent*) &event);
       }
+    protected:
+      SkyboxMesh* mesh_;
     public:
       virtual ~Skybox() = default;
+      virtual SkyboxMesh* GetMesh();
       virtual std::string ToString() const;
     };
   }

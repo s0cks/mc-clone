@@ -1,5 +1,6 @@
 #include "mcc/skybox/skybox.h"
 #include <sstream>
+#include "mcc/skybox/skybox_mesh.h"
 
 namespace mcc::skybox {
   rx::subject<SkyboxEvent*> events_;
@@ -19,5 +20,11 @@ namespace mcc::skybox {
     ss << "Skybox(";
     ss << ")";
     return ss.str();
+  }
+
+  SkyboxMesh* Skybox::GetMesh() {
+    if(mesh_)
+      return mesh_;
+    return mesh_ = SkyboxMesh::New();
   }
 }

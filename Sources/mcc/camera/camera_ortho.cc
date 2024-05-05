@@ -58,6 +58,14 @@ namespace mcc::camera {
     OrthoCamera(eye, pos, up, GetViewportSize()) {
   }
 
+  std::string OrthoCamera::ToString() const {
+    std::stringstream ss;
+    ss << "OrthoCamera(";
+    ss << "data=" << data_;
+    ss << ")";
+    return ss.str();
+  }
+
   glm::mat4 OrthoCameraData::CalculateView() const {
     return glm::lookAt(pos + OrthoCamera::kFront, pos, up);
   }
