@@ -93,6 +93,10 @@ namespace mcc {
     }
   }
   using namespace rgb;
+
+  namespace gfx {
+    void SetClearColor(const Color& c);
+  }
 }
 
 #endif //MCC_COLOR_H

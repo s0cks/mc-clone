@@ -1,6 +1,7 @@
 #ifndef MCC_RENDER_PASS_ROOT_H
 #define MCC_RENDER_PASS_ROOT_H
 
+#include "mcc/color.h"
 #include "mcc/render/render_pass.h"
 
 namespace mcc::render {
@@ -10,6 +11,7 @@ namespace mcc::render {
   protected:
     TerrainRenderPass* terrain_;
     RenderPassGuis* guis_;
+    Color clear_;
 
     void Render() override;
   public:
