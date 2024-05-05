@@ -51,6 +51,7 @@ namespace mcc {
     FOR_EACH_SHADER_EVENT(DEFINE_ON_SHADER_EVENT)
 #undef DEFINE_ON_SHADER_EVENT
 
+    class ShaderCode;
     class ShaderCompiler;
     class Shader {
       friend class VertexShader;
@@ -129,6 +130,7 @@ namespace mcc {
     private:                                                      \
       static Name##Shader* New(const ShaderId id);                \
     public:                                                       \
+      static Name##Shader* New(ShaderCode* code);                 \
       static Name##Shader* New(const uri::Uri& uri);              \
       static inline Name##Shader*                                 \
       New(const uri::basic_uri& uri) {                            \

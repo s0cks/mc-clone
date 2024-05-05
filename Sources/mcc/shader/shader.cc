@@ -28,10 +28,14 @@ namespace mcc::shader {
     Shader::Publish<ShaderCreatedEvent>(shader);                      \
     return shader;                                                    \
   }                                                                   \
+  Name##Shader* Name##Shader::New(ShaderCode* code) {                 \
+    MCC_ASSERT(code);                                                 \
+    return New(ShaderCompiler::Compile(code));                        \
+  }                                                                   \
   Name##Shader* Name##Shader::New(const uri::Uri& uri) {              \
     MCC_ASSERT(uri.HasScheme("shader"));                              \
     const auto code = shader::ShaderCode::FromFile(uri);              \
-    return code ? New(ShaderCompiler::Compile(code)) : nullptr;       \
+    return code ? New(code) : nullptr;                                \
   }
   FOR_EACH_SHADER_TYPE(DEFINE_NEW_SHADER)
 #undef DEFINE_NEW_SHADER
