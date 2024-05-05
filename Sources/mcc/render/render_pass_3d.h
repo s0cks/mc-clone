@@ -13,11 +13,8 @@ namespace mcc::render {
       LOG_IF(ERROR, !pipeline_->Apply()) << "failed to apply pipeline.";
     }
   public:
-    explicit RenderPass3d(Pipeline* pipeline):
-      SequenceRenderPass(),
-      pipeline_(pipeline) {
-    }
-    ~RenderPass3d() override = default;
+    explicit RenderPass3d(Pipeline* pipeline);
+    ~RenderPass3d() override;
 
     const char* GetName() const override {
       return "3d";
