@@ -12,9 +12,7 @@ namespace mcc::terrain {
   protected:
     VertexList& vertices_;
 
-    bool Visit(TerrainChunk* chunk) override {
-      
-    }
+    bool Visit(TerrainChunk* chunk) override;
   public:
     explicit TerrainChunkVertexGenerator(VertexList& vertices):
       TerrainChunkVisitor(),

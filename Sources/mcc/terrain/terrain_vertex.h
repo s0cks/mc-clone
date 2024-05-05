@@ -4,6 +4,7 @@
 #include <vector>
 #include "mcc/glm.h"
 #include "mcc/color.h"
+#include "mcc/vbo/vbo_attribute.h"
 
 namespace mcc::terrain {
   struct Vertex {
@@ -26,6 +27,10 @@ namespace mcc::terrain {
       return stream;
     }
   };
+
+  class PosAttr : public vbo::Vec3fAttribute<0, sizeof(Vertex), offsetof(Vertex, pos)> {};
+  class UvAttr : public vbo::Vec2fAttribute<1, sizeof(Vertex), offsetof(Vertex, uv)>{};
+  class ColorAttr : public vbo::ColorAttribute<2, sizeof(Vertex), offsetof(Vertex, color)>{};
 
   typedef std::vector<Vertex> VertexList;
 
