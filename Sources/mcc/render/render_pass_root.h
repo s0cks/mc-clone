@@ -6,11 +6,13 @@
 
 namespace mcc::render {
   class RenderPassGuis;
+  class SkyboxRenderPass;
   class TerrainRenderPass;
   class RootRenderPass : public OrderedSequenceRenderPass {
   protected:
     TerrainRenderPass* terrain_;
     RenderPassGuis* guis_;
+    SkyboxRenderPass* skybox_;
     Color clear_;
 
     void Render() override;
@@ -24,6 +26,10 @@ namespace mcc::render {
 
     RenderPassGuis* GetGuisPass() const {
       return guis_;
+    }
+
+    SkyboxRenderPass* GetSkyboxPass() const {
+      return skybox_;
     }
   };
 }

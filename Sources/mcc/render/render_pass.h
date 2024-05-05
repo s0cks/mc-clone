@@ -28,6 +28,7 @@ namespace mcc::render {
     typedef RenderPassStats<kDefaultStatsCapacity> Stats;
     
     typedef uint32_t Order;
+    static constexpr const Order kFirst = 1;
     static constexpr const Order kDefaultOrder = 1000;
     static constexpr const Order kLast = 1000000000;
 
