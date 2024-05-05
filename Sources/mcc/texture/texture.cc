@@ -40,6 +40,14 @@ namespace mcc::texture {
     CHECK_GL(FATAL);
   }
 
+  std::string Texture::ToString() const {
+    std::stringstream ss;
+    ss << "Texture(";
+    ss << "id=" << GetTextureId();
+    ss << ")";
+    return ss.str();
+  }
+
   rx::observable<TextureId> Texture::GenerateTextureId(const int num) {
     MCC_ASSERT(num >= 1);
     return rx::observable<>::create<TextureId>([num](rx::subscriber<TextureId> s) {

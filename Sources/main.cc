@@ -113,6 +113,9 @@ int main(int argc, char** argv) {
 
   mouse::OnMouseEvent()
     .subscribe(LogEvent<mouse::MouseEvent>());
+
+  material::OnMaterialCreatedEvent()
+    .subscribe(LogEvent<material::MaterialCreatedEvent>());
     
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
@@ -122,7 +125,8 @@ int main(int argc, char** argv) {
     });
   keyboard->OnPressed(GLFW_KEY_SPACE)
     .subscribe([](keyboard::KeyPressedEvent* event) {
-      const auto material = Material::New("material:example.material.json");
+      const auto example = Material::New("material:example.material.json");
+      const auto leather_blk = Material::New("material:fabrics/leather_black");
     });
   engine->Run();
   return EXIT_SUCCESS;

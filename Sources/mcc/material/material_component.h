@@ -80,7 +80,7 @@ namespace mcc::material {
     friend std::ostream& operator<<(std::ostream& stream, const MaterialComponent& rhs) {
       stream << "MaterialComponent(";
       stream << "type=" << rhs.type << ", ";
-      stream << "texture=" << rhs.texture->GetTextureId(); //TODO: use ToString()
+      stream << "texture=" << (rhs.texture ? rhs.texture->ToString() : "NULL");
       stream << ")";
       return stream;
     }

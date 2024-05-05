@@ -96,6 +96,7 @@ namespace mcc {
       }
       ~Texture() override = default;
       virtual TextureTarget GetTextureTarget() const = 0;
+      virtual std::string ToString() const;
 
       TextureId GetTextureId() const {
         return id_;

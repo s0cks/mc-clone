@@ -108,8 +108,7 @@ namespace mcc {
       }
 
       const auto name = CreateMaterialName(uri);
-      const auto root_path = GetMaterialRoot(uri);
-      return MaterialDirectoryLoader::LoadAny(name, root_path);
+      return MaterialDirectoryLoader::LoadAny(name, base_uri_path);
     }
   }
 }

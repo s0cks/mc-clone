@@ -10,6 +10,7 @@ namespace mcc::material {
   std::string MaterialCreatedEvent::ToString() const {
     std::stringstream ss;
     ss << "MaterialCreatedEvent(";
+    ss << "material=" << GetMaterial()->ToString();
     ss << ")";
     return ss.str();
   }
@@ -17,6 +18,7 @@ namespace mcc::material {
   std::string MaterialDestroyedEvent::ToString() const {
     std::stringstream ss;
     ss << "MaterialDestroyedEvent(";
+    ss << "material=" << GetMaterial()->ToString();
     ss << ")";
     return ss.str();
   }
