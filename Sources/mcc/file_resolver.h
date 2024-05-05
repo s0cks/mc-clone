@@ -16,6 +16,21 @@ namespace mcc {
   namespace fs {
     using namespace std::filesystem;
 
+    static inline bool
+    IsRegularFile(const directory_entry& entry) {
+      return entry.is_regular_file();
+    }
+
+    static inline bool
+    IsDirectory(const directory_entry& entry) {
+      return entry.is_directory();
+    }
+
+    static inline std::string
+    ToPath(const directory_entry& entry) {
+      return (const std::string&) entry.path();
+    }
+
     static inline rx::observable<directory_entry>
     ListAllInDirectory(const std::string& dir) {
       if(!FileExists(dir)) {
@@ -32,9 +47,13 @@ namespace mcc {
     static inline rx::observable<directory_entry>
     ListFilesInDirectory(const std::string& dir) {
       return ListAllInDirectory(dir)
-        .filter([](directory_entry entry) {
-          return entry.is_regular_file();
-        });
+        .filter(IsRegularFile);
+    }
+
+    static inline rx::observable<directory_entry>
+    ListDirsInDirectory(const std::string& dir) {
+      return ListAllInDirectory(dir)
+        .filter(IsDirectory);
     }
   }
 }

@@ -45,6 +45,21 @@
       "MIMode": "lldb"
     }, // .Resolution Tests
     {
+      "name": "File Resolver Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*FileResolver*Test*.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // FileResolver Tests
+    {
       "name": "rapidjson tests",
       "type": "cppdbg",
       "request": "launch",
