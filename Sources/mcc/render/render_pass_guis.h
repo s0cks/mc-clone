@@ -8,7 +8,7 @@
 #include "mcc/camera/camera_ortho.h"
 
 namespace mcc::render {
-  class RenderPassGuis : public RenderPass {
+  class RenderPassGuis : public RenderPass { //TODO: rename
   protected:
     ProgramRef prog_;
   public:

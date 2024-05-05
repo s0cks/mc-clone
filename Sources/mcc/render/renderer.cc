@@ -1,23 +1,25 @@
 #include "mcc/render/renderer.h"
 
-#include "mcc/shape.h"
 #include "mcc/thread_local.h"
 #include "mcc/engine/engine.h"
-#include "mcc/window/window.h"
-#include "mcc/camera/camera_ortho.h"
-
-#include "mcc/ibo/ibo.h"
-
-#include "mcc/render/render_pass.h"
-#include "mcc/render/render_pass_2d.h"
-#include "mcc/render/render_pass_3d.h"
-#include "mcc/render/render_pass_guis.h"
 #include "mcc/render/renderer_stats.h"
+#include "mcc/render/render_pass_root.h"
 #include "mcc/render/render_pass_executor.h"
 
 namespace mcc::render {
   static ThreadLocal<Renderer> renderer_;
   static rx::subject<RenderEvent*> events_;
+
+  Renderer::Renderer(uv_loop_t* loop, const Mode mode):
+    loop_(loop),
+    on_run_(),
+    mode_(mode),
+    pass_(new RootRenderPass()) {
+    MCC_ASSERT(loop);
+    SetRenderer(on_run_, this);
+    InitAsyncHandle(loop, on_run_, &OnRun);
+    Publish<RendererInitializedEvent>(this);
+  }
 
   rx::observable<RenderEvent*> OnRenderEvent() {
     return events_.get_observable();
@@ -58,59 +60,10 @@ namespace mcc::render {
     return renderer_.Get();
   }
 
-  class RendererPipelinePass : public OrderedSequenceRenderPass {
-  protected:
-    const Renderer* renderer_;
-    glm::mat4 projection_;
-
-    inline const Renderer* GetRenderer() const {
-      return renderer_;
-    }
-
-    inline Renderer::Mode GetRenderMode() const {
-      return GetRenderer()->GetMode();
-    }
-
-    void Render() override {
-      const auto window = Window::Get();
-      glfwPollEvents();
-      CHECK_GL(FATAL);
-      //TODO: remove chunk
-      glPolygonMode(GL_FRONT_AND_BACK, GetRenderMode());
-      CHECK_GL(FATAL);
-      glEnable(GL_DEPTH_TEST);
-      CHECK_GL(FATAL);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      CHECK_GL(FATAL);
-      glDepthFunc(GL_LEQUAL);
-      CHECK_GL(FATAL);
-      glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-      CHECK_GL(FATAL);
-    }
-  public:
-    explicit RendererPipelinePass(Window* window, const Renderer* renderer):
-      OrderedSequenceRenderPass(),
-      renderer_(renderer) {
-      MCC_ASSERT(renderer);
-    }
-    ~RendererPipelinePass() override = default;
-
-    const char* GetName() const override {
-      return "RendererPipelinePass";
-    }
-  };
-
   void Renderer::Init() {
-    const auto window = Window::Get();
     const auto engine = engine::Engine::GetEngine();
     const auto renderer = new Renderer(engine->GetLoop());
     SetThreadRenderer(renderer);
-    window::OnWindowOpenedEvent()
-      .subscribe([renderer,window](WindowOpenedEvent* event) {
-        const auto pass = new RendererPipelinePass(window, renderer);
-        pass->Append(new RenderPassGuis());
-        renderer->GetPass()->Append(pass);
-      });
   }
 
   Renderer* Renderer::Get() {

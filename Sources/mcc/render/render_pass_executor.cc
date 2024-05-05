@@ -6,6 +6,10 @@
 
 namespace mcc::render {
   bool RenderPassExecutor::Visit(RenderPass* pass) {
+    return ExecuteRenderPass(pass);
+  }
+
+  bool RenderPassExecutor::ExecuteRenderPass(RenderPass* pass) {
     MCC_ASSERT(pass);
     if(pass->ShouldSkip()) {
       DLOG(INFO) << "skipping " << pass->GetName() << ".";

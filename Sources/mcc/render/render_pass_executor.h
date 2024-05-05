@@ -10,11 +10,12 @@ namespace mcc::render {
   public:
     RenderPassExecutor() = default;
     ~RenderPassExecutor() override = default;
+    virtual bool ExecuteRenderPass(RenderPass* pass);
   public:
     static inline bool
     Execute(RenderPass* pass) {
       RenderPassExecutor executor;
-      return pass->Accept(&executor);
+      return executor.ExecuteRenderPass(pass);
     }
   };
 }

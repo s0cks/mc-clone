@@ -78,16 +78,7 @@ namespace mcc {
       RenderPass* pass_;
 
       Renderer(uv_loop_t* loop,
-               const Mode mode = kDefaultMode):
-        loop_(loop),
-        on_run_(),
-        mode_(mode),
-        pass_(new OrderedSequenceRenderPass()) {
-        MCC_ASSERT(loop);
-        SetRenderer(on_run_, this);
-        InitAsyncHandle(loop, on_run_, &OnRun);
-        Publish<RendererInitializedEvent>(this);
-      }
+               const Mode mode = kDefaultMode);
 
       inline void SetMode(const Mode mode) {
         mode_ = mode;

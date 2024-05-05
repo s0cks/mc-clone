@@ -6,7 +6,7 @@
 namespace mcc::render {
   class TerrainRenderPass : public RenderPass {
   public:
-    TerrainRenderPass();
+    TerrainRenderPass() = default;
     ~TerrainRenderPass() override = default;
 
     bool ShouldSkip() const override;
