@@ -7,51 +7,6 @@
 
 namespace mcc::skybox {
   static ThreadLocal<Vao> skybox_vao_;
-
-  static const VertexList kVertices = {
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3( 1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f,  1.0f) },
-    { .pos = glm::vec3(-1.0f,  1.0f, -1.0f) },
-
-    { .pos = glm::vec3(-1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f, -1.0f) },
-    { .pos = glm::vec3(-1.0f, -1.0f,  1.0f) },
-    { .pos = glm::vec3(1.0f, -1.0f,  1.0f) },
-  };
-
   static inline Vao*
   GetSkyboxVao() {
     if(skybox_vao_)
@@ -63,8 +18,10 @@ namespace mcc::skybox {
 
   static inline Vbo*
   CreateSkyboxVbo() {
+    VertexList vertices;
+    GenerateSkyboxVertices(vertices);
     vbo::VboBuilder<skybox::Vertex,
-                    skybox::PosAttr> builder(kVertices, vbo::kDynamicDraw);
+                    skybox::PosAttr> builder(vertices, vbo::kDynamicDraw);
     return builder.Build()
       .as_blocking()
       .first();
