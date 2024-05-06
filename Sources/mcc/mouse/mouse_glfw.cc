@@ -29,6 +29,11 @@ namespace mcc::mouse {
     return ndc;
   }
 
+  void GlfwMouse::SetCursorPos(const glm::vec2& pos) {
+    const auto window = Window::Get();
+    glfwSetCursorPos(window->handle(), pos[0], pos[1]);
+  }
+
   glm::vec2 GlfwMouse::GetNormalizedPosition() const {
     return CalculateNDC(GetCursorPosition());
   }

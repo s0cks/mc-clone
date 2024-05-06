@@ -39,6 +39,8 @@ namespace mcc::mouse {
       return window_;
     }
 
+    void SetCursorPos(const glm::vec2& pos) override;
+
     glm::vec2 GetPosition() const override {
       return pos_;
     }

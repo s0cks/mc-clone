@@ -48,6 +48,7 @@ namespace mcc {
       }
     public:
       virtual ~Mouse() = default;
+      virtual void SetCursorPos(const glm::vec2& pos) = 0;
       virtual glm::vec2 GetCursorPosition() const = 0;
       virtual glm::vec2 GetPosition() const = 0;
       virtual glm::vec2 GetNormalizedPosition() const = 0;
