@@ -14,6 +14,17 @@ namespace mcc {
   }
 
   namespace keyboard {
+    rx::observable<KeyboardEvent*> OnKeyboardEvent();
+#define DEFINE_ON_KEYBOARD_EVENT(Name)                  \
+    static inline rx::observable<Name##Event*>          \
+    On##Name##Event() {                                 \
+      return OnKeyboardEvent()                          \
+        .filter(Name##Event::Filter)                    \
+        .map(Name##Event::Cast);                        \
+    }
+    FOR_EACH_KEYBOARD_EVENT(DEFINE_ON_KEYBOARD_EVENT)
+#undef DEFINE_ON_KEYBOARD_EVENT
+
     class Keyboard : public engine::PreTickEventListener {
       friend class engine::Engine;
     protected:
@@ -69,21 +80,6 @@ namespace mcc {
     void InitKeyboard();
     bool HasKeyboard();
     Keyboard* GetKeyboard();
-    rx::observable<KeyboardEvent*> OnEvent();
-
-    static inline rx::observable<KeyboardCreatedEvent*>
-    OnCreated() {
-      return OnEvent()
-        .filter(KeyboardCreatedEvent::Filter)
-        .map(KeyboardCreatedEvent::Cast);
-    }
-
-    static inline rx::observable<KeyboardDestroyedEvent*>
-    OnDestroyed() {
-      return OnEvent()
-        .filter(KeyboardDestroyedEvent::Filter)
-        .map(KeyboardDestroyedEvent::Cast);
-    }
   }
 
   using keyboard::Keyboard;

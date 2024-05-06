@@ -95,7 +95,7 @@ namespace mcc::keyboard {
     return keyboard_.Get();
   }
 
-  rx::observable<KeyboardEvent*> OnEvent() {
+  rx::observable<KeyboardEvent*> OnKeyboardEvent() {
     return events_.get_observable();
   }
 }

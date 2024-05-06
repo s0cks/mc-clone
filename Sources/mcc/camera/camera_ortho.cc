@@ -12,9 +12,7 @@ namespace mcc::camera {
                            const glm::vec2& viewport_size):
     Camera(),
     data_(viewport_size, eye, pos, up) {
-    keyboard::OnEvent()
-      .filter(keyboard::KeyPressedEvent::Filter)
-      .map(keyboard::KeyPressedEvent::Cast)
+    keyboard::OnKeyPressedEvent()
       .subscribe([this](keyboard::KeyPressedEvent* event) {
         return OnKeyPressed(event->GetKeyCode());
       });

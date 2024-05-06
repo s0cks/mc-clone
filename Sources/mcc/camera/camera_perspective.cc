@@ -106,6 +106,20 @@ namespace mcc::camera {
     MCC_ASSERT(engine);
     const auto& tick = ((engine::TickState*) engine->GetCurrentState())->GetCurrentTick();
     const auto velocity = data_.CalculateVelocity(tick.delta);
+    switch(code) {
+      case GLFW_KEY_W:
+        data_.pos += (data_.front * velocity);
+        break;
+      case GLFW_KEY_S:
+        data_.pos -= (data_.front * velocity);
+        break;
+      case GLFW_KEY_A:
+        data_.pos -= (data_.right * velocity);
+        break;
+      case GLFW_KEY_D:
+        data_.pos += (data_.right * velocity);
+        break; 
+    }
   }
 
   void PerspectiveCamera::OnMouseMoved(const mouse::MouseMoveEvent* event) {
