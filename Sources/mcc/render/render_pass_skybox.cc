@@ -7,6 +7,7 @@
 #include "mcc/camera/camera_perspective.h"
 
 #include "mcc/cull_face_scope.h"
+#include "mcc/program/program_scope.h"
 
 namespace mcc::render {
   SkyboxRenderPass::SkyboxRenderPass():
@@ -33,13 +34,8 @@ namespace mcc::render {
     const auto camera = camera::GetPerspectiveCamera();
     MCC_ASSERT(camera);
 
-    const auto camera_ubo = camera->GetUbo();
-
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, camera_ubo->GetId(), 0, sizeof(camera::PerspectiveCameraData));
-    CHECK_GL(FATAL);
-
+    program::ProgramUboBindScope program_scope(program_.operator->());
     texture->Bind0();
-
     glDepthMask(GL_FALSE);
     CHECK_GL(FATAL);
     const auto model = glm::mat4(1.0f);
@@ -50,7 +46,7 @@ namespace mcc::render {
     program_->SetMat4("view", camera->GetView());
     program_->SetMat4("model", model);
     program_->SetInt("tex", 0);
-    program_->SetUniformBlock("Camera", 0);
+    program_scope.Bind("Camera", camera->GetUbo());
 
     draw_scope.Draw(GL_TRIANGLES);
     glDepthMask(GL_TRUE);
