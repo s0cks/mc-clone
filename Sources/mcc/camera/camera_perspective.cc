@@ -4,6 +4,9 @@
 #include "mcc/thread_local.h"
 #include "mcc/window/window.h"
 
+#include "mcc/ubo/ubo_scope.h"
+#include "mcc/ubo/ubo_builder.h"
+
 namespace mcc::camera {
   PerspectiveCameraData::PerspectiveCameraData():
     viewport(0.0f),
@@ -53,12 +56,15 @@ namespace mcc::camera {
 
   PerspectiveCamera::PerspectiveCamera(const PerspectiveCameraData& data):
     Camera(),
-    data_(data) {
-  }
-
-  PerspectiveCamera::PerspectiveCamera():
-    Camera(),
-    data_() {
+    data_(data),
+    ubo_(nullptr) {
+    ubo::UboBuilder<gpu::CameraData> builder;
+    builder.Append( gpu::CameraData {
+      .projection = GetProjection(),
+      .view = GetView(), 
+    });
+    ubo_ = builder.Build();
+    LOG_IF(ERROR, !ubo_) << "failed to create PerspectiveCameraData ubo.";
   }
 
   PerspectiveCamera::~PerspectiveCamera() {
@@ -66,6 +72,15 @@ namespace mcc::camera {
       on_mouse_moved_.unsubscribe();
     if(on_key_pressed_.is_subscribed())
       on_key_pressed_.unsubscribe();
+    delete ubo_; //TODO: remove
+  }
+
+  void PerspectiveCamera::UpdateUbo() {
+    ubo::UboUpdateScope update(GetUbo());
+    update.Update(gpu::CameraData {
+      .projection = GetProjection(),
+      .view = GetView(),
+    });
   }
 
   void PerspectiveCamera::Update() {

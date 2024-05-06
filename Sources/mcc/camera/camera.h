@@ -3,6 +3,13 @@
 
 #include "mcc/glm.h"
 
+namespace gpu {
+  struct CameraData {
+    glm::mat4 projection;
+    glm::mat4 view;   
+  };
+}
+
 namespace mcc::camera {
   class Camera {
   protected:

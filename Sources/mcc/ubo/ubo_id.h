@@ -19,11 +19,19 @@ namespace mcc {
       return id >= 0;
     }
 
-    rx::observable<UboId> GenerateUboIds(const int num);
+    void GenerateUboIds(UboId* ids, const int num_ids);
+    rx::observable<UboId> GenerateUboIdsAsync(const int num);
+
+    static inline UboId
+    GenerateUboId() {
+      UboId id;
+      GenerateUboIds(&id, 1);
+      return id;
+    }
 
     static inline rx::observable<UboId>
-    GenerateUboId() {
-      return GenerateUboIds(1);
+    GenerateUboIdAsync() {
+      return GenerateUboIdsAsync(1);
     }
   }
   using ubo::UboId;

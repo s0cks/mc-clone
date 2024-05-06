@@ -39,6 +39,7 @@ namespace mcc {
       friend class UboBindScope;
       friend class UboUpdateScope;
       friend class UboBuilderBase;
+      friend class UboBuilderScope;
     public:
       static constexpr const auto kGlTarget = GL_UNIFORM_BUFFER;
     protected:

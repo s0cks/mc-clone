@@ -5,12 +5,25 @@
 #include "mcc/ubo/ubo_id.h"
 
 namespace mcc::ubo {
+  class UboBuilderScope {
+    friend class UboBuilderBase;
+  protected:
+    UboId id_;
+
+    explicit UboBuilderScope(const UboId id);
+  public:
+    ~UboBuilderScope();
+
+    UboId GetUboId() const {
+      return id_;
+    }
+  };
+
   class Ubo;
   class UboBuilderBase {
   protected:
     UboBuilderBase() = default;
-
-    Ubo* InitUbo(const UboId id);
+    void Init(const UboId id) const;
   public:
     virtual ~UboBuilderBase() = default;
     virtual const uint8_t* GetData() const = 0;
@@ -21,8 +34,9 @@ namespace mcc::ubo {
     uint64_t GetTotalSize() const {
       return GetElementSize() * GetLength();
     }
-
-    virtual rx::observable<Ubo*> Build() const = 0;
+    
+    virtual Ubo* Build() const;
+    virtual rx::observable<Ubo*> BuildAsync() const;
   };
 
   template<typename T>
@@ -39,6 +53,10 @@ namespace mcc::ubo {
       data_(),
       length_(length),
       usage_(usage) {
+    }
+    explicit UboBuilder(const T& value, const GLenum usage = GL_DYNAMIC_DRAW):
+      UboBuilder(0, usage) {
+      Append(value);
     }
     ~UboBuilder() override = default;
 
@@ -77,16 +95,6 @@ namespace mcc::ubo {
     template<typename C>
     void Append(const C& values) {
       data_.insert(std::end(data_), std::begin(values), std::end(values));
-    }
-
-    rx::observable<Ubo*> Build() const override {
-      MCC_ASSERT(GetLength() > 0);
-      MCC_ASSERT(GetElementSize() > 0);
-      return GenerateUboId()
-        .filter(IsValidUboId)
-        .map([this](const UboId id) {
-          return InitUbo(id);
-        });
     }
   };
 }

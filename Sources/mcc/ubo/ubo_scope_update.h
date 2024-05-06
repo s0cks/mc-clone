@@ -5,6 +5,7 @@
 #ifndef MCC_UBO_SCOPE_UPDATE_H
 #define MCC_UBO_SCOPE_BIND_H
 
+#include <vector>
 #include "mcc/ubo/ubo_scope.h"
 
 namespace mcc::ubo {
@@ -19,6 +20,16 @@ namespace mcc::ubo {
 
     inline void Update(const uint8_t* bytes, const uint64_t num_bytes) {
       return Update(0, bytes, num_bytes);
+    }
+
+    template<typename T>
+    inline void Update(const std::vector<T>& values) {
+      return Update((const uint8_t*) &values[0], sizeof(T) * values.size());
+    }
+
+    template<typename T>
+    inline void Update(const T& value) {
+      return Update((const uint8_t*) &value, sizeof(T));
     }
   };
 }

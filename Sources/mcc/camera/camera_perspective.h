@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "mcc/rx.h"
+#include "mcc/ubo/ubo.h"
 #include "mcc/uv/utils.h"
 #include "mcc/mouse/mouse.h"
 #include "mcc/camera/camera.h"
@@ -55,20 +56,26 @@ namespace mcc::camera {
     static constexpr const auto kDefaultUp = glm::vec3(0.0f, 1.0f, 0.0f);
   protected:
     PerspectiveCameraData data_;
+    Ubo* ubo_;
     rx::subscription on_key_pressed_;
     rx::subscription on_mouse_moved_;
 
     void Update();
     void OnKeyPressed(const keyboard::KeyCode code);
     void OnMouseMoved(const mouse::MouseMoveEvent* event);
+
+    void UpdateUbo();
   public:
-    explicit PerspectiveCamera(const PerspectiveCameraData& data);
-    PerspectiveCamera();
+    explicit PerspectiveCamera(const PerspectiveCameraData& data = {});
     ~PerspectiveCamera() override;
     std::string ToString() const override;
 
     const PerspectiveCameraData& GetData() const {
       return data_;
+    }
+
+    Ubo* GetUbo() const {
+      return ubo_;
     }
 
     float GetYaw() const {

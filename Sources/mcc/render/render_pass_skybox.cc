@@ -33,6 +33,11 @@ namespace mcc::render {
     const auto camera = camera::GetPerspectiveCamera();
     MCC_ASSERT(camera);
 
+    const auto camera_ubo = camera->GetUbo();
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, camera_ubo->GetId(), 0, sizeof(camera::PerspectiveCameraData));
+    CHECK_GL(FATAL);
+
     texture->Bind0();
 
     glDepthMask(GL_FALSE);
@@ -45,6 +50,8 @@ namespace mcc::render {
     program_->SetMat4("view", camera->GetView());
     program_->SetMat4("model", model);
     program_->SetInt("tex", 0);
+    program_->SetUniformBlock("Camera", 0);
+
     draw_scope.Draw(GL_TRIANGLES);
     glDepthMask(GL_TRUE);
     CHECK_GL(FATAL);
