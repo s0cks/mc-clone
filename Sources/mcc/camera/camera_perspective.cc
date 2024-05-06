@@ -7,6 +7,9 @@
 #include "mcc/ubo/ubo_scope.h"
 #include "mcc/ubo/ubo_builder.h"
 
+#include "mcc/mouse/mouse.h"
+#include "mcc/keyboard/keyboard.h"
+
 namespace mcc::camera {
   PerspectiveCameraData::PerspectiveCameraData():
     viewport(0.0f),
