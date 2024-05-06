@@ -81,6 +81,9 @@ namespace mcc::texture {
     explicit constexpr TextureWrap(const TextureWrapMode mode = kDefaultTextureWrapMode):
       TextureWrap(mode, mode, mode) {
     }
+    explicit constexpr TextureWrap(const std::string& value):
+      TextureWrap(GetWrapMode(value).value_or(kDefaultTextureWrapMode)) {  
+    }
     TextureWrap(const TextureWrap& rhs) = default;
     ~TextureWrap() = default;
 

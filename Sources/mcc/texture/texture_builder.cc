@@ -1,21 +1,63 @@
 #include "mcc/texture/texture_builder.h"
+#include "mcc/texture/texture.h"
 
 namespace mcc::texture {
-  Texture* TextureBuilder::InitTexture(const TextureId id) const {
+  TextureId TextureBuilderBase::Build() const {
+    const auto id = GenerateTextureId();
     MCC_ASSERT(IsValidTextureId(id));
-    Texture::BindTexture(target_, id);
-    filter_.ApplyTo(target_);
-    wrap_.ApplyTo(target_);
-    glTexImage2D(target_, level_, internal_format_, size_[0], size_[1], border_, format_, type_, NULL);
-    CHECK_GL(FATAL);
-    Texture::UnbindTexture(target_);
-    return new Texture2D(id);
+    Texture::BindTexture(GetTarget(), id);
+    filter_.ApplyTo(GetTarget());
+    wrap_.ApplyTo(GetTarget());
+    InitTexture(id);
+    Texture::UnbindTexture(GetTarget());
+    return id;
+  }
+  
+  rx::observable<TextureId> TextureBuilderBase::BuildAsync() const {
+    return rx::observable<>::create<TextureId>([this](rx::subscriber<TextureId> s) {
+      const auto id = Build();
+      if(IsInvalidTextureId(id)) {
+        const auto err = fmt::format("build returned invalid TextureId: {0:d}", id);
+        return s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+      }
+      
+      s.on_next(id);
+      s.on_completed();
+    });
   }
 
-  rx::observable<Texture*> TextureBuilder::Build(const int num) const {
-    return GenerateTextureIds(1)
-      .map([this](const TextureId id) {
-        return InitTexture(id);
-      });
+  void TextureBuilder::InitTexture(const TextureId id) const {
+    MCC_ASSERT(IsValidTextureId(id));
+    switch(GetTarget()) {
+      case k2D: {
+        glTexImage2D(GetTarget(), GetLevel(), GetInternalFormat(), GetWidth(), GetHeight(), GetBorder(), GetFormat(), GetType(), GetData());
+        CHECK_GL(FATAL);
+        break;
+      }
+      default: {
+        DLOG(ERROR) << "unknown TextureTarget: " << GetTarget();
+        break;
+      }
+    }
+  }
+
+  void TextureBuilder::Attach(img::Image* image) {
+    MCC_ASSERT(image);
+    switch(image->type()) {
+      case img::kRGB:
+        SetFormat(kRGB);
+        SetInternalFormat(kRGB);
+        break;
+      case img::kRGBA:
+        SetFormat(kRGBA);
+        SetInternalFormat(kRGBA);
+        break;
+      default:
+        LOG(ERROR) << "invalid image type: " << image->type();
+        break;
+    }
+    SetType(GL_UNSIGNED_BYTE);
+    SetSize(image->size());
+    SetData(image->data());
   }
 }

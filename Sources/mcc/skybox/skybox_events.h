@@ -8,7 +8,8 @@ namespace mcc::skybox {
 #define FOR_EACH_SKYBOX_EVENT(V)      \
   V(SkyboxCreated)                    \
   V(SkyboxDestroyed)                  \
-  V(SkyboxTextureChanged)
+  V(SkyboxTextureChanged)             \
+  V(SkyboxChanged)
 
   class Skybox;
   class SkyboxEvent;
@@ -61,6 +62,28 @@ namespace mcc::skybox {
     }
     ~SkyboxTextureChangedEvent() override = default;
     DECLARE_SKYBOX_EVENT(SkyboxTextureChanged);
+  };
+
+  class SkyboxChangedEvent : public SkyboxEvent {
+  protected:
+    const Skybox* previous_;
+  public:
+    explicit SkyboxChangedEvent(const Skybox* skybox,
+                                const Skybox* previous = nullptr):
+      SkyboxEvent(skybox),
+      previous_(previous) {
+    }
+    ~SkyboxChangedEvent() override = default;
+
+    const Skybox* GetPrevious() const {
+      return previous_;
+    }
+
+    bool HasPrevious() const {
+      return previous_ != nullptr;
+    }
+
+    DECLARE_SKYBOX_EVENT(SkyboxChanged);
   };
 }
 

@@ -25,6 +25,10 @@ namespace mcc::camera {
     float zoom;
 
     PerspectiveCameraData();
+    PerspectiveCameraData(const glm::vec2& viewport_size,
+                          const glm::vec3& f,
+                          const glm::vec3& p,
+                          const glm::vec3& u);
     PerspectiveCameraData(const PerspectiveCameraData& rhs) = default;
     ~PerspectiveCameraData() = default;
 
@@ -36,11 +40,6 @@ namespace mcc::camera {
 
     friend class PerspectiveCamera;
   private:
-    PerspectiveCameraData(const glm::vec2& viewport_size,
-                          const glm::vec3& f,
-                          const glm::vec3& p,
-                          const glm::vec3& u);
-
     float CalculateVelocity(const uint64_t dts) const {
       return (speed * 100.0f) * ((1.0f * dts) / NSEC_PER_SEC);
     }
@@ -50,6 +49,10 @@ namespace mcc::camera {
   };
 
   class PerspectiveCamera : public Camera {
+  public:
+    static constexpr const auto kDefaultFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    static constexpr const auto kDefaultPos = glm::vec3(0.0f);
+    static constexpr const auto kDefaultUp = glm::vec3(0.0f, 1.0f, 0.0f);
   protected:
     PerspectiveCameraData data_;
     rx::subscription on_key_pressed_;

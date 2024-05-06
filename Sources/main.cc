@@ -35,6 +35,8 @@
 #include "mcc/fbo/fbo_factory.h"
 #include "mcc/render/render_settings.h"
 
+#include "mcc/skybox/skybox.h"
+
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
 LogEvent() {
@@ -117,6 +119,7 @@ int main(int argc, char** argv) {
   material::OnMaterialCreatedEvent()
     .subscribe(LogEvent<material::MaterialCreatedEvent>());
     
+  const auto skybox = Skybox::New("texture://space_nebulas");
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
   keyboard->OnPressed(GLFW_KEY_ESCAPE)
@@ -124,9 +127,8 @@ int main(int argc, char** argv) {
       engine->Shutdown();
     });
   keyboard->OnPressed(GLFW_KEY_SPACE)
-    .subscribe([](keyboard::KeyPressedEvent* event) {
-      const auto example = Material::New("material:example.material.json");
-      const auto leather_blk = Material::New("material:fabrics/leather_black");
+    .subscribe([skybox](keyboard::KeyPressedEvent* event) {
+      skybox::SetCurrentSkybox(skybox);
     });
   engine->Run();
   return EXIT_SUCCESS;

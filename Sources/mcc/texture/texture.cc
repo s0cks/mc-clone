@@ -8,9 +8,6 @@
 #include "mcc/common.h"
 #include "mcc/image/image.h"
 #include "mcc/texture/texture.h"
-#include "mcc/texture/texture_spec.h"
-
-#include "mcc/texture/texture_factory.h"
 
 namespace mcc::texture {
   static rx::subject<TextureEvent*> events_;
@@ -71,49 +68,5 @@ namespace mcc::texture {
   void Texture::Destroy() {
     glDeleteTextures(1, &id_);
     CHECK_GL(FATAL);
-  }
-
-  TextureRef Texture2D::New(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("tex") || uri.HasScheme("texture"));
-    const auto extension = uri.GetPathExtension();
-    if(!extension) {
-      //TODO: resolve w/o extension
-      return {};
-    }
-
-    if(EqualsIgnoreCase(*extension, "json")) {
-    } else if(EqualsIgnoreCase(*extension, "png")) {
-      const auto abs_path = uri::Uri(fmt::format("file://{0:s}/textures/{1:s}", FLAGS_resources, uri.path));
-      if(!FileExists(abs_path)) {
-        DLOG(ERROR) << "no texture found at: " << abs_path;
-        return {};
-      }
-
-      const auto image = img::png::Decode(abs_path);
-      if(!image) {
-        DLOG(ERROR) << "failed to decode png from: " << abs_path;
-        return {};
-      }
-
-      TextureSpecBuilder<k2D> builder;
-      const auto spec = builder.Build();
-      TextureFactory2D factory(spec);
-      return Texture2D::New(factory.Create(image));
-    } else if(EqualsIgnoreCase(*extension, "jpeg")
-           || EqualsIgnoreCase(*extension, "jpg")) {
-    }
-
-    LOG(ERROR) << "unknown texture extension: " << *extension;
-    return {};
-  }
-  
-  TextureRef Texture3D::New(const uri::Uri& uri) {
-    NOT_IMPLEMENTED(FATAL);
-    return {};
-  }
-
-  TextureRef CubeMap::New(const uri::Uri& uri) {
-    NOT_IMPLEMENTED(FATAL);
-    return {};
   }
 }

@@ -5,6 +5,8 @@
 #include "mcc/image/image_data.h"
 
 namespace mcc::img {
+  const std::unordered_set<std::string>& GetValidExtensions();
+
   class Image {
   protected:
     ImageType type_;
@@ -45,13 +47,13 @@ namespace mcc::img {
       return new Image(type, size, data);
     }
   };
+
+  bool Filter(const uri::Uri& uri);
+  Image* Decode(const uri::Uri& uri);
+  rx::observable<Image*> DecodeAsync(const uri::Uri& uri);
 }
 
 #include "mcc/image/image_png.h"
 #include "mcc/image/image_jpeg.h"
-
-namespace mcc::img {
-  rx::observable<Image*> GetImage(const uri::Uri& uri);
-}
 
 #endif //MCC_IMAGE_H

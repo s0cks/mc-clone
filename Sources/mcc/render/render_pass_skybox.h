@@ -8,7 +8,6 @@
 namespace mcc::render {
   class SkyboxRenderPass : public RenderPass {
   protected:
-    Skybox* skybox_;
     ProgramRef program_;
 
     Order GetOrder() const override {
@@ -16,14 +15,6 @@ namespace mcc::render {
     }
 
     bool ShouldSkip() const override;
-
-    inline Skybox* GetSkybox() const {
-      return skybox_;
-    }
-
-    inline bool HasSkybox() const {
-      return GetSkybox() != nullptr;
-    }
   public:
     SkyboxRenderPass();
     ~SkyboxRenderPass() override;

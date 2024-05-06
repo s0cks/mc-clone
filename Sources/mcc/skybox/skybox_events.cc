@@ -26,4 +26,12 @@ namespace mcc::skybox {
     ss << ")";
     return ss.str();
   }
+
+  std::string SkyboxChangedEvent::ToString() const {
+    std::stringstream ss;
+    ss << "SkyboxChangedEvent(";
+    ss << "skybox=" << GetSkybox()->ToString();
+    ss << ")";
+    return ss.str();
+  }
 }

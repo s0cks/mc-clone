@@ -46,7 +46,7 @@ namespace mcc::json {
     return ParseJson(file, doc);
   }
 
-  bool ParseJson(Document& doc, const std::string& value) {
+  bool ParseRawJson(const std::string& value, Document& doc) {
     StringStream ss(value.data());
     doc.ParseStream(ss);
     return !doc.HasParseError();

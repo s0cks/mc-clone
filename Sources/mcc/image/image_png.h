@@ -7,31 +7,24 @@
 
 #include <string>
 #include <optional>
+#include <unordered_set>
 
 #include "mcc/image/image.h"
 #include "mcc/image/image_decoder.h"
 
 namespace mcc::img::png {
-  Image* Decode(FILE* file);
+  static const std::unordered_set<std::string> kValidExtensions = {
+    "png",
+  };
 
-  static inline Image*
-  Decode(const uri::Uri& uri) {
-    const auto file = uri.OpenFileForReading();
-    if(!file) {
-      DLOG(ERROR) << "failed to open file: " << uri;
-      return nullptr;
-    }
-
-    const auto image = Decode(file);
-    if(!image) {
-      DLOG(ERROR) << "failed to decode png from file: " << uri;
-      return nullptr;
-    }
-
-    const auto error = fclose(file);
-    LOG_IF(FATAL, error == EOF) << "failed to close file: " << uri;
-    return image;
+  static inline bool
+  Filter(const uri::Uri& uri) {
+    return uri.HasScheme("file")
+        && uri.HasExtension(kValidExtensions);
   }
+
+  Image* Decode(FILE* file);
+  Image* Decode(const uri::Uri& uri);
 
   static inline Image*
   Decode(const uri::basic_uri& uri) {

@@ -12,7 +12,7 @@ namespace mcc::render {
     terrain_(new TerrainRenderPass()),
     guis_(new RenderPassGuis()),
     skybox_(new SkyboxRenderPass()),
-    clear_(kBlack) {
+    clear_(kGreen) {
     Append(terrain_);
     Append(guis_);
     Append(skybox_);

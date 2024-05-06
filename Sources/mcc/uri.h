@@ -135,6 +135,24 @@ namespace mcc {
         return EqualsIgnoreCase(path_extension, extension);
       }
 
+      bool HasExtension(const std::set<std::string>& extensions) const {
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto path_extension = path.substr(dotpos + 1);
+        const auto pos = extensions.find(path_extension);
+        return pos != extensions.end();
+      }
+
+      bool HasExtension(const std::unordered_set<std::string>& extensions) const {
+        const auto dotpos = path.find_last_of('.');
+        if(dotpos == std::string::npos)
+          return false;
+        const auto path_extension = path.substr(dotpos + 1);
+        const auto pos = extensions.find(path_extension);
+        return pos != extensions.end();
+      }
+
       bool HasExtension(const std::string& a,
                         const std::string& b) const {
         MCC_ASSERT(a[0] == '.');

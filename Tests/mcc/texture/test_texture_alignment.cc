@@ -117,42 +117,42 @@ namespace mcc::texture {
 
   TEST_F(JsonTextureAlignmentTest, Test_StringIsInvalid) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "\"thisisinvalid\""));
+    ASSERT_TRUE(json::ParseRawJson("\"thisisinvalid\"", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, k4));
   }
 
   TEST_F(JsonTextureAlignmentTest, Test_StringIsEmpty) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "\"\""));
+    ASSERT_TRUE(json::ParseRawJson("\"\"", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, k4));
   }
 
   TEST_F(JsonTextureAlignmentTest, Test_StringIsDoubleword) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "\"doubleword\""));
+    ASSERT_TRUE(json::ParseRawJson("\"doubleword\"", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, kDoubleWordAlignment));
   }
 
   TEST_F(JsonTextureAlignmentTest, Test_NumberIs8) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "8"));
+    ASSERT_TRUE(json::ParseRawJson("8", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, k8));
   }
 
   TEST_F(JsonTextureAlignmentTest, Test_PackIs4UnpackIsDoubleword) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "{ \"pack\": 4, \"unpack\": \"doubleword\" }"));
+    ASSERT_TRUE(json::ParseRawJson("{ \"pack\": 4, \"unpack\": \"doubleword\" }", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, k4, kDoubleWordAlignment));
   }
 
   TEST_F(JsonTextureAlignmentTest, Test_UnpackIsRow) {
     json::Document doc;
-    ASSERT_TRUE(json::ParseJson(doc, "{ \"unpack\": \"row\" }"));
+    ASSERT_TRUE(json::ParseRawJson("{ \"unpack\": \"row\" }", doc));
     JsonPixelStoreAlignment alignment(doc);
     ASSERT_TRUE(IsPixelStoreAlignment((const PixelStoreAlignment&) alignment, k4, kRowAlignment));
   }

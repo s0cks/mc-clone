@@ -1,15 +1,19 @@
 #ifndef MCC_TEXTURE_H
 #define MCC_TEXTURE_H
 
+#include <optional>
 #include "mcc/gfx.h"
 #include "mcc/uri.h"
+#include "mcc/json.h"
 #include "mcc/platform.h"
 #include "mcc/resource/resource.h"
 
 #include "mcc/texture/texture_id.h"
 #include "mcc/texture/texture_events.h"
+#include "mcc/texture/texture_loader.h"
 #include "mcc/texture/texture_options.h"
 #include "mcc/texture/texture_constants.h"
+
 
 namespace mcc {
   namespace texture {
@@ -21,6 +25,49 @@ namespace mcc {
     typedef Reference<Texture> TextureRef;
   }
   using res::TextureRef;
+
+  namespace json {
+    template<const bool Const>
+    class TextureObject {
+    public:
+      static constexpr const auto kFilePropertyName = "file"; //TODO: move to tex1d,tex2d,tex3d
+      static constexpr const auto kFilterPropertyName = "filter";
+      static constexpr const auto kWrapPropertyName = "wrap";
+    private:
+      typedef GenericObject<Const, Document::ValueType> ObjectType;
+    protected:
+      const ObjectType& value_;
+    
+      explicit TextureObject(const ObjectType& value):
+        value_(value) {
+      }
+
+      inline const ObjectType& value() const {
+        return value_;
+      }
+    protected:
+      inline std::optional<const Value*>
+      GetProperty(const char* name) const {
+        if(!value().HasMember(name))
+          return std::nullopt;
+        return { &value()[name] };
+      }
+    public:
+      virtual ~TextureObject() = default;
+
+      virtual std::optional<const Value*> GetFileProperty() const {
+        return GetProperty(kFilePropertyName);
+      }
+
+      virtual std::optional<const Value*> GetFilterProperty() const {
+        return GetProperty(kFilterPropertyName);
+      }
+
+      virtual std::optional<const Value*> GetWrapProperty() const {
+        return GetProperty(kWrapPropertyName);
+      }
+    };
+  }
 
   namespace texture {
     rx::observable<TextureEvent*> OnTextureEvent();
@@ -54,6 +101,7 @@ namespace mcc {
                     public res::ResourceTemplate<res::kTextureType>  {
       friend class TextureBindScope;
       friend class TextureBuilder;
+      friend class TextureBuilderBase;
     public:
       static rx::observable<TextureId> GenerateTextureId(const int num = 1);
     protected:
@@ -156,101 +204,11 @@ namespace mcc {
         return Target;
       }
     };
-
-    class Texture2D : public TextureTemplate<k2D> {
-    public:
-      explicit Texture2D(const TextureId id):
-        TextureTemplate<k2D>(id) {
-      }
-      ~Texture2D() override = default;
-    public:
-      static inline TextureRef
-      New(const TextureId id) {
-        return TextureRef(new Texture2D(id));
-      }
-
-      static TextureRef New(const uri::Uri& uri);
-      
-      static inline TextureRef
-      New(const uri::basic_uri& uri) {
-        auto target = uri;
-        if(!StartsWith(target, "texture"))
-          target = fmt::format("texture://{0:s}", uri);
-        return New(uri::Uri(target));
-      }
-    };
-
-    class Texture3D : public TextureTemplate<k3D> {
-    protected:
-      explicit Texture3D(const TextureId id):
-        TextureTemplate<k3D>(id) {
-      }
-    public:
-      ~Texture3D() override = default;
-    public:
-      static TextureRef New(const uri::Uri& uri);
-      
-      static inline TextureRef
-      New(const uri::basic_uri& uri) {
-        return New(uri::Uri(uri));
-      }
-    };
-
-    enum CubeMapFace {
-      kRightFace  = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-      kLeftFace   = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-      kTopFace    = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-      kBottomFace = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      kBackFace   = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-      kFrontFace  = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-      kNumberOfCubeMapFaces,
-    };
-
-    static inline const char*
-    ToString(const CubeMapFace& rhs) {
-      switch(rhs) {
-        case kRightFace:
-          return "right";
-        case kLeftFace:
-          return "left";
-        case kTopFace:
-          return "top";
-        case kBottomFace:
-          return "bottom";
-        case kBackFace:
-          return "back";
-        case kFrontFace:
-          return "front";
-        default:
-          return "Unknown";
-      }
-    }
-
-    static inline std::ostream& operator<<(std::ostream& stream, const CubeMapFace& rhs) {
-      switch(rhs) {
-        case kRightFace: return stream << "Right";
-        case kLeftFace: return stream << "Left";
-        case kTopFace: return stream << "Top";
-        case kBottomFace: return stream << "Bottom";
-        case kBackFace: return stream << "Back";
-        case kFrontFace: return stream << "Front";
-        default: return stream << "Unknown";
-      }
-    }
-
-    class CubeMap : public TextureTemplate<kCubeMap> {
-    public:
-      static TextureRef New(const uri::Uri& uri);
-      
-      static inline TextureRef
-      New(const uri::basic_uri& uri) {
-        return New(uri::Uri(uri));
-      }
-    };
   }
-  using texture::Texture2D;
-  using texture::Texture3D;
-  using texture::CubeMap;
 }
+
+#include "mcc/texture/texture_2d.h"
+#include "mcc/texture/texture_3d.h"
+#include "mcc/texture/cube_map.h"
 
 #endif //MCC_TEXTURE_H

@@ -40,12 +40,24 @@ namespace mcc::json {
       return value_[kTypePropertyName];
     }
 
+    std::string GetType() const {
+      const auto& type = GetTypeProperty();
+      MCC_ASSERT(type.IsString());
+      return std::string(type.GetString(), type.GetStringLength());
+    }
+
     bool HasNameProperty() const {
       return value_.HasMember(kNamePropertyName);
     }
 
     const Value& GetNameProperty() const {
       return value_[kNamePropertyName];
+    }
+
+    std::string GetName() const {
+      const auto& name = GetNameProperty();
+      MCC_ASSERT(name.IsString());
+      return std::string(name.GetString(), name.GetStringLength());
     }
 
     bool HasSpecProperty() const {

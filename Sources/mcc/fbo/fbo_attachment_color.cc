@@ -3,10 +3,8 @@
 #include <sstream>
 
 #include "mcc/fbo/fbo.h"
-#include "mcc/texture/texture_builder.h"
-#include "mcc/texture/texture_factory.h"
-
 #include "mcc/render/render_settings.h"
+#include "mcc/texture/texture_builder.h"
 
 namespace mcc::fbo {
   std::string ColorAttachment::ToString() const {
@@ -32,10 +30,7 @@ namespace mcc::fbo {
     builder.SetFilter(texture::kLinearFilter);
     builder.SetWrap(texture::kClampToEdgeWrap);
     builder.SetType(GL_UNSIGNED_BYTE);
-    const auto texture = builder.Build()
-      .as_blocking()
-      .first();
-    MCC_ASSERT(texture);
+    const auto texture = Texture2d::New(builder);
     return new ColorAttachment(texture, size, level);
   }
 

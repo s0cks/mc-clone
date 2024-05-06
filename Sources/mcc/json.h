@@ -27,16 +27,12 @@ namespace mcc::json {
   bool ParseJson(FILE* file, Document& doc);
   bool ParseJson(const uri::Uri& uri, Document& doc);
 
-  bool ParseJson(Document& doc, const std::string& value);
-
   static inline bool
-  ParseJson(const std::string& filename, Document& doc) {
-    DLOG(INFO) << "parsing json from " << filename;
-    auto file = fopen(filename.c_str(), "rb");
-    if(!file)
-      return false;
-    return ParseJson(file, doc);
+  ParseJson(const uri::basic_uri& uri, Document& doc) {
+    return ParseJson(uri::Uri(uri), doc);
   }
+
+  bool ParseRawJson(const std::string& json, Document& doc);
 
   static constexpr const auto kDefaultJsonFileBufferSize = 4096;
   rx::observable<DocumentPtr> ParseDocument(FILE* file, const int buffer_size = kDefaultJsonFileBufferSize);

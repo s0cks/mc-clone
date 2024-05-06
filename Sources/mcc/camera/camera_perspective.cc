@@ -56,6 +56,11 @@ namespace mcc::camera {
     data_(data) {
   }
 
+  PerspectiveCamera::PerspectiveCamera():
+    Camera(),
+    data_() {
+  }
+
   PerspectiveCamera::~PerspectiveCamera() {
     if(on_mouse_moved_.is_subscribed())
       on_mouse_moved_.unsubscribe();
@@ -96,8 +101,11 @@ namespace mcc::camera {
 
   static inline PerspectiveCamera*
   CreatePerspectiveCamera() {
-    NOT_IMPLEMENTED(FATAL); //TODO: implement
-    return nullptr;
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    const auto viewport_size = window->GetSize();
+    const auto data = PerspectiveCameraData(viewport_size, PerspectiveCamera::kDefaultFront, PerspectiveCamera::kDefaultPos, PerspectiveCamera::kDefaultUp);
+    return new PerspectiveCamera(data);
   }
 
   PerspectiveCamera* GetPerspectiveCamera() {

@@ -1,11 +1,12 @@
 {
+  "name": "space_nebulas",
   "type": "cubemap",
-  "minFilter": "linear",
-  "magFilter": "linear",
-  "left": "left.png",
-  "right": "right.png",
-  "bottom": "top.png",
-  "top": "bottom.png",
-  "front": "front.png",
-  "back": "back.png"
+  "spec": {
+    "left": "left.png",
+    "right": "right.png",
+    "bottom": "top.png",
+    "top": "bottom.png",
+    "front": "front.png",
+    "back": "back.png"
+  }
 }

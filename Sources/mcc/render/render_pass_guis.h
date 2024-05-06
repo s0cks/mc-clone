@@ -5,12 +5,14 @@
 #include "mcc/render/render_pass.h"
 
 #include "mcc/program/program.h"
+#include "mcc/texture/texture.h"
 #include "mcc/camera/camera_ortho.h"
 
 namespace mcc::render {
   class RenderPassGuis : public RenderPass { //TODO: rename
   protected:
     ProgramRef prog_;
+    Texture* texture_;
   public:
     RenderPassGuis();
     ~RenderPassGuis() override = default;

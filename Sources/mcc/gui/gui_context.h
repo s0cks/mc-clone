@@ -13,6 +13,7 @@
 namespace mcc::gui {
   struct Vertex {
     glm::vec3 pos;
+    glm::vec2 uv;
     Color color;
     
     Vertex() = default;
@@ -24,6 +25,7 @@ namespace mcc::gui {
     friend std::ostream& operator<<(std::ostream& stream, const Vertex& rhs) {
       stream << "gui::Vertex(";
       stream << "pos=" << glm::to_string(rhs.pos) << ", ";
+      stream << "uv=" << glm::to_string(rhs.uv) << ", ";
       stream << "color=" << glm::to_string(rhs.color);
       stream << ")";
       return stream;
@@ -33,7 +35,8 @@ namespace mcc::gui {
   typedef std::vector<Vertex> VertexList;
 
   class PosAttr : public vbo::Vec3fAttribute<0, sizeof(Vertex), offsetof(Vertex, pos)>{};
-  class ColorAttr : public vbo::ColorAttribute<1, sizeof(Vertex), offsetof(Vertex, color)>{};
+  class UvAttr : public vbo::Vec3fAttribute<1, sizeof(Vertex), offsetof(Vertex, uv)>{};
+  class ColorAttr : public vbo::ColorAttribute<2, sizeof(Vertex), offsetof(Vertex, color)>{};
 
   class Context {
     friend class ContextScope;

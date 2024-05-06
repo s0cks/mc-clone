@@ -81,8 +81,26 @@ namespace mcc::img::png {
       memcpy(data->bytes() + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
     }
     png_destroy_read_struct(&png, &info, NULL);
-    DLOG(INFO) << "decoded png from file.";
     return Image::New(type, ImageSize(width, height), data);
+  }
+
+  Image* Decode(const uri::Uri& uri) {
+    MCC_ASSERT(Filter(uri));
+    const auto file = uri.OpenFileForReading();
+    if(!file) {
+      DLOG(ERROR) << "failed to open file: " << uri;
+      return nullptr;
+    }
+
+    const auto image = Decode(file);
+    if(!image) {
+      DLOG(ERROR) << "failed to decode png from file: " << uri;
+      return nullptr;
+    }
+
+    const auto error = fclose(file);
+    LOG_IF(FATAL, error == EOF) << "failed to close file: " << uri;
+    return image;
   }
 
   rx::observable<Image*> DecodeAsync(const uri::Uri& uri) {

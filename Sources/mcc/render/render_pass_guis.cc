@@ -39,7 +39,7 @@ namespace mcc::render {
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      shape::NewCenteredRect(vertices_, indices_, glm::vec2(0, 0), glm::vec2(1, 1), window->GetBackground());
+      shape::NewTexturedCenteredRect(vertices_, indices_, glm::vec2(0, 0), glm::vec2(1, 1), window->GetBackground());
       return true;
     }
   };
@@ -104,7 +104,7 @@ namespace mcc::render {
     MCC_ASSERT(num_vertices >= 1);
     DLOG(INFO) << "creating gui vbo w/ " << num_vertices << " vertices....";
     vbo::VboBuilder<gui::Vertex,
-                    gui::PosAttr, gui::ColorAttr> builder(num_vertices, vbo::kDynamicDraw);
+                    gui::PosAttr, gui::UvAttr, gui::ColorAttr> builder(num_vertices, vbo::kDynamicDraw);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();
@@ -154,7 +154,8 @@ namespace mcc::render {
 
   RenderPassGuis::RenderPassGuis():
     RenderPass(),
-    prog_(Program::New("colored_2d")) {
+    prog_(Program::New("textured_2d")),
+    texture_(Texture2d::New("concrete.png")) {
   }
 
   void RenderPassGuis::Render() {
@@ -185,11 +186,14 @@ namespace mcc::render {
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     CHECK_GL(FATAL);
 
+    texture_->Bind0();
+
     const auto camera = camera::GetOrthoCamera();
     MCC_ASSERT(camera);
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
     prog_->Apply();
+    prog_->SetInt("tex", 0);
     prog_->SetMat4("projection", camera->GetProjection());
     prog_->SetMat4("view", camera->GetView());
     prog_->SetMat4("model", model);

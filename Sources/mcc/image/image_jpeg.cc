@@ -49,6 +49,25 @@ namespace mcc::img::jpeg {
     return Image::New(type, size, data);
   }
 
+  Image* Decode(const uri::Uri& uri) {
+    MCC_ASSERT(jpeg::Filter(uri));
+    const auto file = uri.OpenFileForReading();
+    if(!file) {
+      DLOG(ERROR) << "failed to open image: " << uri;
+      return nullptr;
+    }
+
+    const auto image = Decode(file);
+    if(!image) {
+      DLOG(ERROR) << "failed to decode image: " << uri;
+      return nullptr;
+    }
+
+    const auto error = fclose(file);
+    LOG_IF(FATAL, error == EOF) << "failed to close file: " << uri;
+    return image;
+  }
+
   rx::observable<Image*> DecodeAsync(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension(".jpeg") || uri.HasExtension(".jpg"));
@@ -66,7 +85,7 @@ namespace mcc::img::jpeg {
         s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
         return;
       }
-      s.on_next(image);
+      s.on_next(image); //TODO: flcose file and check result
       s.on_completed();
     });
   }
