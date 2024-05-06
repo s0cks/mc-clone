@@ -42,8 +42,6 @@ namespace mcc::render {
     vao::VaoBindScope vao_scope(vao);
     vbo::VboDrawScope draw_scope(vbo);
     program_->Apply();
-    program_->SetMat4("projection", camera->GetProjection());
-    program_->SetMat4("view", camera->GetView());
     program_->SetMat4("model", model);
     program_->SetInt("tex", 0);
     program_scope.Bind("Camera", camera->GetUbo());
