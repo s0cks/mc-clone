@@ -65,6 +65,10 @@ namespace mcc::camera {
     });
     ubo_ = builder.Build();
     LOG_IF(ERROR, !ubo_) << "failed to create PerspectiveCameraData ubo.";
+    on_mouse_moved_ = mouse::OnMouseMoveEvent()
+      .subscribe([this](mouse::MouseMoveEvent* event) {
+        return OnMouseMoved(event);
+      });
   }
 
   PerspectiveCamera::~PerspectiveCamera() {
@@ -91,6 +95,7 @@ namespace mcc::camera {
     data_.front = glm::normalize(front);
     data_.right = glm::normalize(glm::cross(data_.front, data_.up));
     data_.up = glm::normalize(glm::cross(data_.right, data_.front));
+    data_.view = data_.CalculateView();
   }
 
   void PerspectiveCamera::OnKeyPressed(const keyboard::KeyCode code) {
@@ -101,7 +106,14 @@ namespace mcc::camera {
   }
 
   void PerspectiveCamera::OnMouseMoved(const mouse::MouseMoveEvent* event) {
-
+    const auto& delta = event->delta();
+    data_.yaw += (delta[0] * data_.sensitivity);
+    data_.pitch -= (delta[1] * data_.sensitivity);
+    if(data_.pitch > 89.0f)
+      data_.pitch = 89.0f;
+    else if(data_.pitch < -89.0f)
+      data_.pitch = -89.0f;
+    Update();
   }
 
   std::string PerspectiveCamera::ToString() const {
