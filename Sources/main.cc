@@ -37,6 +37,8 @@
 
 #include "mcc/skybox/skybox.h"
 
+#include "mcc/mouse/mouse_flags.h"
+
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
 LogEvent() {
@@ -77,6 +79,7 @@ public:
 };
 
 int main(int argc, char** argv) {
+  using namespace mcc;
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
@@ -93,7 +96,7 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GLFW_TRUE);
 #endif
-  mcc::gfx::EnableDebug();
+  gfx::EnableDebug();
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
   glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
@@ -106,7 +109,6 @@ int main(int argc, char** argv) {
   glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
-  using namespace mcc;
   font::Initialize();
   Window::Init();
   mouse::InitMouse();

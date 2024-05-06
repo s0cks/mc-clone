@@ -38,7 +38,7 @@ namespace mcc {
     OnWindowFocus(WindowHandle* handle, int focused) {
       const auto window = GetGlfwWindow(handle);
       MCC_ASSERT(window);
-      return window->Publish<WindowFocusEvent>(window, static_cast<bool>(focused));
+      return window->SetFocused(static_cast<bool>(focused));
     }
 
     static inline void

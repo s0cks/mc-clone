@@ -2,6 +2,7 @@
 #define MCC_WINDOW_H
 
 #include "mcc/window/monitor.h"
+#include "mcc/relaxed_atomic.h"
 #include "mcc/window/window_glfw.h"
 #include "mcc/window/window_events.h"
 
@@ -50,6 +51,7 @@ namespace mcc {
   protected:
     WindowHandle* handle_;
     rx::subscription sub_post_render_;
+    RelaxedAtomic<bool> focused_;
 
     explicit Window(WindowHandle* handle);
 
@@ -65,6 +67,15 @@ namespace mcc {
     Publish(Args... args) {
       E event(args...);
       return Publish((WindowEvent*) &event);
+    }
+
+    inline void SetFocused(const bool value = true) {
+      focused_ = value;
+      Publish<WindowFocusEvent>(this, value);
+    }
+    
+    inline void SetUnfocused() {
+      return SetFocused(false);
     }
   public:
     virtual ~Window() {
@@ -83,6 +94,10 @@ namespace mcc {
     virtual void Open() = 0;
     virtual void Close() = 0;
     virtual void SwapBuffers() = 0;
+
+    bool IsFocused() const {
+      return (bool) focused_;
+    }
 
     inline WindowSize GetSize() const {
       return GetWindowSize(handle());

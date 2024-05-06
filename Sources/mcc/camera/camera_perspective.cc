@@ -123,6 +123,10 @@ namespace mcc::camera {
   }
 
   void PerspectiveCamera::OnMouseMoved(const mouse::MouseMoveEvent* event) {
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    if(!window->IsFocused())
+      return;
     const auto& delta = event->delta();
     data_.yaw += (delta[0] * data_.sensitivity);
     data_.pitch -= (delta[1] * data_.sensitivity);

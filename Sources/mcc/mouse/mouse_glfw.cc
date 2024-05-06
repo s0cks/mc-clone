@@ -4,7 +4,16 @@
 #include "mcc/window/window.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/mouse/mouse_flags.h"
+
 namespace mcc::mouse {
+  static inline int
+  GetCursorMode() {
+    if(IsCursorHidden())
+      return GLFW_CURSOR_HIDDEN;
+    return GLFW_CURSOR_NORMAL;
+  }
+
   GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
     Mouse(engine),
     window_(window),
@@ -13,6 +22,7 @@ namespace mcc::mouse {
     pos_(),
     last_pos_(),
     delta_() {
+    glfwSetInputMode(window->handle(), GLFW_CURSOR, GetCursorMode());
     for(auto idx = 0; idx < kNumberOfMouseButtons; idx++)
       buttons_.insert(MouseButton(idx));
   }
@@ -60,11 +70,18 @@ namespace mcc::mouse {
   }
 
   void GlfwMouse::OnPreTick(engine::PreTickEvent* event) {
+    const auto window = Window::Get();
+    if(!window || !window->IsFocused())
+      return; // skip
+
+    const auto window_size = window->GetSize();
     const auto handle = Window::Get()->handle();
     pos_ = GetCursorPosition();
+    if(Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
+      SetCursorPos(pos_);
     delta_ = (pos_ - last_pos_);
     if(HasMotion(delta_))
-      PublishEvent<MouseMoveEvent>(this, CalculateNDC(pos_), CalculateNDC(last_pos_), delta_);
+      PublishEvent<MouseMoveEvent>(this, pos_, last_pos_, delta_);
     last_pos_ = pos_;
 
     for(const auto& btn : buttons_) {

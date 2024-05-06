@@ -23,7 +23,8 @@ namespace mcc {
 
   Window::Window(WindowHandle* handle):
     handle_(handle),
-    sub_post_render_() {
+    sub_post_render_(),
+    focused_(false) {
     sub_post_render_ = render::OnRenderEvent()
       .filter(render::PostRenderEvent::Filter)
       .map(render::PostRenderEvent::Cast)
