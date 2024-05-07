@@ -1,6 +1,7 @@
 #ifndef MCC_SHADER_H
 #define MCC_SHADER_H
 
+#include <optional>
 #include "mcc/uri.h"
 #include "mcc/reference.h"
 #include "mcc/resource/resource.h"
@@ -8,7 +9,6 @@
 #include "mcc/shader/shader_id.h"
 #include "mcc/shader/shader_type.h"
 #include "mcc/shader/shader_events.h"
-
 #include "mcc/shader/shader_registry.h"
 
 namespace mcc {
@@ -86,10 +86,9 @@ namespace mcc {
         return id_;
       }
 
-#define DEFINE_TYPE_CHECK(Name, Ext, GlValue)       \
-      inline bool Is##Name##Shader() const {        \
-        return GetType() == k##Name##Shader;        \
-      }
+#define DEFINE_TYPE_CHECK(Name, Ext, GlValue)                             \
+      virtual Name##Shader* As##Name##Shader() { return nullptr; }        \
+      bool Is##Name##Shader() { return As##Name##Shader() != nullptr; }
       FOR_EACH_SHADER_TYPE(DEFINE_TYPE_CHECK)
 #undef DEFINE_TYPE_CHECK
 
@@ -103,6 +102,8 @@ namespace mcc {
       }
       FOR_EACH_SHADER_EVENT(DEFINE_ON_SHADER_EVENT)
 #undef DEFINE_ON_SHADER_EVENT
+    public:
+      static Shader* New(const uri::Uri& uri);
     };
 
     template<const ShaderType Type>
@@ -124,17 +125,18 @@ namespace mcc {
       }
     };
 
-#define DECLARE_SHADER_TYPE(Name)                                 \
-    public:                                                       \
-      std::string ToString() const override;                      \
-    private:                                                      \
-      static Name##Shader* New(const ShaderId id);                \
-    public:                                                       \
-      static Name##Shader* New(ShaderCode* code);                 \
-      static Name##Shader* New(const uri::Uri& uri);              \
-      static inline Name##Shader*                                 \
-      New(const uri::basic_uri& uri) {                            \
-        return New(uri::Uri(uri));                                \
+#define DECLARE_SHADER_TYPE(Name)                                   \
+    public:                                                         \
+      std::string ToString() const override;                        \
+      Name##Shader* As##Name##Shader() override { return this; }    \
+    private:                                                        \
+      static Name##Shader* New(const ShaderId id);                  \
+    public:                                                         \
+      static Name##Shader* New(ShaderCode* code);                   \
+      static Name##Shader* New(const uri::Uri& uri);                \
+      static inline Name##Shader*                                   \
+      New(const uri::basic_uri& uri) {                              \
+        return New(uri::Uri(uri));                                  \
       }
 
     class VertexShader : public ShaderTemplate<kVertexShader> {

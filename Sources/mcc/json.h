@@ -15,6 +15,7 @@
 #include "mcc/rx.h"
 #include "mcc/uri.h"
 #include "mcc/common.h"
+#include "mcc/json_flags.h"
 
 namespace mcc::json {
   using namespace rapidjson;

@@ -8,7 +8,6 @@
 #include "mcc/material/material.h"
 #include "mcc/material/material_builder.h"
 #include "mcc/material/material_loader_dir.h"
-#include "mcc/material/material_loader_spec.h"
 
 namespace mcc {
   namespace material {
@@ -69,24 +68,6 @@ namespace mcc {
       NOT_IMPLEMENTED(FATAL); //TODO: implement
     }
 
-    static inline std::optional<std::string>
-    GetMaterialName(const json::SpecDocument& spec) {
-      if(!spec.HasNameProperty())
-        return std::nullopt;
-      const auto& name = spec.GetNameProperty();
-      MCC_ASSERT(name.IsString());
-      return { std::string(name.GetString(), name.GetStringLength()) };
-    }
-
-    static inline std::optional<std::string>
-    GetMaterialType(const json::SpecDocument& spec) {
-      if(!spec.HasTypeProperty())
-        return std::nullopt;
-      const auto& type = spec.GetTypeProperty();
-      MCC_ASSERT(type.IsString());
-      return { std::string(type.GetString(), type.GetStringLength()) };
-    }
-
     Material* Material::New(const uri::Uri& uri) {
       MCC_ASSERT(uri.HasScheme("material"));
       const auto base_path = fmt::format("{0:s}/materials", FLAGS_resources);
@@ -97,14 +78,19 @@ namespace mcc {
           return nullptr;
         }
         const auto new_uri = fmt::format("file://{0:s}", base_uri_path);
-        return MaterialSpecLoader::Load(new_uri);
+        //TODO: return MaterialSpecLoader::Load(new_uri);
+        NOT_IMPLEMENTED(FATAL); //TODO: implement
+        return nullptr;
       }
 
       // check for .json file
       {
         const auto json_path = fmt::format("{0:s}.json", base_uri_path);
-        if(FileExists(json_path))
-          return MaterialSpecLoader::Load(fmt::format("file://{0:s}", json_path));
+        if(FileExists(json_path)) {
+          //TODO: return MaterialSpecLoader::Load(fmt::format("file://{0:s}", json_path));
+          NOT_IMPLEMENTED(FATAL); //TODO: implement
+          return nullptr; 
+        }
       }
 
       const auto name = CreateMaterialName(uri);

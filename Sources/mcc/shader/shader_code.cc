@@ -13,7 +13,7 @@ namespace mcc::shader {
     }
 
     MCC_ASSERT(uri.HasScheme("file"));
-    const auto type = DetectShaderTypeFromExtension(uri.GetPathExtension());
+    const auto type = DetectShaderTypeFromExtension(uri.GetExtension());
     if(!type) {
       DLOG(ERROR) << "cannot determine ShaderType from: " << uri;
       return nullptr;

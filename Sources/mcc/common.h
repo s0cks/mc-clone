@@ -127,6 +127,13 @@ namespace mcc {
     return lhs.size() == rhs.size()
         && std::equal(rhs.begin(), rhs.end(), lhs.begin(), lhs.end(), CharEqualsIgnoreCase);
   }
+
+  static inline void
+  ToLowercase(std::string& value) {
+    std::transform(std::begin(value), std::end(value), std::begin(value), [](const unsigned char c) {
+      return std::tolower(c);
+    });
+  }
 }
 
 #endif //MCC_COMMON_H

@@ -31,9 +31,9 @@ namespace mcc::texture {
     DLOG(INFO) << "creating CubeMap from " << uri << "....";
     MCC_ASSERT(uri.HasScheme("texture"));
     const auto uri_path = fmt::format("{0:s}/textures/{1:s}", FLAGS_resources, uri.path);
-    const auto extension = uri.GetPathExtension();
-    if(extension) {
-      if(EqualsIgnoreCase(*extension, ".json"))
+    const auto extension = uri.GetExtension();
+    if(!extension.empty()) {
+      if(EqualsIgnoreCase(extension, ".json"))
         return JsonCubeMapLoader::Load(uri_path);
       goto invalid_uri;
     }

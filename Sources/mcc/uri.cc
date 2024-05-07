@@ -2,19 +2,33 @@
 #include <unordered_set>
 
 #include "mcc/uri.h"
+#include "mcc/uri_parser.h"
 
 namespace mcc::uri {
+  void SanitizeExtension(std::string& extension) {
+    if(extension[0] == '.')
+      extension = extension.substr(1);
+    ToLowercase(extension);
+  }
+
+  void SanitizePath(std::string& path, const bool root) {
+    if(root && path[0] != '/')
+      path = '/' + path;
+    else if(!root && path[0] == '/')
+      path = path.substr(1);
+  }
+
   static inline bool
-  OnSchemeParsed(const Parser* parser, const std::string& scheme) {
+  OnSchemeParsed(const Parser* parser, const char* scheme, const uint64_t scheme_len) {
     auto uri = (Uri*)parser->data();
-    uri->scheme = scheme;
+    uri->scheme = std::string(scheme, scheme_len);
     return true;
   }
 
   static inline bool
-  OnPathParsed(const Parser* parser, const std::string& path) {
+  OnPathParsed(const Parser* parser, const char* path, const uint64_t path_len) {
     auto uri = (Uri*)parser->data();
-    uri->path = path;
+    uri->path = std::string(path, path_len);
     return true;
   }
 
@@ -41,9 +55,9 @@ namespace mcc::uri {
   }
 
   static inline bool
-  OnFragmentParsed(const Parser* parser, const std::string& value) {
+  OnFragmentParsed(const Parser* parser, const char* fragment, const uint64_t fragment_len) {
     auto uri = (Uri*)parser->data();
-    uri->fragment = value;
+    uri->fragment = std::string(fragment, fragment_len);
     return true;
   }
 
@@ -51,223 +65,248 @@ namespace mcc::uri {
     scheme(),
     path() {
     Parser::Config config = {
-      .OnSchemeParsed = &OnSchemeParsed,
-      .OnPathParsed = &OnPathParsed,
-      .OnQueryParsed0 = &OnQueryParsed0,
-      .OnQueryParsed1 = &OnQueryParsed1,
-      .OnFragmentParsed = &OnFragmentParsed,
+      .OnParseScheme = &OnSchemeParsed,
+      .OnParsePath = &OnPathParsed,
+      .OnParseQuery0 = &OnQueryParsed0,
+      .OnParseQuery1 = &OnQueryParsed1,
+      .OnParseFragment = &OnFragmentParsed,
     };
     Parser parser(config, uri, this);
-    if(!parser.Parse()) {
-      DLOG(ERROR) << "failed to parse uri: " << uri;
-    }
+    LOG_IF(ERROR, !parser.Parse()) << "failed to parse uri: " << uri;
   }
 
-  bool Parser::ParseScheme() {
-    token_len_ = 0;
-    do {
-      auto next = NextChar();
-      switch(next) {
-        case ':': {
-          switch((next = PeekChar())) {
-            case '/':
-              NextChar();
-              switch((next = PeekChar())) {
-                case '/':
-                  NextChar();
-                  break;
-                default:
-                  DLOG(ERROR) << "unexpected token: " << next;
-                  return false;
-              }
-            default:
-              break;
-          }
-          token_[token_len_] = '\0';
-          return token_len_ > 0;
-        }
-        case EOF:
-          DLOG(ERROR) << "unexpected EOF";
-          return false;
-        default: {
-          token_[token_len_++] = next;
-          continue;
-        }
-      }
-    } while(true);
+  bool Uri::HasScheme() const {
+    return !scheme.empty();
   }
 
-  bool Parser::ParsePath() {
-    token_len_ = 0;
-    do {
-      switch(PeekChar()) {
-        case '?':
-        case EOF:
-          token_[token_len_] = '\0';
-          return true;
-        default:
-          token_[token_len_++] = NextChar();
-          continue;
-      }
-    } while(true);
-    return false;
+  bool Uri::HasScheme(const std::string& a) const {
+    return HasScheme() 
+        && EqualsIgnoreCase(scheme, a);
   }
 
-  bool Parser::ParseQueryParameterKey() {
-    token_len_ = 0;
-    do {
-      switch(PeekChar()) {
-        case '#':
-        case '=':
-        case '\0':
-        case EOF:
-          return true;
-        default:
-          token_[token_len_++] = NextChar();
-          continue;
-      }
-    } while(true);
-    return false;
+  bool Uri::HasScheme(const std::string& a,
+                      const std::string& b) const {
+    return HasScheme()
+        && (EqualsIgnoreCase(scheme, a)
+        || EqualsIgnoreCase(scheme, b));
   }
 
-  bool Parser::ParseQueryParameterValue() {
-    token_len_ = 0;
-    do {
-      switch(PeekChar()) {
-        case '&':
-          NextChar();
-        case '#':
-        case '\0':
-        case EOF:
-          return true;
-        default:
-          token_[token_len_++] = NextChar();
-          continue;
-      }
-    } while(true);
-    return false;
+  bool Uri::HasScheme(const std::string& a,
+                      const std::string& b,
+                      const std::string& c) const {
+    return HasScheme()
+        && (EqualsIgnoreCase(scheme, a)
+        || EqualsIgnoreCase(scheme, b)
+        || EqualsIgnoreCase(scheme, c));
   }
 
-  bool Parser::ParseQueryParameter() {
-    if(!ParseQueryParameterKey()) {
-      DLOG(ERROR) << "failed to parse query parameter key.";
+  bool Uri::HasScheme(const std::string& a,
+                      const std::string& b,
+                      const std::string& c,
+                      const std::string& d) const {
+    return HasScheme()
+        && (EqualsIgnoreCase(scheme, a)
+        || EqualsIgnoreCase(scheme, b)
+        || EqualsIgnoreCase(scheme, c)
+        || EqualsIgnoreCase(scheme, d));
+  }
+
+  bool Uri::HasScheme(const std::string& a,
+                      const std::string& b,
+                      const std::string& c,
+                      const std::string& d,
+                      const std::string& e) const {
+    return HasScheme()
+        && (EqualsIgnoreCase(scheme, a)
+        || EqualsIgnoreCase(scheme, b)
+        || EqualsIgnoreCase(scheme, c)
+        || EqualsIgnoreCase(scheme, d)
+        || EqualsIgnoreCase(scheme, e));
+  }
+
+  bool Uri::HasScheme(const std::string& a,
+                      const std::string& b,
+                      const std::string& c,
+                      const std::string& d,
+                      const std::string& e,
+                      const std::string& f) const {
+    return HasScheme()
+        && (EqualsIgnoreCase(scheme, a)
+        || EqualsIgnoreCase(scheme, b)
+        || EqualsIgnoreCase(scheme, c)
+        || EqualsIgnoreCase(scheme, d)
+        || EqualsIgnoreCase(scheme, e)
+        || EqualsIgnoreCase(scheme, f));
+  }
+
+  bool Uri::HasScheme(const std::unordered_set<std::string>& values) const {
+    if(!HasScheme())
       return false;
-    }
-    const auto key = std::string((const char*) token_, token_len_);
-    
-    switch(PeekChar()) {
-      case '=':
-        NextChar();
-        break;
-      case '#':
-      case '\0':
-      case EOF:
-        if(config_.OnQueryParsed0) {
-          if(!config_.OnQueryParsed0(this, num_query_params_++, key))
-            return false;
-        }
-        return true;
-      default:
-        DLOG(ERROR) << "unexpected token: " << NextChar();
-        return false;
-    }
-
-    if(!ParseQueryParameterValue()) {
-      DLOG(ERROR) << "failed to parse query parameter value.";
-      return false;
-    }
-    const auto value = std::string((const char*) token_, token_len_);
-    if(config_.OnQueryParsed1) {
-      if(!config_.OnQueryParsed1(this, num_query_params_++, key, value))
-        return false;
-    }
-    return true;
+    const auto pos = values.find(scheme);
+    return pos != values.end();
   }
 
-  bool Parser::ParseQueryParameterList() {
-    do {
-      switch(PeekChar()) {
-        case '#':
-        case '\0':
-        case EOF:
-          return true;
-        default:
-          if(!ParseQueryParameter()) {
-            DLOG(ERROR) << "failed to parse query: " << std::string((const char*) &buffer_[rpos_], buffer_len_ - rpos_);
-            return false;
-          }
-          continue;
-      }
-    } while(true);
-    return false;
+  bool Uri::HasScheme(const std::set<std::string>& values) const {
+    if(!HasScheme())
+      return false;
+    const auto pos = values.find(scheme);
+    return pos != values.end();
   }
 
-  bool Parser::ParseFragment() {
-    token_len_ = 0;
-    do {
-      switch(PeekChar()) {
-        case '\0':
-        case EOF:
-          return true;
-        default:
-          token_[token_len_++] = NextChar();
-          continue;
-      }
-    } while(true);
-    return false;
+  std::string Uri::GetExtension() const {
+    const auto dotpos = path.find_last_of('.');
+    if(dotpos == std::string::npos)
+      return {};
+    return path.substr(dotpos + 1);
   }
 
-  bool Parser::Parse() {
-    if(!ParseScheme()) {
-      DLOG(ERROR) << "failed to parse scheme.";
-      return false;
-    }
-    const auto scheme = std::string((const char*) token_, token_len_);
-    if(config_.OnSchemeParsed)
-      if(!config_.OnSchemeParsed(this, scheme))
-        return false;
+  bool Uri::HasExtension() const {
+    const auto dotpos = path.find_last_of('.');
+    return dotpos != std::string::npos;
+  }
 
-    if(!ParsePath()) {
-      DLOG(ERROR) << "failed to parse location.";
-      return false;
-    }
-    const auto location = std::string((const char*) token_, token_len_);
-    if(config_.OnPathParsed) {
-      if(!config_.OnPathParsed(this, location))
-        return false;
-    }
+  bool Uri::HasExtension(const std::string& a) const {
+    auto extension = a;
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, GetExtension());
+  }
 
-    do {
-      switch(PeekChar()) {
-        case '?': {
-          NextChar();
-          if(!ParseQueryParameterList()) {
-            DLOG(ERROR) << "failed to parse query.";
-            return false;
-          }
+  bool Uri::HasExtension(const std::string& a,
+                         const std::string& b) const {
+    auto e1 = a;
+    SanitizeExtension(e1);
+    auto e2 = b;
+    SanitizeExtension(e2);
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, e1)
+        || EqualsIgnoreCase(extension, e2);
+  }
+
+  bool Uri::HasExtension(const std::string& a,
+                         const std::string& b,
+                         const std::string& c) const {
+    auto e1 = a;
+    SanitizeExtension(e1);
+    auto e2 = b;
+    SanitizeExtension(e2);
+    auto e3 = c;
+    SanitizeExtension(e3);
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, e1)
+        || EqualsIgnoreCase(extension, e2)
+        || EqualsIgnoreCase(extension, e3);
+  }
+
+  bool Uri::HasExtension(const std::string& a,
+                         const std::string& b,
+                         const std::string& c,
+                         const std::string& d) const {
+    auto e1 = a;
+    SanitizeExtension(e1);
+    auto e2 = b;
+    SanitizeExtension(e2);
+    auto e3 = c;
+    SanitizeExtension(e3);
+    auto e4 = d;
+    SanitizeExtension(e3);
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, e1)
+        || EqualsIgnoreCase(extension, e2)
+        || EqualsIgnoreCase(extension, e3)
+        || EqualsIgnoreCase(extension, e4);
+  }
+
+  bool Uri::HasExtension(const std::string& a,
+                         const std::string& b,
+                         const std::string& c,
+                         const std::string& d,
+                         const std::string& e) const {
+    auto e1 = a;
+    SanitizeExtension(e1);
+    auto e2 = b;
+    SanitizeExtension(e2);
+    auto e3 = c;
+    SanitizeExtension(e3);
+    auto e4 = d;
+    SanitizeExtension(e4);
+    auto e5 = e;
+    SanitizeExtension(e5);
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, e1)
+        || EqualsIgnoreCase(extension, e2)
+        || EqualsIgnoreCase(extension, e3)
+        || EqualsIgnoreCase(extension, e4)
+        || EqualsIgnoreCase(extension, e5);
+  }
+
+  bool Uri::HasExtension(const std::string& a,
+                         const std::string& b,
+                         const std::string& c,
+                         const std::string& d,
+                         const std::string& e,
+                         const std::string& f) const {
+    auto e1 = a;
+    SanitizeExtension(e1);
+    auto e2 = b;
+    SanitizeExtension(e2);
+    auto e3 = c;
+    SanitizeExtension(e3);
+    auto e4 = d;
+    SanitizeExtension(e4);
+    auto e5 = e;
+    SanitizeExtension(e5);
+    auto e6 = f;
+    SanitizeExtension(e6);
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    return EqualsIgnoreCase(extension, e1)
+        || EqualsIgnoreCase(extension, e2)
+        || EqualsIgnoreCase(extension, e3)
+        || EqualsIgnoreCase(extension, e4)
+        || EqualsIgnoreCase(extension, e5)
+        || EqualsIgnoreCase(extension, e6);
+  }
+
+  bool Uri::HasExtension(const std::set<std::string>& extensions) const {
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    const auto pos = extensions.find(extension);
+    return pos != extensions.end();
+  }
+
+  bool Uri::HasExtension(const std::unordered_set<std::string>& extensions) const {
+    auto extension = GetExtension();
+    SanitizeExtension(extension);
+    const auto pos = extensions.find(extension);
+    return pos != extensions.end();
+  }
+
+  std::string Uri::ToString() const {
+    std::stringstream stream;
+    stream << "Uri(";
+    stream << "scheme=" << scheme << ", ";
+    stream << "path=" << path;
+    if(HasQuery()) {
+      stream << ", query=[";
+      bool first = true;
+      for(const auto& [ key, value ] : query) {
+        if(!first)
+          stream << ", ";
+        stream << key << "=" << value;
+        if(first) {
+          first = false;
           continue;
         }
-        case '#': {
-          NextChar();
-          if(!ParseFragment()) {
-            DLOG(ERROR) << "failed to parse fragment.";
-            return false;
-          }
-          const auto fragment = std::string((const char*) token_, token_len_);
-          if(config_.OnFragmentParsed) {
-            if(!config_.OnFragmentParsed(this, fragment))
-              return false;
-          }
-          continue;
-        }
-        case EOF:
-        case '\0':
-          return true;
-        default:
-          DLOG(ERROR) << "unexpected token: " << NextChar();
-          return false;
       }
-    } while(true);
-    return false;
+      stream << "]";
+    }
+    if(HasFragment())
+      stream << ", fragment=" << fragment;
+    stream << ")";
+    return stream.str();
   }
 }

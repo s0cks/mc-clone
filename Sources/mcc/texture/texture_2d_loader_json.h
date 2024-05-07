@@ -2,13 +2,14 @@
 #define MCC_TEXTURE_2D_LOADER_JSON_H
 
 #include "mcc/texture/texture.h"
+#include "mcc/texture/texture_json.h"
 
 namespace mcc::texture {
   class JsonTexture2dLoader : public Texture2dLoader {
   protected:
-    json::ConstTexture2dObject doc_;
+    json::ConstTextureObject doc_;
 
-    inline const json::ConstTexture2dObject& doc() const {
+    inline const json::ConstTextureObject& doc() const {
       return doc_;
     }
   public:

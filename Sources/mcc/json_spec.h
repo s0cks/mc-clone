@@ -4,70 +4,113 @@
 #include "mcc/json.h"
 
 namespace mcc::json {
-  class SpecObject {
+  template<const bool IsConst>
+  class GenericSpecObject {
+  private:
+    typedef json::GenericObject<IsConst, Document::ValueType> ObjectType;
   protected:
-    const json::Object& value_;
+    ObjectType value_;
 
-    explicit SpecObject(const json::Object& value):
+    explicit GenericSpecObject(const ObjectType& value):
       value_(value) {
     }
 
-    inline const json::Object&
+    inline const ObjectType&
     value() const {
       return value_;
     }
   public:
-    virtual ~SpecObject() = default;
-  };
+    GenericSpecObject() = default;
+    GenericSpecObject(const GenericSpecObject<IsConst>& rhs) = default;
+    virtual ~GenericSpecObject() = default;
 
-  class SpecDocument : public SpecObject {
+    GenericSpecObject<IsConst>& operator=(const GenericSpecObject<IsConst>& rhs) = default;
+  };
+  typedef GenericSpecObject<true> ConstSpecObject;
+  typedef GenericSpecObject<false> SpecObject;
+
+  template<typename T, const bool IsConst>
+  class GenericSpecDocument : public GenericSpecObject<IsConst> {
   public:
     static constexpr const auto kTypePropertyName = "type";
     static constexpr const auto kNamePropertyName = "name";
-    static constexpr const auto kSpecPropertyName = "spec";
+    static constexpr const auto kDataPropertyName = "data";
+  private:
+    typedef json::GenericObject<IsConst, Document::ValueType> ObjectType;
   public:
-    explicit SpecDocument(const json::Object& value):
-      SpecObject(value) {
+    GenericSpecDocument() = default;
+    explicit GenericSpecDocument(const ObjectType& value):
+      GenericSpecObject<IsConst>(value) {
     }
-    ~SpecDocument() override = default;
+    GenericSpecDocument(const GenericSpecDocument<T, IsConst>& rhs) = default;
+    ~GenericSpecDocument() override = default;
 
-    bool HasTypeProperty() const {
-      return value_.HasMember(kTypePropertyName);
-    }
-
-    const Value& GetTypeProperty() const {
-      MCC_ASSERT(HasTypeProperty());
-      return value_[kTypePropertyName];
+    std::optional<const Value*> GetTypeProperty() const {
+      if(!GenericSpecObject<IsConst>::value_.HasMember(kTypePropertyName))
+        return std::nullopt;
+      return { &GenericSpecObject<IsConst>::value_[kTypePropertyName] };
     }
 
     std::string GetType() const {
-      const auto& type = GetTypeProperty();
-      MCC_ASSERT(type.IsString());
-      return std::string(type.GetString(), type.GetStringLength());
+      const auto type = GetTypeProperty();
+      MCC_ASSERT((*type)->IsString());
+      return std::string((*type)->GetString(), (*type)->GetStringLength());
     }
 
-    bool HasNameProperty() const {
-      return value_.HasMember(kNamePropertyName);
-    }
-
-    const Value& GetNameProperty() const {
-      return value_[kNamePropertyName];
+    std::optional<const Value*> GetNameProperty() const {
+      if(!GenericSpecObject<IsConst>::value_.HasMember(kNamePropertyName))
+        return std::nullopt;
+      return { &GenericSpecObject<IsConst>::value_[kNamePropertyName] };
     }
 
     std::string GetName() const {
-      const auto& name = GetNameProperty();
-      MCC_ASSERT(name.IsString());
-      return std::string(name.GetString(), name.GetStringLength());
+      const auto name = GetNameProperty();
+      MCC_ASSERT(name && (*name)->IsString());
+      return std::string((*name)->GetString(), (*name)->GetStringLength());
     }
 
-    bool HasSpecProperty() const {
-      return value_.HasMember(kSpecPropertyName);
+    std::optional<const Value*> GetDataProperty() const {
+      if(!GenericSpecObject<IsConst>::value_.HasMember(kDataPropertyName))
+        return std::nullopt;
+      return { &GenericSpecObject<IsConst>::value_[kDataPropertyName] };
     }
 
-    const Value& GetSpecProperty() const {
-      MCC_ASSERT(HasSpecProperty());
-      return value_[kSpecPropertyName];
+    T GetData() const {
+      const auto data = GetDataProperty();
+      MCC_ASSERT(data && (*data)->IsObject());
+      const auto value = (*data)->GetObject();
+      return T(value);
     }
+
+    GenericSpecDocument<T, IsConst>& operator=(const GenericSpecDocument<T, IsConst>& rhs) = default;
+  };
+
+  template<class T>
+  class ConstSpecDocument : public GenericSpecDocument<T, true> {
+  private:
+    typedef json::GenericObject<true, Document::ValueType> ObjectType;
+  public:
+    ConstSpecDocument() = default;
+    explicit ConstSpecDocument(const ObjectType& value):
+      GenericSpecDocument<T, true> (value) {
+    }
+    ConstSpecDocument(const ConstSpecDocument<T>& rhs) = default;
+    ~ConstSpecDocument() override = default;
+    ConstSpecDocument<T>& operator=(const ConstSpecDocument<T>& rhs) = default;
+  };
+
+  template<class T>
+  class SpecDocument : public GenericSpecDocument<T, false> {
+  private:
+    typedef json::GenericObject<false, Document::ValueType> ObjectType;
+  public:
+    SpecDocument() = default;
+    explicit SpecDocument(const ObjectType& value):
+      GenericSpecDocument<T, false> (value) {
+    }
+    SpecDocument(const SpecDocument<T>& rhs) = default;
+    ~SpecDocument() override = default;
+    SpecDocument<T>& operator=(const SpecDocument<T>& rhs) = default;
   };
 }
 

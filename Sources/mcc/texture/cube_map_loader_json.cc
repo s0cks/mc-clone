@@ -1,6 +1,7 @@
 #include "mcc/texture/cube_map_loader_json.h"
 #include "mcc/json_spec.h"
 #include "mcc/texture/texture.h"
+#include "mcc/texture/cube_map_json.h"
 #include "mcc/texture/cube_map_builder.h"
 
 namespace mcc {
@@ -89,17 +90,13 @@ namespace mcc::texture {
     }
 
     MCC_ASSERT(doc.IsObject());
-    json::SpecDocument spec(doc.GetObject());
+    json::SpecDocument<json::ConstCubeMapObject> spec(doc.GetObject());
     const auto name = spec.GetName();
     const auto type = spec.GetType();
     MCC_ASSERT(EqualsIgnoreCase(type, "cubemap"));
-    MCC_ASSERT(spec.HasSpecProperty());
-    const auto& spec_prop = spec.GetSpecProperty();
-    MCC_ASSERT(spec_prop.IsObject());
-    const auto spec_prop_obj = spec_prop.GetObject();
+    const auto cube_map = spec.GetData();
 
     CubeMapBuilder builder;
-    json::ConstCubeMapObject cube_map(spec_prop_obj);
     const auto top = cube_map.GetTopProperty();
     if(top) {
       json::CubeMapFaceValue value(kTop, *top);

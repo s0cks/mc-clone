@@ -9,21 +9,6 @@
 #include "mcc/texture/texture_builder.h"
 
 namespace mcc {
-  namespace json {
-    template<const bool Const>
-    class GenericTexture2dObject : public TextureObject<Const> {
-    private:
-      typedef GenericObject<Const, Document::ValueType> ObjectType;
-    public:
-      explicit GenericTexture2dObject(const ObjectType& value):
-        TextureObject<Const>(value) {
-      }
-      ~GenericTexture2dObject() override = default;
-    };
-    typedef GenericTexture2dObject<true> ConstTexture2dObject;
-    typedef GenericTexture2dObject<false> Texture2dObject;
-  }
-
   namespace texture {
     class Texture2d : public TextureTemplate<k2D> {
     public:

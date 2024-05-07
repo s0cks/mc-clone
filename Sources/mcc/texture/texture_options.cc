@@ -16,7 +16,7 @@ namespace mcc::texture {
     ~DefaultTextureOptionsFactory() override = default;
 
     bool CreateTextureOptions(const uri::Uri& uri, TextureOptions& results) override {
-      const auto ext = uri.GetPathExtension();
+      const auto ext = uri.GetExtension();
 
       DLOG(ERROR) << "failed to initialize TextureOptions for: " << uri;
       return false;

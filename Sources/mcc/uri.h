@@ -1,6 +1,7 @@
 #ifndef MCC_URI_H
 #define MCC_URI_H
 
+#include <set>
 #include <cstdio>
 #include <string>
 #include <optional>
@@ -9,15 +10,14 @@
 
 #include "mcc/rx.h"
 #include "mcc/murmur.h"
-#include "mcc/parser.h"
 #include "mcc/common.h"
 
 namespace mcc {
   namespace uri {
-    typedef std::string basic_uri;
+    void SanitizePath(std::string& value, const bool root = true);
+    void SanitizeExtension(std::string& value);
 
-    typedef rx::observable<FILE*> FilePointerObservable;
-    
+    typedef std::string basic_uri;
     class Parser;
     struct Uri {
     public:
@@ -43,76 +43,30 @@ namespace mcc {
       Uri(const Uri& rhs) = default;
       ~Uri() = default;
 
-      bool HasScheme() const {
-        return !scheme.empty();
-      }
-
-      bool HasScheme(const std::string& a) const {
-        return HasScheme() 
-            && EqualsIgnoreCase(scheme, a);
-      }
-
+      bool HasScheme() const;
+      bool HasScheme(const std::string& a) const;
       bool HasScheme(const std::string& a,
-                     const std::string& b) const {
-        return HasScheme()
-            && (EqualsIgnoreCase(scheme, a)
-            || EqualsIgnoreCase(scheme, b));
-      }
-
+                     const std::string& b) const;
       bool HasScheme(const std::string& a,
                      const std::string& b,
-                     const std::string& c) const {
-        return HasScheme()
-            && (EqualsIgnoreCase(scheme, a)
-            || EqualsIgnoreCase(scheme, b)
-            || EqualsIgnoreCase(scheme, c));
-      }
-
+                     const std::string& c) const;
       bool HasScheme(const std::string& a,
                      const std::string& b,
                      const std::string& c,
-                     const std::string& d) const {
-        return HasScheme()
-            && (EqualsIgnoreCase(scheme, a)
-            || EqualsIgnoreCase(scheme, b)
-            || EqualsIgnoreCase(scheme, c)
-            || EqualsIgnoreCase(scheme, d));
-      }
-
+                     const std::string& d) const;
       bool HasScheme(const std::string& a,
                      const std::string& b,
                      const std::string& c,
                      const std::string& d,
-                     const std::string& e) const {
-        return HasScheme()
-            && (EqualsIgnoreCase(scheme, a)
-            || EqualsIgnoreCase(scheme, b)
-            || EqualsIgnoreCase(scheme, c)
-            || EqualsIgnoreCase(scheme, d)
-            || EqualsIgnoreCase(scheme, e));
-      }
-
+                     const std::string& e) const;
       bool HasScheme(const std::string& a,
                      const std::string& b,
                      const std::string& c,
                      const std::string& d,
                      const std::string& e,
-                     const std::string& f) const {
-        return HasScheme()
-            && (EqualsIgnoreCase(scheme, a)
-            || EqualsIgnoreCase(scheme, b)
-            || EqualsIgnoreCase(scheme, c)
-            || EqualsIgnoreCase(scheme, d)
-            || EqualsIgnoreCase(scheme, e)
-            || EqualsIgnoreCase(scheme, f));
-      }
-
-      bool HasScheme(const std::unordered_set<std::string>& values) const {
-        if(!HasScheme())
-          return false;
-        const auto pos = values.find(scheme);
-        return pos != values.end();
-      }
+                     const std::string& f) const;
+      bool HasScheme(const std::unordered_set<std::string>& values) const;
+      bool HasScheme(const std::set<std::string>& values) const;
 
       bool HasFragment() const {
         return !fragment.empty();
@@ -122,139 +76,37 @@ namespace mcc {
         return !query.empty();
       }
 
-      bool HasExtension() const {
-        const auto dotpos = path.find_last_of('.');
-        return dotpos != std::string::npos;
-      }
-
-      bool HasExtension(const std::string& extension) const {
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto path_extension = path.substr(extension[0] != '.' ? (dotpos + 1) : dotpos);
-        return EqualsIgnoreCase(path_extension, extension);
-      }
-
-      bool HasExtension(const std::set<std::string>& extensions) const {
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto path_extension = path.substr(dotpos + 1);
-        const auto pos = extensions.find(path_extension);
-        return pos != extensions.end();
-      }
-
-      bool HasExtension(const std::unordered_set<std::string>& extensions) const {
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto path_extension = path.substr(dotpos + 1);
-        const auto pos = extensions.find(path_extension);
-        return pos != extensions.end();
-      }
-
+      std::string GetExtension() const;
+      bool HasExtension() const;
+      bool HasExtension(const std::string& a) const;
       bool HasExtension(const std::string& a,
-                        const std::string& b) const {
-        MCC_ASSERT(a[0] == '.');
-        MCC_ASSERT(b[0] == '.');
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto extension = path.substr(dotpos);
-        return EqualsIgnoreCase(extension, a)
-            || EqualsIgnoreCase(extension, b);
-      }
-
+                        const std::string& b) const;
       bool HasExtension(const std::string& a,
                         const std::string& b,
-                        const std::string& c) const {
-        MCC_ASSERT(a[0] == '.');
-        MCC_ASSERT(b[0] == '.');
-        MCC_ASSERT(c[0] == '.');
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto extension = path.substr(dotpos);
-        return EqualsIgnoreCase(extension, a)
-            || EqualsIgnoreCase(extension, b)
-            || EqualsIgnoreCase(extension, c);
-      }
-
+                        const std::string& c) const;
       bool HasExtension(const std::string& a,
                         const std::string& b,
                         const std::string& c,
-                        const std::string& d) const {
-        MCC_ASSERT(a[0] == '.');
-        MCC_ASSERT(b[0] == '.');
-        MCC_ASSERT(c[0] == '.');
-        MCC_ASSERT(d[0] == '.');
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto extension = path.substr(dotpos);
-        return EqualsIgnoreCase(extension, a)
-            || EqualsIgnoreCase(extension, b)
-            || EqualsIgnoreCase(extension, c)
-            || EqualsIgnoreCase(extension, d);
-      }
-
+                        const std::string& d) const;
       bool HasExtension(const std::string& a,
                         const std::string& b,
                         const std::string& c,
                         const std::string& d,
-                        const std::string& e) const {
-        MCC_ASSERT(a[0] == '.');
-        MCC_ASSERT(b[0] == '.');
-        MCC_ASSERT(c[0] == '.');
-        MCC_ASSERT(d[0] == '.');
-        MCC_ASSERT(e[0] == '.');
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto extension = path.substr(dotpos);
-        return EqualsIgnoreCase(extension, a)
-            || EqualsIgnoreCase(extension, b)
-            || EqualsIgnoreCase(extension, c)
-            || EqualsIgnoreCase(extension, d)
-            || EqualsIgnoreCase(extension, e);
-      }
-
+                        const std::string& e) const;
       bool HasExtension(const std::string& a,
                         const std::string& b,
                         const std::string& c,
                         const std::string& d,
                         const std::string& e,
-                        const std::string& f) const {
-        MCC_ASSERT(a[0] == '.');
-        MCC_ASSERT(b[0] == '.');
-        MCC_ASSERT(c[0] == '.');
-        MCC_ASSERT(d[0] == '.');
-        MCC_ASSERT(e[0] == '.');
-        MCC_ASSERT(f[0] == '.');
-        const auto dotpos = path.find_last_of('.');
-        if(dotpos == std::string::npos)
-          return false;
-        const auto extension = path.substr(dotpos);
-        return EqualsIgnoreCase(extension, a)
-            || EqualsIgnoreCase(extension, b)
-            || EqualsIgnoreCase(extension, c)
-            || EqualsIgnoreCase(extension, d)
-            || EqualsIgnoreCase(extension, e)
-            || EqualsIgnoreCase(extension, f);
-      }
+                        const std::string& f) const;
+      bool HasExtension(const std::set<std::string>& extensions) const;
+      bool HasExtension(const std::unordered_set<std::string>& extensions) const;
 
       std::string GetPathWithoutExtension() const {
         const auto dotpos = path.find_first_of('.');
         if(dotpos != std::string::npos)
           return path.substr(0, path.size() - dotpos);
         return path;
-      }
-
-      std::optional<std::string> GetPathExtension() const {
-        const auto dotpos = path.find_first_of('.');
-        if(dotpos == std::string::npos)
-          return std::nullopt;
-        return { path.substr(dotpos + 1) };
       }
 
       std::optional<std::string> GetQuery(const std::string& name) const {
@@ -271,14 +123,28 @@ namespace mcc {
         return path.substr(0, path.size() - (path.size() - slashpos));
       }
 
-      Uri GetChild(const std::string& child_path) const {
-        const auto new_uri = fmt::format("{0:s}://{1:s}/{2:s}", scheme, path, child_path);
-        return { new_uri };
+      Uri GetParent() const {
+        return Uri(GetParentPath());
       }
 
-      Uri GetSibling(const std::string& sibling_path) const {
-        const auto new_uri = fmt::format("{0:s}://{1:s}/{2:s}", scheme, GetParentPath(), sibling_path);
-        return { new_uri };
+      std::string GetChildPath(const std::string& child) const {
+        auto child_path = child;
+        SanitizePath(child_path, false);
+        return fmt::format("{0:s}/{1:s}", path, child_path);
+      }
+
+      Uri GetChild(const std::string& child) const {
+        return Uri(fmt::format("{0:s}://{1:s}", scheme, GetChildPath(child)));
+      }
+
+      std::string GetSiblingPath(const std::string& sibling) const {
+        auto sibling_path = sibling;
+        SanitizePath(sibling_path, false);
+        return fmt::format("{0:s}/{1:s}", GetParentPath(), sibling_path);
+      }
+
+      Uri GetSibling(const std::string& sibling) const {
+        return Uri(fmt::format("{0:s}://{1:s}", scheme, GetSiblingPath(sibling)));
       }
 
       FILE* OpenFile(const char* mode) const {
@@ -290,76 +156,36 @@ namespace mcc {
         return OpenFile("rb");
       }
 
-      inline FilePointerObservable AsyncOpenFile(const char* mode) const {
-        MCC_ASSERT(HasScheme("file"));
-        return rx::observable<>::create<FILE*>([this,mode](rx::subscriber<FILE*> s) {
-          const auto file = fopen(path.c_str(), mode);
-          if(!file) {
-            const auto error = fmt::format("failed to open: {0:s}", path);
-            return s.on_error(rx::util::make_error_ptr(std::runtime_error(error)));
-          }
-          s.on_next(file);
-
-          const auto err = fclose(file);
-          //TODO: check error
-
-          s.on_completed();
-        });
-      }
-
       inline FILE* OpenFileForWriting() const {
         return OpenFile("wb");
       }
 
-      Uri& operator=(const Uri& rhs) = default;
+      std::string ToString() const;
 
       explicit operator std::string() const {
         return fmt::format("{0:s}://{1:s}", scheme, path);
       }
 
+      Uri& operator=(const Uri& rhs) = default;
+
       bool operator==(const Uri& rhs) const {
-        return scheme == rhs.scheme
-            && path == rhs.path;
+        return EqualsIgnoreCase(scheme, rhs.scheme)
+            && EqualsIgnoreCase(path, rhs.path);
       }
 
       bool operator!=(const Uri& rhs) const {
-        return scheme != rhs.scheme
-            || path != rhs.path;
+        return !EqualsIgnoreCase(scheme, rhs.scheme)
+            || !EqualsIgnoreCase(path, rhs.path);
       }
 
       friend std::ostream& operator<<(std::ostream& stream, const Uri& rhs) {
-        stream << "Uri(";
-        stream << "scheme=" << rhs.scheme << ", ";
-        stream << "path=" << rhs.path;
-        if(rhs.HasQuery()) {
-          stream << ", query=[";
-          bool first = true;
-          for(const auto& [ key, value ] : rhs.query) {
-            if(!first)
-              stream << ", ";
-            stream << key << "=" << value;
-            if(first) {
-              first = false;
-              continue;
-            }
-          }
-          stream << "]";
-        }
-        if(rhs.HasFragment()) {
-          stream << ", fragment=" << rhs.fragment;
-        }
-        stream << ")";
-        return stream;
+        return stream << ((const std::string&) rhs);
       }
     };
 
-    static uri::Uri Shader(const std::string& name) {
-      return { fmt::format("shader://{0:s}", name) };
-    }
-
     static inline bool
     IsDirectory(const Uri& uri) {
-      return IsDirectory(uri.path);
+      return mcc::IsDirectory(uri.path);
     }
 
     static inline bool
@@ -372,54 +198,11 @@ namespace mcc {
     FileExists(const uri::Uri& uri) {
       return mcc::FileExists(uri.path);
     }
+  }
 
-    static constexpr const uint64_t kDefaultParserBufferSize = 4096;
-    static constexpr const uint64_t kDefaultTokenBufferSize = 1024;
-    class Parser : public ParserTemplate<kDefaultParserBufferSize, kDefaultTokenBufferSize> {
-    public:
-      struct Config {
-        bool (*OnSchemeParsed)(const Parser* parser, const std::string& value);
-        bool (*OnPathParsed)(const Parser* parser, const std::string& value);
-        bool (*OnQueryParsed0)(const Parser* parser, const uint64_t idx, const std::string& key);
-        bool (*OnQueryParsed1)(const Parser* parser, const uint64_t idx, const std::string& key, const std::string& value);
-        bool (*OnFragmentParsed)(const Parser* parser, const std::string& value);
-      };
-    protected:
-      Config config_;
-      uint64_t num_query_params_;
-
-      bool ParseScheme();
-      bool ParsePath();
-      bool ParseQueryParameterKey();
-      bool ParseQueryParameterValue();
-      bool ParseQueryParameter();
-      bool ParseQueryParameterList();
-      bool ParseFragment();
-
-      static inline bool
-      IsQueryDelimiter(const char c) {
-        switch(c) {
-          case '&':
-          case ';':
-            return true;
-          default:
-            return false;
-        }
-      }
-    public:
-      explicit Parser(const Config& config, const basic_uri& uri, void* data = nullptr):
-        ParserTemplate(data, uri),
-        config_(config),
-        num_query_params_(0) {
-      }
-      Parser(const basic_uri& uri, void* data = nullptr):
-        ParserTemplate(data, uri),
-        config_(),
-        num_query_params_(0) {
-      }
-      ~Parser() override = default;
-      bool Parse();
-    };
+  static inline uint32_t
+  Murmur(const uri::Uri& uri) {
+    return Murmur((const std::string&) uri);
   }
 }
 
