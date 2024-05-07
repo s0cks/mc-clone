@@ -41,6 +41,34 @@ namespace mcc::shader {
       MCC_ASSERT(schema);
       const auto result = schema->Validate(doc);
     }
+
+    const auto root = doc.GetObject();
+    json::SpecDocument<json::ConstShaderObject> spec(root);
+    const auto name = spec.GetName();
+    const auto type = ParseShaderType(spec.GetType());
+    if(!type) {
+      LOG(ERROR) << "invalid 'type' property \"" << spec.GetType() << "\" for Shader document: " << uri;
+      return nullptr;
+    }
+
+    const auto data = spec.GetData();
+    const auto source = data.GetSource();
+    switch(*type) {
+      case kVertexShader: {
+        DLOG(INFO) << "creating new VertexShader \"" << name << "\" from: " << uri;
+        break;
+      }
+      case kFragmentShader: {
+        DLOG(INFO) << "creating new FragmentShader \"" << name << "\" from: " << uri;
+        break;
+      }
+      default:
+        LOG(ERROR) << "invalid ShaderType: " << (*type);
+        return nullptr;
+    }
+
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 
   static inline Shader*

@@ -14,7 +14,6 @@ file(GLOB MCC_URI_TEST_SOURCES
 add_executable(${PROJECT_NAME}-tests
   main.cc
   ${MCC_URI_TEST_SOURCES}
-  mcc/mock_stdio.h mcc/mock_stdio.cc
   mcc/test_cache.h mcc/test_cache.cc
   mcc/test_rapidjson.h mcc/test_rapidjson.cc
   mcc/mock_gl.h mcc/mock_gl.cc

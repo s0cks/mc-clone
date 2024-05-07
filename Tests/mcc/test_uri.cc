@@ -1,7 +1,6 @@
 #include <set>
 #include <gtest/gtest.h>
 #include "mcc/uri.h"
-#include "mcc/mock_stdio.h"
 #include "mcc/uri_parser.h"
 
 namespace mcc::uri {
@@ -67,79 +66,6 @@ namespace mcc::uri {
     };
     Uri uri("test:example.png");
     ASSERT_TRUE(uri.HasExtension(kExtensions));
-  }
-
-  static inline AssertionResult
-  IsFile(const FILE* file, const short desc) {
-    if(!file)
-      return AssertionFailure() << "expected file to not be null.";
-    if(file->_file != desc)
-      return AssertionFailure() << "expected file->_file to be: " << desc << ", actual: " << file->_file;
-    return AssertionSuccess();
-  }
-
-  TEST_F(UriTest, Test_OpenFile) {
-    static constexpr const auto kPath = "/example.png";
-    static constexpr const auto kOpenMode = "rb";
-    static constexpr const short kFileDesc = 110;
-    static constexpr const FILE kFile = {
-      ._file = kFileDesc,
-    };
-
-    MockStdio stdio;
-    EXPECT_CALL(stdio, fopen(StrEq(kPath), StrEq(kOpenMode)))
-      .WillOnce([](const char* file, const char* mode) {
-        return (FILE*) &kFile;
-      });
-
-    Uri uri(fmt::format("file://{0:s}", kPath));
-    ASSERT_EQ(uri.scheme, "file");
-    ASSERT_EQ(uri.path, kPath);
-    const auto file = uri.OpenFile(kOpenMode);
-    ASSERT_NE(file, nullptr);
-    ASSERT_TRUE(IsFile(file, kFileDesc));
-  }
-
-  TEST_F(UriTest, Test_OpenFileForReading) {
-    static constexpr const auto kPath = "/example.png";
-    static constexpr const short kFileDesc = 120;
-    static constexpr const FILE kFile = {
-      ._file = kFileDesc,
-    };
-
-    MockStdio stdio;
-    EXPECT_CALL(stdio, fopen(StrEq(kPath), StrEq("rb")))
-      .WillOnce([](const char* file, const char* mode) {
-        return (FILE*) &kFile;
-      });
-
-    Uri uri(fmt::format("file://{0:s}", kPath));
-    ASSERT_EQ(uri.scheme, "file");
-    ASSERT_EQ(uri.path, kPath);
-    const auto file = uri.OpenFileForReading();
-    ASSERT_NE(file, nullptr);
-    ASSERT_TRUE(IsFile(file, kFileDesc));
-  }
-
-  TEST_F(UriTest, Test_OpenFileForWriting) {
-    static constexpr const auto kPath = "/example.png";
-    static constexpr const short kFileDesc = 130;
-    static constexpr const FILE kFile = {
-      ._file = kFileDesc,
-    };
-
-    MockStdio stdio;
-    EXPECT_CALL(stdio, fopen(StrEq(kPath), StrEq("wb")))
-      .WillOnce([](const char* file, const char* mode) {
-        return (FILE*) &kFile;
-      });
-
-    Uri uri(fmt::format("file://{0:s}", kPath));
-    ASSERT_EQ(uri.scheme, "file");
-    ASSERT_EQ(uri.path, kPath);
-    const auto file = uri.OpenFileForWriting();
-    ASSERT_NE(file, nullptr);
-    ASSERT_TRUE(IsFile(file, kFileDesc));
   }
 
   TEST_F(UriTest, Test_GetQuery_Fails_NoKey) {

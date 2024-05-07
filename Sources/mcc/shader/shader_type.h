@@ -47,7 +47,7 @@ namespace mcc::shader {
     return ParseShaderType(type);
   }
 
-  static inline std::ostream& operator<<(std::ostream& stream, const ShaderType rhs) {
+  static inline std::ostream& operator<<(std::ostream& stream, const ShaderType& rhs) {
     switch(rhs) {
 #define DEFINE_TOSTRING(Name, Ext, GlValue) \
       case ShaderType::k##Name##Shader: return stream << #Name;
