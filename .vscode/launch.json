@@ -200,6 +200,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/Benchmarks/minecraft-benchmarks",
       "args": [
+        "--undefok=benchmark_filter,resources",
         "--resources", "${workspaceFolder}/resources",
         "--benchmark_filter=ObjParser*"
       ],
