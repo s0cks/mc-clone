@@ -11,9 +11,9 @@ namespace mcc::shader {
   Attach(const ShaderId id, ShaderCode* code) {
     MCC_ASSERT(IsValidShaderId(id));
     MCC_ASSERT(code);
-    auto data = code->data();
-    const auto length = code->length();
-    glShaderSource(id, 1, &data, &length);
+    auto data = code->GetData();
+    const auto length = code->GetLength();
+    glShaderSource(id, 1, (const GLchar**) &data, (const GLint*) &length);
     CHECK_GL(ERROR);
   }
 
@@ -27,15 +27,15 @@ namespace mcc::shader {
   }
 
   ShaderId ShaderCompiler::CompileShaderCode(ShaderCode* code) {
-    if(code->IsEmpty())
+    if(!code)
       return kInvalidShaderId;
 
     using namespace units::time;
     using namespace units::data;
 
-    DLOG(INFO) << "compiling ShaderCode (" << byte_t(code->length()) << ").....";
+    DLOG(INFO) << "compiling ShaderCode (" << byte_t(code->GetLength()) << ").....";
     const auto start_ns = uv_hrtime();
-    const auto id = glCreateShader(code->GetShaderType());
+    const auto id = glCreateShader(code->GetType());
     if(IsValidShaderId(id))
       AttachAndCompile(id, code);
     const auto stop_ns = uv_hrtime();
@@ -58,7 +58,7 @@ namespace mcc::shader {
     LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
     const auto& duration = GetDurationSeries();
     LOG_AT_LEVEL(severity) << " - Duration: " << nanosecond_t(total_ns) << "; (Avg/Min/Max): " << nanosecond_t(duration_.average()) << ", " << nanosecond_t(duration_.min()) << ", " << nanosecond_t(duration_.min());
-    LOG_AT_LEVEL(severity) << "Code (" << byte_t(code->length()) << "):" << std::endl << (*code);
+    LOG_AT_LEVEL(severity) << "Code (" << byte_t(code->GetLength()) << "):" << std::endl << (*code);
 #endif //MCC_DEBUG
 
     if(!status)
@@ -84,7 +84,6 @@ namespace mcc::shader {
 
   ShaderId ShaderCompiler::Compile(ShaderCode* code) {
     MCC_ASSERT(code);
-    MCC_ASSERT(!code->IsEmpty());
     const auto compiler = GetCompiler();
     MCC_ASSERT(compiler);
     return compiler->CompileShaderCode(code);

@@ -83,7 +83,7 @@ namespace mcc::shader {
     return nullptr;
   }
 
-  Shader* Shader::New(const uri::Uri& uri) {
+  Shader* Shader::New(const uri::Uri& uri) { //TODO: remove
     MCC_ASSERT(uri.HasScheme("shader", "file"));
     const auto uri_path = fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path);
     const auto extension = uri.GetExtension();
