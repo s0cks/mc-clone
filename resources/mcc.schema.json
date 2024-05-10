@@ -5,6 +5,18 @@
   "description": "A MCC resource definition",
   "type": "object",
   "definitions": {
+    "Uri": {
+      "type": "string",
+      "pattern": "([a-z0-9]+):\\/\\/([a-z0-9_/\\.]+)"
+    },
+    "ShaderUri": {
+      "type": "string",
+      "pattern": "shader:\/\/([a-z0-9_/\\.]+)"
+    },
+    "TextureUri": {
+      "type": "string",
+      "pattern": "texture:\/\/([a-z0-9_/\\.]+)"
+    },
     "TextureFilterComponent": {
       "type": "string",
       "enum": [
@@ -360,7 +372,41 @@
       "required": [ "type", "name", "data" ]
     },
     "Program": {
-
+      "type": "object",
+      "description": "A program document",
+      "additionalProperties": false,
+      "properties": {
+        "vertex": {
+          "oneOf": [
+            { "$ref": "#/definitions/ShaderUri" },
+            { "$ref": "#/definitions/Shader" }
+          ]
+        },
+        "fragment": {
+          "oneOf": [
+            { "$ref": "#/definitions/ShaderUri" },
+            { "$ref": "#/definitions/Shader" }
+          ]
+        },
+        "geometry": {
+          "oneOf": [
+            { "$ref": "#/definitions/ShaderUri" },
+            { "$ref": "#/definitions/Shader" }
+          ]
+        },
+        "tesscontrol": {
+          "oneOf": [
+            { "$ref": "#/definitions/ShaderUri" },
+            { "$ref": "#/definitions/Shader" }
+          ]
+        },
+        "tesseval": {
+          "oneOf": [
+            { "$ref": "#/definitions/ShaderUri" },
+            { "$ref": "#/definitions/Shader" }
+          ]
+        }
+      }
     },
     "ProgramDocument": {
       "type": "object",

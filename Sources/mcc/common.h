@@ -29,6 +29,10 @@
 
 #endif //MCC_DEBUG
 
+#ifndef UNALLOCATED
+#define UNALLOCATED 0
+#endif //UNALLOCATED
+
 #define DEFINE_NON_COPYABLE_TYPE(Name) \
   public:                              \
     Name(const Name& rhs) = delete;    \
@@ -39,6 +43,11 @@
     Name() = delete;                       \
     ~Name() = delete;                      \
     DEFINE_NON_COPYABLE_TYPE(Name);
+
+#define DEFINE_DEFAULT_COPYABLE_TYPE(Name)            \
+  public:                                             \
+    Name(const Name& rhs) = default;                  \
+    Name& operator=(const Name& rhs) = default;
 
 #define NOT_IMPLEMENTED(Level) \
   LOG(Level) << __FUNCTION__ << " is not implemented!";

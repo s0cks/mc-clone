@@ -15,17 +15,17 @@ namespace mcc::ibo {
   }
 
   void Ibo::BindIbo(const IboId id) {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+    glBindBuffer(kGlTarget, id);
     CHECK_GL(FATAL);
   }
 
   void Ibo::InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage) {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_bytes, bytes, usage);
+    glBufferData(kGlTarget, num_bytes, bytes, usage);
     CHECK_GL(FATAL);
   }
 
   void Ibo::UpdateBufferData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, num_bytes, bytes);
+    glBufferSubData(kGlTarget, offset, num_bytes, bytes);
     CHECK_GL(FATAL);
   }
 
@@ -42,17 +42,17 @@ namespace mcc::ibo {
   }
 
   void Ibo::Update(const uint64_t offset, const uint8_t* data, const uint64_t len) {
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(len), (const GLvoid*) data);
+    glBufferSubData(kGlTarget, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(len), (const GLvoid*) data);
     CHECK_GL(FATAL);
   }
 
   void Ibo::Bind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GetId());
+    glBindBuffer(kGlTarget, GetId());
     CHECK_GL(FATAL);
   }
 
   void Ibo::Unbind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, kDefaultIboId);
+    glBindBuffer(kGlTarget, kInvalidIboId);
     CHECK_GL(FATAL);
   }
 

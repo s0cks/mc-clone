@@ -58,6 +58,7 @@ namespace mcc {
 
     class Program : public res::ResourceTemplate<res::kProgramType> {
       friend class ProgramLinker;
+      friend class ProgramBuilder;
     public:
       struct ActiveAttribute {
         GLenum type;

@@ -198,6 +198,6 @@ namespace mcc::render {
     prog_->SetMat4("view", camera->GetView());
     prog_->SetMat4("model", model);
     prog_->Apply();
-    draw_scope.Draw(GL_TRIANGLES);
+    draw_scope.DrawTriangles();
   } 
 }

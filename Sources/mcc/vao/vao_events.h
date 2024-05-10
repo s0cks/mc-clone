@@ -9,25 +9,29 @@ namespace mcc::vao {
   V(VaoCreated)               \
   V(VaoDestroyed)
 
+  class Vao;
+  class VaoEvent;
 #define FORWARD_DECLARE(Name) class Name##Event;
   FOR_EACH_VAO_EVENT(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
   class VaoEvent : public Event {
   protected:
-    VaoId id_;
+    const Vao* vao_;
 
-    explicit VaoEvent(const VaoId id):
+    explicit VaoEvent(const Vao* vao):
       Event(),
-      id_(id) {
+      vao_(vao) {
+      MCC_ASSERT(vao);
     }
   public:
     ~VaoEvent() override = default;
 
-    VaoId GetVaoId() const {
-      return id_;
+    const Vao* GetVao() const {
+      return vao_;
     }
 
+    VaoId GetVaoId() const;
 #define DEFINE_TYPE_CHECK(Name)                                       \
     virtual Name##Event* As##Name##Event() { return nullptr; }        \
     bool Is##Name##Event() { return As##Name##Event() != nullptr; }
@@ -54,8 +58,8 @@ namespace mcc::vao {
 
   class VaoCreatedEvent : public VaoEvent {
   public:
-    explicit VaoCreatedEvent(const VaoId id):
-      VaoEvent(id) {  
+    explicit VaoCreatedEvent(const Vao* vao):
+      VaoEvent(vao) {
     }
     ~VaoCreatedEvent() override = default;
     DECLARE_VAO_EVENT(VaoCreated);
@@ -63,8 +67,8 @@ namespace mcc::vao {
 
   class VaoDestroyedEvent : public VaoEvent {
   public:
-    explicit VaoDestroyedEvent(const VaoId id):
-      VaoEvent(id) {
+    explicit VaoDestroyedEvent(const Vao* vao):
+      VaoEvent(vao) {
     }
     ~VaoDestroyedEvent() override = default;
     DECLARE_VAO_EVENT(VaoDestroyed);

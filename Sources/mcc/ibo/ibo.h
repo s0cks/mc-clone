@@ -2,6 +2,7 @@
 #define MCC_INDEX_BUFFER_H
 
 #include <vector>
+#include "mcc/gfx_target.h"
 #include "mcc/buffer_object.h"
 
 #include "mcc/ibo/ibo_id.h"
@@ -42,10 +43,12 @@ namespace mcc {
       friend class UIntIbo;
       friend class IboBuilder;
       
-      friend class IboBindScope;
+      template<typename I>
       friend class IboReadScope;
+      friend class IboBindScope;
       friend class IboUpdateScope;
     public:
+      static constexpr const auto kGlTarget = gfx::kIboTarget;
       struct IdComparator {
         bool operator() (const Ibo* lhs, const Ibo* rhs) const {
           return lhs->GetId() < rhs->GetId();
@@ -81,7 +84,7 @@ namespace mcc {
       
       static inline void
       BindDefaultIbo() {
-        return BindIbo(kDefaultIboId);
+        return BindIbo(kInvalidIboId);
       }
 
       template<typename E, typename... Args>

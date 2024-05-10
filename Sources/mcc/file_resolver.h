@@ -31,6 +31,15 @@ namespace mcc {
       return (const std::string&) entry.path();
     }
 
+    static inline std::string
+    GetExtension(const directory_entry& entry) {
+      const auto path = ToPath(entry);
+      const auto dotpos = path.find_last_of('.');
+      if(dotpos == std::string::npos)
+        return {};
+      return path.substr(dotpos);
+    }
+
     static inline rx::observable<directory_entry>
     ListAllInDirectory(const std::string& dir) {
       if(!FileExists(dir)) {
@@ -54,6 +63,38 @@ namespace mcc {
     ListDirsInDirectory(const std::string& dir) {
       return ListAllInDirectory(dir)
         .filter(IsDirectory);
+    }
+
+    static inline void
+    SanitizeFileExtension(std::string& extension) {
+      if(extension[0] == '.')
+        extension = extension.substr(1);
+      ToLowercase(extension);
+    }
+
+    static inline std::function<bool(const directory_entry)>
+    FilterByExtension(const std::set<std::string>& extensions) {
+      return [&extensions](const directory_entry entry) {
+        const auto& path = entry.path();
+        if(!path.has_extension())
+          return false;
+        auto extension = path.extension().string();
+        SanitizeFileExtension(extension);
+        const auto pos = extensions.find(extension);
+        return pos != extensions.end();
+      };
+    }
+
+    static inline std::function<bool(const directory_entry)>
+    FilterByExtension(const std::unordered_set<std::string>& extensions) {
+      return [&extensions](const directory_entry entry) {
+        const auto& path = entry.path();
+        if(!path.has_extension())
+          return false;
+        const auto extension = path.extension();
+        const auto pos = extensions.find(extension);
+        return pos != extensions.end();
+      };
     }
   }
 }

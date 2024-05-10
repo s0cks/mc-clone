@@ -10,21 +10,21 @@ namespace mcc::ibo {
   }
 
   rx::observable<UByteIbo*> UByteIboBuilder::Build(const int num) const {
-    return GenerateIboId(num)
+    return GenerateIboIdsAsync(num)
       .map([this](const IboId id) {
         return InitIbo<UByteIbo>(id);
       });
   }
 
   rx::observable<UShortIbo*> UShortIboBuilder::Build(const int num) const {
-    return GenerateIboId(num)
+    return GenerateIboIdsAsync(num)
       .map([this](const IboId id) {
         return InitIbo<UShortIbo>(id);
       });
   }
 
   rx::observable<UIntIbo*> UIntIboBuilder::Build(const int num) const {
-    return GenerateIboId(num)
+    return GenerateIboIdsAsync(num)
       .map([this](const IboId id) {
         return InitIbo<UIntIbo>(id);
       });

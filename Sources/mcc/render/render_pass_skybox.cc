@@ -56,7 +56,7 @@ namespace mcc::render {
     program_->SetInt("tex", 0);
     program_scope.Bind("Camera", camera_ubo);
 
-    draw_scope.Draw(GL_TRIANGLES);
+    draw_scope.DrawTriangles();
     glDepthMask(GL_TRUE);
     CHECK_GL(FATAL);
   }

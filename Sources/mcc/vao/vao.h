@@ -1,6 +1,7 @@
 #ifndef MCC_VAO_H
 #define MCC_VAO_H
 
+#include "mcc/object.h"
 #include "mcc/vao/vao_id.h"
 #include "mcc/vao/vao_events.h"
 
@@ -19,7 +20,7 @@ namespace mcc {
     FOR_EACH_VAO_EVENT(DEFINE_ON_VAO_EVENT)
 #undef DEFINE_ON_VAO_EVENT
 
-    class Vao {
+    class Vao : public Object {
       friend class VaoBindScope;
     public:
       struct VaoIdComparator {
@@ -28,10 +29,8 @@ namespace mcc {
         }
       };
     protected:
-      VaoId id_;
-
-      explicit Vao(const VaoId id);
-
+      static void BindVao(const VaoId id);
+      static void DeleteVaos(const VaoId* ids, const uint64_t num_ids);
       static void Publish(VaoEvent* event);
 
       template<class E, typename... Args>
@@ -41,9 +40,6 @@ namespace mcc {
         return Publish((VaoEvent*) &event);
       }
 
-      static void BindVao(const VaoId id);
-      static void DeleteVaos(const VaoId* ids, const uint64_t num_ids);
-
       static inline void
       DeleteVao(const VaoId id) {
         return DeleteVaos(&id, 1);
@@ -51,11 +47,15 @@ namespace mcc {
       
       static inline void
       UnbindVao() {
-        return BindVao(kDefaultVaoId);
+        return BindVao(kInvalidVaoId);
       }
+    protected:
+      VaoId id_;
+
+      explicit Vao(const VaoId id);
     public:
-      ~Vao();
-      std::string ToString() const;
+      ~Vao() override;
+      std::string ToString() const override;
 
       VaoId GetId() const {
         return id_;
@@ -65,8 +65,8 @@ namespace mcc {
         return IsValidVaoId(GetId());
       }
 
-      inline bool IsDefault() const {
-        return IsDefaultVaoId(GetId());
+      inline bool IsInvalid() const {
+        return IsInvalidVaoId(GetId());
       }
 
       inline rx::observable<VaoEvent*>
@@ -95,9 +95,7 @@ namespace mcc {
 
       static inline Vao*
       New() {
-        const auto id = GenerateVaoId(1)
-          .as_blocking()
-          .first();
+        const auto id = GenerateVaoId();
         if(!IsValidVaoId(id))
           return nullptr;
         return New(id);

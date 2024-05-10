@@ -2,6 +2,7 @@
 #define MCC_VBO_SCOPE_H
 
 #include "mcc/vbo/vbo_id.h"
+#include "mcc/gfx_mapped_buffer_scope.h"
 
 namespace mcc::vbo {
   class Vbo;
@@ -21,6 +22,13 @@ namespace mcc::vbo {
     }
 
     VboId GetVboId() const;
+  };
+
+  class MappedVboScope : public gfx::MappedBufferScope {
+  protected:
+    explicit MappedVboScope(const gfx::Access access, Vbo* vbo);
+  public:
+    ~MappedVboScope() override = default;
   };
 }
 

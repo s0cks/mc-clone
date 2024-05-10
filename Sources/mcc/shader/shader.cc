@@ -10,6 +10,44 @@
 #include "mcc/json_schema.h"
 
 namespace mcc::shader {
+  const std::set<std::string> VertexShader::kValidExtensions = {
+    "json",
+    "glsl",
+    "vert",
+  };
+  const std::set<std::string> FragmentShader::kValidExtensions = {
+    "json",
+    "glsl",
+    "frag",
+  };
+  const std::set<std::string> GeometryShader::kValidExtensions = {
+    "json",
+    "glsl",
+    "geom",
+  };
+  const std::set<std::string> TessEvalShader::kValidExtensions = {
+    "json",
+    "glsl",
+    "tese",
+  };
+  const std::set<std::string> TessControlShader::kValidExtensions = {
+    "json",
+    "glsl",
+    "tesc",
+  };
+
+  const std::set<std::string>& GetValidFileExtensions() {
+    static std::set<std::string> kValidExtensions;
+    if(kValidExtensions.empty()) {
+      kValidExtensions.insert(std::begin(VertexShader::kValidExtensions), std::end(VertexShader::kValidExtensions));
+      kValidExtensions.insert(std::begin(FragmentShader::kValidExtensions), std::end(FragmentShader::kValidExtensions));
+      kValidExtensions.insert(std::begin(GeometryShader::kValidExtensions), std::end(GeometryShader::kValidExtensions));
+      kValidExtensions.insert(std::begin(TessEvalShader::kValidExtensions), std::end(TessEvalShader::kValidExtensions));
+      kValidExtensions.insert(std::begin(TessControlShader::kValidExtensions), std::end(TessControlShader::kValidExtensions));
+    }
+    return kValidExtensions;
+  }
+
   static rx::subject<ShaderEvent*> events_;
   static ShaderRegistry shaders_(events_);
 
@@ -86,14 +124,14 @@ namespace mcc::shader {
   }
 
   Shader* Shader::New(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("shader"));
+    MCC_ASSERT(uri.HasScheme("shader", "file"));
     const auto uri_path = fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path);
     const auto extension = uri.GetExtension();
     if(!extension.empty()) {
-      if(EqualsIgnoreCase(extension, ".json"))
+      if(EqualsIgnoreCase(extension, "json"))
         return LoadShaderFromJson(uri_path);
 #define DEFINE_LOAD_BY_EXTENSION(Name, Ext, GlValue)        \
-      else if(EqualsIgnoreCase(extension, "." #Ext))       \
+      else if(EqualsIgnoreCase(extension, #Ext))            \
         return Name##Shader::New(uri);
       FOR_EACH_SHADER_TYPE(DEFINE_LOAD_BY_EXTENSION)
 #undef DEFINE_LOAD_BY_EXTENSION
@@ -133,7 +171,8 @@ namespace mcc::shader {
     return New(ShaderCompiler::Compile(code));                        \
   }                                                                   \
   Name##Shader* Name##Shader::New(const uri::Uri& uri) {              \
-    MCC_ASSERT(uri.HasScheme("shader"));                              \
+    MCC_ASSERT(uri.HasScheme("shader", "file"));                      \
+    MCC_ASSERT(uri.HasExtension(kValidExtensions));                   \
     const auto code = shader::ShaderCode::FromFile(uri);              \
     return code ? New(code) : nullptr;                                \
   }

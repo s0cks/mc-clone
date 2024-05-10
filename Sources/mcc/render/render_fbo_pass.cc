@@ -104,6 +104,6 @@ namespace mcc::render {
     program_->SetMat4("view", view);
     program_->SetMat4("model", model);
     program_->Apply();
-    draw_scope.Draw(GL_TRIANGLES);
+    draw_scope.DrawTriangles();
   }
 }

@@ -1,3 +1,4 @@
+#include <regex>
 #include <string>
 #include <unordered_set>
 
@@ -308,5 +309,40 @@ namespace mcc::uri {
       stream << ", fragment=" << fragment;
     stream << ")";
     return stream.str();
+  }
+
+  static const std::regex kAnyUriRegex("([a-z][a-z0-9_]*):(\\/\\/)?([a-z][a-z0-9_\\.]*)", std::regex_constants::icase);
+
+  bool IsValidUri(const basic_uri& value) {
+    return std::regex_match(value, kAnyUriRegex);
+  }
+
+  bool IsValidUri(const basic_uri& value, const std::string& scheme) {
+    std::regex regex(fmt::format("{0:s}:(\\/\\/)?([a-z][a-z0-9_\\.]*)", scheme), std::regex_constants::icase);
+    return std::regex_match(value, regex);
+  }
+
+  template<typename Container>
+  static inline bool
+  IsValidUri(const basic_uri& value, const Container& schemes) {
+    MCC_ASSERT(!value.empty());
+    MCC_ASSERT(!schemes.empty());
+    int idx = 0;
+    std::stringstream filter;
+    for(const auto& scheme : schemes) {
+      if(idx++ > 0)
+        filter << "|";
+      filter << scheme;
+    }
+    std::regex regex(fmt::format("({0:s}):(\\/\\/)?([a-z][a-z0-9_\\.]*)", filter.str()), std::regex_constants::icase);
+    return std::regex_match(value, regex);
+  }
+
+  bool IsValidUri(const basic_uri& value, const std::set<std::string>& schemes) {
+    return IsValidUri<std::set<std::string>>(value, schemes);
+  }
+
+  bool IsValidUri(const basic_uri& value, const std::unordered_set<std::string>& schemes) {
+    return IsValidUri<std::unordered_set<std::string>>(value, schemes);
   }
 }

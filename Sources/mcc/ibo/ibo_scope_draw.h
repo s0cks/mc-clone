@@ -18,6 +18,16 @@ namespace mcc::ibo {
 
     void Draw(const gfx::DrawMode mode, const uint64_t count, const GLvoid* indices = 0);
     void Draw(const gfx::DrawMode mode);
+
+#define DEFINE_DRAW(Name, _)                                                      \
+    inline void Draw##Name(const int64_t count, const GLvoid* indices = 0) {      \
+      return Draw(gfx::k##Name##Mode, count, indices);                            \
+    }                                                                             \
+    inline void Draw##Name() {                                                    \
+      return Draw(gfx::k##Name##Mode);                                            \
+    }
+    FOR_EACH_DRAW_MODE(DEFINE_DRAW)
+#undef DEFINE_DRAW
   };
 }
 

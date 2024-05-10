@@ -1,9 +1,7 @@
 #include "mcc/program/program.h"
-
-#include "mcc/program/program_linker.h"
-
 #include "mcc/shader/shader_code.h"
 #include "mcc/shader/shader_compiler.h"
+#include "mcc/program/program_loader_dir.h"
 
 namespace mcc::program {
   static rx::subject<ProgramEvent*> events_;
@@ -94,41 +92,28 @@ namespace mcc::program {
     return ss.str();
   }
 
+  static inline std::string
+  GetProgramNameFromDirectory(const std::string& dir) {
+    const auto slashpos = dir.find_last_of('/');
+    if(slashpos == std::string::npos)
+      return {};
+    return {};
+  }
+
   ProgramRef Program::New(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("program"));
-    DLOG(INFO) << "getting program from " << uri << "....";
-
-    const auto base_path = fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path);
-    const auto json_path = fmt::format("{0:s}.json", base_path);
-    if(FileExists(json_path)) {
-      DLOG(INFO) << "found .json file: " << json_path;
-      return {}; //TODO: load from json file
-    }
-
-    // no json, check for vertex & fragment files
-    ProgramSpecBuilder builder(uri);
-    DLOG(INFO) << "building ProgramSpec....";
-    const auto spec = builder.Build();
-    DLOG(INFO) << "created ProgramSpec: " << spec->GetProgramName();
-
-    const auto id = glCreateProgram();
-    CHECK_GL(FATAL);
-    if(!IsValidProgramId(id)) {
-      DLOG(ERROR) << "failed to create program.";
+    const auto base_path = uri.ToFileUri(fmt::format("{0:s}/shaders", FLAGS_resources));
+    DLOG(INFO) << "loading Program from: " << base_path;
+    const auto parent_path = base_path.GetParent();
+    DLOG(INFO) << "parent: " << parent_path;
+    const auto name = base_path.GetResourceName();
+    DirProgramLoader dir(parent_path.path, name);
+    const auto program = dir.LoadProgram();
+    if(!program) {
+      LOG(FATAL) << "failed to load program from: " << uri;
       return {};
     }
-
-    {
-      //TODO: cleanup
-      ProgramCreatedEvent event(id);
-      Publish(&event);
-    }
-    
-    const auto link_status = ProgramLinker::Link(id, spec);
-    if(!link_status) {
-      DLOG(ERROR) << "failed to link program " << id << ": " << link_status;
-      return {};
-    }
-    return New(id);
+    DLOG(INFO) << uri << " => " << program->ToString();
+    return ProgramRef(program);
   }
 }

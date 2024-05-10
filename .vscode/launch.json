@@ -178,7 +178,22 @@
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb"
-    }, // URI Tests
+    }, // Color Tests
+    {
+      "name": "Program Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Program*Test.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // Program Tests
     {
       "name": "Resource tests",
       "type": "cppdbg",

@@ -16,13 +16,14 @@ namespace mcc::vao {
   }
 
   Vao::Vao(const VaoId id):
+    Object(),
     id_(id) {
     vaos_.insert(this);
-    Publish<VaoCreatedEvent>(id);
+    Publish<VaoCreatedEvent>(this);
   }
 
   Vao::~Vao() {
-
+    Publish<VaoDestroyedEvent>(this);
   }
 
   void Vao::BindVao(const VaoId id) {

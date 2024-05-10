@@ -1,6 +1,7 @@
 #ifndef MCC_SHADER_H
 #define MCC_SHADER_H
 
+#include <set>
 #include <optional>
 #include "mcc/uri.h"
 #include "mcc/reference.h"
@@ -16,6 +17,10 @@ namespace mcc {
     class Shader;
   }
   using shader::Shader;
+#define DEFINE_USE_SHADER_TYPE(Name, Ext, GlValue)      \
+  using shader::Name##Shader;
+  FOR_EACH_SHADER_TYPE(DEFINE_USE_SHADER_TYPE)
+#undef DEFINE_USE_SHADER_TYPE
 
   namespace resource {
     typedef Reference<Shader> ShaderRef;
@@ -23,6 +28,7 @@ namespace mcc {
   using res::ShaderRef;
 
   namespace shader {
+    const std::set<std::string>& GetValidFileExtensions();
     const ShaderRegistry& GetRegistry();
     rx::observable<ShaderEvent*> OnEvent();
     
@@ -54,13 +60,20 @@ namespace mcc {
     class ShaderCode;
     class ShaderCompiler;
     class Shader {
+      friend class ShaderCompiler;
       friend class VertexShader;
       friend class FragmentShader;
       friend class GeometryShader;
       friend class TessEvalShader;
       friend class TessControlShader;
-      
-      friend class ShaderCompiler;
+    public:
+      struct Comparator {
+        bool operator()(const Shader* lhs,
+                        const Shader* rhs) const {
+          return lhs->GetId() == rhs->GetId()
+              && lhs->GetType() == rhs->GetType();
+        }
+      };
     private:
       static void Publish(ShaderEvent* event);
 
@@ -78,12 +91,16 @@ namespace mcc {
       }
     public:
       virtual ~Shader() = default;
-      virtual bool Equals(const Shader* rhs) const = 0;
       virtual ShaderType GetType() const = 0;
       virtual std::string ToString() const = 0;
       
       ShaderId GetId() const {
         return id_;
+      }
+
+      virtual bool Equals(const Shader* rhs) const {
+        return GetType() == rhs->GetType()
+            && GetId() == rhs->GetId();
       }
 
 #define DEFINE_TYPE_CHECK(Name, Ext, GlValue)                             \
@@ -118,11 +135,6 @@ namespace mcc {
       ShaderType GetType() const override {
         return Type;
       }
-
-      bool Equals(const Shader* rhs) const override {
-        return GetType() == rhs->GetType()
-            && GetId() == rhs->GetId();
-      }
     };
 
 #define DECLARE_SHADER_TYPE(Name)                                   \
@@ -132,6 +144,7 @@ namespace mcc {
     private:                                                        \
       static Name##Shader* New(const ShaderId id);                  \
     public:                                                         \
+      static const std::set<std::string> kValidExtensions;          \
       static Name##Shader* New(ShaderCode* code);                   \
       static Name##Shader* New(const uri::Uri& uri);                \
       static inline Name##Shader*                                   \

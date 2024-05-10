@@ -26,20 +26,33 @@ namespace mcc {
       std::string fragment;
       std::unordered_map<std::string, std::string> query;
     private:
+      Uri(const std::string& s, const Uri& other):
+        scheme(s),
+        path(other.path),
+        fragment(other.fragment),
+        query(other.query) {  
+      }
+      Uri(const std::string& s, const std::string& root, const Uri& path):
+        scheme(s),
+        path(fmt::format("{0:s}/{1:s}", root, path.path)),
+        fragment(path.fragment),
+        query(path.query) {
+      }
+    public:
+      Uri() = default;
+      Uri(const basic_uri& uri);
       Uri(const std::string& s,
           const std::string& p,
           const std::string& f):
         scheme(s),
         path(p),
-        fragment(f) {
+        fragment(f),
+        query() {
       }
       Uri(const std::string& s,
           const std::string& p):
-        Uri(s, p, {}) {
+        Uri(s, p, std::string()) {
       }
-    public:
-      Uri() = default;
-      Uri(const basic_uri& uri);
       Uri(const Uri& rhs) = default;
       ~Uri() = default;
 
@@ -102,6 +115,13 @@ namespace mcc {
       bool HasExtension(const std::set<std::string>& extensions) const;
       bool HasExtension(const std::unordered_set<std::string>& extensions) const;
 
+      std::string GetResourceName() const {
+        const auto slashpos = path.find_last_of('/');
+        if(slashpos == std::string::npos)
+          return path;
+        return path.substr(slashpos + 1);
+      }
+
       std::string GetPathWithoutExtension() const {
         const auto dotpos = path.find_first_of('.');
         if(dotpos != std::string::npos)
@@ -124,7 +144,7 @@ namespace mcc {
       }
 
       Uri GetParent() const {
-        return Uri(GetParentPath());
+        return Uri(scheme, GetParentPath());
       }
 
       std::string GetChildPath(const std::string& child) const {
@@ -145,6 +165,23 @@ namespace mcc {
 
       Uri GetSibling(const std::string& sibling) const {
         return Uri(fmt::format("{0:s}://{1:s}", scheme, GetSiblingPath(sibling)));
+      }
+
+      Uri ToFileUri(const std::string& root) const {
+        return Uri("file", root, *this);
+      }
+
+      Uri ToFileUri() const {
+        return Uri("file", *this);
+      }
+
+      bool IsFile() const {
+        return EqualsIgnoreCase(scheme, "file");
+      }
+
+      bool IsAbsolutePath() const {
+        return IsFile()
+            && (FileExists(path));
       }
 
       FILE* OpenFile(const char* mode) const {
@@ -198,6 +235,11 @@ namespace mcc {
     FileExists(const uri::Uri& uri) {
       return mcc::FileExists(uri.path);
     }
+
+    bool IsValidUri(const basic_uri& rhs);
+    bool IsValidUri(const basic_uri& rhs, const std::string& scheme);
+    bool IsValidUri(const basic_uri& rhs, const std::set<std::string>& schemes);
+    bool IsValidUri(const basic_uri& rhs, const std::unordered_set<std::string>& schemes);
   }
 
   static inline uint32_t

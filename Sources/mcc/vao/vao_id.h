@@ -7,8 +7,7 @@
 namespace mcc {
   namespace vao {
     typedef GLuint VaoId;
-    static constexpr const VaoId kDefaultVaoId = 0;
-    static constexpr const VaoId kInvalidVaoId = -1;
+    static constexpr const VaoId kInvalidVaoId = 0;
 
     static inline bool
     IsValidVaoId(const VaoId id) {
@@ -16,25 +15,30 @@ namespace mcc {
     }
 
     static inline bool
-    IsDefaultVaoId(const VaoId id) {
-      return id == kDefaultVaoId;
+    IsInvalidVaoId(const VaoId id) {
+      return id == kInvalidVaoId;
     }
 
+    void GenerateVaoIds(VaoId* ids, const int num_ids);
+
+    static inline VaoId
+    GenerateVaoId() {
+      VaoId id;
+      GenerateVaoIds(&id, 1);
+      return id;
+    }
+
+    rx::observable<VaoId> GenerateVaoIdsAsync(const int num_ids);
+
     static inline rx::observable<VaoId>
-    GenerateVaoId(const int num = 1) {
-      return rx::observable<>::create<VaoId>([num](rx::subscriber<VaoId> s) {
-        VaoId ids[num];
-        glGenVertexArrays(num, ids);
-        CHECK_GL(FATAL);
-        for(auto idx = 0; idx < num; idx++)
-          s.on_next(ids[idx]);
-        s.on_completed();
-      });
+    GenerateVaoIdAsync() {
+      return GenerateVaoIdsAsync(1);
     }
   }
   using vao::VaoId;
-  using vao::kDefaultVaoId;
   using vao::kInvalidVaoId;
+  using vao::IsValidVaoId;
+  using vao::IsInvalidVaoId;
 }
 
 #endif //MCC_VAO_ID_H

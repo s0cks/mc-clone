@@ -23,7 +23,6 @@ namespace mcc::json {
     explicit GenericShaderObject(const ObjectType& value):
       value_(value) {
     }
-    GenericShaderObject(const GenericShaderObject<IsConst>& rhs) = default;
     ~GenericShaderObject() = default;
 
     std::optional<const Value*> GetSourceProperty() const {
@@ -34,8 +33,6 @@ namespace mcc::json {
       const auto source = GetSourceProperty();
       return source ? std::string((*source)->GetString(), (*source)->GetStringLength()) : std::string();
     }
-
-    GenericShaderObject<IsConst>& operator=(const GenericShaderObject<IsConst>& rhs) = default;
   };
   typedef GenericShaderObject<true> ConstShaderObject;
   typedef GenericShaderObject<false> ShaderObject;
