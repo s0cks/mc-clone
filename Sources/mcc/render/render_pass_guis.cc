@@ -20,6 +20,8 @@
 #include "mcc/render/renderer.h"
 #include "mcc/render/render_fbo_pass.h"
 
+#include "mcc/program/program_scope.h"
+
 namespace mcc::render {
   bool RenderPassGuis::ShouldSkip() const {
     return gui::Tree::IsEmpty();
@@ -192,12 +194,11 @@ namespace mcc::render {
     MCC_ASSERT(camera);
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
-    prog_->Apply();
-    prog_->SetInt("tex", 0);
-    prog_->SetMat4("projection", camera->GetProjection());
-    prog_->SetMat4("view", camera->GetView());
-    prog_->SetMat4("model", model);
-    prog_->Apply();
+    program::ApplyProgramScope prog(prog_.operator->());
+    prog.Set("tex", 0);
+    prog.Set("projection", camera->GetProjection());
+    prog.Set("view", camera->GetView());
+    prog.Set("model", model);
     draw_scope.DrawTriangles();
   } 
 }

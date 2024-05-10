@@ -27,7 +27,7 @@ namespace mcc::vao {
   }
 
   void Vao::BindVao(const VaoId id) {
-    MCC_ASSERT(IsValidVaoId(id));
+    MCC_ASSERT(IsValidVaoId(id) || id == 0);
     glBindVertexArray(id);
     CHECK_GL(FATAL);
   }

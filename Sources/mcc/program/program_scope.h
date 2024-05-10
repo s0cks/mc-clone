@@ -2,6 +2,7 @@
 #define MCC_PROGRAM_SCOPE_H
 
 #include "mcc/ubo/ubo.h"
+#include "mcc/program/program_id.h"
 
 namespace mcc::program {
   class Program;
@@ -18,6 +19,8 @@ namespace mcc::program {
     Program* GetProgram() const {
       return program_;
     }
+
+    ProgramId GetProgramId() const;
   };
 
   class ProgramUboBindScope : public ProgramScope {
@@ -71,5 +74,7 @@ namespace mcc::program {
     void Bind(const std::string& name, Ubo* ubo);
   };
 }
+
+#include "mcc/program/program_scope_apply.h"
 
 #endif //MCC_PROGRAM_SCOPE_H

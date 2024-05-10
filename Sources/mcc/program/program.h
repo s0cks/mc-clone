@@ -59,6 +59,7 @@ namespace mcc {
     class Program : public res::ResourceTemplate<res::kProgramType> {
       friend class ProgramLinker;
       friend class ProgramBuilder;
+      friend class ApplyProgramScope;
     public:
       struct ActiveAttribute {
         GLenum type;
@@ -109,6 +110,14 @@ namespace mcc {
         FOR_EACH_PROGRAM_PROPERTY(DEFINE_PROGRAM_PROPERTY)
   #undef DEFINE_PROGRAM_PROPERTY
       };
+      
+      static void UseProgram(const ProgramId id);
+      static void DeleteProgram(const ProgramId id);
+
+      static inline void
+      UseDefault() {
+        return UseProgram(kInvalidProgramId);
+      }
     protected:
       ProgramId id_;
 
@@ -162,40 +171,6 @@ namespace mcc {
 
       virtual GLint GetUniformBlockIndex(const std::string& name) const {
         return glGetUniformBlockIndex(GetProgramId(), name.c_str());
-      }
-
-      virtual void SetVec4(const std::string& name, const glm::vec4& value) const {
-        glUniform4fv(GetUniformLocation(name), 1, &value[0]);
-        CHECK_GL(FATAL);
-      }
-
-      virtual void SetVec3(const std::string& name, const glm::vec3& value) const {
-        glUniform3fv(GetUniformLocation(name), 1, &value[0]);
-        CHECK_GL(FATAL);
-      }
-
-      virtual void SetVec2(const std::string& name, const glm::vec2& value) const {
-        glUniform2fv(GetUniformLocation(name), 1, glm::value_ptr(value));
-        CHECK_GL(FATAL);
-      }
-
-      virtual void SetMat4(const std::string& name, const glm::mat4& value) const {
-        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
-        CHECK_GL(FATAL);
-      }
-
-      virtual void SetFloat(const std::string& name, const float& value) const {
-        glUniform1f(GetUniformLocation(name), value);
-        CHECK_GL(FATAL);
-      }
-
-      virtual void SetInt(const std::string& name, const GLint value) const {
-        glUniform1i(GetUniformLocation(name), value);
-        CHECK_GL(FATAL);
-      }
-
-      virtual inline void SetBool(const std::string& name, const bool value = true) const {
-        return SetInt(name, value ? 1 : 0);
       }
 
       virtual void SetUniformBlock(const std::string& name, const GLuint binding) const {

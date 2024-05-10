@@ -4,6 +4,7 @@
 
 #include "mcc/camera/camera.h"
 #include "mcc/shader/shader.h"
+#include "mcc/program/program_scope.h"
 
 namespace mcc::font {
   static FT_Library ft;
@@ -48,8 +49,8 @@ namespace mcc::font {
     shader_(Program::New(name)),
     chars_(),
     mesh_() {
-      shader_->Apply();
-      shader_->SetMat4("projection", glm::mat4(1.0f));
-      GlyphMapGenerator::Generate(name, chars_, size);
+    program::ApplyProgramScope prog(shader_.operator->());
+    prog.Set("projection", glm::mat4(1.0f));
+    GlyphMapGenerator::Generate(name, chars_, size);
   }
 }

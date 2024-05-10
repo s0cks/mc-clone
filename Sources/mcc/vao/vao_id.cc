@@ -2,7 +2,6 @@
 
 namespace mcc::vao {
   void GenerateVaoIds(VaoId* ids, const int num_ids) {
-    MCC_ASSERT(ids == nullptr);
     MCC_ASSERT(num_ids >= 1);
     glGenVertexArrays(num_ids, ids);
     CHECK_GL(FATAL);

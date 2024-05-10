@@ -1,12 +1,13 @@
 #include "mcc/font/font_renderer.h"
+#include "mcc/program/program_scope.h"
 
 namespace mcc::font {
   void FontRenderer::RenderText(const std::string& text, const glm::vec2 pos) {
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    shader()->Apply();
-    shader()->SetVec3("textColor", color_);
+    program::ApplyProgramScope prog(shader().operator->());
+    prog.Set("textColor", color_);
     glActiveTexture(GL_TEXTURE0);
 
     float startX = pos[0];

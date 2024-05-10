@@ -12,6 +12,7 @@
 #include "mcc/vbo/vbo_builder.h"
 #include "mcc/cull_face_scope.h"
 #include "mcc/camera/camera_ortho.h"
+#include "mcc/program/program_scope.h"
 #include "mcc/render/render_settings.h"
 
 namespace mcc::render {
@@ -98,12 +99,11 @@ namespace mcc::render {
     const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
-    program_->Apply();
-    program_->SetInt("tex", 0);
-    program_->SetMat4("projection", projection);
-    program_->SetMat4("view", view);
-    program_->SetMat4("model", model);
-    program_->Apply();
+    program::ApplyProgramScope program(program_.operator->());
+    program.Set("tex", 0);
+    program.Set("projection", projection);
+    program.Set("view", view);
+    program.Set("model", model);
     draw_scope.DrawTriangles();
   }
 }

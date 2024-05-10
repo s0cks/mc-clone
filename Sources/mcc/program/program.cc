@@ -16,6 +16,18 @@ namespace mcc::program {
     subscriber.on_next(event);
   }
 
+  void Program::UseProgram(const ProgramId id) {
+    MCC_ASSERT(IsValidProgramId(id));
+    glUseProgram(id);
+    CHECK_GL(FATAL);
+  }
+
+  void Program::DeleteProgram(const ProgramId id) {
+    MCC_ASSERT(IsValidProgramId(id) && id != 0); //TODO: better assertion
+    glDeleteProgram(id);
+    CHECK_GL(FATAL);
+  }
+
   Program::Program(const ProgramId id):
     res::ResourceTemplate<res::kProgramType>(),
     id_(id) {

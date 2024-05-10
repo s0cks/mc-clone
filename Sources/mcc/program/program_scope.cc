@@ -2,6 +2,10 @@
 #include "mcc/program/program.h"
 
 namespace mcc::program {
+  ProgramId ProgramScope::GetProgramId() const {
+    return GetProgram()->GetProgramId();
+  }
+
   void ProgramUboBindScope::Bind(const std::string& name, Ubo* ubo) {
     MCC_ASSERT(ubo);
     const auto index = index_++;

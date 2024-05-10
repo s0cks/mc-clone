@@ -51,9 +51,9 @@ namespace mcc::render {
     const auto model = glm::mat4(1.0f);
     vao::VaoBindScope vao_scope(vao);
     vbo::VboDrawScope draw_scope(vbo);
-    program_->Apply();
-    program_->SetMat4("model", model);
-    program_->SetInt("tex", 0);
+    program::ApplyProgramScope prog(program_.operator->());
+    prog.Set("model", model);
+    prog.Set("tex", 0);
     program_scope.Bind("Camera", camera_ubo);
 
     draw_scope.DrawTriangles();
