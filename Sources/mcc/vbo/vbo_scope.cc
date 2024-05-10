@@ -7,10 +7,10 @@ namespace mcc::vbo {
   }
 
   WriteOnlyVboScope::WriteOnlyVboScope(Vbo* vbo):
-    gfx::WriteOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetSize()) { //TODO: use Vbo::kGlType
+    gfx::WriteOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetTotalSize()) { //TODO: use Vbo::kGlType
   }
 
   ReadOnlyVboScope::ReadOnlyVboScope(Vbo* vbo):
-    gfx::ReadOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetSize()) { //TODO: use Vbo::kGlType
+    gfx::ReadOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetTotalSize()) { //TODO: use Vbo::kGlType
   }
 }

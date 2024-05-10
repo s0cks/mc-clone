@@ -21,7 +21,7 @@ namespace mcc::skybox {
     VertexList vertices;
     GenerateSkyboxVertices(vertices);
     vbo::VboBuilder<skybox::Vertex,
-                    skybox::PosAttr> builder(vertices, vbo::kDynamicDraw);
+                    skybox::PosAttr> builder(vertices, gfx::kDynamicDrawUsage);
     return builder.Build()
       .as_blocking()
       .first();

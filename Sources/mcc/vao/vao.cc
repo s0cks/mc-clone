@@ -16,8 +16,7 @@ namespace mcc::vao {
   }
 
   Vao::Vao(const VaoId id):
-    Object(),
-    id_(id) {
+    ObjectTemplate(id) {
     vaos_.insert(this);
     Publish<VaoCreatedEvent>(this);
   }

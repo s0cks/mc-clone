@@ -8,6 +8,8 @@
 #include "mcc/platform.h"
 #include "mcc/resource/resource.h"
 
+#include "mcc/gfx_object.h"
+
 #include "mcc/texture/texture_id.h"
 #include "mcc/texture/texture_events.h"
 #include "mcc/texture/texture_loader.h"
@@ -54,7 +56,8 @@ namespace mcc {
   //TODO:
 #undef DEFINE_ON_TEXTURE_EVENT
 
-    class Texture : public gfx::Resource,
+    class Texture : public gfx::ObjectTemplate<TextureId>,
+                    public gfx::Resource,
                     public res::ResourceTemplate<res::kTextureType>  {
       friend class TextureBindScope;
       friend class TextureBuilder;
@@ -70,7 +73,7 @@ namespace mcc {
 
       template<class E, typename... Args>
       void Publish(Args... args) const {
-        E event(GetTextureId(), args...);
+        E event(GetId(), args...);
         return Publish(&event);
       }
 
@@ -90,22 +93,12 @@ namespace mcc {
     public:
       Texture() = default;
       explicit Texture(const TextureId id):
+        ObjectTemplate(id),
         gfx::Resource(),
-        res::ResourceTemplate<res::kTextureType>(),
-        id_(id) {
-      }
-      Texture(const Texture& rhs):
-        gfx::Resource(),
-        res::ResourceTemplate<res::kTextureType>(),
-        id_(rhs.id_) {
+        res::ResourceTemplate<res::kTextureType>() {
       }
       ~Texture() override = default;
       virtual TextureTarget GetTextureTarget() const = 0;
-      virtual std::string ToString() const;
-
-      TextureId GetTextureId() const {
-        return id_;
-      }
 
       TextureWrap GetTextureWrap() const;
 

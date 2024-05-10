@@ -9,10 +9,10 @@ namespace mcc {
   namespace ibo {
     class IboBuilder {
     protected:
-      Usage usage_;
+      gfx::Usage usage_;
 
       IboBuilder():
-        usage_(kDefaultUsage) {
+        usage_(gfx::kDefaultUsage) {
       }
 
       template<class IboType>
@@ -23,11 +23,11 @@ namespace mcc {
       virtual uint64_t GetLength() const = 0;
       virtual uint64_t GetIndexSize() const = 0;
 
-      void SetUsage(const Usage& rhs) {
+      void SetUsage(const gfx::Usage& rhs) {
         usage_ = rhs;
       }
 
-      virtual Usage GetUsage() const {
+      virtual gfx::Usage GetUsage() const {
         return usage_;
       }
       

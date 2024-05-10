@@ -2,9 +2,11 @@
 #define MCC_VBO_H
 
 #include "mcc/vbo/vbo_id.h"
-#include "mcc/vbo/vbo_usage.h"
 #include "mcc/vbo/vbo_events.h"
 #include "mcc/vbo/vbo_layout.h"
+
+#include "mcc/gfx_usage.h"
+#include "mcc/gfx_buffer_object.h"
 
 namespace mcc {
   namespace vbo {
@@ -27,7 +29,7 @@ namespace mcc {
     FOR_EACH_VBO_EVENT(DEFINE_ON_VBO_EVENT)
 #undef DEFINE_ON_VBO_EVENT
 
-    class Vbo {
+    class Vbo : public gfx::BufferObjectTemplate<VboId> {
       friend class VboScope;
       friend class VboBindScope;
       friend class VboUpdateScope;
@@ -36,7 +38,7 @@ namespace mcc {
       static void PublishEvent(VboEvent* event);
       static void BindVbo(const VboId id);
       static void DeleteVbos(const VboId* ids, const int num_ids);
-      static void PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const VboUsage usage);
+      static void PutVboData(const uint8_t* bytes, const uint64_t num_bytes, const gfx::Usage usage);
       static void UpdateVboData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes);
 
       static inline void
@@ -61,19 +63,11 @@ namespace mcc {
         return PublishEvent((VboEvent*) &event);
       }
     protected:
-      VboId id_;
-      uint64_t length_;
-      uint64_t vertex_size_;
-      VboUsage usage_;
-
-      explicit Vbo(const VboId id,
-                   const uint64_t length,
-                   const uint64_t vertex_size,
-                   const VboUsage usage):
-        id_(id),
-        length_(length),
-        vertex_size_(vertex_size),
-        usage_(usage) {
+      Vbo(const VboId id,
+          const uword vertex_size,
+          const uword length,
+          const gfx::Usage usage):
+        BufferObjectTemplate(id, vertex_size, length, usage) {
       }
 
       template<class E, typename... Args>
@@ -85,8 +79,8 @@ namespace mcc {
         length_ = length;
       }
     public:
-      virtual ~Vbo() = default;
-      std::string ToString() const;
+      ~Vbo() override = default;
+      std::string ToString() const override;
 
       void Update(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes) {
         Vbo::UpdateVboData(bytes, num_bytes);
@@ -94,26 +88,6 @@ namespace mcc {
 
       inline void Update(const uint8_t* bytes, const uint64_t num_bytes) {
         return Update(0, bytes, num_bytes);
-      }
-
-      VboId GetId() const {
-        return id_;
-      }
-
-      uint64_t GetLength() const {
-        return length_;
-      }
-
-      uint64_t GetVertexSize() const {
-        return vertex_size_;
-      }
-
-      uint64_t GetSize() const {
-        return GetLength() * GetVertexSize();
-      }
-      
-      VboUsage GetUsage() const {
-        return usage_;
       }
 
       rx::observable<VboEvent*> OnEvent() const {
@@ -128,7 +102,7 @@ namespace mcc {
       FOR_EACH_VBO_EVENT(DEFINE_ON_VBO_EVENT)
 #undef DEFINE_ON_VBO_EVENT
     private:
-      static Vbo* New(const VboId id, const uint64_t length, const uint64_t vertex_size, const VboUsage usage);
+      static Vbo* New(const VboId id, const uint64_t length, const uint64_t vertex_size, const gfx::Usage usage);
     };
   }
   using vbo::Vbo;

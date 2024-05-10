@@ -10,7 +10,7 @@ namespace mcc::texture {
   std::string Texture2d::ToString() const {
     std::stringstream ss;
     ss << "Texture2d(";
-    ss << "id=" << GetTextureId();
+    ss << "id=" << GetId();
     ss << ")";
     return ss.str();
   }

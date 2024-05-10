@@ -1,6 +1,7 @@
 #ifndef MCC_RBO_H
 #define MCC_RBO_H
 
+#include "mcc/gfx_object.h"
 #include "mcc/rbo/rbo_id.h"
 #include "mcc/rbo/rbo_size.h"
 #include "mcc/rbo/rbo_events.h"
@@ -28,7 +29,7 @@ namespace mcc {
 #undef DEFINE_ON_RBO_EVENT
 
     class RboFactory;
-    class Rbo {
+    class Rbo : public gfx::ObjectTemplate<RboId> {
       friend class RboFactory;
     public:
       static int32_t GetMaxSize();
@@ -49,14 +50,13 @@ namespace mcc {
         return PublishEvent((RboEvent*) &event);
       }
     protected:
-      RboId id_;
       RboFormat format_;
       RboSize size_;
 
       explicit Rbo(const RboId id,
                    const RboFormat format,
                    const RboSize& size):
-        id_(id),
+        ObjectTemplate(id),
         format_(format),
         size_(size) {
       }
@@ -67,11 +67,7 @@ namespace mcc {
         return PublishEvent<E>(this, args...);
       }
     public:
-      virtual ~Rbo() = default;
-
-      RboId GetId() const {
-        return id_;
-      }
+      ~Rbo() override = default;
 
       RboFormat GetFormat() const {
         return format_;
@@ -92,8 +88,8 @@ namespace mcc {
       inline rx::observable<RboEvent*> OnEvent() const {
         return OnRboEvent(GetId());
       }
-
-      virtual std::string ToString() const;
+      
+      std::string ToString() const override;
 
 #define DEFINE_ON_RBO_EVENT(Name)                                           \
       inline rx::observable<Name##Event*> On##Name##Event() const {         \

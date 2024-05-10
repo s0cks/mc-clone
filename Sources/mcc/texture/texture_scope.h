@@ -19,7 +19,7 @@ namespace mcc::texture {
     }
 
     TextureId GetTextureId() const {
-      return GetTexture()->GetTextureId();
+      return GetTexture()->GetId();
     }
     
     TextureTarget GetTextureTarget() const {

@@ -45,13 +45,10 @@ namespace mcc::ubo {
   }
 
   Ubo::Ubo(const UboId id,
-           const uint64_t elem_size,
-           const uint64_t len,
-           const GLenum usage):
-    id_(id),
-    elem_size_(elem_size),
-    length_(len),
-    usage_(usage) {
+           const uword elem_size,
+           const uword length,
+           const gfx::Usage usage):
+    BufferObjectTemplate(id, elem_size, length, usage) {
     Publish<UboCreatedEvent>(this);
   }
 

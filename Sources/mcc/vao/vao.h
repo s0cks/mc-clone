@@ -1,7 +1,7 @@
 #ifndef MCC_VAO_H
 #define MCC_VAO_H
 
-#include "mcc/object.h"
+#include "mcc/gfx_object.h"
 #include "mcc/vao/vao_id.h"
 #include "mcc/vao/vao_events.h"
 
@@ -20,7 +20,7 @@ namespace mcc {
     FOR_EACH_VAO_EVENT(DEFINE_ON_VAO_EVENT)
 #undef DEFINE_ON_VAO_EVENT
 
-    class Vao : public Object {
+    class Vao : public gfx::ObjectTemplate<VaoId> {
       friend class VaoBindScope;
     public:
       struct VaoIdComparator {
@@ -50,16 +50,10 @@ namespace mcc {
         return BindVao(kInvalidVaoId);
       }
     protected:
-      VaoId id_;
-
       explicit Vao(const VaoId id);
     public:
       ~Vao() override;
       std::string ToString() const override;
-
-      VaoId GetId() const {
-        return id_;
-      }
 
       inline bool IsValid() const {
         return IsValidVaoId(GetId());

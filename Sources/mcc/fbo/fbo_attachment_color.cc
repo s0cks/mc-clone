@@ -7,16 +7,20 @@
 #include "mcc/texture/texture_builder.h"
 
 namespace mcc::fbo {
+  TextureId ColorAttachment::GetTextureId() const {
+    return GetTexture()->GetId();
+  }
+
   std::string ColorAttachment::ToString() const {
     std::stringstream ss;
     ss << "fbo::ColorAttachment(";
-    ss << "texture=" << GetTexture()->GetTextureId();
+    ss << "texture=" << GetTexture()->ToString();
     ss << ")";
     return ss.str();
   }
 
   void ColorAttachment::AttachTo(const FboTarget target) {
-    Fbo::AttachTexture2D(target, GetAttachmentPoint(), GetTexture()->GetTextureId());
+    Fbo::AttachTexture2D(target, GetAttachmentPoint(), GetTexture()->GetId());
   }
 
   ColorAttachment* ColorAttachment::New(const texture::TextureFormat format,

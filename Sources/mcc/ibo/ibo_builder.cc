@@ -6,7 +6,7 @@ namespace mcc::ibo {
     Ibo::BindIbo(id);
     Ibo::InitBufferData(GetData(), GetTotalSize(), GetUsage());
     Ibo::BindDefaultIbo();
-    return IboType::New(id, GetUsage(), GetLength());
+    return IboType::New(id, GetLength(), GetUsage());
   }
 
   rx::observable<UByteIbo*> UByteIboBuilder::Build(const int num) const {

@@ -3,11 +3,12 @@
 
 #include <vector>
 #include "mcc/gfx_target.h"
-#include "mcc/buffer_object.h"
+
+#include "mcc/gfx_usage.h"
+#include "mcc/gfx_buffer_object.h"
 
 #include "mcc/ibo/ibo_id.h"
 #include "mcc/ibo/ibo_type.h"
-#include "mcc/ibo/ibo_usage.h"
 #include "mcc/ibo/ibo_events.h"
 #include "mcc/ibo/ibo_registry.h"
 
@@ -37,7 +38,7 @@ namespace mcc {
     class UShortIbo;
     class UIntIbo;
     class IboScope;
-    class Ibo {
+    class Ibo : public gfx::BufferObjectTemplate<IboId> {
       friend class UByteIbo;
       friend class UShortIbo;
       friend class UIntIbo;
@@ -69,7 +70,7 @@ namespace mcc {
       }
 
       static void BindIbo(const IboId id);
-      static void InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage);
+      static void InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const gfx::Usage usage);
       static void UpdateBufferData(const uint64_t offset, const uint8_t* bytes, const uint64_t num_bytes);
       
       static inline void
@@ -78,7 +79,7 @@ namespace mcc {
       }
 
       static inline void
-      InitBufferData(const uint64_t num_bytes, const Usage usage) {
+      InitBufferData(const uint64_t num_bytes, const gfx::Usage usage) {
         return InitBufferData(NULL, num_bytes, usage);
       }
       
@@ -93,47 +94,32 @@ namespace mcc {
         return PublishEvent<E>(this, args...);
       }
     protected:
-      IboId id_;
-      Usage usage_;
-      uint64_t length_;
-      
       Ibo(const IboId id,
-          const Usage usage,
-          const uint64_t length):
-        id_(id),
-        usage_(usage),
-        length_(length) {
+          const uword elem_size,
+          const uword length,
+          const gfx::Usage usage):
+        BufferObjectTemplate(id, elem_size, length, usage) {
       }
 
       void Destroy();
     public:
-      virtual ~Ibo() = default;
-      virtual std::string ToString() const = 0;
-      virtual uint64_t GetSize() const = 0;
+      ~Ibo() override = default;
       virtual GLenum GetType() const = 0;
 
-      IboId GetId() const {
-        return id_;
-      }
-      
-      Usage GetUsage() const {
+      gfx::Usage GetUsage() const {
         return usage_;
       }
 
-      uint64_t GetLength() const {
-        return length_;
-      }
-
       inline bool HasDynamicUsage() const {
-        return IsDynamic(GetUsage());
+        return gfx::IsDynamicUsage(GetUsage());
       }
 
       inline bool HasStaticUsage() const {
-        return IsStatic(GetUsage());
+        return gfx::IsStaticUsage(GetUsage());
       }
 
       inline bool HasStreamUsage() const {
-        return IsStream(GetUsage());
+        return gfx::IsStreamUsage(GetUsage());
       }
 
       void Bind() const;
@@ -189,9 +175,9 @@ namespace mcc {
       }
     protected:
       IboTemplate(const IboId id,
-                  const Usage usage,
-                  const uint64_t length):
-        Ibo(id, usage, length) {
+                  const uword length,
+                  const gfx::Usage usage):
+        Ibo(id, T::GetSize(), length, usage) {
       }
     public:
       ~IboTemplate() override = default;
@@ -215,27 +201,23 @@ namespace mcc {
       inline void Update(const IndexList& indices) {
         return Update(&indices[0], indices.size());
       }
-
-      uint64_t GetSize() const override {
-        return T::CalculateBufferSize(GetLength());
-      }
     };
 
     class UByteIbo : public IboTemplate<UnsignedByte> {
       friend class IboBuilder;
     protected:
       UByteIbo(const IboId id,
-               const Usage usage,
-               const uint64_t length):
-        IboTemplate(id, usage, length) {
+               const uword length,
+               const gfx::Usage usage):
+        IboTemplate(id, length, usage) {
       }
     public:
       ~UByteIbo() override = default;
       std::string ToString() const override;
     protected:
       static inline UByteIbo*
-      New(const IboId id, const Usage usage, const uint64_t length) {
-        const auto ibo = new UByteIbo(id, usage, length);
+      New(const IboId id, const uword length, const gfx::Usage usage) {
+        const auto ibo = new UByteIbo(id, length, usage);
         MCC_ASSERT(ibo);
         PublishEvent<IboCreatedEvent>(ibo);
         return ibo;
@@ -248,15 +230,15 @@ namespace mcc {
         return (const UByteIbo*) ibo;
       }
 
-      static UByteIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
-      static UByteIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
+      static UByteIbo* New(const uword num_indices, const gfx::Usage usage = gfx::kDefaultUsage);
+      static UByteIbo* New(const IndexList& indices, const gfx::Usage usage = gfx::kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
       static inline UByteIbo*                                             \
       New##Name(const IndexList& indices) {                               \
-        return New(indices, k##Name);                                     \
+        return New(indices, gfx::k##Name##Usage);                         \
       }
-      FOR_EACH_IBO_USAGE(DEFINE_NEW_USAGE)
+      FOR_EACH_GFX_USAGE(DEFINE_NEW_USAGE)
 #undef DEFINE_NEW_USAGE
     };
 
@@ -264,17 +246,17 @@ namespace mcc {
       friend class IboBuilder;
     protected:
       UShortIbo(const IboId id,
-                const Usage usage,
-                const uint64_t length):
-        IboTemplate(id, usage, length) {
+                const uword length,
+                const gfx::Usage usage):
+        IboTemplate(id, length, usage) {
       }
     public:
       ~UShortIbo() override = default;
       std::string ToString() const override;
     protected:
       static inline UShortIbo*
-      New(const IboId id, const Usage usage, const uint64_t length) {
-        const auto ibo = new UShortIbo(id, usage, length);
+      New(const IboId id, const uword length, const gfx::Usage usage) {
+        const auto ibo = new UShortIbo(id, length, usage);
         MCC_ASSERT(ibo);
         PublishEvent<IboCreatedEvent>(ibo);
         return ibo;
@@ -287,15 +269,15 @@ namespace mcc {
         return (const UShortIbo*) ibo;
       }
 
-      static UShortIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
-      static UShortIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
+      static UShortIbo* New(const uword num_indices, const gfx::Usage usage = gfx::kDefaultUsage);
+      static UShortIbo* New(const IndexList& indices, const gfx::Usage usage = gfx::kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
       static inline UShortIbo*                                            \
       New##Name(const IndexList& indices) {                               \
-        return New(indices, k##Name);                                     \
+        return New(indices, gfx::k##Name##Usage);                         \
       }
-      FOR_EACH_IBO_USAGE(DEFINE_NEW_USAGE)
+      FOR_EACH_GFX_USAGE(DEFINE_NEW_USAGE)
 #undef DEFINE_NEW_USAGE
     };
 
@@ -303,17 +285,17 @@ namespace mcc {
       friend class IboBuilder;
     private:
       UIntIbo(const IboId id,
-              const Usage usage,
-              const uint64_t length):
-        IboTemplate(id, usage, length) {
+              const uword length,
+              const gfx::Usage usage):
+        IboTemplate(id, length, usage) {
       }
     public:
       ~UIntIbo() override = default;
       std::string ToString() const override;
     private:
       static inline UIntIbo*
-      New(const IboId id, const Usage usage, const uint64_t length) {
-        const auto ibo = new UIntIbo(id, usage, length);
+      New(const IboId id, const uword length, const gfx::Usage usage) {
+        const auto ibo = new UIntIbo(id, length, usage);
         MCC_ASSERT(ibo);
         PublishEvent<IboCreatedEvent>(ibo);
         return ibo;
@@ -326,15 +308,15 @@ namespace mcc {
         return (const UIntIbo*) ibo;
       }
 
-      static UIntIbo* New(const uint64_t num_indices, const Usage usage = kDefaultUsage);
-      static UIntIbo* New(const IndexList& indices, const Usage usage = kDefaultUsage);
+      static UIntIbo* New(const uword num_indices, const gfx::Usage usage = gfx::kDefaultUsage);
+      static UIntIbo* New(const IndexList& indices, const gfx::Usage usage = gfx::kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
       static inline UIntIbo*                                              \
       New##Name(const IndexList& indices) {                               \
-        return New(indices, k##Name);                                     \
+        return New(indices, gfx::k##Name##Usage);                         \
       }
-      FOR_EACH_IBO_USAGE(DEFINE_NEW_USAGE)
+      FOR_EACH_GFX_USAGE(DEFINE_NEW_USAGE)
 #undef DEFINE_NEW_USAGE
     };
 

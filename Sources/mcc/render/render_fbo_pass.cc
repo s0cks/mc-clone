@@ -61,7 +61,7 @@ namespace mcc::render {
     UIntIbo::IndexList indices;
     shape::NewTexturedCenteredRect(vertices, indices, glm::vec2(0.0f), glm::vec2(1.0f), kBlack);
     vbo::VboBuilder<Vertex,
-                    PosAttr, UvAttr, ColorAttr> builder(vertices, vbo::kStaticDraw);
+                    PosAttr, UvAttr, ColorAttr> builder(vertices, gfx::kStaticDrawUsage);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();

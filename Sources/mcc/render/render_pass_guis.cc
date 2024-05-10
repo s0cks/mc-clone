@@ -106,7 +106,7 @@ namespace mcc::render {
     MCC_ASSERT(num_vertices >= 1);
     DLOG(INFO) << "creating gui vbo w/ " << num_vertices << " vertices....";
     vbo::VboBuilder<gui::Vertex,
-                    gui::PosAttr, gui::UvAttr, gui::ColorAttr> builder(num_vertices, vbo::kDynamicDraw);
+                    gui::PosAttr, gui::UvAttr, gui::ColorAttr> builder(num_vertices, gfx::kDynamicDrawUsage);
     const auto vbo = builder.Build()
       .as_blocking()
       .first();

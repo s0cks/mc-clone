@@ -37,7 +37,7 @@ namespace mcc::vbo {
     virtual uint64_t GetLength() const = 0;
     virtual uint64_t GetVertexLength() const = 0;
     virtual const uint8_t* GetVertexData() const = 0;
-    virtual VboUsage GetUsage() const = 0;
+    virtual gfx::Usage GetUsage() const = 0;
     virtual rx::observable<Vbo*> Build(const int num = 1) const = 0;
   };
 
@@ -49,11 +49,11 @@ namespace mcc::vbo {
   protected:
     VertexList data_;
     uint64_t length_;
-    VboUsage usage_;
+    gfx::Usage usage_;
 
     VboBuilderTemplate(const VertexList& data, 
                        const uint64_t length,
-                       const VboUsage usage):
+                       const gfx::Usage usage):
       VboBuilderBase(),
       data_(data),
       length_(length),
@@ -62,7 +62,7 @@ namespace mcc::vbo {
   public:
     ~VboBuilderTemplate() override = default;
 
-    VboUsage GetUsage() const override {
+    gfx::Usage GetUsage() const override {
       return usage_;
     }
 
@@ -106,10 +106,10 @@ namespace mcc::vbo {
   public:
     typedef std::vector<Vertex> VertexList;
   public:
-    VboBuilder(const VertexList& vertices, const VboUsage usage):
+    VboBuilder(const VertexList& vertices, const gfx::Usage usage):
       VboBuilderTemplate<Vertex, Attributes...> (vertices, 0, usage) {
     }
-    explicit VboBuilder(const uint64_t num_vertices = 0, const VboUsage usage = kDefaultVboUsage):
+    explicit VboBuilder(const uint64_t num_vertices = 0, const gfx::Usage usage = gfx::kDefaultUsage):
       VboBuilderTemplate<Vertex, Attributes...> (VertexList{}, num_vertices, usage) {
     }
     ~VboBuilder() override = default;

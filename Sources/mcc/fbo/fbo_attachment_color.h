@@ -39,6 +39,8 @@ namespace mcc::fbo {
       return texture_;
     }
 
+    virtual TextureId GetTextureId() const;
+
     virtual Level GetLevel() const {
       return level_;
     }

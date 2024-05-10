@@ -16,7 +16,7 @@ namespace mcc::texture {
   std::string CubeMap::ToString() const {
     std::stringstream ss;
     ss << "CubeMap(";
-    ss << "id=" << GetTextureId();
+    ss << "id=" << GetId();
     ss << ")";
     return ss.str();
   }

@@ -19,7 +19,7 @@ namespace mcc::ibo {
     CHECK_GL(FATAL);
   }
 
-  void Ibo::InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const Usage usage) {
+  void Ibo::InitBufferData(const uint8_t* bytes, const uint64_t num_bytes, const gfx::Usage usage) {
     glBufferData(kGlTarget, num_bytes, bytes, usage);
     CHECK_GL(FATAL);
   }
@@ -62,7 +62,7 @@ namespace mcc::ibo {
     ss << "UByteIbo(";
     ss << "id=" << GetId();
     ss << "length=" << GetLength() << ", ";
-    ss << "size=" << data::byte_t(GetSize());
+    ss << "size=" << data::byte_t(GetTotalSize());
     ss << ")";
     return ss.str();
   }
@@ -73,7 +73,7 @@ namespace mcc::ibo {
     ss << "UShortIbo(";
     ss << "id=" << GetId();
     ss << "length=" << GetLength() << ", ";
-    ss << "size=" << data::byte_t(GetSize());
+    ss << "size=" << data::byte_t(GetTotalSize());
     ss << ")";
     return ss.str();
   }
@@ -84,12 +84,12 @@ namespace mcc::ibo {
     ss << "UIntIbo(";
     ss << "id=" << GetId() << ", ";
     ss << "length=" << GetLength() << ", ";
-    ss << "size=" << data::byte_t(GetSize());
+    ss << "size=" << data::byte_t(GetTotalSize());
     ss << ")";
     return ss.str();
   }
 
-  UByteIbo* UByteIbo::New(const IndexList& indices, const Usage usage) {
+  UByteIbo* UByteIbo::New(const IndexList& indices, const gfx::Usage usage) {
     UByteIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);
@@ -98,7 +98,7 @@ namespace mcc::ibo {
       .first();
   }
 
-  UByteIbo* UByteIbo::New(const uint64_t num_indices, const Usage usage) {
+  UByteIbo* UByteIbo::New(const uword num_indices, const gfx::Usage usage) {
     UByteIboBuilder builder(num_indices);
     builder.SetUsage(usage);
     return builder.Build()
@@ -106,7 +106,7 @@ namespace mcc::ibo {
       .first();
   }
 
-  UShortIbo* UShortIbo::New(const IndexList& indices, const Usage usage) {
+  UShortIbo* UShortIbo::New(const IndexList& indices, const gfx::Usage usage) {
     UShortIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);
@@ -115,7 +115,7 @@ namespace mcc::ibo {
       .first();
   }
 
-  UShortIbo* UShortIbo::New(const uint64_t num_indices, const Usage usage) {
+  UShortIbo* UShortIbo::New(const uword num_indices, const gfx::Usage usage) {
     UShortIboBuilder builder(num_indices);
     builder.SetUsage(usage);
     return builder.Build()
@@ -123,7 +123,7 @@ namespace mcc::ibo {
       .first();
   }
 
-  UIntIbo* UIntIbo::New(const uint64_t num_indices, const Usage usage) {
+  UIntIbo* UIntIbo::New(const uword num_indices, const gfx::Usage usage) {
     UIntIboBuilder builder(num_indices);
     builder.SetUsage(usage);
     return builder.Build()
@@ -131,7 +131,7 @@ namespace mcc::ibo {
       .first();
   }
 
-  UIntIbo* UIntIbo::New(const IndexList& indices, const Usage usage) {
+  UIntIbo* UIntIbo::New(const IndexList& indices, const gfx::Usage usage) {
     UIntIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);

@@ -47,7 +47,7 @@ namespace mcc::material {
     ~MaterialComponent() = default;
 
     TextureId GetTextureId() const {
-      return texture->GetTextureId();
+      return texture->GetId();
     }
 
 #define DEFINE_TYPE_CHECK(Name)       \

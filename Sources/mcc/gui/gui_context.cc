@@ -69,7 +69,7 @@ namespace mcc::gui {
 
   static inline Ibo*
   CreateIbo(const int32_t num_indices) {
-    return UIntIbo::New(num_indices, ibo::kDefaultUsage);
+    return UIntIbo::New(num_indices, gfx::kDynamicDrawUsage);
   }
 
   static inline Ibo*

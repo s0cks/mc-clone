@@ -2,11 +2,11 @@
 #define MCC_IBO_ID_H
 
 #include "mcc/rx.h"
-#include "mcc/buffer_object.h"
+#include "mcc/gfx.h"
 
 namespace mcc {
   namespace ibo {
-    typedef BufferObjectId IboId;
+    typedef GLuint IboId;
     static constexpr const IboId kInvalidIboId = 0;
 
     static inline bool

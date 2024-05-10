@@ -2,6 +2,7 @@
 #define MCC_UBO_BUILDER_H
 
 #include "mcc/rx.h"
+#include "mcc/gfx_usage.h"
 #include "mcc/ubo/ubo_id.h"
 
 namespace mcc::ubo {
@@ -29,7 +30,7 @@ namespace mcc::ubo {
     virtual const uint8_t* GetData() const = 0;
     virtual uint64_t GetLength() const = 0;
     virtual uint64_t GetElementSize() const = 0;
-    virtual GLenum GetUsage() const = 0;
+    virtual gfx::Usage GetUsage() const = 0;
 
     uint64_t GetTotalSize() const {
       return GetElementSize() * GetLength();
@@ -46,15 +47,15 @@ namespace mcc::ubo {
   protected:
     std::vector<T> data_;
     uint64_t length_;
-    GLenum usage_;
+    gfx::Usage usage_;
   public:
-    explicit UboBuilder(const uint64_t length = 0, const GLenum usage = GL_DYNAMIC_DRAW):
+    explicit UboBuilder(const uint64_t length = 0, const gfx::Usage usage = gfx::kDefaultUsage):
       UboBuilderBase(),
       data_(),
       length_(length),
       usage_(usage) {
     }
-    explicit UboBuilder(const T& value, const GLenum usage = GL_DYNAMIC_DRAW):
+    explicit UboBuilder(const T& value, const gfx::Usage usage = gfx::kDefaultUsage):
       UboBuilder(0, usage) {
       Append(value);
     }
@@ -80,11 +81,11 @@ namespace mcc::ubo {
            : NULL;
     }
 
-    void SetUsage(const GLenum rhs) {
+    void SetUsage(const gfx::Usage rhs) {
       usage_ = rhs;
     }
 
-    GLenum GetUsage() const override {
+    gfx::Usage GetUsage() const override {
       return usage_;
     }
 
