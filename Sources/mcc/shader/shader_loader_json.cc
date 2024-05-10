@@ -7,8 +7,8 @@ namespace mcc::shader {
     if(value().IsString()) {
       return std::string(value().GetString(), value().GetStringLength());
     } else if(value().IsObject()) {
-      json::ConstShaderObject shader(value().GetObject());
-      return shader.GetSource();
+      NOT_IMPLEMENTED(FATAL); //TODO: implement
+      return {};
     }
     return {};
   }

@@ -1,14 +1,25 @@
 #include "mcc/shader/shader_json.h"
-#include "mcc/common.h"
+#include "mcc/shader/shader.h"
+#include "mcc/shader/shader_uri.h"
+#include "mcc/shader/shader_code.h"
 
 namespace mcc::json {
-  static inline void Test() {
-    json::Document doc;
-    json::ParseJson("", doc);
-    const auto root = doc.GetObject();
-    json::SpecDocument<json::ConstShaderObject> spec(root);
-    const auto name = spec.GetName();
-    const auto type = spec.GetType();
-    const auto data = spec.GetData();
+  Shader* ShaderValue::GetShader() const {
+    if(IsString()) {
+      const auto val = std::string(value()->GetString(), value()->GetStringLength());
+      if(shader::IsValidShaderUri(val)) {
+        NOT_IMPLEMENTED(FATAL); //TODO: implement
+        return nullptr; //TODO: load shader from uri
+      }
+
+      NOT_IMPLEMENTED(FATAL); //TODO: implement
+      return nullptr; //TODO: load shader from raw code
+    } else if(IsObject()) {
+      NOT_IMPLEMENTED(FATAL); //TODO: implement
+    }
+
+    LOG(ERROR) << "invalid json type for " << (*this);
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 }

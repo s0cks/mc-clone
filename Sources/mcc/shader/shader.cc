@@ -65,46 +65,6 @@ namespace mcc::shader {
 
   static inline Shader*
   LoadShaderFromJson(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("file"));
-    MCC_ASSERT(uri.HasExtension("json"));
-
-    json::Document doc;
-    if(!json::ParseJson(uri, doc)) {
-      LOG(ERROR) << "failed to parse Shader document from: " << uri;
-      return nullptr;
-    }
-    
-    if(json::IsSchemaValidationEnabled()) {
-      const auto schema = json::GetSchema();
-      MCC_ASSERT(schema);
-      const auto result = schema->Validate(doc);
-    }
-
-    const auto root = doc.GetObject();
-    json::SpecDocument<json::ConstShaderObject> spec(root);
-    const auto name = spec.GetName();
-    const auto type = ParseShaderType(spec.GetType());
-    if(!type) {
-      LOG(ERROR) << "invalid 'type' property \"" << spec.GetType() << "\" for Shader document: " << uri;
-      return nullptr;
-    }
-
-    const auto data = spec.GetData();
-    const auto source = data.GetSource();
-    switch(*type) {
-      case kVertexShader: {
-        DLOG(INFO) << "creating new VertexShader \"" << name << "\" from: " << uri;
-        break;
-      }
-      case kFragmentShader: {
-        DLOG(INFO) << "creating new FragmentShader \"" << name << "\" from: " << uri;
-        break;
-      }
-      default:
-        LOG(ERROR) << "invalid ShaderType: " << (*type);
-        return nullptr;
-    }
-
     NOT_IMPLEMENTED(FATAL); //TODO: implement
     return nullptr;
   }

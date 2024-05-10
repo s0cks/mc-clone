@@ -33,18 +33,4 @@ namespace mcc {
     ASSERT_TRUE(json::ParseJson(uri::Uri(fmt::format("file://{0:s}/shaders/invalid.shader.json", FLAGS_resources)), doc));
     ASSERT_FALSE(IsValid(doc));
   }
-
-  TEST_F(ShaderJsonTest, Test_SourceIsUri) {
-    json::Document doc;
-    ASSERT_TRUE(json::ParseJson(uri::Uri(fmt::format("file://{0:s}/shaders/example-vertex-shader1.json", FLAGS_resources)), doc));
-    ASSERT_TRUE(IsValid(doc));
-    const auto root = doc.GetObject();
-    json::SpecDocument<json::ConstShaderObject> spec(root);
-    const auto name = spec.GetName();
-    const auto type = spec.GetType();
-    const auto data = spec.GetData();
-
-    const auto source = data.GetSource();
-    ASSERT_EQ(source, "file://example.vs");
-  }
 }
