@@ -6,7 +6,11 @@ namespace mcc::vbo {
     return GetVbo()->GetId();
   }
 
-  MappedVboScope::MappedVboScope(const gfx::Access access, Vbo* vbo):
-    gfx::MappedBufferScope(GL_ARRAY_BUFFER, access, vbo->GetSize()) {
+  WriteOnlyVboScope::WriteOnlyVboScope(Vbo* vbo):
+    gfx::WriteOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetSize()) { //TODO: use Vbo::kGlType
+  }
+
+  ReadOnlyVboScope::ReadOnlyVboScope(Vbo* vbo):
+    gfx::ReadOnlyMappedBufferScope<GL_ARRAY_BUFFER>(vbo->GetSize()) { //TODO: use Vbo::kGlType
   }
 }

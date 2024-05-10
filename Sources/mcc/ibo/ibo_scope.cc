@@ -6,7 +6,11 @@ namespace mcc::ibo {
     return GetIbo()->GetId();
   }
 
-  MappedIboScope::MappedIboScope(const gfx::Access access, Ibo* ibo):
-    gfx::MappedBufferScope(GL_ELEMENT_ARRAY_BUFFER, access, ibo->GetSize()) {
+  ReadOnlyIboScope::ReadOnlyIboScope(Ibo* ibo):
+    gfx::ReadOnlyMappedBufferScope<GL_ELEMENT_ARRAY_BUFFER>(ibo->GetSize()) { //TODO: use Ibo::kGlType
+  }
+
+  WriteOnlyIboScope::WriteOnlyIboScope(Ibo* ibo):
+    gfx::WriteOnlyMappedBufferScope<GL_ELEMENT_ARRAY_BUFFER>(ibo->GetSize()) { //TODO: use Ibo::kGlType
   }
 }

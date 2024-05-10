@@ -24,11 +24,16 @@ namespace mcc::vbo {
     VboId GetVboId() const;
   };
 
-  class MappedVboScope : public gfx::MappedBufferScope {
-  protected:
-    explicit MappedVboScope(const gfx::Access access, Vbo* vbo);
+  class ReadOnlyVboScope : public gfx::ReadOnlyMappedBufferScope<GL_ARRAY_BUFFER> { //TODO: use Vbo::kGlType
   public:
-    ~MappedVboScope() override = default;
+    explicit ReadOnlyVboScope(Vbo* vbo);
+    ~ReadOnlyVboScope() override = default;
+  };
+
+  class WriteOnlyVboScope : public gfx::WriteOnlyMappedBufferScope<GL_ARRAY_BUFFER> { //TODO: use Vbo::kGlType
+  public:
+    explicit WriteOnlyVboScope(Vbo* vbo);
+    ~WriteOnlyVboScope() override = default;
   };
 }
 

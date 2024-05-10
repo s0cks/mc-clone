@@ -194,64 +194,6 @@ namespace mcc {
   typedef gfx::BindScope<Resource> Resource##Scope;
 
   typedef glm::u64vec2 Dimension;
-
-  template<const GLenum Target,
-           const GLenum Access>
-  class MappedBufferScope {
-  protected:
-    uword ptr_;
-
-    static inline uword
-    MapBuffer() {
-      const auto ptr = glMapBuffer(Target, Access);
-      CHECK_GL(FATAL);
-      return ptr == NULL ? 0 : (uword) ptr;
-    }
-  public:
-    explicit MappedBufferScope(const uword ptr = MapBuffer()):
-      ptr_(ptr) {
-    }
-    virtual ~MappedBufferScope() {
-      if(IsMapped()) {
-        glUnmapBuffer(Target);
-        CHECK_GL(FATAL);
-      }
-    }
-
-    uword address() const {
-      return ptr_;
-    }
-
-    inline void* raw_ptr() const {
-      return (void*) address();
-    }
-
-    inline uint8_t* bytes() const {
-      return (uint8_t) address();
-    }
-
-    inline bool IsMapped() const {
-      return ptr_ != 0;
-    }
-  };
-
-  template<const GLenum Target>
-  class WriteOnlyMappedBufferScope : public MappedBufferScope<Target, GL_WRITE_ONLY> {
-  public:
-    explicit WriteOnlyMappedBufferScope(const uword ptr = MappedBufferScope<Target, GL_WRITE_ONLY>::MapBuffer()):
-      MappedBufferScope<Target, GL_WRITE_ONLY>(ptr) {
-    }
-    ~WriteOnlyMappedBufferScope() override = default;
-  };
-
-  template<const GLenum Target>
-  class ReadOnlyMappedBufferScope : public MappedBufferScope<Target, GL_READ_ONLY> {
-  public:
-    explicit ReadOnlyMappedBufferScope(const uword ptr = MappedBufferScope<Target, GL_READ_ONLY>::MapBuffer()):
-      MappedBufferScope<Target, GL_READ_ONLY>(ptr) {
-    }
-    ~ReadOnlyMappedBufferScope() override = default;
-  };
 }
 
 #endif //MCC_GFX_MISC_H

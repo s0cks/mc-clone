@@ -23,13 +23,16 @@ namespace mcc::ibo {
     IboId GetIboId() const;
   };
 
-  class MappedIboScope : public gfx::MappedBufferScope {
-  protected:
-    explicit MappedIboScope(const gfx::Access access, Ibo* ibo);
+  class ReadOnlyIboScope : public gfx::ReadOnlyMappedBufferScope<GL_ELEMENT_ARRAY_BUFFER> { //TODO: use Ibo::kGlTarget
   public:
-    ~MappedIboScope() override = default;
-    uint64_t GetSize() const;
-    uint64_t GetLength() const;
+    ReadOnlyIboScope(Ibo* ibo);
+    ~ReadOnlyIboScope() override = default;
+  };
+
+  class WriteOnlyIboScope : public gfx::WriteOnlyMappedBufferScope<GL_ELEMENT_ARRAY_BUFFER> { //TODO: use Ibo::kGlTarget
+  public:
+    WriteOnlyIboScope(Ibo* ibo);
+    ~WriteOnlyIboScope() override = default;
   };
 }
 

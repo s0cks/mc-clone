@@ -8,6 +8,10 @@
 
 namespace mcc::gfx {
   class MappedBufferScope : public Region {
+    DEFINE_NON_COPYABLE_TYPE(MappedBufferScope);
+
+    template<const GLenum Target, const Access A>
+    friend class MappedBufferScopeTemplate;
   public:
     template<typename T>
     class Iterator {
@@ -36,42 +40,15 @@ namespace mcc::gfx {
       }
     };
   private:
-    GLenum target_;
-    Access access_;
-
-    GLenum GetTarget() const {
-      return target_;
-    }
-
     static void UnmapBuffer(const GLenum target);
     static uword MapBuffer(const GLenum target, const Access access);
   protected:
-    MappedBufferScope(const GLenum target, const Access access, const uword size):
-      Region(),
-      target_(target),
-      access_(access) {
-      const auto address = MapBuffer(GetTarget(), GetAccess());
-      if(address == UNALLOCATED) {
-        DLOG(ERROR) << "failed to map buffer."; //TODO: better error handling.
-        return;
-      }
-      start_ = address;
-      size_ = size;
-    }
+    MappedBufferScope() = default;
   public:
-    ~MappedBufferScope() override {
-      if(IsMapped())
-        Release();
-    }
+    ~MappedBufferScope() override = default;
 
-    bool IsMapped() const {
-      return GetStartingAddress() != UNALLOCATED
-          && GetSize() > 0;
-    }
-
-    Access GetAccess() const {
-      return access_;
-    }
+    virtual GLenum GetTarget() const = 0;
+    virtual Access GetAccess() const = 0;
 
     bool IsReadOnly() const {
       return GetAccess() == kReadOnly;
@@ -85,10 +62,64 @@ namespace mcc::gfx {
       return GetAccess() == kReadWrite;
     }
 
+    bool IsMapped() const {
+      return GetStartingAddress() != UNALLOCATED
+          && GetSize() > 0;
+    }
+
     void Release() {
       MCC_ASSERT(IsMapped());
       return UnmapBuffer(GetTarget());
     }
+  };
+
+  template<const GLenum Target, const Access A>
+  class MappedBufferScopeTemplate : public MappedBufferScope {
+    DEFINE_NON_COPYABLE_TYPE(MappedBufferScopeTemplate);
+  protected:
+    explicit MappedBufferScopeTemplate(const uword size):
+      MappedBufferScope() {
+      const auto address = MappedBufferScope::MapBuffer(GetTarget(), GetAccess());
+      if(address == UNALLOCATED) {
+        DLOG(ERROR) << "failed to map buffer."; //TODO: better error handling.
+        return;
+      }
+      start_ = address;
+      size_ = size;
+    }
+  public:
+    ~MappedBufferScopeTemplate() override {
+      if(IsMapped())
+        Release();
+    }
+
+    GLenum GetTarget() const override {
+      return Target;
+    }
+
+    Access GetAccess() const override {
+      return A;
+    }
+  };
+
+  template<const GLenum Target>
+  class WriteOnlyMappedBufferScope : public MappedBufferScopeTemplate<Target, kWriteOnly> {
+    DEFINE_NON_COPYABLE_TYPE(WriteOnlyMappedBufferScope);
+  public:
+    explicit WriteOnlyMappedBufferScope(const uword size):
+      MappedBufferScopeTemplate<Target, kWriteOnly>(size) {
+    }
+    ~WriteOnlyMappedBufferScope() override = default;
+  };
+
+  template<const GLenum Target>
+  class ReadOnlyMappedBufferScope : public MappedBufferScopeTemplate<Target, kReadOnly> {
+    DEFINE_NON_COPYABLE_TYPE(ReadOnlyMappedBufferScope);
+  public:
+    explicit ReadOnlyMappedBufferScope(const uword size):
+      MappedBufferScopeTemplate<Target, kReadOnly>(size) {
+    }
+    ~ReadOnlyMappedBufferScope() override = default;
   };
 }
 

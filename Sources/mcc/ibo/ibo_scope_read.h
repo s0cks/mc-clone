@@ -10,11 +10,11 @@
 namespace mcc::ibo {
   template<typename I>
   class IboReadScope : public IboBindScope,
-                       public MappedIboScope {
+                       public ReadOnlyIboScope {
   public:
     explicit IboReadScope(Ibo* ibo):
       IboBindScope(ibo),
-      MappedIboScope(gfx::kReadOnly, ibo) {
+      ReadOnlyIboScope(ibo) {
     }
     ~IboReadScope() override = default;
 

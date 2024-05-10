@@ -11,17 +11,18 @@
 namespace mcc::vbo {
   template<class V>
   class VboReadScope : public VboBindScope,
-                       public MappedVboScope {
+                       public ReadOnlyVboScope {
   public:
     explicit VboReadScope(Vbo* vbo):
       VboBindScope(vbo),
-      MappedVboScope(gfx::kReadOnly, vbo) {
+      ReadOnlyVboScope(vbo) {
     }
     ~VboReadScope() override = default;
 
     rx::observable<V> ReadAll() const {
       if(!IsMapped())
         return rx::observable<>::empty<V>();
+        
       return rx::observable<>::create<V>([this](rx::subscriber<V> s) {
         Iterator<V> iter(this);
         while(iter.HasNext()) {

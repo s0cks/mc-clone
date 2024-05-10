@@ -10,11 +10,11 @@
 namespace mcc::ibo {
   template<typename I>
   class IboWriteScope : public IboBindScope,
-                       public MappedIboScope {
+                        public WriteOnlyIboScope {
   public:
     explicit IboWriteScope(Ibo* ibo):
       IboBindScope(ibo),
-      MappedIboScope(gfx::kWriteOnly, ibo) {
+      WriteOnlyIboScope(ibo) {
     }
     ~IboWriteScope() override = default;
     //TODO: implement
