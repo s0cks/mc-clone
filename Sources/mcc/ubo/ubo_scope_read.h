@@ -9,10 +9,12 @@
 
 namespace mcc::ubo {
   template<typename T>
-  class UboReadScope : public UboMappedScope {
+  class UboReadScope : public UboBindScope,
+                       public ReadOnlyUboScope {
   public:
     explicit UboReadScope(Ubo* ubo):
-      UboMappedScope(ubo, kReadOnly) {
+      UboBindScope(ubo),
+      ReadOnlyUboScope(ubo) {
     }
     ~UboReadScope() override = default;
 
@@ -21,12 +23,9 @@ namespace mcc::ubo {
         return rx::observable<>::empty<T>();
         
       return rx::observable<>::create<T>([this](rx::subscriber<T> s) {
-        auto current = GetStartingAddress();
-        while(current < GetEndingAddress()) {
-          const auto v = (T*)current;
-          s.on_next(*v);
-          current += sizeof(T);
-        }
+        Iterator<T> iter(this);
+        while(iter.HasNext())
+          s.on_next(iter.Next());
         s.on_completed();
       });
     }
