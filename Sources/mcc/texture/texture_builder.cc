@@ -40,24 +40,4 @@ namespace mcc::texture {
       }
     }
   }
-
-  void TextureBuilder::Attach(img::Image* image) {
-    MCC_ASSERT(image);
-    switch(image->type()) {
-      case img::kRGB:
-        SetFormat(kRGB);
-        SetInternalFormat(kRGB);
-        break;
-      case img::kRGBA:
-        SetFormat(kRGBA);
-        SetInternalFormat(kRGBA);
-        break;
-      default:
-        LOG(ERROR) << "invalid image type: " << image->type();
-        break;
-    }
-    SetType(GL_UNSIGNED_BYTE);
-    SetSize(image->size());
-    SetData(image->data());
-  }
 }

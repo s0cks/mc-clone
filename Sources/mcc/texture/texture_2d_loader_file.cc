@@ -7,7 +7,7 @@ namespace mcc::texture {
     LOG_IF(WARNING, !FileExists(uri_)) << "cannot load Texture2d from " << uri_ << ", file doesn't exist.";
     if(FileExists(uri_)) {
       const auto image = img::Decode(uri_);
-      builder.Attach(image);
+      builder << image;
     }
     return Texture2d::New(builder);
   }

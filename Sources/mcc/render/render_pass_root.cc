@@ -11,11 +11,11 @@ namespace mcc::render {
     OrderedSequenceRenderPass(),
     terrain_(new TerrainRenderPass()),
     guis_(new RenderPassGuis()),
-    skybox_(new SkyboxRenderPass()),
+    // skybox_(new SkyboxRenderPass()),
     clear_(kGreen) {
     Append(terrain_);
     Append(guis_);
-    Append(skybox_);
+    // Append(skybox_);
   }
 
   RootRenderPass::~RootRenderPass() {

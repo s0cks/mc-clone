@@ -46,7 +46,7 @@ namespace mcc::texture {
           LOG(FATAL) << "failed to decode image from: " << file_path;
           return nullptr;
         }
-        builder.Attach(image);
+        builder << image;
       } else {
         LOG(FATAL) << "invalid file property type.";
       }

@@ -3,6 +3,7 @@
 
 #include "mcc/image/image.h"
 #include "mcc/texture/texture_id.h"
+#include "mcc/texture/texture_data.h"
 #include "mcc/texture/texture_wrap.h"
 #include "mcc/texture/texture_target.h"
 #include "mcc/texture/texture_format.h"
@@ -49,30 +50,6 @@ namespace mcc::texture {
   };
 
   class TextureBuilder : public TextureBuilderBase {
-  public:
-    struct TextureData {
-      TextureFormat internal_format;
-      TextureFormat format;
-      GLenum type;
-      const uint8_t* bytes;
-      uint64_t num_bytes;
-      glm::vec2 size;
-
-      TextureData() = default;
-      TextureData(const TextureData& rhs) = default;
-      ~TextureData() = default;
-
-      TextureData& operator=(const TextureData& rhs) = default;
-    };
-  private:
-    static constexpr const auto kDefaultTextureData = TextureData {
-      .internal_format = kDefaultTextureFormat,
-      .format = kDefaultTextureFormat,
-      .type = GL_UNSIGNED_BYTE,
-      .bytes = NULL,
-      .num_bytes = 0,
-      .size = glm::vec2(0),
-    };
   protected:
     int level_;
     int border_;
@@ -84,40 +61,40 @@ namespace mcc::texture {
       TextureBuilderBase(target),
       level_(0),
       border_(0),
-      data_(kDefaultTextureData) {
+      data_() {
     }
     virtual ~TextureBuilder() = default;
 
-    const TextureFormat& GetFormat() const {
-      return data_.format;
+    const TextureFormat GetFormat() const {
+      return data_.format();
     }
 
     virtual void SetFormat(const TextureFormat format) {
-      data_.format = format;
+      data_.format_ = format;
     }
 
-    const TextureFormat& GetInternalFormat() const {
-      return data_.internal_format;
+    const TextureFormat GetInternalFormat() const {
+      return data_.internal_format();
     }
 
     virtual void SetInternalFormat(const TextureFormat format) {
-      data_.internal_format = format;
+      data_.internal_format_ = format;
     }
 
     const glm::vec2& GetSize() const {
-      return data_.size;
+      return data_.size();
     }
 
     virtual void SetSize(const TextureSize& size) {
-      data_.size = size;
+      data_.size_ = size;
     }
 
     float GetWidth() const {
-      return data_.size[0];
+      return data_.width();
     }
 
     float GetHeight() const {
-      return data_.size[1];
+      return data_.height();
     }
 
     const int& GetLevel() const {
@@ -135,31 +112,23 @@ namespace mcc::texture {
     virtual void SetBorder(const int border) {
       border_ = border;
     }
-
-    const GLenum& GetType() const {
-      return data_.type;
+    
+    GLenum GetType() const {
+      return data_.type();
     }
 
     virtual void SetType(const GLenum type) {
-      data_.type = type;
-    }
-
-    virtual void SetData(const uint8_t* bytes, const uint64_t num_bytes) {
-      MCC_ASSERT(bytes);
-      MCC_ASSERT(num_bytes > 0);
-      data_.bytes = bytes;
-      data_.num_bytes = num_bytes;
-    }
-
-    inline void SetData(ImageData* image) {
-      return SetData(image->bytes(), image->num_bytes());
+      data_.type_ = type;
     }
 
     virtual const GLvoid* GetData() const {
-      return (const GLvoid*) data_.bytes;
+      return (const GLvoid*) data_.bytes();
     }
 
-    void Attach(img::Image* image);
+    void operator<<(const img::Image* img) {
+      MCC_ASSERT(img);
+      data_ = img;
+    }
   };
 }
 
