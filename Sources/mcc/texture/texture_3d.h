@@ -18,6 +18,7 @@ namespace mcc {
       ~Texture3d() override = default;
       std::string ToString() const override;
     public:
+      static Texture3d* New(const json::TextureValue* value);
       static TextureRef New(const uri::Uri& uri);
       
       static inline TextureRef

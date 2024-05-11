@@ -18,11 +18,21 @@ namespace mcc::texture {
   Texture2d* Texture2d::New(const json::TextureValue* value) {
     MCC_ASSERT(value);
     MCC_ASSERT(value->IsObject());
-
     TextureBuilder builder(k2D);
-    
-    const auto filter = value->GetFilter();
-
+    {
+      const auto filter = value->GetFilter();
+      if(filter)
+        builder.SetFilter(*filter);
+    }
+    {
+      const auto wrap = value->GetWrap();
+      if(wrap)
+        builder.SetWrap(*wrap);
+    }
+    //TODO: set border
+    //TODO: set level
+    //TODO: set mipmap
+    //TODO: decode image data
     return new Texture2d(builder.Build());
   }
 
