@@ -4,7 +4,7 @@
 #include "mcc/uv/utils.h"
 #include "mcc/thread_local.h"
 
-#include "mcc/shader/shader_compiler_status.h"
+#include "mcc/shader/shader_compile_status.h"
 
 namespace mcc::shader {
   static inline void
@@ -70,7 +70,7 @@ namespace mcc::shader {
     duration_.Append(total_ns);
     compiled_ += 1;
     DLOG(INFO) << "compilation finished (" << nanosecond_t(total_ns) << ").";
-    const auto status = ShaderCompilerStatus(id);
+    const auto status = ShaderCompileStatus(id);
 #ifdef MCC_DEBUG
     using namespace units::data;
     const auto severity = status ? google::INFO : google::ERROR;
@@ -110,7 +110,7 @@ namespace mcc::shader {
     duration_.Append(total_ns);
     compiled_ += 1;
     DLOG(INFO) << "compilation finished (" << nanosecond_t(total_ns) << ").";
-    const auto status = ShaderCompilerStatus(id);
+    const auto status = ShaderCompileStatus(id);
 #ifdef MCC_DEBUG
     const auto severity = status ? google::INFO : google::ERROR;
     LOG_AT_LEVEL(severity) << "Shader: " << id;
