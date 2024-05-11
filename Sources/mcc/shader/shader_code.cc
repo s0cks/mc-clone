@@ -57,7 +57,7 @@ namespace mcc::shader {
 
   ShaderCode* ShaderCode::FromFile(const ShaderType type, const uri::Uri& uri) {
     if(uri.HasScheme("shader")) {
-      const auto new_uri = uri::Uri("file", fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path));
+      const auto new_uri = fmt::format("file://{0:s}/shaders/{1:s}", FLAGS_resources, uri.path[0] == '/' ? &uri.path[1] : uri.path);
       return FromFile(type, new_uri);
     } else if(!uri.HasScheme("file")) {
       LOG(ERROR) << "cannot load ShaderCode from: " << uri;
@@ -85,7 +85,7 @@ namespace mcc::shader {
   
   ShaderCode* ShaderCode::FromFile(const uri::Uri& uri) {
     if(uri.HasScheme("shader")) {
-      const auto new_uri = uri::Uri("file", fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path));
+      const auto new_uri = fmt::format("file://{0:s}/shaders/{1:s}", FLAGS_resources, uri.path[0] == '/' ? &uri.path[1] : uri.path);
       return FromFile(new_uri);
     } else if(!uri.HasScheme("file")) {
       LOG(ERROR) << "cannot load ShaderCode from: " << uri;

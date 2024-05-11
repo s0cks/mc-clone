@@ -28,6 +28,7 @@ namespace mcc {
         return New(builder.Build());
       }
 
+      static Texture2d* New(const json::TextureValue* value);
       static Texture2d* New(const uri::Uri& uri);
       
       static inline Texture2d*

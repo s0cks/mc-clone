@@ -11,6 +11,7 @@
 #include "mcc/gfx_object.h"
 
 #include "mcc/texture/texture_id.h"
+#include "mcc/texture/texture_json.h"
 #include "mcc/texture/texture_events.h"
 #include "mcc/texture/texture_loader.h"
 #include "mcc/texture/texture_options.h"

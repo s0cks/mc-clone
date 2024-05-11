@@ -15,6 +15,12 @@ namespace mcc::texture {
     return ss.str();
   }
 
+  Texture2d* Texture2d::New(const json::TextureValue* value) {
+    MCC_ASSERT(value);
+    auto path = value->GetFile();
+
+  }
+
   Texture2d* Texture2d::New(const uri::Uri& uri) {
     MCC_ASSERT(uri.HasScheme("tex") || uri.HasScheme("texture"));
     const auto uri_path = fmt::format("{0:s}/textures/{1:s}", FLAGS_resources, uri.path);

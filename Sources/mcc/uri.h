@@ -14,6 +14,8 @@
 
 namespace mcc {
   namespace uri {
+    typedef std::unordered_map<std::string, std::string> QueryMap;
+
     void SanitizePath(std::string& value, const bool root = true);
     void SanitizeExtension(std::string& value);
 
@@ -24,7 +26,7 @@ namespace mcc {
       std::string scheme;
       std::string path;
       std::string fragment;
-      std::unordered_map<std::string, std::string> query;
+      QueryMap query;
     private:
       Uri(const std::string& s, const Uri& other):
         scheme(s),
@@ -43,15 +45,12 @@ namespace mcc {
       Uri(const basic_uri& uri);
       Uri(const std::string& s,
           const std::string& p,
-          const std::string& f):
+          const std::string& f,
+          const QueryMap& q):
         scheme(s),
         path(p),
         fragment(f),
-        query() {
-      }
-      Uri(const std::string& s,
-          const std::string& p):
-        Uri(s, p, std::string()) {
+        query(q) {
       }
       Uri(const Uri& rhs) = default;
       ~Uri() = default;

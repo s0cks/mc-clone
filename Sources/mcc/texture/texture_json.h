@@ -2,6 +2,65 @@
 #define MCC_TEXTURE_JSON_H
 
 namespace mcc::json {
+  class TextureValue {
+    DEFINE_NON_COPYABLE_TYPE(TextureValue);
+  public:
+    static constexpr const auto kFilePropertyName = "file";
+    static constexpr const auto kWrapPropertyName = "wrap";
+    static constexpr const auto kFilterPropertyName = "filter";
+  protected:
+    const Value* value_;
+
+    explicit TextureValue(const Value* value):
+      value_(value) {
+      MCC_ASSERT(value);
+    }
+
+    inline const Value* value() const {
+      return value_;
+    }
+
+    inline std::optional<const Value*>
+    GetProperty(const char* name) const {
+      if(!value()->HasMember(name))
+        return std::nullopt;
+      return { &(*value())[name] };
+    }
+  public:
+    virtual ~TextureValue() = default;
+
+    bool IsString() const {
+      return value()->IsString();
+    }
+
+    bool IsObject() const {
+      return value()->IsObject();
+    }
+
+    std::optional<const Value*> GetFileProperty() const {
+      return GetProperty(kFilePropertyName);
+    }
+
+    std::optional<const Value*> GetFilterProperty() const {
+      return GetProperty(kFilterPropertyName);
+    }
+
+    std::optional<const Value*> GetWrapProperty() const {
+      return GetProperty(kWrapPropertyName);
+    }
+
+    uri::Uri GetFile() const {
+      if(IsString())
+        return std::string(value()->GetString(), value()->GetStringLength());
+      MCC_ASSERT(IsObject());
+      const auto file = GetFileProperty();
+      MCC_ASSERT(file);
+      MCC_ASSERT((*file)->IsString());
+      std::string path((*file)->GetString(), (*file)->GetStringLength());
+      
+    }
+  };
+
   template<const bool Const>
   class GenericTextureObject {
   public:
