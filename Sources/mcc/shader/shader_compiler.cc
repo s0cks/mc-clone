@@ -82,7 +82,6 @@ namespace mcc::shader {
     const auto& duration = GetDurationSeries();
     LOG_AT_LEVEL(severity) << " - Duration: " << nanosecond_t(total_ns) << "; (Avg/Min/Max): " << nanosecond_t(duration_.average()) << ", " << nanosecond_t(duration_.min()) << ", " << nanosecond_t(duration_.min());
 #endif //MCC_DEBUG
-
     if(!status)
       return kInvalidShaderId; //TODO: cleanup shader id
     Publish<ShaderCompiledEvent>(id);
