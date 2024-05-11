@@ -65,6 +65,7 @@ namespace mcc::shader {
 
   static inline Shader*
   LoadShaderFromJson(const uri::Uri& uri) {
+    DLOG(INFO) << "loading Shader from: " << uri;
     NOT_IMPLEMENTED(FATAL); //TODO: implement
     return nullptr;
   }
