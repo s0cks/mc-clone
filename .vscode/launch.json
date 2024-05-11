@@ -105,6 +105,21 @@
       "MIMode": "lldb"
     }, // Texture Tests
     {
+      "name": "Image Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Image*Test*.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // Image Tests
+    {
       "name": "Shader Tests",
       "type": "cppdbg",
       "request": "launch",

@@ -28,6 +28,33 @@ namespace mcc::img {
     GetDataOffset() {
       return GetSizeOffset() + sizeof(uword);
     }
+
+    static inline uword
+    CalculateAllocationSize(const uword num_bytes) {
+      uword sz = 0;
+      sz += sizeof(Image);
+      sz += sizeof(uword); // format
+      sz += (sizeof(uword) * 2); // size
+      sz += (sizeof(uint8_t) * num_bytes); // data
+      return sz;
+    }
+
+    static inline uword
+    CalculateNumberOfBytes(const ImageFormat format, const ImageSize& size) {
+      switch(format) {
+        case kRGB:
+          return 3 * size[0] * size[1];
+        case kRGBA:
+          return 4 * size[0] * size[1];
+        default:
+          return 0;
+      }
+    }
+
+    static inline uword
+    CalculateAllocationSize(const ImageFormat format, const ImageSize& size) {
+      return CalculateAllocationSize(CalculateNumberOfBytes(format, size));
+    }
   protected:
     Image(const ImageFormat format,
           const ImageSize& size):
@@ -79,7 +106,8 @@ namespace mcc::img {
       return data_ptr();
     }
 
-    uword GetTotalSize() const;
+    uword GetNumberOfBytes() const;
+    uword GetTotalNumberOfBytes() const;
   public:
     void* operator new(const size_t sz, const uword num_bytes);
     static Image* New(const ImageFormat format, const ImageSize& size, const uword num_bytes);

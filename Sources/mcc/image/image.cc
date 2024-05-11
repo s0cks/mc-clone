@@ -4,7 +4,7 @@
 namespace mcc::img {
   void* Image::operator new(const size_t sz, const uword num_bytes) {
     using namespace units::data;
-    const auto total_size = sz + (sizeof(uint8_t) * num_bytes);
+    const auto total_size = sz + CalculateAllocationSize(num_bytes);
     const auto ptr = malloc(total_size);
     LOG_IF(FATAL, !ptr) << "failed to allocate data " << byte_t(total_size) << " for Image of " << byte_t(num_bytes) << " size.";
     return ptr;
@@ -13,6 +13,9 @@ namespace mcc::img {
   std::string Image::ToString() const {
     std::stringstream ss;
     ss << "Image(";
+    ss << "format=" << *format_ptr() << ", ";
+    ss << "size=" << glm::to_string(*size_ptr()) << ", ";
+    ss << "data=" << (void*)data_ptr();
     ss << ")";
     return ss.str();
   }
@@ -57,16 +60,12 @@ namespace mcc::img {
     });
   }
 
-  uword Image::GetTotalSize() const {
-    const auto& sz = size();
-    switch(format()) {
-      case kRGB:
-        return 3 * sz[0] * sz[1];
-      case kRGBA:
-        return 4 * sz[0] * sz[1];
-      default:
-        return 0;
-    }
+  uword Image::GetNumberOfBytes() const {
+    return CalculateNumberOfBytes(format(), size());
+  }
+
+  uword Image::GetTotalNumberOfBytes() const {
+    return CalculateAllocationSize(format(), size());
   }
 
   Image* Image::New(const ImageFormat format, const ImageSize& size, const uword num_bytes) {
