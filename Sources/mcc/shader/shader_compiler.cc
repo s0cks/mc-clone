@@ -75,11 +75,7 @@ namespace mcc::shader {
     using namespace units::data;
     const auto severity = status ? google::INFO : google::ERROR;
     LOG_AT_LEVEL(severity) << "Shader: " << id;
-    if(status) {
-      LOG_AT_LEVEL(severity) << "Status: Compiled.";
-    } else {
-      LOG_AT_LEVEL(severity) << "Status: " << status;
-    }
+    LOG_AT_LEVEL(severity) << "Status: " << status;
     LOG_AT_LEVEL(severity) << "Unit: " << unit->GetName() << " " << unit->GetHash();
     LOG_AT_LEVEL(severity) << "Stats:";
     LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
@@ -114,11 +110,7 @@ namespace mcc::shader {
 #ifdef MCC_DEBUG
     const auto severity = status ? google::INFO : google::ERROR;
     LOG_AT_LEVEL(severity) << "Shader: " << id;
-    if(status) {
-      LOG_AT_LEVEL(severity) << "Status: Compiled.";
-    } else {
-      LOG_AT_LEVEL(severity) << "Status: " << status;
-    }
+    LOG_AT_LEVEL(severity) << "Status: " << status;
     LOG_AT_LEVEL(severity) << "Code: " << code->GetSHA256();
     LOG_AT_LEVEL(severity) << "Stats:";
     LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
