@@ -22,7 +22,7 @@ namespace mcc::texture {
     FOR_EACH_TEXTURE_FILTER_COMPONENT(DEFINE_TEXTURE_FILTER_COMPONENT)
 #undef DEFINE_TEXTURE_FILTER_COMPONENT
 
-    kDefaultMinFilter = kLinearMipmapLinear,
+    kDefaultMinFilter = kLinear,
     kDefaultMagFilter = kLinear,
   };
 
@@ -57,14 +57,16 @@ namespace mcc::texture {
   private:
     static constexpr const auto kMinFilterPropertyName = "min";
     static constexpr const auto kMagFilterPropertyName = "mag";
-    static inline std::optional<TextureFilterComponent> GetFilterComponent(const json::Value& value) {
+    static inline std::optional<TextureFilterComponent>
+    GetFilterComponent(const json::Value& value) {
       MCC_ASSERT(value.IsString());
       const std::string val(value.GetString(), value.GetStringLength());
       return ParseTextureFilterComponent(val);
     }
 
     template<const bool IsConst>
-    static inline std::optional<TextureFilterComponent> GetFilterComponent(const json::GenericObject<IsConst, json::Document::ValueType>& obj, const char* name) {
+    static inline std::optional<TextureFilterComponent>
+    GetFilterComponent(const json::GenericObject<IsConst, json::Document::ValueType>& obj, const char* name) {
       if(!obj.HasMember(name))
         return std::nullopt;
       const auto& property = obj[name];
@@ -93,11 +95,8 @@ namespace mcc::texture {
       TextureFilter(ParseTextureFilterComponent(value).value_or(kDefaultMinFilter), 
                     ParseTextureFilterComponent(value).value_or(kDefaultMagFilter)) { //TODO: remove double parsing?
     }
-    explicit constexpr TextureFilter(const json::Document::Object& value):
-      TextureFilter(GetFilterComponent(value, kMinFilterPropertyName).value_or(kDefaultMinFilter),
-                    GetFilterComponent(value, kMagFilterPropertyName).value_or(kDefaultMagFilter)) {
-    }
-    explicit constexpr TextureFilter(const json::Document::ConstObject& value):
+    template<const bool IsConst>
+    explicit constexpr TextureFilter(const json::GenericObject<IsConst, json::Document::ValueType>& value):
       TextureFilter(GetFilterComponent(value, kMinFilterPropertyName).value_or(kDefaultMinFilter),
                     GetFilterComponent(value, kMagFilterPropertyName).value_or(kDefaultMagFilter)) {
     }

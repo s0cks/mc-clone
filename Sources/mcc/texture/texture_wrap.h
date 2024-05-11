@@ -23,7 +23,8 @@ namespace mcc::texture {
     kDefaultTextureWrapMode = kClampToEdge
   };
 
-  static inline const char* GetTextureWrapModeName(const TextureWrapMode& rhs) {
+  static inline const char*
+  GetTextureWrapModeName(const TextureWrapMode& rhs) {
     switch(rhs) {
 #define DEFINE_TOSTRING(Name, GlValue) \
       case k##Name: return #Name;
@@ -33,23 +34,29 @@ namespace mcc::texture {
     }
   }
 
-  static inline std::optional<TextureWrapMode> GetWrapMode(const std::string& value) {
+  static inline std::optional<TextureWrapMode>
+  GetWrapMode(const std::string& value) {
     if(EqualsIgnoreCase(value, "default")) return { kDefaultTextureWrapMode };
 #define DEFINE_FROM_STRING(Name, GlValue) \
     else if(EqualsIgnoreCase(value, #Name)) return { k##Name };
     FOR_EACH_TEXTURE_WRAP_MODE(DEFINE_FROM_STRING)
 #undef DEFINE_FROM_STRING
+    else if(EqualsIgnoreCase(value, "clamp2edge")) return { kClampToEdge };
+    else if(EqualsIgnoreCase(value, "clamp2border")) return { kClampToBorder };
     DLOG(ERROR) << "unknown TextureWrapMode: " << value;
     return std::nullopt;
   }
 
-  static inline std::optional<TextureWrapMode> GetWrapMode(const json::Value& value) {
+  static inline std::optional<TextureWrapMode>
+  GetWrapMode(const json::Value& value) {
     MCC_ASSERT(value.IsString());
-    const std::string val(value.GetString(), value.IsString());
+    const std::string val(value.GetString(), value.GetStringLength());
     return GetWrapMode(val);
   }
 
-  static inline std::optional<TextureWrapMode> GetWrapMode(const json::Document::ConstObject& obj, const char* name) {
+  template<const bool IsConst>
+  static inline std::optional<TextureWrapMode>
+  GetWrapMode(const json::GenericObject<IsConst, json::Document::ValueType>& obj, const char* name) {
     if(!obj.HasMember(name))
       return std::nullopt;
     const auto& property = obj[name];
@@ -73,7 +80,8 @@ namespace mcc::texture {
       s(S),
       t(T) {
     }
-    explicit constexpr TextureWrap(const json::Document::ConstObject& value):
+    template<const bool IsConst>
+    explicit constexpr TextureWrap(const json::GenericObject<IsConst, json::Document::ValueType>& value):
       TextureWrap(GetWrapMode(value, "r").value_or(kDefaultTextureWrapMode),
                   GetWrapMode(value, "s").value_or(kDefaultTextureWrapMode),
                   GetWrapMode(value, "t").value_or(kDefaultTextureWrapMode)) {

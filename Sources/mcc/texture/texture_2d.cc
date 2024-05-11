@@ -17,8 +17,13 @@ namespace mcc::texture {
 
   Texture2d* Texture2d::New(const json::TextureValue* value) {
     MCC_ASSERT(value);
-    NOT_IMPLEMENTED(FATAL); //TODO: implement
-    return nullptr;
+    MCC_ASSERT(value->IsObject());
+
+    TextureBuilder builder(k2D);
+    
+    const auto filter = value->GetFilter();
+
+    return new Texture2d(builder.Build());
   }
 
   Texture2d* Texture2d::New(const uri::Uri& uri) {

@@ -1,6 +1,9 @@
 #ifndef MCC_TEXTURE_JSON_H
 #define MCC_TEXTURE_JSON_H
 
+#include "mcc/texture/texture_wrap.h"
+#include "mcc/texture/texture_filter.h"
+
 namespace mcc::json {
   class TextureValue {
     DEFINE_NON_COPYABLE_TYPE(TextureValue);
@@ -10,11 +13,6 @@ namespace mcc::json {
     static constexpr const auto kFilterPropertyName = "filter";
   protected:
     const Value* value_;
-
-    explicit TextureValue(const Value* value):
-      value_(value) {
-      MCC_ASSERT(value);
-    }
 
     inline const Value* value() const {
       return value_;
@@ -27,6 +25,10 @@ namespace mcc::json {
       return { &(*value())[name] };
     }
   public:
+    explicit TextureValue(const Value* value):
+      value_(value) {
+      MCC_ASSERT(value);
+    }
     virtual ~TextureValue() = default;
 
     bool IsString() const {
@@ -45,8 +47,34 @@ namespace mcc::json {
       return GetProperty(kFilterPropertyName);
     }
 
+    std::optional<texture::TextureFilter> GetFilter() const {
+      const auto filter = GetFilterProperty();
+      if(!filter)
+        return std::nullopt;
+      if((*filter)->IsString()) {
+        return { texture::TextureFilter(std::string((*filter)->GetString(), (*filter)->GetStringLength())) };
+      } else if((*filter)->IsObject()) {
+        return { texture::TextureFilter((*filter)->GetObject()) };
+      }
+      DLOG(ERROR) << "invalid type for TextureFilter property.";
+      return std::nullopt;
+    }
+
     std::optional<const Value*> GetWrapProperty() const {
       return GetProperty(kWrapPropertyName);
+    }
+
+    std::optional<texture::TextureWrap> GetWrap() const {
+      const auto wrap = GetWrapProperty();
+      if(!wrap)
+        return std::nullopt;
+      if((*wrap)->IsString()) {
+        return { texture::TextureWrap(std::string((*wrap)->GetString(), (*wrap)->GetStringLength())) };
+      } else if((*wrap)->IsObject()) {
+        return { texture::TextureWrap((*wrap)->GetObject()) };
+      }
+      DLOG(ERROR) << "invalid type for TextureWrap property.";
+      return std::nullopt;
     }
 
     uri::Uri GetFile() const {
