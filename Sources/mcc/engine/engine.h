@@ -17,7 +17,6 @@ namespace mcc::engine {
   protected:
     uv_loop_t* loop_;
     RelaxedAtomic<bool> running_;
-    RelaxedAtomic<signal::Signal> signal_;
     EngineState* current_state_;
     EngineState* previous_state_;
     rx::subject<EngineEvent*> events_;
@@ -63,7 +62,6 @@ namespace mcc::engine {
   public:
     explicit Engine(uv_loop_t* loop):
       loop_(loop),
-      signal_(signal::kNone),
       running_(false),
       current_state_(nullptr),
       previous_state_(nullptr),
@@ -81,14 +79,6 @@ namespace mcc::engine {
 
     virtual bool IsRunning() const {
       return (bool) running_;
-    }
-
-    virtual signal::Signal GetSignal() const {
-      return (signal::Signal) signal_;
-    }
-
-    bool HasErrorSignal() const {
-      return GetSignal() != signal::kNone;
     }
     
     virtual uv_loop_t* GetLoop() const {

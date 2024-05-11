@@ -6,6 +6,7 @@
 #include <uv.h>
 
 #include <units.h>
+#include <backward.hpp>
 
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
@@ -37,6 +38,7 @@
 
 #include "mcc/skybox/skybox.h"
 
+#include "mcc/signals.h"
 #include "mcc/mouse/mouse_flags.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
@@ -78,12 +80,23 @@ public:
   ~TestWindow() override = default;
 };
 
-int main(int argc, char** argv) {
+static inline void
+OnUnhandledException() {
+  using namespace backward;
+  StackTrace st;
+  st.load_here(32);
+  Printer p;
+  p.print(st);
+}
+
+int main(int argc, char** argv) {  
   using namespace mcc;
   srand(time(NULL));
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);
+  mcc::InitSignalHandlers();
+  std::set_terminate(OnUnhandledException);
   LOG_IF(FATAL, !mcc::SetCurrentThreadName("main")) << "failed to set main thread name.";
   glfwSetErrorCallback(&mcc::OnGlfwError);
   LOG_IF(FATAL, !glfwInit()) << "error initializing GLFW";
