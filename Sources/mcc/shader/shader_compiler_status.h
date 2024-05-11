@@ -3,19 +3,20 @@
 
 #include "mcc/gfx.h"
 #include "mcc/shader/shader_id.h"
+#include "mcc/shader/shader_info_log.h"
 
 namespace mcc::shader {
   struct ShaderCompilerStatus {
     ShaderId id;
     bool compiled;
-    std::string message;
+    ShaderInfoLog info;
 
     ShaderCompilerStatus(const ShaderId id);
     ShaderCompilerStatus(const ShaderCompilerStatus& rhs) = default;
     ~ShaderCompilerStatus() = default;
 
     bool HasMessage() const {
-      return !message.empty();
+      return !info.IsEmpty();
     }
 
     operator bool() const {
@@ -30,7 +31,7 @@ namespace mcc::shader {
       if(rhs.compiled) {
         return stream << "Compiled";
       } else if(!rhs.compiled && rhs.HasMessage()) {
-        return stream << "Compilation Error: " << rhs.message;
+        return stream << "Compilation Error: " << rhs.info;
       }
       return stream << "Unknown ShaderCompilerStatus: " << rhs.ToString();
     }

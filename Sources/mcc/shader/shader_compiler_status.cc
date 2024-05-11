@@ -11,29 +11,10 @@ namespace mcc::shader {
     return status == GL_TRUE;
   }
 
-  static inline uint64_t
-  GetShaderInfoLogLength(const ShaderId id) {
-    MCC_ASSERT(IsValidShaderId(id));
-    GLint length = 0;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-    CHECK_GL(FATAL);
-    return static_cast<uint64_t>(length);
-  }
-
-  static inline std::string
-  GetShaderInfoLog(const ShaderId id) {
-    auto size = GetShaderInfoLogLength(id);
-    uint8_t data[size];
-    GLsizei length;
-    glGetShaderInfoLog(id, size, &length, (GLchar*) data);
-    CHECK_GL(FATAL);
-    return std::string((const char*) &data[0], length);
-  }
-
   ShaderCompilerStatus::ShaderCompilerStatus(const ShaderId shader):
     id(shader),
     compiled(GetCompileStatus(shader)),
-    message() {
+    info(shader) {
   }
 
   std::string ShaderCompilerStatus::ToString() const {
@@ -41,7 +22,7 @@ namespace mcc::shader {
     ss << "ShaderCompilerStatus(";
     ss << "id=" << id << ", ";
     ss << "compiled=" << compiled << ", ";
-    ss << "message=" << (HasMessage() ? message : "None");
+    ss << "message=" << (HasMessage() ? (const std::string&)info : "None");
     ss << ")";
     return ss.str();
   }
