@@ -157,6 +157,7 @@ target_link_libraries(${PROJECT_NAME}
   OpenAL::OpenAL
   Backward::Backward
   OpenSSL::Crypto
+  ${GRAPHVIZ_LIBRARIES}
   ${LIBUV_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
