@@ -17,8 +17,8 @@ namespace mcc::texture {
 
   Texture2d* Texture2d::New(const json::TextureValue* value) {
     MCC_ASSERT(value);
-    auto path = value->GetFile();
-
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 
   Texture2d* Texture2d::New(const uri::Uri& uri) {
