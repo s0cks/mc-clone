@@ -1,32 +1,39 @@
 #include "mcc/ibo/ibo_builder.h"
 
 namespace mcc::ibo {
-  template<class IboType>
-  IboType* IboBuilder::InitIbo(const IboId id) const {
+  void IboBuilder::InitIbo(const IboId id) const {
     Ibo::BindIbo(id);
     Ibo::InitBufferData(GetData(), GetTotalSize(), GetUsage());
     Ibo::BindDefaultIbo();
-    return IboType::New(id, GetLength(), GetUsage());
   }
 
-  rx::observable<UByteIbo*> UByteIboBuilder::Build(const int num) const {
-    return GenerateIboIdsAsync(num)
-      .map([this](const IboId id) {
-        return InitIbo<UByteIbo>(id);
-      });
+  UByteIbo* UByteIboBuilder::Build() const {
+    const auto id = GenerateIboId();
+    if(IsInvalidIboId(id)) {
+      LOG(FATAL) << "failed to generate Ibo id.";
+      return nullptr;
+    }
+    InitIbo(id);
+    return UByteIbo::New(id, GetLength(), GetUsage());
   }
 
-  rx::observable<UShortIbo*> UShortIboBuilder::Build(const int num) const {
-    return GenerateIboIdsAsync(num)
-      .map([this](const IboId id) {
-        return InitIbo<UShortIbo>(id);
-      });
+  UShortIbo* UShortIboBuilder::Build() const {
+    const auto id = GenerateIboId();
+    if(IsInvalidIboId(id)) {
+      LOG(FATAL) << "failed to generate Ibo id.";
+      return nullptr;
+    }
+    InitIbo(id);
+    return UShortIbo::New(id, GetLength(), GetUsage());
   }
 
-  rx::observable<UIntIbo*> UIntIboBuilder::Build(const int num) const {
-    return GenerateIboIdsAsync(num)
-      .map([this](const IboId id) {
-        return InitIbo<UIntIbo>(id);
-      });
+  UIntIbo* UIntIboBuilder::Build() const {
+    const auto id = GenerateIboId();
+    if(IsInvalidIboId(id)) {
+      LOG(FATAL) << "failed to generate Ibo id.";
+      return nullptr;
+    }
+    InitIbo(id);
+    return UIntIbo::New(id, GetLength(), GetUsage());
   }
 }

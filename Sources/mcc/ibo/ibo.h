@@ -121,16 +121,7 @@ namespace mcc {
       inline bool HasStreamUsage() const {
         return gfx::IsStreamUsage(GetUsage());
       }
-
-      void Bind() const;
-      void Unbind() const;
-      void Update(const uint64_t offset, const uint8_t* data, const uint64_t len);
-
-      inline void
-      Update(const uint8_t* data, const uint64_t len) {
-        return Update(0, data, len);
-      }
-
+      
       rx::observable<IboEvent*> OnEvent() const {
         return OnIboEvent()
           .filter([this](IboEvent* event) {
@@ -204,7 +195,7 @@ namespace mcc {
     };
 
     class UByteIbo : public IboTemplate<UnsignedByte> {
-      friend class IboBuilder;
+      friend class UByteIboBuilder;
     protected:
       UByteIbo(const IboId id,
                const uword length,
@@ -235,6 +226,10 @@ namespace mcc {
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
       static inline UByteIbo*                                             \
+      New##Name(const uword num_indices) {                                \
+        return New(num_indices, gfx::k##Name##Usage);                     \
+      }                                                                   \
+      static inline UByteIbo*                                             \
       New##Name(const IndexList& indices) {                               \
         return New(indices, gfx::k##Name##Usage);                         \
       }
@@ -243,7 +238,7 @@ namespace mcc {
     };
 
     class UShortIbo : public IboTemplate<UnsignedShort> {
-      friend class IboBuilder;
+      friend class UShortIboBuilder;
     protected:
       UShortIbo(const IboId id,
                 const uword length,
@@ -274,6 +269,10 @@ namespace mcc {
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
       static inline UShortIbo*                                            \
+      New##Name(const uword num_indices) {                                \
+        return New(num_indices, gfx::k##Name##Usage);                     \
+      }                                                                   \
+      static inline UShortIbo*                                            \
       New##Name(const IndexList& indices) {                               \
         return New(indices, gfx::k##Name##Usage);                         \
       }
@@ -282,7 +281,7 @@ namespace mcc {
     };
 
     class UIntIbo : public IboTemplate<UnsignedInt> {
-      friend class IboBuilder;
+      friend class UIntIboBuilder;
     private:
       UIntIbo(const IboId id,
               const uword length,
@@ -312,6 +311,10 @@ namespace mcc {
       static UIntIbo* New(const IndexList& indices, const gfx::Usage usage = gfx::kDefaultUsage);
 
 #define DEFINE_NEW_USAGE(Name, GlValue)                                   \
+      static inline UIntIbo*                                              \
+      New##Name(const uword num_indices) {                                \
+        return New(num_indices, gfx::k##Name##Usage);                     \
+      }                                                                   \
       static inline UIntIbo*                                              \
       New##Name(const IndexList& indices) {                               \
         return New(indices, gfx::k##Name##Usage);                         \

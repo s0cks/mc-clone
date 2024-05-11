@@ -41,21 +41,6 @@ namespace mcc::ibo {
     NOT_IMPLEMENTED(FATAL); //TODO: implement
   }
 
-  void Ibo::Update(const uint64_t offset, const uint8_t* data, const uint64_t len) {
-    glBufferSubData(kGlTarget, static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(len), (const GLvoid*) data);
-    CHECK_GL(FATAL);
-  }
-
-  void Ibo::Bind() const {
-    glBindBuffer(kGlTarget, GetId());
-    CHECK_GL(FATAL);
-  }
-
-  void Ibo::Unbind() const {
-    glBindBuffer(kGlTarget, kInvalidIboId);
-    CHECK_GL(FATAL);
-  }
-
   std::string UByteIbo::ToString() const {
     using namespace units;
     std::stringstream ss;
@@ -93,50 +78,38 @@ namespace mcc::ibo {
     UByteIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 
   UByteIbo* UByteIbo::New(const uword num_indices, const gfx::Usage usage) {
     UByteIboBuilder builder(num_indices);
     builder.SetUsage(usage);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 
   UShortIbo* UShortIbo::New(const IndexList& indices, const gfx::Usage usage) {
     UShortIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 
   UShortIbo* UShortIbo::New(const uword num_indices, const gfx::Usage usage) {
     UShortIboBuilder builder(num_indices);
     builder.SetUsage(usage);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 
   UIntIbo* UIntIbo::New(const uword num_indices, const gfx::Usage usage) {
     UIntIboBuilder builder(num_indices);
     builder.SetUsage(usage);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 
   UIntIbo* UIntIbo::New(const IndexList& indices, const gfx::Usage usage) {
     UIntIboBuilder builder;
     builder.SetUsage(usage);
     builder.Append(indices);
-    return builder.Build()
-      .as_blocking()
-      .first();
+    return builder.Build();
   }
 }

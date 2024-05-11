@@ -15,8 +15,7 @@ namespace mcc {
         usage_(gfx::kDefaultUsage) {
       }
 
-      template<class IboType>
-      IboType* InitIbo(const IboId id) const;
+      void InitIbo(const IboId id) const;
     public:
       virtual ~IboBuilder() = default;
       virtual const uint8_t* GetData() const = 0;
@@ -49,7 +48,19 @@ namespace mcc {
       }
     public:
       ~IboBuilderTemplate() override = default;
-      virtual rx::observable<T*> Build(const int num = 1) const = 0;
+      virtual T* Build() const = 0;
+      
+      virtual rx::observable<T*> BuildAsync() const {
+        return rx::observable<>::create<T*>([this](rx::subscriber<T*> s) {
+          const auto value = Build();
+          if(!value) {
+            const auto err = "failed to build Ibo.";
+            return s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+          }
+          s.on_next(value);
+          s.on_completed();
+        });
+      }
 
       uint64_t GetIndexSize() const override {
         return T::GetIndexSize();
@@ -83,7 +94,7 @@ namespace mcc {
         IboBuilderTemplate<UByteIbo>(length) {
       }
       ~UByteIboBuilder() override = default;
-      rx::observable<UByteIbo*> Build(const int num = 1) const override;
+      UByteIbo* Build() const override;
     };
 
     class UShortIboBuilder : public IboBuilderTemplate<UShortIbo> {
@@ -92,7 +103,7 @@ namespace mcc {
         IboBuilderTemplate<UShortIbo>(length) {
       }
       ~UShortIboBuilder() override = default;
-      rx::observable<UShortIbo*> Build(const int num = 1) const override;
+      UShortIbo* Build() const override;
     };
 
     class UIntIboBuilder : public IboBuilderTemplate<UIntIbo> {
@@ -101,7 +112,7 @@ namespace mcc {
         IboBuilderTemplate<UIntIbo>(length) {   
       }
       ~UIntIboBuilder() override = default;
-      rx::observable<UIntIbo*> Build(const int num = 1) const override;
+      UIntIbo* Build() const override;
     };
   }
 }
