@@ -31,9 +31,8 @@ namespace mcc::ibo {
         return rx::observable<>::empty<I>();
       return rx::observable<>::create<I>([this](rx::subscriber<I> s) {
         Iterator<I> iter(this);
-        while(iter.HasNext()) {
+        while(iter.HasNext())
           s.on_next(iter.Next());
-        }
         s.on_completed();
       });
     }
