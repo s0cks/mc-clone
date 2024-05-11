@@ -4,14 +4,14 @@
 namespace mcc::texture {
   void CubeMapBuilder::SetFace(const CubeMapFace face, const img::Image* image, const int level, const int border) {
     MCC_ASSERT(image);
-    switch(image->type()) {
+    switch(image->format()) {
       case img::kRGB: {
         const auto data = FaceData {
           .face = face,
           .border = border,
           .level = level,
-          .bytes = image->data()->bytes(),
-          .num_bytes = image->data()->num_bytes(),
+          .bytes = (const uint8_t*) image->data(),
+          .num_bytes = image->GetTotalSize(),
           .internal_format = kRGB,
           .format = kRGB,
           .type = GL_UNSIGNED_BYTE,
@@ -26,8 +26,8 @@ namespace mcc::texture {
           .face = face,
           .border = border,
           .level = level,
-          .bytes = image->data()->bytes(),
-          .num_bytes = image->data()->num_bytes(),
+          .bytes = (const uint8_t*) image->data(),
+          .num_bytes = image->GetTotalSize(),
           .internal_format = kRGBA,
           .format = kRGBA,
           .type = GL_UNSIGNED_BYTE,
@@ -38,7 +38,7 @@ namespace mcc::texture {
         break;
       }
       default:
-        LOG(ERROR) << "invalid image type: " << image->type();
+        LOG(ERROR) << "invalid image type: " << image->format();
         break;
     }
   }

@@ -4,8 +4,7 @@
 #include <string>
 #include <fmt/format.h>
 #include <glog/logging.h>
-
-#include "mcc/image/image_data.h"
+#include "mcc/image/image.h"
 
 namespace mcc::img::png {
   Image* Decode(FILE* file) {
@@ -37,18 +36,18 @@ namespace mcc::img::png {
     png_set_sig_bytes(png, 0);
     png_read_png(png, info, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
 
-    ImageType type;
+    ImageFormat format;
 
     png_uint_32 width, height;
     int bit_depth, color_type;
     png_get_IHDR(png, info, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
     switch(color_type) {
       case PNG_COLOR_TYPE_RGBA:
-        type = ImageType::kRGBA;
+        format = kRGBA;
         break;
       case PNG_COLOR_TYPE_RGB:
       case PNG_COLOR_TYPE_GRAY:
-        type = ImageType::kRGB;
+        format = kRGB;
         break;
       default:
         DLOG(ERROR) << "unknown color type: " << color_type;
@@ -75,13 +74,13 @@ namespace mcc::img::png {
 
     const auto row_bytes = png_get_rowbytes(png, info);
     const auto total_size = row_bytes * height;
-    const auto data = ImageData::New(total_size);
+    const auto image = Image::New(format, ImageSize(width, height), total_size);
     png_bytepp rows = png_get_rows(png, info);
     for(auto i = 0; i < height; i++) {
-      memcpy(data->bytes() + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
+      memcpy(image->data() + (row_bytes * (height - 1 - i)), rows[i], row_bytes);
     }
     png_destroy_read_struct(&png, &info, NULL);
-    return Image::New(type, ImageSize(width, height), data);
+    return image;
   }
 
   Image* Decode(const uri::Uri& uri) {

@@ -1,51 +1,88 @@
 #ifndef MCC_IMAGE_H
 #define MCC_IMAGE_H
 
+#include "mcc/gfx.h"
 #include "mcc/uri.h"
-#include "mcc/image/image_data.h"
+#include "mcc/object.h"
+#include "mcc/image/image_format.h"
 
 namespace mcc::img {
   const std::unordered_set<std::string>& GetValidExtensions();
 
-  class Image {
-  protected:
-    ImageType type_;
-    ImageSize size_;
-    ImageData* data_;
-  public:
-    Image(const ImageType type, const ImageSize& size, ImageData* data):
-      type_(type),
-      size_(size),
-      data_(data) {
-      MCC_ASSERT(data);
-    }
-    virtual ~Image() = default;
+  typedef glm::u32vec2 ImageSize;
 
-    ImageType type() const {
-      return type_;
+  class Image : public Object {
+    DEFINE_NON_COPYABLE_TYPE(Image);
+  private:
+    static inline uword
+    GetFormatOffset() {
+      return sizeof(Image);
+    }
+
+    static inline uword
+    GetSizeOffset() {
+      return GetFormatOffset() + sizeof(uword);
+    }
+
+    static inline uword
+    GetDataOffset() {
+      return GetSizeOffset() + sizeof(uword);
+    }
+  protected:
+    Image(const ImageFormat format,
+          const ImageSize& size):
+      Object() {
+      SetFormat(format);
+      SetSize(size);
+    }
+
+    inline uword raw_ptr() const {
+      return (uword)this;
+    }
+
+    inline ImageFormat* format_ptr() const {
+      return (ImageFormat*) (raw_ptr() + GetFormatOffset());
+    }
+
+    inline void SetFormat(const ImageFormat& rhs) {
+      (*format_ptr()) = rhs;
+    }
+
+    inline ImageSize* size_ptr() const {
+      return (ImageSize*) (raw_ptr() + GetSizeOffset());
+    }
+
+    inline void SetSize(const ImageSize& rhs) {
+      (*size_ptr()) = rhs;
+    }
+
+    inline uint8_t* data_ptr() const {
+      return (uint8_t*) (raw_ptr() + GetDataOffset());
+    }
+
+    inline void ClearData() {
+      NOT_IMPLEMENTED(FATAL); //TODO: implement
+    }
+  public:
+    ~Image() override = default;
+    std::string ToString() const override;
+
+    virtual ImageFormat format() const {
+      return *format_ptr();
     }
 
     const ImageSize& size() const {
-      return size_;
+      return *size_ptr();
     }
 
-    ImageData* data() const {
-      return data_;
+    uint8_t* data() const {
+      return data_ptr();
     }
 
-    friend std::ostream& operator<<(std::ostream& stream, const Image& rhs) {
-      stream << "Image(";
-      stream << "type=" << rhs.type() << ", ";
-      stream << "size=" << glm::to_string(rhs.size()) << ", ";
-      stream << "data=" << (*rhs.data());
-      stream << ")";
-      return stream;
-    }
+    uword GetTotalSize() const;
   public:
-    static inline Image*
-    New(const ImageType type, const ImageSize size, ImageData* data) {
-      return new Image(type, size, data);
-    }
+    void* operator new(const size_t sz, const uword num_bytes);
+    static Image* New(const ImageFormat format, const ImageSize& size, const uword num_bytes);
   };
 
   bool Filter(const uri::Uri& uri);

@@ -5,23 +5,23 @@
 #include <jerror.h>
 #include <jpeglib.h>
 #include <fmt/format.h>
+#include "mcc/image/image.h"
 
 namespace mcc::img::jpeg {
-  static inline ImageType
-  GetType(const int channels) {
+  static inline ImageFormat
+  GetFormat(const int channels) {
     switch(channels) {
       case 4:
-        return ImageType::kRGBA;
+        return kRGBA;
       case 3:
       default:
-        return ImageType::kRGB;
+        return kRGB;
     }
   }
 
   Image* Decode(FILE* file) {
     MCC_ASSERT(file);
-
-    ImageType type;
+    ImageFormat format;
     ImageSize size;
 
     unsigned long data_size;
@@ -37,16 +37,16 @@ namespace mcc::img::jpeg {
     channels = info.num_components;
     size[0] = info.output_width;
     size[1] = info.output_height;
-    type = GetType(channels);
+    format = GetFormat(channels);
     const auto total_size = size[0] * size[1] * channels;
-    const auto data = ImageData::New(total_size);
+    const auto image = Image::New(format, size, total_size);
     while (info.output_scanline < info.output_height) {
-      const auto row_ptr = &data->bytes()[channels * info.output_width * info.output_scanline];
+      const auto row_ptr = &image->data()[channels * info.output_width * info.output_scanline];
       jpeg_read_scanlines(&info, (JSAMPARRAY)&row_ptr, 1);
     }
     jpeg_finish_decompress(&info);
     jpeg_destroy_decompress(&info);
-    return Image::New(type, size, data);
+    return image;
   }
 
   Image* Decode(const uri::Uri& uri) {

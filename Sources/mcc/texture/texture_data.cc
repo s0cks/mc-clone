@@ -3,14 +3,7 @@
 namespace mcc::texture {
   void TextureData::operator=(const img::Image* img) {
     MCC_ASSERT(img);
-    switch(img->type()) {
-      case img::kRGB:
-        format_ = internal_format_ = kRGB;
-        break;
-      case img::kRGBA:
-        format_ = internal_format_ = kRGBA;
-        break;
-    }
+    format_ = internal_format_ = static_cast<TextureFormat>(img->format());
     type_ = kDefaultType;
     size_ = img->size();
   }

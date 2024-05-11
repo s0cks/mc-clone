@@ -93,6 +93,7 @@
     "*.tcc": "cpp",
     "charconv": "cpp",
     "format": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "csignal": "cpp"
   }
 }
