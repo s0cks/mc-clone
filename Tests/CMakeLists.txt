@@ -9,6 +9,10 @@ file(GLOB MCC_PROGRAM_TEST_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/program/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/program/*.cc")
 
+file(GLOB MCC_VAO_TEST_SOURCES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/vao/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/vao/*.cc")
+
 file(GLOB MCC_URI_TEST_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri.cc"
@@ -28,6 +32,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/ibo/test_ibo_factory.cc
   ${MCC_SHADER_TEST_SOURCES}
   ${MCC_PROGRAM_TEST_SOURCES}
+  ${MCC_VAO_TEST_SOURCES}
 # Textures
   mcc/texture/mock_texture.h
   mcc/texture/test_texture_filter.cc

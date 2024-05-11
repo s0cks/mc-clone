@@ -21,6 +21,7 @@ namespace mcc {
 #undef DEFINE_ON_VAO_EVENT
 
     class Vao : public gfx::ObjectTemplate<VaoId> {
+      friend class VaoTest;
       friend class VaoBindScope;
     public:
       struct VaoIdComparator {
