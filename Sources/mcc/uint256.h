@@ -45,6 +45,14 @@ namespace mcc {
     bool operator>(const uint256& rhs) const {
       return Compare(*this, rhs) > 0;
     }
+
+    explicit operator std::string() const {
+      return ToHexString();
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const uint256& rhs) {
+      return stream << ((const std::string&) rhs);
+    }
   };
 }
 

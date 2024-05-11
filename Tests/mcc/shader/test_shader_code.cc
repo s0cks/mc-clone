@@ -32,12 +32,23 @@ namespace mcc::shader {
     ASSERT_TRUE(VertexShaderCodeEquals(code, kShaderCode));
   }
 
-  TEST_F(ShaderCodeTest, Test_FromFile_WillPass) {
+  TEST_F(ShaderCodeTest, Test_VertexShaderCodeFromFile_WillPass) {
     static constexpr const auto kExpectedShaderCode = 
       "#version 330 core\n"
       "void main() {\n"
       "}";
     const auto code = ShaderCode::VertexShaderCodeFromFile("shader:test-shader-code-1.glsl");
+    ASSERT_TRUE(code);
+    DLOG(INFO) << "code: " << code->ToString();
+    ASSERT_TRUE(VertexShaderCodeEquals(code, kExpectedShaderCode));
+  }
+
+  TEST_F(ShaderCodeTest, Test_FromFile_WillPass) {
+    static constexpr const auto kExpectedShaderCode = 
+      "#version 330 core\n"
+      "void main() {\n"
+      "}";
+    const auto code = ShaderCode::FromFile("shader:test-shader-code-1.vert");
     ASSERT_TRUE(code);
     DLOG(INFO) << "code: " << code->ToString();
     ASSERT_TRUE(VertexShaderCodeEquals(code, kExpectedShaderCode));

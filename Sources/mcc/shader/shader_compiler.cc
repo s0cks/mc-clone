@@ -8,7 +8,7 @@
 
 namespace mcc::shader {
   static inline void
-  Attach(const ShaderId id, ShaderCode* code) {
+  Attach(const ShaderId id, const ShaderCode* code) {
     MCC_ASSERT(IsValidShaderId(id));
     MCC_ASSERT(code);
     auto data = code->GetData();
@@ -18,12 +18,79 @@ namespace mcc::shader {
   }
 
   static inline void
-  AttachAndCompile(const ShaderId id, ShaderCode* code) {
+  Attach(const ShaderId id, const ShaderUnit* unit) {
+    MCC_ASSERT(IsValidShaderId(id));
+    MCC_ASSERT(unit);
+    MCC_ASSERT(!unit->IsEmpty());
+    const auto num_sources = unit->GetSize();
+    GLint lengths[num_sources];
+    GLchar* sources[num_sources];
+    for(auto idx = 0; idx < num_sources; idx++) {
+      const auto code = (*unit)[idx];
+      sources[idx] = (GLchar*) code->GetData();
+      lengths[idx] = code->GetLength();
+    }
+    glShaderSource(id, num_sources, sources, lengths);
+    CHECK_GL(ERROR);
+  }
+
+  static inline void
+  Compile(const ShaderId id) {
+    glCompileShader(id);
+    CHECK_GL(ERROR);
+  }
+
+  static inline void
+  AttachAndCompile(const ShaderId id, const ShaderCode* code) {
     MCC_ASSERT(IsValidShaderId(id));
     MCC_ASSERT(code);
     Attach(id, code);
-    glCompileShader(id);
-    CHECK_GL(ERROR);
+    Compile(id);
+  }
+
+  static inline void
+  AttachAndCompile(const ShaderId id, const ShaderUnit* unit) {
+    MCC_ASSERT(IsValidShaderId(id));
+    MCC_ASSERT(unit);
+    Attach(id, unit);
+    Compile(id);
+  }
+
+  ShaderId ShaderCompiler::CompileShaderUnit(ShaderUnit* unit) {
+    if(!unit)
+      return kInvalidShaderId;
+    using namespace units::time;
+    DLOG(INFO) << "compiling " << unit->ToString() << "....";
+    const auto start_ns = uv_hrtime();
+    const auto id = glCreateShader(unit->GetType());
+    if(IsValidShaderId(id))
+      AttachAndCompile(id, unit);
+    const auto stop_ns = uv_hrtime();
+    const auto total_ns = (stop_ns - start_ns);
+    duration_.Append(total_ns);
+    compiled_ += 1;
+    DLOG(INFO) << "compilation finished (" << nanosecond_t(total_ns) << ").";
+    const auto status = ShaderCompilerStatus(id);
+#ifdef MCC_DEBUG
+    using namespace units::data;
+    const auto severity = status ? google::INFO : google::ERROR;
+    LOG_AT_LEVEL(severity) << "Shader: " << id;
+    if(status) {
+      LOG_AT_LEVEL(severity) << "Status: Compiled.";
+    } else {
+      LOG_AT_LEVEL(severity) << "Status: " << status;
+    }
+    LOG_AT_LEVEL(severity) << "Unit: " << unit->GetName() << " " << unit->GetHash();
+    LOG_AT_LEVEL(severity) << "Stats:";
+    LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
+    const auto& duration = GetDurationSeries();
+    LOG_AT_LEVEL(severity) << " - Duration: " << nanosecond_t(total_ns) << "; (Avg/Min/Max): " << nanosecond_t(duration_.average()) << ", " << nanosecond_t(duration_.min()) << ", " << nanosecond_t(duration_.min());
+#endif //MCC_DEBUG
+
+    if(!status)
+      return kInvalidShaderId; //TODO: cleanup shader id
+    Publish<ShaderCompiledEvent>(id);
+    return id;
   }
 
   ShaderId ShaderCompiler::CompileShaderCode(ShaderCode* code) {
@@ -52,13 +119,11 @@ namespace mcc::shader {
     } else {
       LOG_AT_LEVEL(severity) << "Status: " << status;
     }
-    const auto hash = code->GetSHA256();
-    LOG_AT_LEVEL(severity) << "Hash: " << hash.ToHexString();
+    LOG_AT_LEVEL(severity) << "Code: " << code->GetSHA256();
     LOG_AT_LEVEL(severity) << "Stats:";
     LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
     const auto& duration = GetDurationSeries();
     LOG_AT_LEVEL(severity) << " - Duration: " << nanosecond_t(total_ns) << "; (Avg/Min/Max): " << nanosecond_t(duration_.average()) << ", " << nanosecond_t(duration_.min()) << ", " << nanosecond_t(duration_.min());
-    LOG_AT_LEVEL(severity) << "Code (" << byte_t(code->GetLength()) << "):" << std::endl << (*code);
 #endif //MCC_DEBUG
 
     if(!status)
@@ -87,7 +152,7 @@ namespace mcc::shader {
     const auto compiler = GetCompiler();
     MCC_ASSERT(compiler);
     return compiler->CompileShaderCode(code);
-  } 
+  }
 
   rx::observable<ShaderId> ShaderCompiler::CompileAsync(ShaderCode* code) {
     if(!code)

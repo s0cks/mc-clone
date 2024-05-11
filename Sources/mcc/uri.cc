@@ -158,7 +158,9 @@ namespace mcc::uri {
     const auto dotpos = path.find_last_of('.');
     if(dotpos == std::string::npos)
       return {};
-    return path.substr(dotpos + 1);
+    auto extension = path.substr(dotpos + 1);
+    SanitizeExtension(extension);
+    return extension;
   }
 
   bool Uri::HasExtension() const {

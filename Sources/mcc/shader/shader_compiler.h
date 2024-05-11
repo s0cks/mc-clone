@@ -8,6 +8,7 @@
 #include "mcc/counter.h"
 #include "mcc/shader/shader.h"
 #include "mcc/shader/shader_code.h"
+#include "mcc/shader/shader_unit.h"
 #include "mcc/shader/shader_compiler_events.h"
 
 namespace mcc::shader {
@@ -35,6 +36,7 @@ namespace mcc::shader {
   public:
     ShaderCompiler() = default;
     virtual ~ShaderCompiler() = default;
+    virtual ShaderId CompileShaderUnit(ShaderUnit* unit);
     virtual ShaderId CompileShaderCode(ShaderCode* source);
 
     const DurationSeries& GetDurationSeries() const {

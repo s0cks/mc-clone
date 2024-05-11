@@ -204,6 +204,11 @@ namespace mcc::shader {
       return FromFile(type, uri::Uri(uri));
     }
 
+    static inline ShaderCode*
+    FromFile(const uri::basic_uri& uri) { //TODO: normalize uri
+      return FromFile(uri::Uri(uri));
+    }
+
 #define DEFINE_FROM_FILE_TYPE(Name, Ext, GlValue)                     \
     static inline ShaderCode*                                         \
     Name##ShaderCodeFromFile(const uri::Uri& uri) {                   \

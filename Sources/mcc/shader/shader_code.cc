@@ -5,6 +5,8 @@
 #include "mcc/flags.h"
 #include "mcc/sha256.h"
 #include "mcc/common.h"
+#include "mcc/shader/shader.h"
+#include "mcc/shader/shader_uri.h"
 
 namespace mcc::shader {
   int ShaderCode::Compare(const RawShaderCode bytes, const uword num_bytes) const {
@@ -61,6 +63,7 @@ namespace mcc::shader {
       LOG(ERROR) << "cannot load ShaderCode from: " << uri;
       return nullptr;
     }
+    //TODO: check extension
 
     MCC_ASSERT(uri.HasScheme("file"));
     const auto file = uri.OpenFileForReading();
@@ -81,8 +84,26 @@ namespace mcc::shader {
   }
   
   ShaderCode* ShaderCode::FromFile(const uri::Uri& uri) {
-    NOT_IMPLEMENTED(FATAL); //TODO: implement
-    return nullptr;
+    if(uri.HasScheme("shader")) {
+      const auto new_uri = uri::Uri("file", fmt::format("{0:s}/shaders/{1:s}", FLAGS_resources, uri.path));
+      return FromFile(new_uri);
+    } else if(!uri.HasScheme("file")) {
+      LOG(ERROR) << "cannot load ShaderCode from: " << uri;
+      return nullptr;
+    }
+    
+    const auto extension = GetShaderFileExtension(uri);
+    if(!extension) {
+      LOG(ERROR) << "cannot load ShaderCode from " << uri << ", no extension.";
+      return nullptr;
+    }
+
+    const auto type = ParseShaderType(*extension);
+    if(!type) {
+      LOG(ERROR) << "cannot load ShaderCode from " << uri << ", cannot determine type from extension: " << (*extension);
+      return nullptr;
+    }
+    return FromFile(*type, uri);
   }
 
   uint256 ShaderCode::GetSHA256() const {

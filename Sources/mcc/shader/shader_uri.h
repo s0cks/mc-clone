@@ -2,6 +2,8 @@
 #define MCC_SHADER_URI_H
 
 #include <set>
+#include <string>
+#include <optional>
 #include "mcc/uri.h"
 
 namespace mcc::shader {
@@ -9,6 +11,8 @@ namespace mcc::shader {
   bool IsValidShaderUri(const uri::Uri& uri);
   bool IsValidShaderJsonUri(const uri::Uri& uri);
   void NormalizeShaderUriPath(uri::Uri& uri);
+
+  std::optional<std::string> GetShaderFileExtension(const uri::Uri& uri);
 }
 
 #endif //MCC_SHADER_URI_H

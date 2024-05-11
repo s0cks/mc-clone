@@ -28,4 +28,16 @@ namespace mcc::shader {
       return;
     path = fmt::format("{0:s}/{1:s}", root, path);
   }
+
+  std::optional<std::string> GetShaderFileExtension(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme("file"));
+    const auto extension = uri.GetExtension();
+    if(extension.empty())
+      return std::nullopt;
+    const auto& extensions = shader::GetValidFileExtensions();
+    const auto pos = extensions.find(extension);
+    if(pos == std::end(extensions))
+      return std::nullopt;
+    return { extension };
+  }
 }

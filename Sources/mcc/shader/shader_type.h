@@ -33,7 +33,7 @@ namespace mcc::shader {
     if(value.empty())
       return std::nullopt;
 #define DEFINE_PARSE(Name, Ext, GlValue) \
-    else if(EqualsIgnoreCase(#Name, value)) return { k##Name##Shader };
+    else if(EqualsIgnoreCase(#Name, value) || EqualsIgnoreCase(#Ext, value)) return { k##Name##Shader };
     FOR_EACH_SHADER_TYPE(DEFINE_PARSE)
 #undef DEFINE_PARSE
     return std::nullopt;
