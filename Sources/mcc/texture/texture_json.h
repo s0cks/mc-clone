@@ -56,8 +56,7 @@ namespace mcc::json {
       const auto file = GetFileProperty();
       MCC_ASSERT(file);
       MCC_ASSERT((*file)->IsString());
-      std::string path((*file)->GetString(), (*file)->GetStringLength());
-      
+      return std::string((*file)->GetString(), (*file)->GetStringLength());
     }
   };
 
