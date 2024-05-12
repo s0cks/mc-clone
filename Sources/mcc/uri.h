@@ -9,7 +9,6 @@
 #include <fmt/format.h>
 
 #include "mcc/rx.h"
-#include "mcc/murmur.h"
 #include "mcc/common.h"
 
 namespace mcc {

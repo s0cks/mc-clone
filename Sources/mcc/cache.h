@@ -3,13 +3,15 @@
 
 #include <optional>
 #include <functional>
+
+#include "mcc/common.h"
 #include "mcc/platform.h"
-#include "mcc/murmur.h"
 
 namespace mcc {
   struct DefaultHasher {
     uint32_t operator()(const std::string& key) const {
-      return Murmur(key.data(), key.size());
+      NOT_IMPLEMENTED(FATAL); //TODO: implement
+      return 0; //TODO: Murmur(key.data(), key.size());
     }
   };
 

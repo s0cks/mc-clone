@@ -2,7 +2,7 @@
 #define MCC_BENCHMARK_MURMUR_H
 
 #include <benchmark/benchmark.h>
-#include "mcc/murmur.h"
+#include "mcc/hash/murmur3.h"
 
 namespace mcc {
   void BM_Murmur(benchmark::State& state);
