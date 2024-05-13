@@ -33,7 +33,12 @@ namespace mcc::json {
     return ParseJson(uri::Uri(uri), doc);
   }
 
-  bool ParseRawJson(const std::string& json, Document& doc);
+  bool ParseRawJson(const char* json, Document& doc);
+
+  static inline bool
+  ParseRawJson(const std::string& json, Document& doc) {
+    return ParseRawJson(json.data(), doc);
+  }
 
   static constexpr const auto kDefaultJsonFileBufferSize = 4096;
   rx::observable<DocumentPtr> ParseDocument(FILE* file, const int buffer_size = kDefaultJsonFileBufferSize);

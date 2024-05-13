@@ -8,7 +8,7 @@
 #include "mcc/shader/shader_type.h"
 
 namespace mcc::shader {
-  typedef uint8_t* RawShaderCode;
+  typedef const uint8_t* RawShaderCode;
   class ShaderCode : public Object { //TODO: implement Region
     DEFINE_NON_COPYABLE_TYPE(ShaderCode);
     static constexpr const auto kTypeOffset = sizeof(Object);
@@ -87,7 +87,7 @@ namespace mcc::shader {
     inline void CopyFrom(const RawShaderCode bytes, const uword num_bytes) {
       MCC_ASSERT(bytes);
       MCC_ASSERT(num_bytes <= GetLength());
-      memcpy(raw_ptr(), bytes, num_bytes);
+      memcpy((void*) raw_ptr(), bytes, num_bytes);
     }
 
     inline void CopyFrom(const ShaderCode* rhs) {

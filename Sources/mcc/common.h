@@ -134,6 +134,17 @@ namespace mcc {
   }
 
   static inline bool
+  StartsWith(const char* str, const uword str_len, const char* prefix, const uword prefix_len) {
+    return str_len >= prefix_len
+        && strncmp(&str[0], &prefix[0], prefix_len) == 0;
+  }
+
+  static inline bool
+  StartsWith(const char* str, const uword str_len, const char* prefix) {
+    return StartsWith(str, str_len, prefix, strlen(prefix));
+  }
+
+  static inline bool
   StartsWith(const std::string& str, const std::string& prefix) {
      return str.size() >= prefix.size() 
          && str.compare(0, prefix.size(), prefix) == 0;

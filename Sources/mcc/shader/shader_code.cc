@@ -73,7 +73,7 @@ namespace mcc::shader {
     }
     const auto total_size = GetFilesize(file);
     const auto code = new(total_size)ShaderCode(type, total_size);
-    const auto nread = fread(code->raw_ptr(), sizeof(uint8_t), total_size, file);
+    const auto nread = fread((void*) code->raw_ptr(), sizeof(uint8_t), total_size, file);
     if(nread != total_size) {
       using namespace units::data;
       LOG(ERROR) << "failed to read ShaderCode, read " << byte_t(nread) << "/" << byte_t(total_size) << " from " << uri << ": " << strerror(errno);

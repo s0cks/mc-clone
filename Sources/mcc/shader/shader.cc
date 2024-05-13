@@ -140,6 +140,63 @@ namespace mcc::shader {
   FOR_EACH_SHADER_TYPE(DEFINE_NEW_SHADER)
 #undef DEFINE_NEW_SHADER
 
+  VertexShader* VertexShader::FromSource(ShaderCode* source) {
+    const auto id = ShaderCompiler::Compile(source);
+    if(IsInvalidShaderId(id)) {
+      LOG(ERROR) << "failed to compile: " << source->ToString();
+      return nullptr;
+    }
+    return New(id);
+  }
+
+  VertexShader* VertexShader::FromSource(const uri::Uri& uri) {
+
+  }
+
+  VertexShader* VertexShader::FromJson(const uri::Uri& uri) {
+
+  }
+
+  VertexShader* VertexShader::FromJson(const json::Value& value) {
+
+  }
+  
+  VertexShader* VertexShader::FromJson(const char* source, const uword length) {
+    if(StartsWith(source, length, "file:")
+    || StartsWith(source, length, "shader:")) {
+      return FromJson(uri::Uri(std::string(source, length)));
+    }
+    json::Document doc;
+    if(!json::ParseRawJson(source, doc)) {
+      LOG(ERROR) << "failed to parse VertexShader json: " << source;
+      return nullptr;
+    }
+
+    const auto schema = json::GetSchema();
+    MCC_ASSERT(schema);
+    const auto valid = schema->Validate(doc);
+    if(!valid) {
+      LOG(ERROR) << "VertexShader json is invalid: " << valid;
+      return nullptr;
+    }
+
+    const auto& name_prop = doc["name"];
+    MCC_ASSERT(name_prop.IsString());
+    const auto name = std::string(name_prop.GetString(), name_prop.GetStringLength());
+    MCC_ASSERT(!name.empty());
+    
+    const auto& type_prop = doc["type"];
+    MCC_ASSERT(type_prop.IsString());
+    const auto type = std::string(type_prop.GetString(), type_prop.GetStringLength());
+    if(!EqualsIgnoreCase(type, "vertexshader")) {
+      LOG(ERROR) << "invalid type " << type << " for VertexShader json.";
+      return nullptr;
+    }
+
+    const auto& data_prop = doc["data"];
+    return FromJson(data_prop);
+  }
+
   std::string VertexShader::ToString() const {
     std::stringstream ss;
     ss << "VertexShader(";
