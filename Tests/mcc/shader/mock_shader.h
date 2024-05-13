@@ -51,11 +51,11 @@ namespace mcc::shader {
       return ss.str();
     }
 
-    MOCK_METHOD0(AsVertexShader, VertexShader*());
-    MOCK_METHOD0(AsFragmentShader, FragmentShader*());
-    MOCK_METHOD0(AsGeometryShader, GeometryShader*());
-    MOCK_METHOD0(AsTessEvalShader, TessEvalShader*());
-    MOCK_METHOD0(AsTessControlShader, TessControlShader*());
+    MOCK_METHOD(VertexShader*, AsVertexShader, (), (override));
+    MOCK_METHOD(FragmentShader*, AsFragmentShader, (), (override));
+    MOCK_METHOD(GeometryShader*, AsGeometryShader, (), (override));
+    MOCK_METHOD(TessEvalShader*, AsTessEvalShader, (), (override));
+    MOCK_METHOD(TessControlShader*, AsTessControlShader, (), (override));
   };
 }
 
