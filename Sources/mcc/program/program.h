@@ -178,8 +178,8 @@ namespace mcc {
         CHECK_GL(FATAL);
       }
 
-      void Apply();
-      void Unapply();
+      void Apply(); //TODO: remove
+      void Unapply(); //TODO: remove
       std::string ToString() const;
 
       inline rx::observable<ProgramEvent*>
@@ -194,21 +194,19 @@ namespace mcc {
       }
       FOR_EACH_PROGRAM_EVENT(DEFINE_ON_PROGRAM_EVENT);
 #undef DEFINE_ON_PROGRAM_EVENT
-    public:
-      static inline ProgramRef
+    private:
+      static inline Program*
       New(const ProgramId id) {
         MCC_ASSERT(IsValidProgramId(id));
-        return ProgramRef(new Program(id));
+        return new Program(id);
       }
+    public:
+      static Program* FromJson(const uri::Uri& uri);
+      static Program* FromJson(const json::Value& value);
 
-      static ProgramRef New(const uri::Uri& uri);
-
-      static inline ProgramRef
-      New(const uri::basic_uri& uri) {
-        auto target = uri;
-        if(!StartsWith(target, "program:"))
-          target = fmt::format("program:{0:s}", target);
-        return New(uri::Uri(target));
+      static inline Program*
+      FromJson(const uri::basic_uri& uri) {
+        return FromJson(uri::Uri(uri)); //TODO: sanitize uri -> uri::Uri("file://{0:s}/{1:s}.json", programs_dir, uri.path)
       }
     };
   }

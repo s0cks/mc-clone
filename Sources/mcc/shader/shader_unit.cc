@@ -8,6 +8,21 @@ namespace mcc::shader {
     return {};
   }
 
+  void ShaderUnit::Append(const uri::Uri& code) {
+    MCC_ASSERT(code.HasScheme("file", "shader"));
+    MCC_ASSERT(code.HasExtension());
+    return Append(ShaderCode::FromFile(code));
+  }
+
+  void ShaderUnit::Append(const std::string& code) {
+    if(StartsWith(code, "file:")) {
+      return Append(uri::Uri(code));
+    } else if(StartsWith(code, "shader:")) {
+      return Append(uri::Uri(code));
+    }
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+  }
+
   void ShaderUnit::Append(const ShaderCode* code) {
     MCC_ASSERT(code);
     MCC_ASSERT(GetType() == code->GetType());

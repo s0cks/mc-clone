@@ -145,6 +145,13 @@ namespace mcc::shader {
     return compiler->CompileShaderCode(code);
   }
 
+  ShaderId ShaderCompiler::Compile(ShaderUnit* unit) {
+    MCC_ASSERT(unit);
+    const auto compiler = GetCompiler();
+    MCC_ASSERT(compiler);
+    return compiler->CompileShaderUnit(unit);
+  }
+
   rx::observable<ShaderId> ShaderCompiler::CompileAsync(ShaderCode* code) {
     if(!code)
       return rx::observable<>::empty<ShaderId>();
@@ -153,6 +160,20 @@ namespace mcc::shader {
       if(!compiler)
         return s.on_error(rx::util::make_error_ptr(std::runtime_error("no ShaderCompiler available on thread.")));
       const auto id = compiler->CompileShaderCode(code);
+      s.on_next(id);
+      s.on_completed();
+    });
+  }
+
+  rx::observable<ShaderId> ShaderCompiler::CompileAsync(ShaderUnit* unit) {
+    if(!unit)
+      return rx::observable<>::empty<ShaderId>();
+
+    return rx::observable<>::create<ShaderId>([unit](rx::subscriber<ShaderId> s) {
+      const auto compiler = GetCompiler();
+      if(!compiler)
+        return s.on_error(rx::util::make_error_ptr(std::runtime_error("no ShaderCompiler available on thread.")));
+      const auto id = compiler->CompileShaderUnit(unit);
       s.on_next(id);
       s.on_completed();
     });

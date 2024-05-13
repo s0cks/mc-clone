@@ -10,14 +10,14 @@ namespace mcc::render {
   class RenderFboPass : public RenderPass {
   protected:
     Fbo* fbo_;
-    ProgramRef program_; 
+    Program* program_; 
 
     void Render() override;
   public:
     explicit RenderFboPass(Fbo* fbo):
       RenderPass(),
       fbo_(fbo),
-      program_(Program::New("textured_2d")) {
+      program_(Program::FromJson("program:textured_2d")) {
     }
     ~RenderFboPass() override = default;
 

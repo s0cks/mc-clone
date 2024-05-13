@@ -8,7 +8,7 @@
 namespace mcc::render {
   class SkyboxRenderPass : public RenderPass {
   protected:
-    ProgramRef program_;
+    Program* program_;
 
     Order GetOrder() const override {
       return kFirst;

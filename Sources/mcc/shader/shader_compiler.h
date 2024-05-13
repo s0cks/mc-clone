@@ -71,7 +71,8 @@ namespace mcc::shader {
     }
   public:
     static ShaderCompiler* GetCompiler();
-    static ShaderId Compile(ShaderCode* code);
+    static ShaderId Compile(ShaderUnit* unit);
+    static ShaderId Compile(ShaderCode* code); //TODO: remove
     static ShaderId Compile(const uri::Uri& uri);
 
     static inline ShaderId
@@ -79,7 +80,8 @@ namespace mcc::shader {
       return Compile(FormatBasicUri(uri));
     }
 
-    static rx::observable<ShaderId> CompileAsync(ShaderCode* code);
+    static rx::observable<ShaderId> CompileAsync(ShaderUnit* unit);
+    static rx::observable<ShaderId> CompileAsync(ShaderCode* code); //TODO: remove
     static rx::observable<ShaderId> CompileAsync(const uri::Uri& uri);
 
     static inline rx::observable<ShaderId>

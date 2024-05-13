@@ -35,7 +35,7 @@ namespace mcc {
       }
       Uri(const std::string& s, const std::string& root, const Uri& path):
         scheme(s),
-        path(fmt::format("{0:s}/{1:s}", root, path.path)),
+        path(fmt::format("{0:s}/{1:s}", root, path.path[0] == '/' ? path.path.substr(1) : path.path)),
         fragment(path.fragment),
         query(path.query) {
       }

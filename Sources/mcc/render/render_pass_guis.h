@@ -11,7 +11,7 @@
 namespace mcc::render {
   class RenderPassGuis : public RenderPass { //TODO: rename
   protected:
-    ProgramRef prog_;
+    Program* prog_;
     Texture* texture_;
   public:
     RenderPassGuis();

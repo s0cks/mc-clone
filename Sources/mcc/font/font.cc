@@ -46,10 +46,10 @@ namespace mcc::font {
   }
 
   Font::Font(const std::string& name, const FontSize size):
-    shader_(Program::New(name)),
+    shader_(Program::FromJson(fmt::format("program:{0:s}", name))),
     chars_(),
     mesh_() {
-    program::ApplyProgramScope prog(shader_.operator->());
+    program::ApplyProgramScope prog(shader_);
     prog.Set("projection", glm::mat4(1.0f));
     GlyphMapGenerator::Generate(name, chars_, size);
   }

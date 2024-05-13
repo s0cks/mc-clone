@@ -22,6 +22,7 @@
 
 #include "mcc/glm.h"
 #include "mcc/gfx_error.h"
+#include "mcc/gfx_debug.h"
 #include "mcc/gfx_misc.h"
 
 #define MCC_GLFW_CTX_VERSION_MAJOR @PROJECT_GLFW_CONTEXT_VERSION_MAJOR@
@@ -34,5 +35,9 @@
 #ifndef PI
 #define PI 3.141592654
 #endif //PI
+
+namespace mcc::gfx {
+  void Init();
+}
 
 #endif //MCC_GFX_H

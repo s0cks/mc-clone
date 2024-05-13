@@ -20,7 +20,7 @@ namespace mcc::program {
   }
 
   bool ProgramBuilder::Attach(const uri::Uri& uri) {
-    const auto shader = Shader::New(uri);
+    const auto shader = nullptr; //TODO: Shader::New(uri);
     if(!shader) {
       DLOG(ERROR) << "failed to load shader from: " << uri;
       return false;

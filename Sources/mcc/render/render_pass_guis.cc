@@ -156,7 +156,7 @@ namespace mcc::render {
 
   RenderPassGuis::RenderPassGuis():
     RenderPass(),
-    prog_(Program::New("textured_2d")),
+    prog_(Program::FromJson("program:textured_2d")),
     texture_(Texture2d::New("concrete.png")) {
   }
 
@@ -194,7 +194,7 @@ namespace mcc::render {
     MCC_ASSERT(camera);
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
-    program::ApplyProgramScope prog(prog_.operator->());
+    program::ApplyProgramScope prog(prog_);
     prog.Set("tex", 0);
     prog.Set("projection", camera->GetProjection());
     prog.Set("view", camera->GetView());

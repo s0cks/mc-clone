@@ -56,6 +56,8 @@ namespace mcc::shader {
 
     uint256 GetHash() const;
     void Append(const ShaderCode* code);
+    void Append(const uri::Uri& code);
+    void Append(const std::string& code);
 
     const ShaderCode*& operator[](const uword idx) {
       MCC_ASSERT(idx >= 0 && idx <= GetSize());
@@ -66,6 +68,19 @@ namespace mcc::shader {
       MCC_ASSERT(idx >= 0 && idx <= GetSize());
       return code_[idx];
     }
+  public:
+    static inline ShaderUnit*
+    New(const ShaderType type, const std::string& name) {
+      return new ShaderUnit(name, type);
+    }
+
+#define DEFINE_NEW_SHADER_UNIT_BY_TYPE(Name, Ext, GlValue)          \
+    static inline ShaderUnit*                                       \
+    New##Name##ShaderUnit(const std::string& name) {                \
+      return New(k##Name##Shader, name);                            \
+    }
+    FOR_EACH_SHADER_TYPE(DEFINE_NEW_SHADER_UNIT_BY_TYPE)
+#undef DEFINE_NEW_SHADER_UNIT_BY_TYPE
   };
 }
 

@@ -1,7 +1,11 @@
 #include "mcc/program/program.h"
+
+#include "mcc/json_schema.h"
 #include "mcc/shader/shader_code.h"
 #include "mcc/shader/shader_compiler.h"
 #include "mcc/program/program_loader_dir.h"
+
+#include "mcc/program/program_builder.h"
 
 namespace mcc::program {
   static rx::subject<ProgramEvent*> events_;
@@ -112,20 +116,82 @@ namespace mcc::program {
     return {};
   }
 
-  ProgramRef Program::New(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("program"));
-    const auto base_path = uri.ToFileUri(fmt::format("{0:s}/shaders", FLAGS_resources));
-    DLOG(INFO) << "loading Program from: " << base_path;
-    const auto parent_path = base_path.GetParent();
-    DLOG(INFO) << "parent: " << parent_path;
-    const auto name = base_path.GetResourceName();
-    DirProgramLoader dir(parent_path.path, name);
-    const auto program = dir.LoadProgram();
-    if(!program) {
-      LOG(FATAL) << "failed to load program from: " << uri;
-      return {};
+  Program* Program::FromJson(const uri::Uri& uri) {
+    if(uri.HasScheme("program")) {
+      const auto programs_dir = fmt::format("{0:s}/shaders/", FLAGS_resources);
+
+      auto path = uri.path;
+      if(!StartsWith(path, programs_dir))
+        path = fmt::format("{0:s}/{1:s}", programs_dir, path[0] == '/' ? path.substr(1) : path);
+      
+      if(!EndsWith(path, ".json"))
+        path = fmt::format("{0:s}.json", path);
+      const auto new_uri = uri::Uri(fmt::format("file://{0:s}", path));
+      return FromJson(new_uri);
+    } else if(!uri.HasScheme("file")) {
+      LOG(ERROR) << "invalid Program uri: " << uri;
+      return nullptr;
     }
-    DLOG(INFO) << uri << " => " << program->ToString();
-    return ProgramRef(program);
+    MCC_ASSERT(uri.HasScheme("file"));
+    MCC_ASSERT(uri.HasExtension("json"));
+
+    json::Document doc;
+    if(!json::ParseJson(uri, doc)) {
+      LOG(ERROR) << "failed to parse Program json from: " << uri;
+      return nullptr;
+    }
+
+    const auto schema = json::GetSchema();
+    MCC_ASSERT(schema);
+    const auto valid = schema->Validate(doc);
+    if(!valid) {
+      LOG(ERROR) << "VertexShader json is invalid: " << valid;
+      return nullptr;
+    }
+
+    const auto& name_prop = doc["name"];
+    MCC_ASSERT(name_prop.IsString());
+    const auto name = std::string(name_prop.GetString(), name_prop.GetStringLength());
+    MCC_ASSERT(!name.empty());
+    
+    const auto& type_prop = doc["type"];
+    MCC_ASSERT(type_prop.IsString());
+    const auto type = std::string(type_prop.GetString(), type_prop.GetStringLength());
+    if(!EqualsIgnoreCase(type, "vertexshader")) {
+      LOG(ERROR) << "invalid type " << type << " for VertexShader json.";
+      return nullptr;
+    }
+    const auto& data_prop = doc["data"];
+    return FromJson(data_prop);
+  }
+
+  Program* Program::FromJson(const json::Value& value) {
+    if(!value.IsObject()) {
+      LOG(ERROR) << "invalid program json.";
+      return nullptr;
+    }
+
+    ProgramBuilder builder;
+
+    MCC_ASSERT(value.HasMember("vertex"));
+    const auto& vertex = value["vertex"];
+    const auto vertex_shader = VertexShader::FromJson(vertex);
+    if(!vertex_shader) {
+      LOG(ERROR) << "failed to load vertex shader from program json.";
+      return nullptr;
+    }
+    builder.Attach(vertex_shader);
+
+
+    MCC_ASSERT(value.HasMember("fragment"));
+    const auto& fragment = value["fragment"];
+    const auto fragment_shader = FragmentShader::FromJson(fragment);
+    if(!fragment_shader) {
+      LOG(ERROR) << "failed to load fragment shader from program json.";
+      return nullptr;
+    }
+    builder.Attach(fragment_shader);
+
+    return builder.Build();
   }
 }

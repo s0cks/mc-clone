@@ -25,7 +25,7 @@ namespace mcc::font {
       return font_->mesh_;
     }
 
-    inline ProgramRef shader() {
+    inline Program* shader() {
       return font_->shader_;
     }
 

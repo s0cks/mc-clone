@@ -8,8 +8,8 @@ namespace mcc {
 #define MCC_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define MCC_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
-    std::string GetVersion();
-    void OnGlfwError(int code, const char* description);
+  std::string GetVersion();
+  void OnGlfwError(int code, const char* description);
 }
 
 #endif //MCC_H

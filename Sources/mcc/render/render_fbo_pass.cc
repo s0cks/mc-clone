@@ -99,7 +99,7 @@ namespace mcc::render {
     const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
-    program::ApplyProgramScope program(program_.operator->());
+    program::ApplyProgramScope program(program_);
     program.Set("tex", 0);
     program.Set("projection", projection);
     program.Set("view", view);

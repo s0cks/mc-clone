@@ -14,7 +14,7 @@
 namespace mcc::render {
   SkyboxRenderPass::SkyboxRenderPass():
     RenderPass(),
-    program_(Program::New("skybox")) {
+    program_(Program::FromJson("program:skybox")) {
   }
 
   SkyboxRenderPass::~SkyboxRenderPass() {
@@ -44,14 +44,14 @@ namespace mcc::render {
       });
     }
 
-    program::ProgramUboBindScope program_scope(program_.operator->());
+    program::ProgramUboBindScope program_scope(program_);
     texture->Bind0();
     glDepthMask(GL_FALSE);
     CHECK_GL(FATAL);
     const auto model = glm::mat4(1.0f);
     vao::VaoBindScope vao_scope(vao);
     vbo::VboDrawScope draw_scope(vbo);
-    program::ApplyProgramScope prog(program_.operator->());
+    program::ApplyProgramScope prog(program_);
     prog.Set("model", model);
     prog.Set("tex", 0);
     program_scope.Bind("Camera", camera_ubo);

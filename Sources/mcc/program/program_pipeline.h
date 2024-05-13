@@ -49,16 +49,6 @@ namespace mcc::program {
     New(const ProgramRef& ref, SetUniformsCallback callback = kDoNothing) {
       return new ApplyProgramPipeline(ref, callback);
     }
-
-    static inline ApplyProgramPipeline*
-    New(const uri::Uri& uri, SetUniformsCallback callback = kDoNothing) {
-      return New(Program::New(uri), callback);
-    }
-
-    static inline ApplyProgramPipeline*
-    New(const uri::basic_uri& uri, SetUniformsCallback callback = kDoNothing) {
-      return New(Program::New(uri), callback);
-    }
   };
 }
 
