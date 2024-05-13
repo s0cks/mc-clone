@@ -12,9 +12,6 @@ namespace mcc {
     class ProgramBuilder {
     protected:
       ShaderSet shaders_;
-
-      inline void AttachShader(const ProgramId programId, const ShaderId shaderId) const;
-      inline void DetachShader(const ProgramId programId, const ShaderId shaderId) const;
     public:
       ProgramBuilder() = default;
       virtual ~ProgramBuilder() = default;
@@ -24,11 +21,6 @@ namespace mcc {
       }
 
       virtual bool Attach(const Shader* shader);
-      virtual bool Attach(const uri::Uri& shader);
-
-      inline bool Attach(const uri::basic_uri& shader) {
-        return Attach(uri::Uri(shader));
-      }
 
       virtual Program* Build() const;
       virtual rx::observable<Program*> BuildAsync() const;

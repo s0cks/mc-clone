@@ -1,14 +1,13 @@
 #include "mcc/program/program_pipeline.h"
 
 namespace mcc::program {
-  const ApplyProgramPipeline::SetUniformsCallback ApplyProgramPipeline::kDoNothing = [](const ProgramRef& ref) {
+  const ApplyProgramPipeline::SetUniformsCallback ApplyProgramPipeline::kDoNothing = [](ApplyProgramScope& ref) {
     // do nothing.
   };
 
   bool ApplyProgramPipeline::Apply() {
-    GetProgramRef()->Apply();
-    set_uniforms_(GetProgramRef());
-    GetProgramRef()->Apply();
+    ApplyProgramScope scope(GetProgram());
+    set_uniforms_(scope);
     return true;
   }
 }

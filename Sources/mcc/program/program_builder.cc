@@ -19,25 +19,6 @@ namespace mcc::program {
     return true;
   }
 
-  bool ProgramBuilder::Attach(const uri::Uri& uri) {
-    const auto shader = nullptr; //TODO: Shader::New(uri);
-    if(!shader) {
-      DLOG(ERROR) << "failed to load shader from: " << uri;
-      return false;
-    }
-    return Attach(shader);
-  }
-
-  void ProgramBuilder::AttachShader(const ProgramId programId, const ShaderId shaderId) const {
-    glAttachShader(programId, shaderId);
-    CHECK_GL(FATAL);
-  }
-
-  void ProgramBuilder::DetachShader(const ProgramId programId, const ShaderId shaderId) const {
-    glDetachShader(programId, shaderId);
-    CHECK_GL(FATAL);
-  }
-
   Program* ProgramBuilder::Build() const { //TODO: code cleanup
     // create program
     const auto id = glCreateProgram();
@@ -50,7 +31,7 @@ namespace mcc::program {
     // attach all...
     const auto& shaders = GetShaders();
     for(const auto& shader : shaders) {
-      AttachShader(id, shader.id());
+      Program::Attach(id, shader.id());
     }
 
     // link program
@@ -65,7 +46,7 @@ namespace mcc::program {
 
     //TODO: more cleanup
     for(const auto& shader : GetShaders()) {
-      DetachShader(id, shader.id());
+      Program::Detach(id, shader.id());
     }
     return new Program(id);
   }

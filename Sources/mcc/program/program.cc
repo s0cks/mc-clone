@@ -30,6 +30,16 @@ namespace mcc::program {
     CHECK_GL(FATAL);
   }
 
+  void Program::Attach(const ProgramId programId, const ShaderId shaderId) {
+    glAttachShader(programId, shaderId);
+    CHECK_GL(FATAL);
+  }
+
+  void Program::Detach(const ProgramId programId, const ShaderId shaderId) {
+    glDetachShader(programId, shaderId);
+    CHECK_GL(FATAL);
+  }
+
   Program::Program(const ProgramId id):
     res::ResourceTemplate<res::kProgramType>(),
     id_(id) {
@@ -86,16 +96,6 @@ namespace mcc::program {
       }
       s.on_completed();
     });
-  }
-
-  void Program::Apply() {
-    glUseProgram(id_);
-    CHECK_GL(FATAL);
-  }
-
-  void Program::Unapply() {
-    glUseProgram(kInvalidProgramId);
-    CHECK_GL(FATAL);
   }
 
   std::string Program::ToString() const {

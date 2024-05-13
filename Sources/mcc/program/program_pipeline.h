@@ -3,37 +3,34 @@
 
 #include "mcc/pipeline.h"
 #include "mcc/program/program.h"
+#include "mcc/program/program_scope.h"
 
 namespace mcc::program {
   class ProgramPipeline : public Pipeline {
   protected:
-    ProgramRef ref_;
+    Program* program_;
 
-    explicit ProgramPipeline(ProgramRef ref):
+    explicit ProgramPipeline(Program* program):
       Pipeline(),
-      ref_(ref) {
+      program_(program) {
     }
   public:
     ~ProgramPipeline() override = default;
 
-    inline const ProgramRef& GetProgramRef() const {
-      return ref_;
-    }
-
-    inline ProgramRef& GetProgramRef() {
-      return ref_;
+    Program* GetProgram() const {
+      return program_;
     }
   };
 
   class ApplyProgramPipeline : public ProgramPipeline {
   public:
-    typedef std::function<void(const ProgramRef&)> SetUniformsCallback;
+    typedef std::function<void(ApplyProgramScope&)> SetUniformsCallback;
     static const SetUniformsCallback kDoNothing;
   private:
     SetUniformsCallback set_uniforms_;
 
-    ApplyProgramPipeline(ProgramRef ref, SetUniformsCallback callback):
-      ProgramPipeline(ref),
+    ApplyProgramPipeline(Program* program, SetUniformsCallback callback):
+      ProgramPipeline(program),
       set_uniforms_(callback) {
     }
   public:
@@ -46,8 +43,8 @@ namespace mcc::program {
     bool Apply() override;
   public:
     static inline ApplyProgramPipeline*
-    New(const ProgramRef& ref, SetUniformsCallback callback = kDoNothing) {
-      return new ApplyProgramPipeline(ref, callback);
+    New(Program* program, SetUniformsCallback callback = kDoNothing) {
+      return new ApplyProgramPipeline(program, callback);
     }
   };
 }

@@ -113,6 +113,8 @@ namespace mcc {
       
       static void UseProgram(const ProgramId id);
       static void DeleteProgram(const ProgramId id);
+      static void Attach(const ProgramId program, const ShaderId shader);
+      static void Detach(const ProgramId program, const ShaderId shader);
 
       static inline void
       UseDefault() {
@@ -178,8 +180,6 @@ namespace mcc {
         CHECK_GL(FATAL);
       }
 
-      void Apply(); //TODO: remove
-      void Unapply(); //TODO: remove
       std::string ToString() const;
 
       inline rx::observable<ProgramEvent*>
