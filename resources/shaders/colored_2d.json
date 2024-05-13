@@ -1,0 +1,8 @@
+{
+  "name": "colored_2d",
+  "type": "Program",
+  "data": {
+    "vertex": "shader:colored_2d",
+    "fragment": "shader:colored_2d"
+  }
+}
