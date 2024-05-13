@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "mcc/json_schema.h"
-#include "mcc/shader/shader_json.h"
 
 namespace mcc {
   using namespace ::testing;

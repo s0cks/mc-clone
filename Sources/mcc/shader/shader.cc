@@ -1,14 +1,6 @@
 #include <sstream>
 #include <unordered_map>
-
-#include "mcc/flags.h"
 #include "mcc/shader/shader.h"
-#include "mcc/shader/shader_unit.h"
-#include "mcc/shader/shader_compiler.h"
-
-#include "mcc/shader/shader_json.h"
-#include "mcc/json_spec.h"
-#include "mcc/json_schema.h"
 
 namespace mcc::shader {
   const std::set<std::string>& GetValidFileExtensions() {
