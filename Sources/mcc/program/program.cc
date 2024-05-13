@@ -3,8 +3,6 @@
 #include "mcc/json_schema.h"
 #include "mcc/shader/shader_code.h"
 #include "mcc/shader/shader_compiler.h"
-#include "mcc/program/program_loader_dir.h"
-
 #include "mcc/program/program_builder.h"
 
 namespace mcc::program {
@@ -21,7 +19,7 @@ namespace mcc::program {
   }
 
   void Program::UseProgram(const ProgramId id) {
-    MCC_ASSERT(IsValidProgramId(id));
+    MCC_ASSERT(IsValidProgramId(id) || id == 0);
     glUseProgram(id);
     CHECK_GL(FATAL);
   }
@@ -157,7 +155,7 @@ namespace mcc::program {
     const auto& type_prop = doc["type"];
     MCC_ASSERT(type_prop.IsString());
     const auto type = std::string(type_prop.GetString(), type_prop.GetStringLength());
-    if(!EqualsIgnoreCase(type, "vertexshader")) {
+    if(!EqualsIgnoreCase(type, "program")) {
       LOG(ERROR) << "invalid type " << type << " for VertexShader json.";
       return nullptr;
     }

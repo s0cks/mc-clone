@@ -1,0 +1,8 @@
+{
+  "name": "textured_2d",
+  "type": "Program",
+  "data": {
+    "vertex": "shader:textured_2d",
+    "fragment": "shader:textured_2d"
+  }
+}

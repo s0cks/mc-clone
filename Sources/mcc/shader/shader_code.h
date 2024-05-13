@@ -11,9 +11,6 @@ namespace mcc::shader {
   typedef const uint8_t* RawShaderCode;
   class ShaderCode : public Object { //TODO: implement Region
     DEFINE_NON_COPYABLE_TYPE(ShaderCode);
-    static constexpr const auto kTypeOffset = sizeof(Object);
-    static constexpr const auto kLengthOffset = kTypeOffset + sizeof(uword);
-    static constexpr const auto kRawOffset = kLengthOffset + sizeof(uword);
 
     static inline uword
     CalculateAllocateSize(const uword length) {
@@ -32,7 +29,7 @@ namespace mcc::shader {
     }
 
     inline uword type_address() const {
-      return GetStartingAddress() + kTypeOffset;
+      return GetStartingAddress() + sizeof(ShaderCode) + (sizeof(uword) * 0);
     }
 
     inline ShaderType* type_ptr() const {
@@ -40,7 +37,7 @@ namespace mcc::shader {
     }
 
     inline uword length_address() const {
-      return GetStartingAddress() + kLengthOffset;
+      return GetStartingAddress() + sizeof(ShaderCode) + (sizeof(uword) * 1);
     }
 
     inline uword* length_ptr() const {
@@ -48,7 +45,7 @@ namespace mcc::shader {
     }
 
     inline uword raw_address() const {
-      return GetStartingAddress() + kRawOffset;
+      return GetStartingAddress() + sizeof(ShaderCode) + (sizeof(uword) * 2);
     }
 
     inline RawShaderCode raw_ptr() const {

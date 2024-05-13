@@ -113,6 +113,10 @@ int main(int argc, char** argv) {
     
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
+  keyboard->OnPressed(GLFW_KEY_SPACE)
+    .subscribe([engine](keyboard::KeyPressedEvent* event) {
+      new TestWindow();
+    });
   keyboard->OnPressed(GLFW_KEY_ESCAPE)
     .subscribe([engine](keyboard::KeyPressedEvent* event) {
       engine->Shutdown();
