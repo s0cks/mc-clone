@@ -77,7 +77,7 @@ namespace mcc::mouse {
     const auto window_size = window->GetSize();
     const auto handle = Window::Get()->handle();
     pos_ = GetCursorPosition();
-    if(Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
+    if(ShouldCaptureMouse() && Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
       SetCursorPos(pos_);
     delta_ = (pos_ - last_pos_);
     if(HasMotion(delta_))
