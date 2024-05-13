@@ -1,4 +1,5 @@
 #include "mcc/signals.h"
+#include <glog/logging.h>
 
 namespace mcc {
   static inline void
@@ -33,9 +34,9 @@ namespace mcc {
 
   void InitSignalHandlers() {
     DLOG(INFO) << "initializing signal handlers....";
-    OnSignal<Signal::kInterrupt>(&OnInterrupt);
-    OnSignal<Signal::kAbort>(&OnAbort);
-    OnSignal<Signal::kSegfault>(&OnSegfault);
-    OnSignal<Signal::kTerminate>(&OnTerminate);
+    OnSignal<kInterruptSignal>(&OnInterrupt);
+    OnSignal<kAbortSignal>(&OnAbort);
+    OnSignal<kSegfaultSignal>(&OnSegfault);
+    OnSignal<kTerminateSignal>(&OnTerminate);
   }
 }
