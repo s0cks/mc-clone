@@ -49,10 +49,11 @@ namespace mcc::vbo {
     using namespace units;
     std::stringstream ss;
     ss << "Vbo(";
-    ss << "id=" << GetId();
+    ss << "id=" << GetId() << ", ";
     ss << "length=" << GetLength() << ", ";
     ss << "vertex_size=" << data::byte_t(GetElementSize()) << ", ";
-    ss << "size=" << data::byte_t(GetTotalSize());
+    ss << "total_size=" << data::byte_t(GetTotalSize()) << ", ";
+    ss << "usage=" << GetUsage();
     ss << ")";
     return ss.str();
   }
