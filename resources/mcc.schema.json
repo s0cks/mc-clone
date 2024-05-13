@@ -250,6 +250,13 @@
         "source": {
           "type": "string",
           "description": ""
+        },
+        "sources": {
+          "type": "array",
+          "description": "",
+          "items": {
+            "$ref": "#/definitions/ShaderUri"
+          }
         }
       },
       "required": [ "source" ]
