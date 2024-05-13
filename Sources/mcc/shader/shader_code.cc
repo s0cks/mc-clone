@@ -24,7 +24,7 @@ namespace mcc::shader {
     ss << "type=" << GetType() << ", ";
     ss << "length=" << GetLength() << ", ";
     ss << "total_size=" << byte_t(GetSize()) << ", ";
-    ss << "code=" << GetSHA256().ToHexString();
+    ss << "code=" << GetSHA256();
     ss << ")";
     return ss.str();
   }

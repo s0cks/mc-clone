@@ -40,6 +40,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/mock_subscription.h
   mcc/test_color.cc
   mcc/test_file_resolver.cc
+  mcc/test_uint256.cc
 # IBOs
   mcc/ibo/test_ibo_factory.cc
   ${MCC_SHADER_TEST_SOURCES}

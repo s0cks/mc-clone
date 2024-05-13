@@ -23,7 +23,7 @@ namespace mcc {
             const uint32_t c,
             const uint32_t d):
       uint128() {
-      uint32_t data[] = { a, b, c, d };
+      const uint32_t data[] = { a, b, c, d };
       CopyFrom((const uint8_t*) data, kSizeInBytes);
     }
 #if defined(ARCH_IS_X64) || defined(ARCH_IS_ARM64)

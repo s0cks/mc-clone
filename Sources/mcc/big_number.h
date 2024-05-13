@@ -3,6 +3,8 @@
 
 #include <string>
 #include <cstdint>
+#include <iomanip>
+
 #include "mcc/platform.h"
 
 namespace mcc {
@@ -41,20 +43,19 @@ namespace mcc {
     constexpr BigNumberTemplate(const uint8_t* bytes, const uword num_bytes):
       BigNumber(),
       data_() {
-      memset(&data_[0], 0, sizeof(data_));
-      memcpy(&data_[0], &bytes[0], std::min(kSizeInBytes, num_bytes));
-    }
-    constexpr BigNumberTemplate(const BigNumberTemplate<NumberOfBits>& rhs):
-      BigNumber(),
-      data_() {
-      memset(&data_[0], 0, sizeof(data_));
-      memcpy(&data_[0], &rhs.data_[0], kSizeInBytes);
+      CopyFrom(bytes, num_bytes);
     }
 
     inline void
     CopyFrom(const uint8_t* bytes, const uword num_bytes) {
+      memset(&data_[0], 0, kSizeInBytes);
       const auto total_bytes = std::min(num_bytes, kSizeInBytes);
       memcpy(&data_[0], &bytes[0], total_bytes);
+    }
+
+    inline void
+    CopyFrom(const BigNumberTemplate<NumberOfBits>& rhs) {
+      return CopyFrom((const uint8_t*) rhs.data(), rhs.size());
     }
   public:
     ~BigNumberTemplate() override = default;
@@ -72,32 +73,19 @@ namespace mcc {
     }
 
     virtual std::string ToHexString() const {
-      static const char *hexDigits = "0123456789ABCDEF";
-      std::string hexString;
-      hexString.reserve(size() * 2);
-      std::for_each(
-          const_begin(),
-          const_end(),
-          [&hexString](const uword word) {
-            hexString.push_back(hexDigits[word >> 16]);
-            hexString.push_back(hexDigits[word >> 8]);
-            hexString.push_back(hexDigits[word >> 4]);
-            hexString.push_back(hexDigits[word & 0x0F]);
-          });
-      return hexString;
+      std::stringstream ss;
+      ss << std::hex;
+      for(auto i = 0; i < size(); ++i )
+          ss << data_[i];
+      return ss.str();
     }
     
     virtual std::string ToBinaryString() const {
       std::stringstream ss;
       std::bitset<kSizeInBits> bits;
-      for(auto idx = 0; idx < size(); idx++){
-        auto curr = data()[idx];
-        int offset = idx * CHAR_BIT;
-        for(int bit = 0; bit < CHAR_BIT; bit++){
-          bits[offset] = curr & 1;
-          offset++;
-          curr >>= 1;
-        }
+      for(auto idx = 0; idx < size(); idx++) {
+        bits <<= kBitsPerWord;
+        bits |= std::bitset<kSizeInBits>(data_[idx]);
       }
       ss << bits;
       return ss.str();

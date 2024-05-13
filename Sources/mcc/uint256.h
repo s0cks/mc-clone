@@ -5,18 +5,16 @@
 #include "mcc/big_number.h"
 
 namespace mcc {
-  static constexpr const uint64_t kUInt256Size = 256 / 8;
-  class uint256 : public BigNumberTemplate<kUInt256Size> {
-    DEFINE_DEFAULT_COPYABLE_TYPE(uint256);
+  class uint256 : public BigNumberTemplate<256> {
   public:
     static inline int
     Compare(const uint256& lhs, const uint256& rhs) {
-      return memcmp(lhs.data(), rhs.data(), kUInt256Size);
+      return memcmp(lhs.data(), rhs.data(), kSizeInBytes);
     }
   public:
     uint256() = default;
     uint256(const uint8_t* bytes, const uword num_bytes):
-      BigNumberTemplate<kUInt256Size>(bytes, num_bytes) {
+      BigNumberTemplate(bytes, num_bytes) {
     }
     uint256(const uint32_t a,
             const uint32_t b,
@@ -27,8 +25,8 @@ namespace mcc {
             const uint32_t g,
             const uint32_t h):
       uint256() {
-      uint32_t data[] = { a, b, c, d, e, f, g, h };
-      CopyFrom((const uint8_t*) data, kSizeInBytes);
+      const uint32_t data[] = { a, b, c, d, e, f, g, h };
+      CopyFrom((const uint8_t*) &data[0], kSizeInBytes);
     }
 #if defined(ARCH_IS_X64) || defined(ARCH_IS_ARM64)
     uint256(const uint64_t a,
@@ -37,9 +35,13 @@ namespace mcc {
             const uint64_t d):
       uint256() {
       const uint64_t data[] = { a, b, c, d };
-      CopyFrom((const uint8_t*) data, kSizeInBytes);
+      CopyFrom((const uint8_t*) &data[0], kSizeInBytes);
     }
 #endif //ARCH_IS_X64 || ARCH_IS_ARM64
+    constexpr uint256(const uint256& rhs):
+      BigNumberTemplate() {
+      CopyFrom(rhs);
+    }
     ~uint256() override = default;
 
     uword& operator[](const uword idx) {
@@ -74,6 +76,10 @@ namespace mcc {
 
     friend std::ostream& operator<<(std::ostream& stream, const uint256& rhs) {
       return stream << ((const std::string&) rhs);
+    }
+
+    void operator=(const uint256& rhs) {
+      CopyFrom(rhs);
     }
   };
 }
