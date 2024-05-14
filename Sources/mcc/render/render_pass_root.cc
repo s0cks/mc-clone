@@ -2,6 +2,7 @@
 
 #include "mcc/render/renderer.h"
 #include "mcc/render/render_pass_guis.h"
+#include "mcc/render/render_pass_text.h"
 #include "mcc/render/render_pass_skybox.h"
 #include "mcc/render/render_pass_terrain.h"
 
@@ -11,10 +12,12 @@ namespace mcc::render {
     OrderedSequenceRenderPass(),
     terrain_(new TerrainRenderPass()),
     guis_(new RenderPassGuis()),
+    text_(new TextRenderPass()),
     // skybox_(new SkyboxRenderPass()),
     clear_(kGreen) {
     Append(terrain_);
     Append(guis_);
+    Append(text_);
     // Append(skybox_);
   }
 

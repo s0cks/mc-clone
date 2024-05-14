@@ -8,11 +8,13 @@ namespace mcc::render {
   class RenderPassGuis;
   class SkyboxRenderPass;
   class TerrainRenderPass;
+  class TextRenderPass;
   class RootRenderPass : public OrderedSequenceRenderPass {
   protected:
     TerrainRenderPass* terrain_;
     RenderPassGuis* guis_;
     SkyboxRenderPass* skybox_;
+    TextRenderPass* text_;
     Color clear_;
 
     void Render() override;
