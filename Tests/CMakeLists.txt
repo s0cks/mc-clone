@@ -25,6 +25,10 @@ file(GLOB MCC_HASH_TEST_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/hash/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/hash/*.cc")
 
+file(GLOB MCC_MOUSE_TEST_SOURCES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/mouse/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/mouse/*.cc")
+
 file(GLOB MCC_URI_TEST_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri.cc"
@@ -43,6 +47,7 @@ add_executable(${PROJECT_NAME}-tests
   mcc/test_uint256.cc
 # IBOs
   mcc/ibo/test_ibo_factory.cc
+  ${MCC_MOUSE_TEST_SOURCES}
   ${MCC_SHADER_TEST_SOURCES}
   ${MCC_PROGRAM_TEST_SOURCES}
   ${MCC_VAO_TEST_SOURCES}

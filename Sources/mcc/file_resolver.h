@@ -12,7 +12,7 @@
 #include "mcc/rx.h"
 #include "mcc/common.h"
 
-namespace mcc {
+namespace mcc { //TODO: cleanup
   namespace fs {
     using namespace std::filesystem;
 
@@ -40,28 +40,37 @@ namespace mcc {
       return path.substr(dotpos);
     }
 
+    template<const bool IsRecursive = false>
     static inline rx::observable<directory_entry>
     ListAllInDirectory(const std::string& dir) {
       if(!FileExists(dir)) {
         const auto err = fmt::format("cannot ls directory {0:s}, directory doesn't exist", dir);
         return rx::observable<>::error<directory_entry>(std::runtime_error(err));
       }
-      return rx::observable<>::create<directory_entry>([dir](rx::subscriber<directory_iterator::value_type> s) {
-        for(const auto& entry : directory_iterator(dir))
-          s.on_next(entry);
+
+      return rx::observable<>::create<directory_entry>([dir](rx::subscriber<directory_entry> s) {
+        if(IsRecursive) {
+          for(const auto& entry : recursive_directory_iterator(dir))
+            s.on_next(entry);
+        } else {
+          for(const auto& entry : directory_iterator(dir))
+            s.on_next(entry);
+        }
         s.on_completed();
       });
     }
 
+    template<const bool IsRecursive = false>
     static inline rx::observable<directory_entry>
     ListFilesInDirectory(const std::string& dir) {
-      return ListAllInDirectory(dir)
+      return ListAllInDirectory<IsRecursive>(dir)
         .filter(IsRegularFile);
     }
 
+    template<const bool IsRecursive = false>
     static inline rx::observable<directory_entry>
     ListDirsInDirectory(const std::string& dir) {
-      return ListAllInDirectory(dir)
+      return ListAllInDirectory<IsRecursive>(dir)
         .filter(IsDirectory);
     }
 
@@ -91,7 +100,8 @@ namespace mcc {
         const auto& path = entry.path();
         if(!path.has_extension())
           return false;
-        const auto extension = path.extension();
+        auto extension = (std::string) path.extension();
+        SanitizeFileExtension(extension);
         const auto pos = extensions.find(extension);
         return pos != extensions.end();
       };

@@ -38,6 +38,10 @@ void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height) {
   __ glfwGetFramebufferSize(window, width, height);
 }
 
+GLFWcursor* glfwCreateStandardCursor(const int shape) {
+  __ glfwCreateStandardCursor(shape);
+}
+
 void glfwTerminate(void) {
   __ glfwTerminate();
 }

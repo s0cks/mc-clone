@@ -5,6 +5,7 @@
 # Except These
 !/.gitignore
 !/.gitkeep
+!/cursors/
 !/fonts/
 !/materials/
 !/meshes/

@@ -39,7 +39,7 @@
 #include "mcc/skybox/skybox.h"
 
 #include "mcc/signals.h"
-#include "mcc/mouse/mouse_flags.h"
+#include "mcc/mouse/cursor.h"
 
 template<class Event, const google::LogSeverity Severity = google::INFO>
 static inline std::function<void(Event*)>
@@ -54,14 +54,18 @@ class TestWindow : public mcc::gui::Window,
                    public mcc::gui::OnMouseExitEvent,
                    public mcc::gui::OnMouseClickEvent {
 protected:
+  mcc::mouse::Cursor* grab_cursor_;
+
   void OnMouseEnter(mcc::gui::MouseEnterEvent* event) override {
     DLOG(INFO) << "enter.";
     SetBackground(mcc::Color(255, 0, 0, 255 / 2));
+    mcc::mouse::SetCurrentCursor(grab_cursor_);
   }
 
   void OnMouseExit(mcc::gui::MouseExitEvent* event) override {
     DLOG(INFO) << "exit.";
     SetBackground(mcc::kBlack);
+    mcc::mouse::SetCurrentCursor(nullptr);
   }
   
   void OnMouseClick(mcc::gui::MouseClickEvent* event) override {
@@ -72,7 +76,8 @@ public:
     Window(),
     OnMouseEnterEvent(this),
     OnMouseExitEvent(this),
-    OnMouseClickEvent(this) {
+    OnMouseClickEvent(this),
+    grab_cursor_(mcc::mouse::GlfwCursor::New("bibata-modern-ice/hand1.png")) {
     SetPos({ 0, 0 });
     SetSize({ 128, 128 });
     SetBackground(mcc::kBlack);
@@ -105,12 +110,12 @@ int main(int argc, char** argv) {
   keyboard::InitKeyboard();
   render::Renderer::Init();
 
-  mouse::OnMouseEvent()
-    .subscribe(LogEvent<mouse::MouseEvent>());
+  window::OnWindowOpenedEvent()
+    .subscribe([](WindowOpenedEvent* event) {
+      const auto window = event->window();
+      mouse::SetCurrentCursor("cursor://bibata-modern-ice/left_ptr.png");
+    });
 
-  material::OnMaterialCreatedEvent()
-    .subscribe(LogEvent<material::MaterialCreatedEvent>());
-    
   const auto engine = engine::Engine::GetEngine();
   const auto keyboard = GetKeyboard();
   keyboard->OnPressed(GLFW_KEY_SPACE)

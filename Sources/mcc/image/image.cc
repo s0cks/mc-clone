@@ -10,6 +10,20 @@ namespace mcc::img {
     return ptr;
   }
 
+  void Image::Flip() {
+    const auto components = GetNumberOfColorComponents();
+    const auto total_size = width() * height() * GetNumberOfColorComponents();
+    uint8_t data[total_size];
+    for (auto i = 0; i < width(); i++) {
+      for (auto j = 0; j < height(); j++) {
+        for(auto k = 0; k < components; k++) {
+          data[(i + j * width()) * components + k] = data_ptr()[(i + (height() - 1 - j) * width()) * components + k];
+        }
+      }
+    }
+    memcpy(data_ptr(), &data[0], total_size);
+  }
+
   std::string Image::ToString() const {
     std::stringstream ss;
     ss << "Image(";
@@ -35,17 +49,27 @@ namespace mcc::img {
         && uri.HasExtension(GetValidExtensions());
   }
 
-  Image* Decode(const uri::Uri& uri) {
-    MCC_ASSERT(uri.HasScheme("file"));
-    MCC_ASSERT(uri.HasExtension());
+  static inline Image*
+  DecodeImage(const uri::Uri& uri) {
     if(png::Filter(uri)) {
       return png::Decode(uri);
     } else if(jpeg::Filter(uri)) {
       return jpeg::Decode(uri);
     }
-
-    LOG(ERROR) << "invalid image uri: " << uri;
     return nullptr;
+  }
+
+  Image* Decode(const uri::Uri& uri) {
+    MCC_ASSERT(uri.HasScheme("file"));
+    MCC_ASSERT(uri.HasExtension());
+    const auto image = DecodeImage(uri);
+    if(!image) {
+      LOG(ERROR) << "invalid image uri: " << uri;
+      return nullptr;
+    }
+    DLOG(INFO) << "decoded: " << image->ToString();
+    image->Flip();
+    return image;
   }
 
   rx::observable<Image*> DecodeAsync(const uri::Uri& uri) {

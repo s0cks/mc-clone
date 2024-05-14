@@ -38,6 +38,7 @@ namespace mcc {
     MOCK_METHOD2(glfwSetWindowRefreshCallback, GLFWwindowrefreshfun(GLFWwindow*, GLFWwindowrefreshfun));
     MOCK_METHOD2(glfwSetWindowSizeCallback, GLFWwindowsizefun(GLFWwindow*,GLFWwindowsizefun));
     MOCK_METHOD1(glfwGetVideoMode, const GLFWvidmode*(GLFWmonitor*));
+    MOCK_METHOD1(glfwCreateStandardCursor, GLFWcursor*(const int shape));
   };
 }
 

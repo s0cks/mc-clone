@@ -98,14 +98,33 @@ namespace mcc::img {
       return *format_ptr();
     }
 
+    inline int GetNumberOfColorComponents() const {
+      switch(format()) {
+        case kRGBA:
+          return 4;
+        case kRGB:
+        default:
+          return 3;
+      }
+    }
+
     const ImageSize& size() const {
       return *size_ptr();
+    }
+
+    uword width() const {
+      return (*size_ptr())[0];
+    }
+
+    uword height() const {
+      return (*size_ptr())[1];
     }
 
     uint8_t* data() const {
       return data_ptr();
     }
 
+    void Flip();
     uword GetNumberOfBytes() const;
     uword GetTotalNumberOfBytes() const;
   public:

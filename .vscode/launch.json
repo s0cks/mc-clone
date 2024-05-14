@@ -165,6 +165,21 @@
       "MIMode": "lldb"
     }, // uint256 Tests
     {
+      "name": "Cursor Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Cursor*Test*.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // Cursor Tests
+    {
       "name": "Uri Tests",
       "type": "cppdbg",
       "request": "launch",

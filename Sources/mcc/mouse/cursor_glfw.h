@@ -6,6 +6,7 @@
 #define MCC_CURSOR_GLFW_H
 
 #include "mcc/gfx.h"
+#include "mcc/image/image.h"
 #include "mcc/mouse/cursor.h"
 
 namespace mcc::mouse {
@@ -32,17 +33,33 @@ namespace mcc::mouse {
       handle_(handle) {
       MCC_ASSERT(handle);
     }
-
-    inline CursorHandle* handle() const {
-      return handle_;
-    }
   public:
     ~GlfwCursor() override = default;
     std::string ToString() const override;
+
+    inline CursorHandle* handle() const { //TODO: reduce visibility
+      return handle_;
+    }
   private:
-    static GlfwCursor* CreateDefaultCursor(const Shape shape = kDefaultShape);
+    static inline GlfwCursor*
+    New(CursorHandle* handle) {
+      MCC_ASSERT(handle);
+      return new GlfwCursor(handle);
+    }
   public:
-    static Cursor* GetDefaultCursor();
+    static Cursor* NewStandard(const Shape shape = kDefaultShape);
+    static Cursor* New(const img::Image* image);
+    static Cursor* New(const uri::Uri& uri);
+
+    static inline Cursor*
+    New(const uri::basic_uri& uri) {
+      if(!(StartsWith(uri, "file:") && EndsWith(uri, ".png"))
+      && !StartsWith(uri, "cursor:")) {
+        LOG(WARNING) << "invalid Cursor Uri: " << uri;
+        return New(uri::Uri(fmt::format("cursor://{0:s}", uri)));
+      }
+      return New(uri::Uri(uri));
+    }
   };
 }
 
