@@ -27,6 +27,8 @@ namespace mcc::font {
   public:
     Font(const std::string& filename, const FontSize size = kDefaultFontSize);
     virtual ~Font() = default;
+
+    std::string ToString() const;
   };
 
   void Initialize();

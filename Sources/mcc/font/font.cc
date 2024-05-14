@@ -53,4 +53,11 @@ namespace mcc::font {
     prog.Set("projection", glm::mat4(1.0f));
     GlyphMapGenerator::Generate(name, chars_, size);
   }
+
+  std::string Font::ToString() const {
+    std::stringstream ss;
+    ss << "Font(";
+    ss << ")";
+    return ss.str();
+  }
 }
