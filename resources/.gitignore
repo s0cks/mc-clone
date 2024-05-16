@@ -11,4 +11,5 @@
 !/meshes/
 !/shaders/
 !/textures/
-!/mcc.schema.json
+!/*.schema.json
+!/*.properties

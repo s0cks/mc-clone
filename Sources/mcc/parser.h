@@ -1,6 +1,9 @@
 #ifndef MCC_PARSER_H
 #define MCC_PARSER_H
 
+#include <cstdint>
+#include <ostream>
+
 namespace mcc {
   struct Position {
     uint64_t row;
