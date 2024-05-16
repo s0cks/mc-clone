@@ -1,6 +1,16 @@
 #include "mcc/properties/property_set.h"
 
 namespace mcc::properties {
+  PropertySet::PropertySet():
+    all_() {
+  }
+  
+  PropertySet::~PropertySet() {
+    for(const auto& prop : all_)
+      delete prop.second;
+    all_.clear();
+  }
+
   bool PropertySet::Insert(Property* property) {
     const auto result = all_.insert({ property->GetName(), property });
     return result.second;

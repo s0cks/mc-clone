@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "mcc/rx.h"
 #include "mcc/common.h"
 #include "mcc/properties/property.h"
 
@@ -40,8 +41,8 @@ namespace mcc::properties {
   protected:
     PropertyMap all_;
   public:
-    PropertySet() = default;
-    virtual ~PropertySet() = default;
+    PropertySet();
+    virtual ~PropertySet();
 
     virtual PropertyMap::const_iterator begin() const {
       return all_.begin();
@@ -89,6 +90,14 @@ namespace mcc::properties {
       return pos != all_.end()
            ? pos->second
            : nullptr;
+    }
+
+    rx::observable<Property*> ToObservable() const {
+      return rx::observable<>::create<Property*>([this](rx::subscriber<Property*> s) {
+        for(const auto& prop : all_)
+          s.on_next(prop.second);
+        s.on_completed();
+      });
     }
 
     bool VisitAllProperties(PropertyVisitor* vis) const {
