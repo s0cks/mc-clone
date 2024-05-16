@@ -3,6 +3,7 @@
 
 #include "mcc/flags.h"
 #include "mcc/properties/properties_parser.h"
+#include "mcc/properties/property_assertions.h"
 
 namespace mcc::properties {
   using namespace ::testing;
@@ -24,5 +25,41 @@ namespace mcc::properties {
     
     PropertySet properties;
     ASSERT_TRUE(parser.ParseProperties(properties));
+
+    const auto& k1 = properties["k1"];
+    MCC_ASSERT(k1);
+    ASSERT_TRUE(IsStringProperty(k1));
+    ASSERT_TRUE(HasName(k1, "k1"));
+    ASSERT_TRUE(HasValue(k1, (const std::string&) "Hello World"));
+
+    const auto& k2 = properties["k2"];
+    MCC_ASSERT(k2);
+    ASSERT_TRUE(IsStringProperty(k2));
+    ASSERT_TRUE(HasName(k2, "k2"));
+    ASSERT_TRUE(HasValue(k2, (const std::string&) "Hello World"));
+
+    const auto& k3 = properties["k3"];
+    MCC_ASSERT(k3);
+    ASSERT_TRUE(IsLongProperty(k3));
+    ASSERT_TRUE(HasName(k3, "k3"));
+    ASSERT_TRUE(HasValue(k3, (uint64_t) 10));
+
+    const auto& k4 = properties["k4"];
+    MCC_ASSERT(k4);
+    ASSERT_TRUE(IsBoolProperty(k4));
+    ASSERT_TRUE(HasName(k4, "k4"));
+    ASSERT_TRUE(HasValue(k4, (bool) true));
+
+    const auto& k5 = properties["k5"];
+    MCC_ASSERT(k5);
+    ASSERT_TRUE(IsBoolProperty(k5));
+    ASSERT_TRUE(HasName(k5, "k5"));
+    ASSERT_TRUE(HasValue(k5, (bool) false));
+
+    const auto& k6 = properties["k6"];
+    MCC_ASSERT(k6);
+    ASSERT_TRUE(IsDoubleProperty(k6));
+    ASSERT_TRUE(HasName(k6, "k6"));
+    ASSERT_TRUE(HasValue(k6, (double) 3.14159264));
   }
 }

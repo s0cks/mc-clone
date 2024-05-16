@@ -3,6 +3,9 @@
 
 #include <cstdint>
 #include <ostream>
+#include <glog/logging.h>
+
+#include "mcc/common.h"
 
 namespace mcc {
   struct Position {
@@ -36,7 +39,7 @@ namespace mcc {
     uint64_t length;
 
     TokenTemplate():
-      kind(Kind::kUnknownToken),
+      kind(Kind::kUnknown),
       pos(0, 0),
       data(nullptr),
       length(0) {
@@ -68,6 +71,16 @@ namespace mcc {
                   const uint64_t l):
       TokenTemplate(k, Position(r, c), t, l) {
     }
+    TokenTemplate(const Kind k,
+                  const Position& p,
+                  const uint8_t c):
+      TokenTemplate(k, p, (uint8_t*) &c, 1) {
+    }
+    TokenTemplate(const Kind k,
+                  const Position& p,
+                  const char c):
+      TokenTemplate(k, p, (uint8_t) c) {
+    }
     TokenTemplate(const TokenTemplate<Kind>& rhs):
       kind(rhs.kind),
       pos(rhs.pos),
@@ -77,11 +90,11 @@ namespace mcc {
     ~TokenTemplate() {}
 
     bool valid() const {
-      return kind != Kind::kUnknownToken;
+      return kind != Kind::kUnknown;
     }
 
     bool invalid() const {
-      return kind == Kind::kUnknownToken;
+      return kind == Kind::kUnknown;
     }
 
     uint64_t as_u64() const {
@@ -187,12 +200,13 @@ namespace mcc {
       return false;
     }
 
-    inline char PeekChar() {
-      if(rpos_ >= buffer_len_) {
-        if(!ReadNextChunk())
+    inline char PeekChar(const uint64_t offset = 0) {
+      const auto idx = rpos_ + offset;
+      if(idx >= buffer_len_) {
+        if(!ReadNextChunk() || idx >= buffer_len_)
           return EOF;
       }
-      return (char)buffer_[rpos_];
+      return (char) buffer_[rpos_ + offset];
     }
 
     inline char NextChar() {
@@ -222,8 +236,48 @@ namespace mcc {
       return next;
     }
 
+    inline void SkipWhitespace() {
+      while(IsWhitespace(PeekChar()))
+        NextChar();
+    }
+
+    inline void Advance(const uint64_t num) {
+      MCC_ASSERT(num >= 1);
+      auto idx = num;
+      while(idx-- > 0) NextChar();
+    }
+
+    inline int ParseUntil(const char expected) {
+      auto skipped = 0;
+      do {
+        switch(PeekChar()) {
+          case '\0':
+          case EOF:
+            goto finished_parsing_until;
+          default:
+            if(PeekChar() == expected)
+              goto finished_parsing_until;
+            NextChar();
+            skipped += 1;
+            continue;
+        }
+      } while(true);
+    finished_parsing_until:
+      return skipped;
+    }
+
     void set_data(const void* data) {
       data_ = data;
+    }
+
+    template<const google::LogSeverity Severity = google::FATAL>
+    inline bool ExpectNextRealChar(const char token) {
+      if(PeekChar() != token) {
+        LOG_AT_LEVEL(Severity) << "unexpected token: " << NextChar();
+        return false;
+      }
+      NextChar();
+      return true;
     }
   public:
     virtual ~ParserTemplate() = default;

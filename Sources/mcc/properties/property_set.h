@@ -8,6 +8,7 @@
 
 namespace mcc::properties {
   class PropertySet {
+    friend class Parser;
     DEFINE_NON_COPYABLE_TYPE(PropertySet); //TODO: make copyable
   protected:
     std::map<std::string, Property*> all_;
@@ -107,6 +108,13 @@ namespace mcc::properties {
       }
       (*result) = prop->AsBool()->GetValue();
       return true;
+    }
+
+    Property* operator[](const std::string& name) const {
+      const auto pos = all_.find(name);
+      return pos != all_.end()
+           ? pos->second
+           : nullptr;
     }
   };
 }
