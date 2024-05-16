@@ -195,6 +195,21 @@
       "MIMode": "lldb"
     }, // Property Tests
     {
+      "name": "Properties Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Properties*Test*.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // Properties Tests
+    {
       "name": "Uri Tests",
       "type": "cppdbg",
       "request": "launch",
