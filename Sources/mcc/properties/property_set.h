@@ -10,16 +10,46 @@ namespace mcc::properties {
   class PropertySet {
     friend class Parser;
     DEFINE_NON_COPYABLE_TYPE(PropertySet); //TODO: make copyable
-  protected:
-    std::map<std::string, Property*> all_;
+  private:
+    typedef std::map<std::string, Property*> PropertyMap; //TODO: remove
+  public:
+    class Iterator {
+    protected:
+      const PropertySet* props_;
+      PropertyMap::const_iterator iter_;
+      PropertyMap::const_iterator end_;
+    public:
+      explicit Iterator(const PropertySet* props):
+        props_(props),
+        iter_(props->begin()),
+        end_(props->end()) {
+        MCC_ASSERT(props);
+      }
+      ~Iterator() = default;
 
-    virtual bool Insert(Property* property) {
-      const auto result = all_.insert({ property->GetName(), property });
-      return result.second;
-    }
+      bool HasNext() const {
+        return iter_ != end_;
+      }
+
+      Property* Next() {
+        const auto next = iter_->second;
+        iter_++;
+        return next;
+      }
+    };
+  protected:
+    PropertyMap all_;
   public:
     PropertySet() = default;
     virtual ~PropertySet() = default;
+
+    virtual PropertyMap::const_iterator begin() const {
+      return all_.begin();
+    }
+
+    virtual PropertyMap::const_iterator end() const {
+      return all_.end();
+    }
     
     virtual bool Contains(const std::string& name) const {
       const auto pos = all_.find(name);
@@ -31,6 +61,7 @@ namespace mcc::properties {
       return removed == 1;
     }
 
+    virtual bool Insert(Property* property);
     inline bool Insert(const std::string& name, const std::string& value) {
       return Insert(StringProperty::New(name, value));
     }
@@ -47,68 +78,11 @@ namespace mcc::properties {
       return Insert(BoolProperty::New(name, value));
     }
 
-    bool Get(const std::string& name, std::string* result) const {
-      const auto pos = all_.find(name);
-      if(pos == std::end(all_)) {
-        (*result) = nullptr;
-        return false;
-      }
-      const auto& prop = pos->second;
-      if(!prop->IsString()) {
-        DLOG(WARNING) << prop->ToString() << " is not of type String.";
-        (*result) = nullptr;
-        return false;
-      }
-      (*result) = prop->AsString()->GetValue();
-      return true;
-    }
-    
-    bool Get(const std::string& name, uint64_t* result) const {
-      const auto pos = all_.find(name);
-      if(pos == std::end(all_)) {
-        (*result) = 0;
-        return false;
-      }
-      const auto& prop = pos->second;
-      if(!prop->IsString()) {
-        DLOG(WARNING) << prop->ToString() << " is not of type Long.";
-        (*result) = 0;
-        return false;
-      }
-      (*result) = prop->AsLong()->GetValue();
-      return true;
-    }
-
-    bool Get(const std::string& name, double* result) const {
-      const auto pos = all_.find(name);
-      if(pos == std::end(all_)) {
-        (*result) = 0.0;
-        return false;
-      }
-      const auto& prop = pos->second;
-      if(!prop->IsDouble()) {
-        DLOG(WARNING) << prop->ToString() << " is not of type Double.";
-        (*result) = 0.0;
-      }
-      (*result) = prop->AsDouble()->GetValue();
-      return true;
-    }
-
-    bool Get(const std::string& name, bool* result) const {
-      const auto pos = all_.find(name);
-      if(pos == std::end(all_)) {
-        (*result) = false;
-        return false;
-      }
-      const auto& prop = pos->second;
-      if(!prop->IsString()) {
-        DLOG(WARNING) << prop->ToString() << " is not of type Bool.";
-        (*result) = false;
-        return false;
-      }
-      (*result) = prop->AsBool()->GetValue();
-      return true;
-    }
+    virtual Property* GetProperty(const std::string& name) const;
+    bool Get(const std::string& name, std::string* result) const;
+    bool Get(const std::string& name, uint64_t* result) const;
+    bool Get(const std::string& name, double* result) const;
+    bool Get(const std::string& name, bool* result) const;
 
     Property* operator[](const std::string& name) const {
       const auto pos = all_.find(name);
@@ -116,6 +90,31 @@ namespace mcc::properties {
            ? pos->second
            : nullptr;
     }
+
+    bool VisitAllProperties(PropertyVisitor* vis) const {
+      MCC_ASSERT(vis);
+      Iterator iter(this);
+      while(iter.HasNext()) {
+        const auto next = iter.Next();
+        if(!vis->Visit(next))
+          return false;
+      }
+      return true;
+    }
+
+#define DEFINE_VISIT_PROPERTY_TYPE(Name)                                          \
+    bool VisitAll##Name##Properties(PropertyVisitor* vis) const {                 \
+      MCC_ASSERT(vis);                                                            \
+      Iterator iter(this);                                                        \
+      while(iter.HasNext()) {                                                     \
+        const auto next = iter.Next();                                            \
+        if(next->Is##Name() && !vis->Visit(next))                                 \
+          return false;                                                           \
+      }                                                                           \
+      return true;                                                                \
+    }
+    FOR_EACH_PROPERTY_TYPE(DEFINE_VISIT_PROPERTY_TYPE)
+#undef DEFINE_VISIT_PROPERTY_TYPE
   };
 }
 

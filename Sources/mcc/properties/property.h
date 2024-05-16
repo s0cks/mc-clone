@@ -16,6 +16,14 @@ namespace mcc::properties {
   FOR_EACH_PROPERTY_TYPE(FORWARD_DECLARE)
 #undef FORWARD_DECLARE
 
+  class PropertyVisitor {
+  protected:
+    PropertyVisitor() = default;
+  public:
+    virtual ~PropertyVisitor() = default;
+    virtual bool Visit(Property* property) = 0;
+  };
+
   class Property {
   protected:
     Property() = default;
@@ -29,6 +37,14 @@ namespace mcc::properties {
     bool Is##Name() { return As##Name() != nullptr; }
     FOR_EACH_PROPERTY_TYPE(DEFINE_TYPE_CHECK)
 #undef DEFINE_TYPE_CHECK
+
+    friend std::ostream& operator<<(std::ostream& stream, const Property& rhs) {
+      return stream << rhs.ToString();
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Property* rhs) {
+      return stream << (*rhs);
+    }
   };
 
   template<typename T>

@@ -87,7 +87,6 @@ namespace mcc::properties {
       FileParserTemplate<kDefaultParserBufferSize, kDefaultTokenBufferSize>(file, data) {  
     }
     ~Parser() override = default;
-
     bool ParseProperties(PropertySet& properties);
   };
 }
