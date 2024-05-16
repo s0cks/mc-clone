@@ -15,8 +15,6 @@ else()
       /usr)
 endif()
 
-message(STATUS "utf8 search paths: " ${UTF8_SEARCH_PATHS})
-
 find_path(UTF8_INCLUDE_DIR
           NAMES utf8/utf8.h
           PATHS ${UTF8_SEARCH_PATHS})

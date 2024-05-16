@@ -39,18 +39,16 @@ file(GLOB MCC_URI_TEST_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri_*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*_uri_*.cc")
 
+file(GLOB MCC_MISC_TEST_SOURCES
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/mcc/*.cc")
+
 add_executable(${PROJECT_NAME}-tests
   main.cc
   ${MCC_URI_TEST_SOURCES}
-  mcc/test_cache.h mcc/test_cache.cc
-  mcc/test_rapidjson.h mcc/test_rapidjson.cc
-  mcc/mock_gl.h mcc/mock_gl.cc
-  mcc/mock_subscription.h
-  mcc/test_color.cc
-  mcc/test_file_resolver.cc
-  mcc/test_uint256.cc
 # IBOs
   mcc/ibo/test_ibo_factory.cc
+  ${MCC_MISC_TEST_SOURCES}
   ${MCC_MOUSE_TEST_SOURCES}
   ${MCC_SHADER_TEST_SOURCES}
   ${MCC_PROGRAM_TEST_SOURCES}
@@ -58,10 +56,7 @@ add_executable(${PROJECT_NAME}-tests
   ${MCC_TEXTURE_TEST_SOURCES}
   ${MCC_IMAGE_TEST_SOURCES}
   ${MCC_HASH_TEST_SOURCES}
-  ${MCC_PROPERTIES_TEST_SOURCES}
-# Misc
-  mcc/test_resolution.cc
-  mcc/mock_glfw.h mcc/mock_glfw.cc)
+  ${MCC_PROPERTIES_TEST_SOURCES})
 target_link_libraries(${PROJECT_NAME}-tests
   ${PROJECT_NAME}
   GTest::gtest
