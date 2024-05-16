@@ -7,13 +7,6 @@
 #include "mcc/mouse/mouse_flags.h"
 
 namespace mcc::mouse {
-  static inline int
-  GetCursorMode() {
-    if(IsCursorHidden())
-      return GLFW_CURSOR_HIDDEN;
-    return GLFW_CURSOR_NORMAL;
-  }
-
   GlfwMouse::GlfwMouse(engine::Engine* engine, Window* window):
     Mouse(engine),
     window_(window),
@@ -22,9 +15,13 @@ namespace mcc::mouse {
     pos_(),
     last_pos_(),
     delta_() {
-    glfwSetInputMode(window->handle(), GLFW_CURSOR, GetCursorMode());
+    glfwSetInputMode(window->handle(), GLFW_CURSOR, kDefaultInputMode);
     for(auto idx = 0; idx < kNumberOfMouseButtons; idx++)
       buttons_.insert(MouseButton(idx));
+  }
+
+  GlfwMouse::InputMode GlfwMouse::GetInputMode() const {
+    return static_cast<GlfwMouse::InputMode>(glfwGetInputMode(GetWindowHandle(), GLFW_CURSOR));
   }
 
   static inline glm::vec2
@@ -77,8 +74,8 @@ namespace mcc::mouse {
     const auto window_size = window->GetSize();
     const auto handle = Window::Get()->handle();
     pos_ = GetCursorPosition();
-    if(ShouldCaptureMouse() && Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
-      SetCursorPos(pos_);
+    // if(ShouldCaptureMouse() && Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
+    //   SetCursorPos(pos_);
     delta_ = (pos_ - last_pos_);
     if(HasMotion(delta_))
       PublishEvent<MouseMoveEvent>(this, pos_, last_pos_, delta_);

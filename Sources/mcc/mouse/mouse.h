@@ -48,6 +48,10 @@ namespace mcc {
       }
     public:
       virtual ~Mouse() = default;
+      virtual bool IsCursorVisible() const = 0;
+      virtual bool IsCursorHidden() const = 0;
+      virtual bool IsCursorDisabled() const = 0;
+      virtual bool IsCursorEnabled() const = 0;
       virtual void SetCursorPos(const glm::vec2& pos) = 0;
       virtual glm::vec2 GetCursorPosition() const = 0;
       virtual glm::vec2 GetPosition() const = 0;
@@ -56,6 +60,7 @@ namespace mcc {
       virtual rx::observable<MouseButton> GetAllButtons() const = 0;
       virtual rx::observable<std::pair<MouseButton, MouseButton::State>> GetAllButtonStates() const = 0;
     };
+    
     void InitMouse();
     Mouse* GetMouse();
   }

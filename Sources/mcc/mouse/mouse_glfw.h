@@ -14,8 +14,46 @@ namespace mcc {
 }
 
 namespace mcc::mouse {
+#define FOR_EACH_MOUSE_INPUT_MODE(V)             \
+  V(Disabled,     GLFW_CURSOR_DISABLED)          \
+  V(Hidden,       GLFW_CURSOR_HIDDEN)            \
+  V(Normal,       GLFW_CURSOR_NORMAL)
+
   class GlfwMouse : public Mouse {
     friend class Engine;
+  public:
+    enum InputMode : int {
+#define DEFINE_INPUT_MODE(Name, GlfwValue) k##Name = (GlfwValue),
+      FOR_EACH_MOUSE_INPUT_MODE(DEFINE_INPUT_MODE)
+#undef DEFINE_INPUT_MODE
+    };
+
+    friend std::ostream& operator<<(std::ostream& stream, const InputMode& rhs) {
+      switch(rhs) {
+#define DEFINE_TO_STRING(Name, GlfwValue)                                     \
+        case k##Name: return stream << #Name << " (" << #GlfwValue << ")";
+        FOR_EACH_MOUSE_INPUT_MODE(DEFINE_TO_STRING)
+        default: return stream << "Unknown Mouse::InputMode";
+      }
+#undef DEFINE_TO_STRING
+    }
+
+    static constexpr const auto kDefaultInputMode = kNormal;
+
+    static inline std::optional<InputMode>
+    ParseInputMode(const std::string& value) {
+      if(EqualsIgnoreCase(value, "default")) 
+        return kDefaultInputMode;
+#define DEFINE_PARSE_INPUT_MODE(Name, GlfwValue)        \
+      else if(EqualsIgnoreCase(value, #Name))           \
+        return { k##Name };
+      FOR_EACH_MOUSE_INPUT_MODE(DEFINE_PARSE_INPUT_MODE)
+#undef DEFINE_PARSE_INPUT_MODE
+      DLOG(WARNING) << "failed to parse GlfwMouse::InputMode from: " << value;
+      return std::nullopt;
+    }
+
+    InputMode GetInputMode() const;
   protected:
     Window* window_;
     MouseButtonSet buttons_;
@@ -34,6 +72,51 @@ namespace mcc::mouse {
   public:
     explicit GlfwMouse(engine::Engine* engine, Window* window);
     ~GlfwMouse() override = default;
+
+
+    bool IsCursorEnabled() const override {
+      switch(GetInputMode()) {
+        case kNormal:
+        case kHidden:
+          return true;
+        case kDisabled:
+        default:
+          return false;
+      }
+    }
+
+    bool IsCursorDisabled() const override {
+      switch(GetInputMode()) {
+        case kDisabled:
+          return true;
+        case kNormal:
+        case kHidden:
+        default:
+          return false;
+      }
+    }
+
+    bool IsCursorHidden() const override {
+      switch(GetInputMode()) {
+        case kHidden:
+          return true;
+        case kNormal:
+        case kDisabled:
+        default:
+          return true;
+      }
+    }
+
+    bool IsCursorVisible() const override {
+      switch(GetInputMode()) {
+        case kNormal:
+          return true;
+        case kHidden:
+        case kDisabled:
+        default:
+          return false;
+      }
+    }
 
     inline Window* window() const {
       return window_;
@@ -62,6 +145,8 @@ namespace mcc::mouse {
           return std::make_pair(btn, btn.GetState(GetWindowHandle()));
         });
     }
+  public:
+    static inline GlfwMouse* New();
   };
 }
 
