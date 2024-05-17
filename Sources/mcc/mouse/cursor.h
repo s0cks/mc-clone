@@ -3,13 +3,35 @@
 
 #include <string>
 #include <glog/logging.h>
+
 #include "mcc/rx.h"
 #include "mcc/uri.h"
+#include "mcc/mouse/cursor_events.h"
 
 namespace mcc::mouse {
+  rx::observable<CursorEvent*> OnCursorEvent();
+#define DEFINE_ON_CURSOR_EVENT(Name)            \
+  static inline rx::observable<Name##Event*>    \
+  On##Name##Event() {                           \
+    return OnCursorEvent()                      \
+      .filter(Name##Event::Filter)              \
+      .map(Name##Event::Cast);                  \
+  }
+  FOR_EACH_CURSOR_EVENT(DEFINE_ON_CURSOR_EVENT)
+#undef DEFINE_ON_CURSOR_EVENT
+
   class Cursor {
   protected:
     Cursor() = default;
+
+    static void Publish(CursorEvent* event);
+
+    template<class E, typename... Args>
+    static inline void
+    Publish(Args... args) {
+      E event(args...);
+      return Publish((CursorEvent*) &event);
+    }
   public:
     virtual ~Cursor() = default;
     virtual std::string ToString() const = 0;

@@ -7,25 +7,17 @@
 #include "mcc/image/image.h"
 
 namespace mcc::mouse {
-  class AvailableCursorPrinter {
-  protected:
-    std::string root_;
-  public:
-    explicit AvailableCursorPrinter(const std::string& root):
-      root_(root) {
-    }
-    ~AvailableCursorPrinter() = default;
+  static rx::subject<CursorEvent*> events_;
 
-    const std::string& GetRoot() const {
-      return root_;
-    }
+  rx::observable<CursorEvent*> OnCursorEvent() {
+    return events_.get_observable();
+  }
 
-    void PrintAll() {
-      for(const auto& entry : fs::recursive_directory_iterator(GetRoot())) {
-
-      }
-    }
-  };
+  void Cursor::Publish(CursorEvent* event) {
+    MCC_ASSERT(event);
+    const auto& subscriber = events_.get_subscriber();
+    subscriber.on_next(event);
+  }
 
   rx::observable<std::string> ListAvailableCursors() {
     return rx::observable<>::create<std::string>([](rx::subscriber<std::string> s) {
