@@ -6,6 +6,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/gfx.h"
+#include "mcc/platform.h"
 #include "mcc/entity/entity.h"
 
 #include "mcc/mouse/mouse_events.h"
@@ -31,7 +32,7 @@ namespace mcc {
     FOR_EACH_MOUSE_EVENT(DEFINE_ON_MOUSE_EVENT)
 #undef DEFINE_ON_MOUSE_EVENT
 
-    class Mouse : public engine::PreTickEventListener {
+    class Mouse : protected engine::PreTickEventListener {
       friend class engine::Engine;
     protected:
       explicit Mouse(engine::Engine* engine):
@@ -59,6 +60,7 @@ namespace mcc {
       virtual glm::vec2 GetDelta() const = 0;
       virtual rx::observable<MouseButton> GetAllButtons() const = 0;
       virtual rx::observable<std::pair<MouseButton, MouseButton::State>> GetAllButtonStates() const = 0;
+      virtual uword GetNumberOfButtons() const = 0;
     };
     
     void InitMouse();

@@ -122,6 +122,10 @@ namespace mcc::mouse {
       return window_;
     }
 
+    uword GetNumberOfButtons() const override {
+      return kNumberOfMouseButtons;
+    }
+
     void SetCursorPos(const glm::vec2& pos) override;
 
     glm::vec2 GetPosition() const override {
