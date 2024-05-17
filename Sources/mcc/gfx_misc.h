@@ -122,63 +122,6 @@ namespace mcc {
     };
     typedef ScissorTestCapabilityScope<false> ScissorTestScope;
     typedef ScissorTestCapabilityScope<true> InvertedScissorTestScope;
-
-    enum BlendSFactor : GLenum {
-      kSrcAlpha = GL_SRC_ALPHA,
-    };
-
-    enum BlendDFactor : GLenum {
-      kOneMinusSrcAlpha = GL_ONE_MINUS_SRC_ALPHA,
-    };
-
-    enum BlendEquation : GLenum {
-      kAddFunc = GL_FUNC_ADD,
-    };
-
-    static inline void
-    GetCurrentBlendFunction(GLint* srgb, GLint* sa, GLint* drgb, GLint* da) {
-      glGetIntegerv(GL_BLEND_SRC_RGB, srgb);
-      CHECK_GL(FATAL);
-      glGetIntegerv(GL_BLEND_SRC_ALPHA, sa);
-      CHECK_GL(FATAL);
-      glGetIntegerv(GL_BLEND_DST_RGB, drgb);
-      CHECK_GL(FATAL);
-      glGetIntegerv(GL_BLEND_DST_ALPHA, da);
-      CHECK_GL(FATAL);
-    }
-
-    template<const bool Inverted = false>
-    class BlendTestCapabilityScope : public CapabilityScope<GL_BLEND, Inverted> {
-    private:
-      bool restore_;
-      GLint srgb_;
-      GLint sa_;
-      GLint drgb_;
-      GLint da_;
-    public:
-      BlendTestCapabilityScope(const BlendSFactor sfactor,
-                               const BlendDFactor dfactor,
-                               const BlendEquation equation,
-                               const bool restore = true):
-        CapabilityScope<GL_BLEND, Inverted>(),
-        restore_(restore) {
-        glBlendFunc(sfactor, dfactor);
-        CHECK_GL(FATAL);
-        glBlendEquation(equation);
-        CHECK_GL(FATAL);
-        if(restore) {
-          GetCurrentBlendFunction(&srgb_, &sa_, &drgb_, &da_);
-        }
-      }
-      ~BlendTestCapabilityScope() override {
-        if(restore_) {
-          glBlendFuncSeparate(srgb_, drgb_, sa_, da_);
-          CHECK_GL(FATAL);
-        }
-      }
-    };
-    typedef BlendTestCapabilityScope<false> BlendTestScope;
-    typedef BlendTestCapabilityScope<true> InvertedBlendTestScope;
   }
 
   using gfx::DepthTestScope;
@@ -186,9 +129,6 @@ namespace mcc {
 
   using gfx::ScissorTestScope;
   using gfx::InvertedScissorTestScope;
-
-  using gfx::BlendTestScope;
-  using gfx::InvertedBlendTestScope;
 
 #define DEFINE_RESOURCE_SCOPE(Resource) \
   typedef gfx::BindScope<Resource> Resource##Scope;

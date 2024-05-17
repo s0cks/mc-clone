@@ -285,6 +285,21 @@
       "MIMode": "lldb"
     }, // Resource Tests
     {
+      "name": "Blend Tests",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Tests/minecraft-tests",
+      "args": [
+        "--resources", "${workspaceFolder}/resources",
+        "--gtest_filter=*Blend*Test*.*"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    }, // Blend Tests
+    {
       "name": "minecraft-benchmarks",
       "type": "cppdbg",
       "request": "launch",

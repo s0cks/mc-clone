@@ -233,7 +233,7 @@ void glDisable(GLenum cap) {
 }
 
 void glEnable(GLenum cap) {
-  __ glDisable(cap);
+  __ glEnable(cap);
 }
 
 GLenum glGetError(void) {
