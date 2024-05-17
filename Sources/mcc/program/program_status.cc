@@ -8,7 +8,7 @@ namespace mcc::program {
     glGetProgramiv(id, GL_INFO_LOG_LENGTH, &len);
     CHECK_GL(FATAL);
 
-    if(len <= 0) {
+    if(len < 0) {
       DLOG(WARNING) << "not getting program info log of length: " << len;
       (*result) = nullptr;
       (*length) = len;

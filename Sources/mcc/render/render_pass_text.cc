@@ -13,10 +13,15 @@
 #include "mcc/cull_face_scope.h"
 #include "mcc/camera/camera_ortho.h"
 
+#include "mcc/text/text.h"
+
+#include "mcc/font/font.h"
+#include "mcc/font/font_renderer.h"
+
 namespace mcc::render {
   bool TextRenderPass::ShouldSkip() const {
-    NOT_IMPLEMENTED(ERROR); //TODO: implement
-    return true;
+    const auto& all = text::GetAll();
+    return !all.empty();
   }
 
   static ThreadLocal<Vao> vao_;
@@ -134,6 +139,17 @@ namespace mcc::render {
     return SetIbo(CreateIbo(num_indices));
   }
 
+  using font::Font;
+  static ThreadLocal<Font> font_;
+
+  static inline Font*
+  GetFont() {
+    if(font_)
+      return font_.Get();
+    const auto font = new Font("arial/arial");
+    return font;
+  }
+
   TextRenderPass::TextRenderPass():
     RenderPass(),
     program_(Program::FromJson("program:textured_2d")) {
@@ -144,10 +160,10 @@ namespace mcc::render {
     VertexList vertices;
     UIntIbo::IndexList indices;
 
-    if(vertices.empty()) {
-      LOG(WARNING) << "no vertices to render.";
-      return;
-    }
+    // if(vertices.empty()) {
+    //   LOG(WARNING) << "no vertices to render.";
+    //   return;
+    // }
     const auto vao = GetOrCreateVao();
     vao::VaoBindScope scope(vao);
     const auto vbo = GetOrCreateVbo(128);
@@ -165,12 +181,18 @@ namespace mcc::render {
 
     const auto camera = camera::GetOrthoCamera();
     MCC_ASSERT(camera);
+
+    const auto& projection = camera->GetProjection();
+    const auto& view = camera->GetView();
+    font::FontRenderer renderer(projection, view, GetFont());
+    renderer.RenderText("Hello World", glm::vec2(25.0f, 25.0f));
+
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
     program::ApplyProgramScope prog(program_);
     prog.Set("tex", 0);
-    prog.Set("projection", camera->GetProjection());
-    prog.Set("view", camera->GetView());
+    prog.Set("projection", projection);
+    prog.Set("view", view);
     prog.Set("model", model);
     draw_scope.DrawTriangles();
   } 

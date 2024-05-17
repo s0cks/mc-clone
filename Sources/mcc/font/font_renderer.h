@@ -9,6 +9,9 @@ namespace mcc::font {
     static constexpr const float kDefaultScale = 1.0f;
     static constexpr const glm::vec3 kDefaultColor = glm::vec3(1.0f, 1.0f, 1.0f);
   protected:
+    const glm::mat4& projection_;
+    const glm::mat4& view_;
+
     Font* font_;
     float scale_;
     glm::vec3 color_;
@@ -33,10 +36,14 @@ namespace mcc::font {
       return font_->chars_;
     }
   public:
-    FontRenderer(Font* font):
+    FontRenderer(const glm::mat4& projection,
+                 const glm::mat4& view,
+                 Font* font):
       font_(font),
       scale_(kDefaultScale),
-      color_(kDefaultColor) {
+      color_(kDefaultColor),
+      projection_(projection),
+      view_(view) {
     }
     virtual ~FontRenderer() = default;
 

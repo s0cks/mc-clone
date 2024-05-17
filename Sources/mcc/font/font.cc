@@ -46,7 +46,7 @@ namespace mcc::font {
   }
 
   Font::Font(const std::string& name, const FontSize size):
-    shader_(Program::FromJson(fmt::format("program:{0:s}", name))),
+    shader_(Program::FromJson(fmt::format("program:text", name))),
     chars_(),
     mesh_() {
     program::ApplyProgramScope prog(shader_);

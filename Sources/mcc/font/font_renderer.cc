@@ -7,7 +7,8 @@ namespace mcc::font {
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     program::ApplyProgramScope prog(shader());
-    prog.Set("textColor", color_);
+    prog.Set("projection", projection_);
+    prog.Set("view", view_);
     glActiveTexture(GL_TEXTURE0);
 
     float startX = pos[0];
