@@ -24,6 +24,7 @@ namespace mcc::program {
     virtual void Set(const char* name, const glm::mat4& value, const bool transpose = GL_FALSE) const;
     virtual void Set(const char* name, const float value) const;
     virtual void Set(const char* name, const int32_t value) const;
+    virtual void Set(const char* name, const uint32_t value) const;
 
     inline void Set(const char* name, const bool value) const {
       return Set(name, static_cast<int32_t>(value));

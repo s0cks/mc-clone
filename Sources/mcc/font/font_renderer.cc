@@ -6,9 +6,6 @@ namespace mcc::font {
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    program::ApplyProgramScope prog(shader());
-    prog.Set("projection", projection_);
-    prog.Set("view", view_);
     glActiveTexture(GL_TEXTURE0);
 
     float startX = pos[0];
@@ -23,6 +20,10 @@ namespace mcc::font {
         scale(x + ch.bearing[0]),
         scale(startY - (ch.size[1] - ch.bearing[1])),
       };
+      program::ApplyProgramScope prog(shader());
+      prog.Set("projection", projection_);
+      prog.Set("view", view_);
+      prog.Set("tex", ch.texture);
       ch.Draw(pos, scale_, mesh());
       x += scale(ch.advance >> 6);
     }

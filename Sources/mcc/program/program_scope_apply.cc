@@ -53,6 +53,11 @@ namespace mcc::program {
     CHECK_GL(FATAL);
   }
 
+  void ApplyProgramScope::Set(const char* name, const uint32_t value) const {
+    glUniform1ui(GetUniformLocation(name), value);
+    CHECK_GL(FATAL);
+  }
+
   void ApplyProgramScope::Apply() {
     Program::UseProgram(GetProgramId());
   }
