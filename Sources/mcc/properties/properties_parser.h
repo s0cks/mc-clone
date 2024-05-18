@@ -1,6 +1,8 @@
 #ifndef MCC_PROPERTIES_PARSER_H
 #define MCC_PROPERTIES_PARSER_H
 
+#include "mcc/uri.h"
+#include "mcc/flags.h"
 #include "mcc/parser.h"
 #include "mcc/properties/property_set.h"
 
@@ -88,13 +90,6 @@ namespace mcc::properties {
     }
     ~Parser() override = default;
     bool ParseProperties(PropertySet& props);
-  public:
-    static inline bool
-    Parse(FILE* file, PropertySet& props) {
-      MCC_ASSERT(file);
-      Parser parser(file);
-      return parser.ParseProperties(props);
-    }
   };
 }
 

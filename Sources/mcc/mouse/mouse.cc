@@ -6,6 +6,8 @@
 #include "mcc/window/window.h"
 #include "mcc/engine/engine.h"
 
+#include "mcc/properties/properties.h"
+
 namespace mcc::mouse {
   static ThreadLocal<Mouse> mouse_;
   static rx::subject<MouseEvent*> events_;
@@ -40,11 +42,11 @@ namespace mcc::mouse {
   }
 
   void InitMouse() {
-    const auto window = Window::Get();
-    if(!window) {
-      LOG(ERROR) << "no window available to create mouse.";
-      return;
-    }
+    PropertySet props;
+    LOG_IF(ERROR, !properties::Parse(uri::Uri("file:mouse.properties"), props)) << "failed to parse Mouse properties.";
+
+    DLOG(INFO) << "Mouse Properties:";
+    properties::PropertySetPrinter::Print(props);
 
     window::OnWindowOpenedEvent()
       .subscribe([](WindowOpenedEvent* event) {
