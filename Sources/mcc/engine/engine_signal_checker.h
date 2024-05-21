@@ -1,8 +1,0 @@
-#ifndef MCC_ENGINE_SIGNAL_CHECKER_H
-#define MCC_ENGINE_SIGNAL_CHECKER_H
-
-namespace mcc::engine {
-
-}
-
-#endif //MCC_ENGINE_SIGNAL_CHECKER_H

@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 
 #include "mcc/font/glyph.h"
+#include "mcc/font/glyph_map.h"
 #include "mcc/font/font_mesh.h"
 #include "mcc/program/program.h"
 
