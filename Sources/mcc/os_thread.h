@@ -2,8 +2,10 @@
 #define MCC_OS_THREAD_H
 
 #include <string>
+#include "mcc/rx.h"
 #include "mcc/common.h"
 #include "mcc/platform.h"
+
 #ifdef OS_IS_LINUX
 #include "mcc/os_thread_linux.h"
 #elif OS_IS_OSX
@@ -22,6 +24,7 @@ namespace mcc {
   bool Start(ThreadId* thread, const std::string& name, const ThreadHandler& func, void* data);
   bool Join(const ThreadId& thread);
   bool Compare(const ThreadId& lhs, const ThreadId& rhs);
+  int GetCurrentThreadCount();
 
   static inline std::string
   GetCurrentThreadName(){

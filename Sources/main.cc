@@ -38,6 +38,8 @@
 
 #include "mcc/skybox/skybox.h"
 
+#include "mcc/os_thread.h"
+
 #include "mcc/signals.h"
 #include "mcc/mouse/cursor.h"
 
@@ -126,6 +128,7 @@ int main(int argc, char** argv) {
     .subscribe([engine](keyboard::KeyPressedEvent* event) {
       engine->Shutdown();
     });
+  LOG(INFO) << "number of threads: " << mcc::GetCurrentThreadCount();
   engine->Run();
   return EXIT_SUCCESS;
 }

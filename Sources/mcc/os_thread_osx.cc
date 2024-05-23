@@ -1,6 +1,13 @@
 #include "mcc/os_thread.h"
 #ifdef OS_IS_OSX
 #include <utility>
+#include <pthread.h>
+#include <mach/mach.h>
+#include <mach/mach_types.h>
+#include <fmt/format.h>
+
+#include <pthread_spis.h>
+
 #include <glog/logging.h>
 
 namespace mcc {
@@ -33,6 +40,24 @@ namespace mcc {
      return parameter_;
    }
  };
+
+ int GetCurrentThreadCount() {
+  const auto me = mach_task_self();
+  thread_array_t threads;
+  mach_msg_type_number_t num_threads;
+
+  {
+    const auto res = task_threads(me, &threads, &num_threads);
+    if(res != KERN_SUCCESS)
+      return -1;
+  }
+  {
+    const auto res = vm_deallocate(me, (vm_address_t) threads, num_threads * sizeof(*threads));
+    if(res != KERN_SUCCESS)
+      return -1;
+  }
+  return num_threads;
+ }
 
  bool SetThreadName(const ThreadId& thread, const char* name){
    char truncated_name[kThreadNameMaxLength];
