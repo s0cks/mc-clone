@@ -25,6 +25,7 @@ namespace mcc {
   bool Join(const ThreadId& thread);
   bool Compare(const ThreadId& lhs, const ThreadId& rhs);
   int GetCurrentThreadCount();
+  rx::observable<std::string> GetCurrentThreadNames();
 
   static inline std::string
   GetCurrentThreadName(){

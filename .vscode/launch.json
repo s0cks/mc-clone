@@ -326,7 +326,10 @@
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [
-        
+        {
+          "name": "UV_THREADPOOL_SIZE",
+          "value": "0"
+        }
       ],
       "externalConsole": false,
       "MIMode": "lldb"

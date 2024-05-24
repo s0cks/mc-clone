@@ -4,6 +4,8 @@
 #include <time.h>
 #include <cstdlib>
 #include <uv.h>
+#include <stdexcept>
+#include <exception>
 
 #include <units.h>
 #include <backward.hpp>
@@ -11,6 +13,7 @@
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
 
+#include "mcc/rx.h"
 #include "mcc/mcc.h"
 #include "mcc/ibo/ibo.h"
 #include "mcc/font/font.h"
@@ -128,7 +131,20 @@ int main(int argc, char** argv) {
     .subscribe([engine](keyboard::KeyPressedEvent* event) {
       engine->Shutdown();
     });
-  LOG(INFO) << "number of threads: " << mcc::GetCurrentThreadCount();
+
+  DLOG(INFO) << "current threads: ";
+  mcc::GetCurrentThreadNames()
+    .as_blocking()
+    .subscribe([](const std::string& name) {
+      DLOG(INFO) << " - " << name;
+    }, [](const rx::util::error_ptr& err) {
+      try {
+        std::rethrow_exception(err);
+      } catch(const std::exception& e) {
+        DLOG(ERROR) << "error: " << e.what();
+      }
+    });
+
   engine->Run();
   return EXIT_SUCCESS;
 }

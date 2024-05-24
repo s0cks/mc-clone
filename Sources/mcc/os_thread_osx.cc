@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <mach/mach.h>
 #include <mach/mach_types.h>
+#include <mach/thread_act.h>
 #include <fmt/format.h>
 
 #include <pthread_spis.h>
@@ -58,6 +59,39 @@ namespace mcc {
   }
   return num_threads;
  }
+
+rx::observable<std::string> GetCurrentThreadNames() {
+  return rx::observable<>::create<std::string>([](rx::subscriber<std::string> s) {
+    const auto me = mach_task_self();
+    thread_array_t threads;
+    mach_msg_type_number_t num_threads;
+    {
+      const auto res = task_threads(me, &threads, &num_threads);
+      if(res != KERN_SUCCESS)
+        return s.on_error(rx::util::make_error_ptr(std::runtime_error("")));
+    }
+
+    for(auto idx = 0; idx < num_threads; idx++) {
+      const auto& th = threads[idx];
+      thread_extended_info_data_t th_info;
+      mach_msg_type_number_t num_th_info = THREAD_EXTENDED_INFO_COUNT;
+      const auto res = thread_info(th, THREAD_EXTENDED_INFO, (thread_info_t)&th_info, &num_th_info);
+      if(res != KERN_SUCCESS) {
+        const auto err = fmt::format("failed to get thread info: {0:s}", mach_error_string(res));
+        return s.on_error(rx::util::make_error_ptr(std::runtime_error(err)));
+      }
+      s.on_next(std::string(th_info.pth_name));
+    }
+
+    {
+      const auto res = vm_deallocate(me, (vm_address_t) threads, num_threads * sizeof(*threads));
+      if(res != KERN_SUCCESS)
+        return s.on_error(rx::util::make_error_ptr(std::runtime_error("")));
+    }
+    return s.on_completed();
+  });
+ }
+
 
  bool SetThreadName(const ThreadId& thread, const char* name){
    char truncated_name[kThreadNameMaxLength];
@@ -149,6 +183,7 @@ namespace mcc {
      LOG(WARNING) << "couldn't set thread name: " << strerror(result);
      return false;
    }
+   DLOG(INFO) << "set thread #" << thread << " name to: " << name;
    return true;
  }
 
