@@ -10,21 +10,11 @@
 #include "mcc/texture/texture_id.h"
 
 namespace mcc::font {
-  static inline void
-  GenerateGlyphTexture(TextureId& texture, FT_Bitmap& bitmap) {
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.width, bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  }
-
   struct Glyph {
     friend class FontRenderer;
+    DEFINE_DEFAULT_COPYABLE_TYPE(Glyph);
   private:
-    void Draw(const glm::vec2 pos, const float scale, FontMesh& mesh);
+    void Draw(const glm::vec2 pos, FontMesh& mesh);
   public:
     TextureId texture;
     glm::ivec2 size;
@@ -32,18 +22,21 @@ namespace mcc::font {
     GLuint advance;
 
     Glyph() = default;
-    Glyph(FT_Bitmap& bitmap, FT_Int left, FT_Int top, FT_Vector& advance):
-      texture(),
-      size(glm::ivec2(bitmap.width, bitmap.rows)),
-      bearing(glm::ivec2(left, top)),
-      advance(static_cast<GLuint>(advance.x)) {
-      GenerateGlyphTexture(texture, bitmap);
-    }
-    Glyph(FT_GlyphSlot glyph):
+    Glyph(FT_Bitmap& bitmap, FT_Int left, FT_Int top, FT_Vector& advance);
+    explicit Glyph(FT_GlyphSlot glyph):
       Glyph(glyph->bitmap, glyph->bitmap_left, glyph->bitmap_top, glyph->advance) {
     }
-    Glyph(const Glyph& rhs) = default;
     ~Glyph() = default;
+
+    friend std::ostream& operator<<(std::ostream& stream, const Glyph& rhs) {
+      stream << "font::Glyph(";
+      stream << "texture=" << rhs.texture << ", ";
+      stream << "size=" << glm::to_string(rhs.size) << ", ";
+      stream << "bearing=" << glm::to_string(rhs.bearing) << ", ";
+      stream << "advance=" << rhs.advance;
+      stream << ")";
+      return stream;
+    }
   };
 
   typedef std::vector<Glyph> GlyphList;
