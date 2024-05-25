@@ -3,15 +3,13 @@
 
 namespace mcc::font {
   void FontRenderer::RenderText(const std::string& text, const glm::vec2 pos) {
-    glEnable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glActiveTexture(GL_TEXTURE0);
-
     float startX = pos[0];
     float startY = pos[1];
     float x = startX;
 
+    program::ApplyProgramScope prog(shader());
+    prog.Set("projection", projection_);
+    glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(mesh().vao);
     std::string::const_iterator iter;
     for(iter = text.begin(); iter != text.end(); iter++) {
@@ -20,16 +18,10 @@ namespace mcc::font {
         scale(x + ch.bearing[0]),
         scale(startY - (ch.size[1] - ch.bearing[1])),
       };
-      program::ApplyProgramScope prog(shader());
-      prog.Set("projection", projection_);
-      prog.Set("view", view_);
-      prog.Set("tex", ch.texture);
       ch.Draw(pos, scale_, mesh());
       x += scale(ch.advance >> 6);
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
   }
 }

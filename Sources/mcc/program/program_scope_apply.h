@@ -6,6 +6,7 @@
 #define MCC_PROGRAM_SCOPE_APPLY_H
 
 #include "mcc/ubo/ubo_id.h"
+#include "mcc/texture/texture_id.h"
 #include "mcc/program/program_scope.h"
 
 namespace mcc::program {

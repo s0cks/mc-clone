@@ -20,7 +20,7 @@ namespace mcc::font {
   class Font {
     friend class FontRenderer;
 
-    static constexpr const FontSize kDefaultFontSize = 32;
+    static constexpr const FontSize kDefaultFontSize = 48;
   protected:
     Program* shader_;
     GlyphMap chars_;

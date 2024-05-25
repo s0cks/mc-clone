@@ -7,11 +7,11 @@
 #include "mcc/font/truetype.h"
 #include "mcc/font/font_mesh.h"
 
-namespace mcc::font {
-  typedef GLuint GlyphTextureId;
+#include "mcc/texture/texture_id.h"
 
+namespace mcc::font {
   static inline void
-  GenerateGlyphTexture(GlyphTextureId& texture, FT_Bitmap& bitmap) {
+  GenerateGlyphTexture(TextureId& texture, FT_Bitmap& bitmap) {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmap.width, bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap.buffer);
@@ -26,7 +26,7 @@ namespace mcc::font {
   private:
     void Draw(const glm::vec2 pos, const float scale, FontMesh& mesh);
   public:
-    GlyphTextureId texture;
+    TextureId texture;
     glm::ivec2 size;
     glm::ivec2 bearing;
     GLuint advance;

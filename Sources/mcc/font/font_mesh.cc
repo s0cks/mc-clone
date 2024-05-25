@@ -2,7 +2,8 @@
 
 namespace mcc::font {
   static constexpr const int8_t kVertexLength = 4;
-  static constexpr const uint64_t kVertexSize = sizeof(float) * 4;
+  static constexpr const uint64_t kVertexSize = sizeof(float) * kVertexLength;
+  
   static constexpr const int8_t kNumberOfVertices = 6;
   static constexpr const uint64_t kFontMeshSize = kNumberOfVertices * kVertexSize;
 

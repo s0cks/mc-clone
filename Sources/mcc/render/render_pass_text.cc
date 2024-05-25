@@ -18,6 +18,8 @@
 #include "mcc/font/font.h"
 #include "mcc/font/font_renderer.h"
 
+#include "mcc/window/window.h"
+
 namespace mcc::render {
   bool TextRenderPass::ShouldSkip() const {
     const auto& all = text::GetAll();
@@ -147,53 +149,52 @@ namespace mcc::render {
     if(font_)
       return font_.Get();
     const auto font = new Font("arial/arial");
+    font_.Set(font);
     return font;
   }
 
   TextRenderPass::TextRenderPass():
     RenderPass(),
-    program_(Program::FromJson("program:textured_2d")) {
+    program_(Program::FromJson("program:text")) {
   }
 
   void TextRenderPass::Render() {
     // compute vertices && indices for roots
-    VertexList vertices;
-    UIntIbo::IndexList indices;
+    // VertexList vertices;
+    // UIntIbo::IndexList indices;
 
-    // if(vertices.empty()) {
-    //   LOG(WARNING) << "no vertices to render.";
-    //   return;
+    // const auto vao = GetOrCreateVao();
+    // vao::VaoBindScope scope(vao);
+    // const auto vbo = GetOrCreateVbo(128);
+    // {
+    //   vbo::VboUpdateScope update(vbo);
+    //   update.Update(vertices);
     // }
-    const auto vao = GetOrCreateVao();
-    vao::VaoBindScope scope(vao);
-    const auto vbo = GetOrCreateVbo(128);
-    {
-      vbo::VboUpdateScope update(vbo);
-      update.Update(vertices);
-    }
 
-    InvertedCullFaceScope cull_face;
-    InvertedDepthTestScope depth_test;
+    // InvertedCullFaceScope cull_face;
+    // InvertedDepthTestScope depth_test;
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL(FATAL);
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     CHECK_GL(FATAL);
 
-    const auto camera = camera::GetOrthoCamera();
-    MCC_ASSERT(camera);
-
-    const auto& projection = camera->GetProjection();
-    const auto& view = camera->GetView();
-    font::FontRenderer renderer(projection, view, GetFont());
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    const auto size = window->GetSize();
+    const auto projection = glm::ortho(0.0f, size[0] * 1.0f, 0.0f, size[1] * 1.0f, 0.1f, 1000.0f);
+    font::FontRenderer renderer(projection, GetFont());
     renderer.RenderText("Hello World", glm::vec2(25.0f, 25.0f));
 
-    auto model = glm::mat4(1.0f);
-    vbo::VboDrawScope draw_scope(vbo);
-    program::ApplyProgramScope prog(program_);
-    prog.Set("tex", 0);
-    prog.Set("projection", projection);
-    prog.Set("view", view);
-    prog.Set("model", model);
-    draw_scope.DrawTriangles();
+    // if(vertices.empty()) {
+    //   LOG(WARNING) << "no vertices to render.";
+    //   return;
+    // }
+
+    // auto model = glm::mat4(1.0f);
+    // vbo::VboDrawScope draw_scope(vbo);
+    // program::ApplyProgramScope prog(program_);
+    // prog.Set("projection", projection);
+    // prog.Set("model", model);
+    // draw_scope.DrawTriangles();
   } 
 }

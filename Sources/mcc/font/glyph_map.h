@@ -18,6 +18,7 @@ namespace mcc::font {
     }
 
     void GenerateCharacterMap(GlyphMap& chars) {
+      glEnable(GL_CULL_FACE);
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       FT_Set_Pixel_Sizes(face_, 0, height_);
@@ -33,6 +34,7 @@ namespace mcc::font {
       }
       glBindTexture(GL_TEXTURE_2D, 0);
       glDisable(GL_BLEND);
+      glDisable(GL_CULL_FACE);
     }
   public:
     virtual ~GlyphMapGenerator() = default;

@@ -14,7 +14,7 @@ namespace mcc::render {
     guis_(new RenderPassGuis()),
     text_(new TextRenderPass()),
     // skybox_(new SkyboxRenderPass()),
-    clear_(kGreen) {
+    clear_(Color(128, 128, 128, 255)) {
     Append(terrain_);
     Append(guis_);
     Append(text_);
