@@ -238,6 +238,10 @@ namespace mcc {
       return mcc::FileExists(uri.path);
     }
 
+    bool TryParseUri(uri::Uri& result,
+                     const basic_uri uri,
+                     const char* default_scheme);
+
     bool IsValidUri(const basic_uri& rhs);
     bool IsValidUri(const basic_uri& rhs, const std::string& scheme);
     bool IsValidUri(const basic_uri& rhs, const std::set<std::string>& schemes);

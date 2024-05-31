@@ -76,6 +76,21 @@ namespace mcc::uri {
     LOG_IF(ERROR, !parser.Parse()) << "failed to parse uri: " << uri;
   }
 
+  bool TryParseUri(uri::Uri& result,
+                   const basic_uri uri,
+                   const char* default_scheme) {
+    Parser::Config config = {
+      .default_scheme = default_scheme,
+      .OnParseScheme = &OnSchemeParsed,
+      .OnParsePath = &OnPathParsed,
+      .OnParseQuery0 = &OnQueryParsed0,
+      .OnParseQuery1 = &OnQueryParsed1,
+      .OnParseFragment = &OnFragmentParsed,
+    };
+    Parser parser(config, uri, &result);
+    return parser.Parse();
+  }
+
   bool Uri::HasScheme() const {
     return !scheme.empty();
   }

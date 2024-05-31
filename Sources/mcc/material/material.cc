@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "mcc/spec.h"
 #include "mcc/texture/texture.h"
 #include "mcc/material/material.h"
 #include "mcc/material/material_builder.h"
