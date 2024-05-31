@@ -279,6 +279,10 @@ namespace mcc {
       NextChar();
       return true;
     }
+
+    std::string token() const {
+      return std::string((const char*) token_, token_len_);
+    }
   public:
     virtual ~ParserTemplate() = default;
 

@@ -91,7 +91,7 @@ namespace mcc::uri {
       DLOG(ERROR) << "failed to parse query parameter key.";
       return false;
     }
-    const auto key = std::string((const char*) token_, token_len_);
+    const auto key = token();
     
     switch(PeekChar()) {
       case '=':
@@ -160,13 +160,13 @@ namespace mcc::uri {
         return ParseResult::Failure(fmt::format("Failed to parse uri scheme: {0:s}", config_.default_scheme));
     } else {
       if(!OnParseScheme((const char*) token_, token_len_))
-        return ParseResult::Failure(fmt::format("Failed to parse uri scheme: {0:s}", std::string((const char*) token_, token_len_)));
+        return ParseResult::Failure(fmt::format("Failed to parse uri scheme: {0:s}", token()));
     }
 
     if(!ParsePath())
       return ParseResult::Failure("Failed to parse uri path.");
     if(!OnParsePath((const char*) token_, token_len_))
-      return ParseResult::Failure(fmt::format("Failed to parse uri path: {0:s}", std::string((const char*) token_, token_len_)));
+      return ParseResult::Failure(fmt::format("Failed to parse uri path: {0:s}", token()));
 
     do {
       switch(PeekChar()) {
@@ -186,7 +186,7 @@ namespace mcc::uri {
           if(!ParseFragment())
             return ParseResult::Failure("failed to parse uri fragment.");
           if(!OnParseFragment((const char*) token_, token_len_))
-            return ParseResult::Failure(fmt::format("failed to parse uri fragment: {0:s}", std::string((const char*) token_, token_len_)));
+            return ParseResult::Failure(fmt::format("failed to parse uri fragment: {0:s}", token()));
           continue;
         }
         case EOF:
