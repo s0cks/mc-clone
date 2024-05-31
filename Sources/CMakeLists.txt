@@ -1,3 +1,5 @@
+include(MccCompileOptions)
+
 configure_file(mcc/mcc.h.in ${PROJECT_BINARY_DIR}/Sources/mcc/mcc.h)
 configure_file(mcc/gfx.h.in ${PROJECT_BINARY_DIR}/Sources/mcc/gfx.h)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -174,16 +176,13 @@ target_link_libraries(${PROJECT_NAME}
   OpenSSL::Crypto
   ${GRAPHVIZ_LIBRARIES}
   ${LIBUV_LIBRARIES})
-
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-  target_compile_options(${PROJECT_NAME} PRIVATE -Wno-deprecated -frtti)
-endif()
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/Sources ${PROJECT_BINARY_DIR})
+target_compile_options(${PROJECT_NAME}
+  PRIVATE ${MCC_COMPILE_OPTIONS})
+target_include_directories(${PROJECT_NAME}
+  PUBLIC ${PROJECT_SOURCE_DIR}/Sources ${PROJECT_BINARY_DIR})
 
 add_executable(${PROJECT_NAME}-client
-  main.cc
-  )
+  main.cc)
 target_link_libraries(${PROJECT_NAME}-client
   ${PROJECT_NAME}
   OpenGL::GL

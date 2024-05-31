@@ -22,6 +22,7 @@ namespace mcc {
 
     class Vao : public gfx::ObjectTemplate<VaoId> {
       friend class VaoTest;
+      friend class VaoFinalizer;
       friend class VaoBindScope;
     public:
       struct VaoIdComparator {
