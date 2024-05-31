@@ -152,6 +152,21 @@ namespace mcc::uri {
     return false;
   }
 
+  /*
+   * http:(//)?google.com?test&size=sm#json
+   
+   * ident (http)
+   * :(//)? <-- scheme
+   * ident (google.com)
+   * ? <-- query
+   * ident (test)
+   * & <-- query
+   * ident (size)
+   * = <-- qassign
+   * ident (sm)
+   * # <-- fragment
+   * ident (json)
+  */
   ParseResult Parser::Parse() {
     if(!ParseScheme()) {
       if(!config_.default_scheme)
