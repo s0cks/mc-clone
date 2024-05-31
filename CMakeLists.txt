@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 
 include(MccOptions)
+include(MccGitInfo)
 
 find_package(Threads REQUIRED)
 find_package(Glog REQUIRED)

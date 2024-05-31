@@ -1,0 +1,14 @@
+find_package(Git REQUIRED)
+
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+  OUTPUT_VARIABLE PROJECT_GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(STATUS "current git branch: ${PROJECT_GIT_BRANCH}")
+
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(STATUS "current git commit hash: ${PROJECT_GIT_COMMIT_HASH}")

@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 
+#include "mcc/common.h"
 #include "mcc/platform.h"
 
 namespace mcc {
@@ -55,7 +56,7 @@ namespace mcc {
       bottom_(),
       items_(),
       garbage_() {
-    auto cap = RoundUpPowTwo(capacity);
+    auto cap = RoundUpPow2(capacity);
     top_.store(0, std::memory_order_relaxed);
     bottom_.store(0, std::memory_order_relaxed);
     items_.store(new Item{static_cast<int64_t>(cap)}, std::memory_order_relaxed);

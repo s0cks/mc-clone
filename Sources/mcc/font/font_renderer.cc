@@ -18,7 +18,7 @@ namespace mcc::font {
         scale(x + ch.bearing[0]),
         scale(startY - (ch.size[1] - ch.bearing[1])),
       };
-      ch.Draw(pos, scale_, mesh());
+      ch.Draw(pos, mesh());
       x += scale(ch.advance >> 6);
     }
     glBindVertexArray(0);

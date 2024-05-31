@@ -102,6 +102,10 @@ OnUnhandledException() {
 int main(int argc, char** argv) {  
   using namespace mcc;
   srand(time(NULL));
+
+  DLOG(INFO) << "running mcc v" << mcc::GetVersion() << ".....";
+  mcc::PrintRuntimeInformation();
+
   ::google::InitGoogleLogging(argv[0]);
   ::google::LogToStderr();
   ::google::ParseCommandLineFlags(&argc, &argv, true);

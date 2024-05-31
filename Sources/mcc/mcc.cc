@@ -52,4 +52,11 @@ namespace mcc {
     GlfwError error(code, description);
     LOG_AT_LEVEL(error.severity()) << "unexpected " << error;
   }
+
+#define __ LOG_AT_LEVEL(s)
+  void PrintRuntimeInformation(const google::LogSeverity s) {
+    __ << "mcc Runtime Information:";
+    __ << " - Version: " << mcc::GetVersion() << " (" << MCC_GIT_BRANCH << "/" << MCC_GIT_COMMIT_HASH << ")";
+  }
+#undef __
 }
