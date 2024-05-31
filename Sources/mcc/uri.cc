@@ -6,13 +6,13 @@
 #include "mcc/uri_parser.h"
 
 namespace mcc::uri {
-  void SanitizeExtension(std::string& extension) {
+  void SanitizeExtension(Extension& extension) {
     if(extension[0] == '.')
       extension = extension.substr(1);
     ToLowercase(extension);
   }
 
-  void SanitizePath(std::string& path, const bool root) {
+  void SanitizePath(Path& path, const bool root) {
     if(root && path[0] != '/')
       path = '/' + path;
     else if(!root && path[0] == '/')
@@ -22,14 +22,14 @@ namespace mcc::uri {
   static inline bool
   OnSchemeParsed(const Parser* parser, const char* scheme, const uint64_t scheme_len) {
     auto uri = (Uri*)parser->data();
-    uri->scheme = std::string(scheme, scheme_len);
+    uri->scheme = Scheme(scheme, scheme_len);
     return true;
   }
 
   static inline bool
   OnPathParsed(const Parser* parser, const char* path, const uint64_t path_len) {
     auto uri = (Uri*)parser->data();
-    uri->path = std::string(path, path_len);
+    uri->path = Path(path, path_len);
     return true;
   }
 
@@ -58,7 +58,7 @@ namespace mcc::uri {
   static inline bool
   OnFragmentParsed(const Parser* parser, const char* fragment, const uint64_t fragment_len) {
     auto uri = (Uri*)parser->data();
-    uri->fragment = std::string(fragment, fragment_len);
+    uri->fragment = Fragment(fragment, fragment_len);
     return true;
   }
 
@@ -80,31 +80,31 @@ namespace mcc::uri {
     return !scheme.empty();
   }
 
-  bool Uri::HasScheme(const std::string& a) const {
+  bool Uri::HasScheme(const Scheme& a) const {
     return HasScheme() 
         && EqualsIgnoreCase(scheme, a);
   }
 
-  bool Uri::HasScheme(const std::string& a,
-                      const std::string& b) const {
+  bool Uri::HasScheme(const Scheme& a,
+                      const Scheme& b) const {
     return HasScheme()
         && (EqualsIgnoreCase(scheme, a)
         || EqualsIgnoreCase(scheme, b));
   }
 
-  bool Uri::HasScheme(const std::string& a,
-                      const std::string& b,
-                      const std::string& c) const {
+  bool Uri::HasScheme(const Scheme& a,
+                      const Scheme& b,
+                      const Scheme& c) const {
     return HasScheme()
         && (EqualsIgnoreCase(scheme, a)
         || EqualsIgnoreCase(scheme, b)
         || EqualsIgnoreCase(scheme, c));
   }
 
-  bool Uri::HasScheme(const std::string& a,
-                      const std::string& b,
-                      const std::string& c,
-                      const std::string& d) const {
+  bool Uri::HasScheme(const Scheme& a,
+                      const Scheme& b,
+                      const Scheme& c,
+                      const Scheme& d) const {
     return HasScheme()
         && (EqualsIgnoreCase(scheme, a)
         || EqualsIgnoreCase(scheme, b)
@@ -112,11 +112,11 @@ namespace mcc::uri {
         || EqualsIgnoreCase(scheme, d));
   }
 
-  bool Uri::HasScheme(const std::string& a,
-                      const std::string& b,
-                      const std::string& c,
-                      const std::string& d,
-                      const std::string& e) const {
+  bool Uri::HasScheme(const Scheme& a,
+                      const Scheme& b,
+                      const Scheme& c,
+                      const Scheme& d,
+                      const Scheme& e) const {
     return HasScheme()
         && (EqualsIgnoreCase(scheme, a)
         || EqualsIgnoreCase(scheme, b)
@@ -125,12 +125,12 @@ namespace mcc::uri {
         || EqualsIgnoreCase(scheme, e));
   }
 
-  bool Uri::HasScheme(const std::string& a,
-                      const std::string& b,
-                      const std::string& c,
-                      const std::string& d,
-                      const std::string& e,
-                      const std::string& f) const {
+  bool Uri::HasScheme(const Scheme& a,
+                      const Scheme& b,
+                      const Scheme& c,
+                      const Scheme& d,
+                      const Scheme& e,
+                      const Scheme& f) const {
     return HasScheme()
         && (EqualsIgnoreCase(scheme, a)
         || EqualsIgnoreCase(scheme, b)
@@ -140,21 +140,21 @@ namespace mcc::uri {
         || EqualsIgnoreCase(scheme, f));
   }
 
-  bool Uri::HasScheme(const std::unordered_set<std::string>& values) const {
+  bool Uri::HasScheme(const std::unordered_set<Scheme>& values) const {
     if(!HasScheme())
       return false;
     const auto pos = values.find(scheme);
     return pos != values.end();
   }
 
-  bool Uri::HasScheme(const std::set<std::string>& values) const {
+  bool Uri::HasScheme(const std::set<Scheme>& values) const {
     if(!HasScheme())
       return false;
     const auto pos = values.find(scheme);
     return pos != values.end();
   }
 
-  std::string Uri::GetExtension() const {
+  Extension Uri::GetExtension() const {
     const auto dotpos = path.find_last_of('.');
     if(dotpos == std::string::npos)
       return {};
@@ -168,14 +168,14 @@ namespace mcc::uri {
     return dotpos != std::string::npos;
   }
 
-  bool Uri::HasExtension(const std::string& a) const {
+  bool Uri::HasExtension(const Extension& a) const {
     auto extension = a;
     SanitizeExtension(extension);
     return EqualsIgnoreCase(extension, GetExtension());
   }
 
-  bool Uri::HasExtension(const std::string& a,
-                         const std::string& b) const {
+  bool Uri::HasExtension(const Extension& a,
+                         const Extension& b) const {
     auto e1 = a;
     SanitizeExtension(e1);
     auto e2 = b;
@@ -186,9 +186,9 @@ namespace mcc::uri {
         || EqualsIgnoreCase(extension, e2);
   }
 
-  bool Uri::HasExtension(const std::string& a,
-                         const std::string& b,
-                         const std::string& c) const {
+  bool Uri::HasExtension(const Extension& a,
+                         const Extension& b,
+                         const Extension& c) const {
     auto e1 = a;
     SanitizeExtension(e1);
     auto e2 = b;
@@ -202,10 +202,10 @@ namespace mcc::uri {
         || EqualsIgnoreCase(extension, e3);
   }
 
-  bool Uri::HasExtension(const std::string& a,
-                         const std::string& b,
-                         const std::string& c,
-                         const std::string& d) const {
+  bool Uri::HasExtension(const Extension& a,
+                         const Extension& b,
+                         const Extension& c,
+                         const Extension& d) const {
     auto e1 = a;
     SanitizeExtension(e1);
     auto e2 = b;
@@ -222,11 +222,11 @@ namespace mcc::uri {
         || EqualsIgnoreCase(extension, e4);
   }
 
-  bool Uri::HasExtension(const std::string& a,
-                         const std::string& b,
-                         const std::string& c,
-                         const std::string& d,
-                         const std::string& e) const {
+  bool Uri::HasExtension(const Extension& a,
+                         const Extension& b,
+                         const Extension& c,
+                         const Extension& d,
+                         const Extension& e) const {
     auto e1 = a;
     SanitizeExtension(e1);
     auto e2 = b;
@@ -246,12 +246,12 @@ namespace mcc::uri {
         || EqualsIgnoreCase(extension, e5);
   }
 
-  bool Uri::HasExtension(const std::string& a,
-                         const std::string& b,
-                         const std::string& c,
-                         const std::string& d,
-                         const std::string& e,
-                         const std::string& f) const {
+  bool Uri::HasExtension(const Extension& a,
+                         const Extension& b,
+                         const Extension& c,
+                         const Extension& d,
+                         const Extension& e,
+                         const Extension& f) const {
     auto e1 = a;
     SanitizeExtension(e1);
     auto e2 = b;
@@ -274,14 +274,14 @@ namespace mcc::uri {
         || EqualsIgnoreCase(extension, e6);
   }
 
-  bool Uri::HasExtension(const std::set<std::string>& extensions) const {
+  bool Uri::HasExtension(const std::set<Extension>& extensions) const {
     auto extension = GetExtension();
     SanitizeExtension(extension);
     const auto pos = extensions.find(extension);
     return pos != extensions.end();
   }
 
-  bool Uri::HasExtension(const std::unordered_set<std::string>& extensions) const {
+  bool Uri::HasExtension(const std::unordered_set<Extension>& extensions) const {
     auto extension = GetExtension();
     SanitizeExtension(extension);
     const auto pos = extensions.find(extension);
@@ -340,11 +340,11 @@ namespace mcc::uri {
     return std::regex_match(value, regex);
   }
 
-  bool IsValidUri(const basic_uri& value, const std::set<std::string>& schemes) {
-    return IsValidUri<std::set<std::string>>(value, schemes);
+  bool IsValidUri(const basic_uri& value, const std::set<Scheme>& schemes) {
+    return IsValidUri<std::set<Scheme>>(value, schemes);
   }
 
-  bool IsValidUri(const basic_uri& value, const std::unordered_set<std::string>& schemes) {
-    return IsValidUri<std::unordered_set<std::string>>(value, schemes);
+  bool IsValidUri(const basic_uri& value, const std::unordered_set<Scheme>& schemes) {
+    return IsValidUri<std::unordered_set<Scheme>>(value, schemes);
   }
 }
