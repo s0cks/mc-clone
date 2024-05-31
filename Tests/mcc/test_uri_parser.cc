@@ -73,43 +73,42 @@ namespace mcc::uri {
 
   TEST_F(UriParserTest, Test_Parse3) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
+      .flags = Parser::Strict() | Parser::ParseQueries(),
     }, "tex://test.png?");
     ASSERT_TRUE(IsSuccess(parser));
   }
 
   TEST_F(UriParserTest, Test_Parse4) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
+      .flags = Parser::Strict() | Parser::ParseQueries(),
     }, "tex://test.png?test");
     ASSERT_TRUE(IsSuccess(parser));
   }
 
   TEST_F(UriParserTest, Test_Parse5) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
+      .flags = Parser::Strict() | Parser::ParseQueries(),
     }, "tex://test.png?message=hello");
     ASSERT_TRUE(IsSuccess(parser));
   }
 
   TEST_F(UriParserTest, Test_Parse6) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
+      .flags = Parser::Strict() | Parser::ParseQueries(),
     }, "tex://test.png?message=hello&");
     ASSERT_TRUE(IsSuccess(parser));
   }
 
   TEST_F(UriParserTest, Test_Parse7) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
+      .flags = Parser::Strict() | Parser::ParseQueries(),
     }, "tex://test.png?message=hello&test");
     ASSERT_TRUE(IsSuccess(parser));
   }
 
   TEST_F(UriParserTest, Test_Parse8) {
     Parser parser(Parser::Config {
-      .parse_queries = true,
-      .parse_fragments = true,
+      .flags = Parser::Strict() | Parser::ParseQueries() | Parser::ParseFragments(),
     }, "tex://test.png?message=hello&test#test");
     ASSERT_TRUE(IsSuccess(parser));
   }

@@ -6,6 +6,7 @@
 
 #include "mcc/uri.h"
 #include "mcc/parser.h"
+#include "mcc/bitfield.h"
 
 namespace mcc::uri {
 #define FOR_EACH_URI_PARSER_ERROR(V)  \
@@ -64,16 +65,71 @@ namespace mcc::uri {
   class Parser : public ParserTemplate<kDefaultParserBufferSize, kDefaultTokenBufferSize> {
   public:
     struct Config {
+    public:
+      typedef uint8_t Flags;
+      static constexpr const Flags kNoFlags = 0x0;
+    private:
+      enum FlagsLayout {
+        kStrictOffset = 0,
+        kParseQueriesOffset = kStrictOffset + 1,
+        kParseFragmentsOffset = kParseQueriesOffset + 1,
+      };
+
+      template<const uint64_t Offset>
+      class FlagsField : public BitField<Flags, bool, Offset, 1> {};
+    public:
+      class StrictField : public FlagsField<kStrictOffset>{};
+      class ParseQueriesField : public FlagsField<kParseQueriesOffset>{};
+      class ParseFragmentsField : public FlagsField<kParseFragmentsOffset>{};
+    public:
       const char* default_scheme;
-      bool parse_queries;
-      bool parse_fragments;
+      Flags flags;
       bool (*OnParseScheme)(const Parser* parser, const char* scheme, const uint64_t length);
       bool (*OnParsePath)(const Parser* parser, const char* path, const uint64_t length);
       bool (*OnParseQuery0)(const Parser* parser, const uint64_t idx, const std::string& key);
       bool (*OnParseQuery1)(const Parser* parser, const uint64_t idx, const std::string& key, const std::string& value);
       bool (*OnParseFragment)(const Parser* parser, const char* fragment, const uint64_t length);
       bool (*OnParseError)(const Parser* parser);
+
+      bool IsStrict() const {
+        return StrictField::Decode(flags);
+      }
+
+      bool ShouldParseQueries() const {
+        return ParseQueriesField::Decode(flags);
+      }
+
+      bool ShouldParseFragments() const {
+        return ParseFragmentsField::Decode(flags);
+      }
     };
+  public:
+    static inline constexpr Config::Flags
+    NoFlags() {
+      return Config::kNoFlags;
+    }
+
+    static inline constexpr Config::Flags
+    Strict(const bool value = true) {
+      return NoFlags() | Config::StrictField::Encode(value);
+    }
+
+    static inline constexpr Config::Flags
+    ParseFragments(const bool value = true) {
+      return NoFlags() | Config::ParseFragmentsField::Encode(value);
+    }
+
+    static inline constexpr Config::Flags
+    ParseQueries(const bool value = true) {
+      return NoFlags() | Config::ParseQueriesField::Encode(value);
+    }
+
+    static inline constexpr Config::Flags
+    DefaultFlags() {
+      return Strict(true)
+           | ParseFragments(false)
+           | ParseQueries(false);
+    }
   protected:
     Config config_;
     uint64_t num_query_params_;

@@ -81,6 +81,7 @@ namespace mcc::uri {
                    const char* default_scheme) {
     Parser::Config config = {
       .default_scheme = default_scheme,
+      .flags = Parser::DefaultFlags(),
       .OnParseScheme = &OnSchemeParsed,
       .OnParsePath = &OnPathParsed,
       .OnParseQuery0 = &OnQueryParsed0,

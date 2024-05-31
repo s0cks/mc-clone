@@ -171,7 +171,7 @@ namespace mcc::uri {
     do {
       switch(PeekChar()) {
         case '?': {
-          if(!config_.parse_queries)
+          if(!config_.ShouldParseQueries())
             return ParseResult::Failure("unexpected token '?', uri queries are not enabled.");
           NextChar();
           if(!ParseQueryParameterList())
@@ -179,7 +179,7 @@ namespace mcc::uri {
           continue;
         }
         case '#': {
-          if(!config_.parse_fragments)
+          if(!config_.ShouldParseFragments())
             return ParseResult::Failure("unexpected token '#', uri fragments are not enabled.");
 
           NextChar();
