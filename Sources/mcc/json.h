@@ -6,9 +6,11 @@
 #include <memory>
 #include <optional>
 #include <glog/logging.h>
+#include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/schema.h>
 #include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/filereadstream.h>
 
@@ -173,6 +175,40 @@ namespace mcc::json {
     }
   public:
     virtual ~JsonSpec() = default;
+  };
+
+  template<typename State, class D>
+  class ReaderHandlerTemplate : public BaseReaderHandler<UTF8<>, D> {
+  protected:
+    State state_;
+
+    explicit ReaderHandlerTemplate(const State init_state = State::kClosed):
+      BaseReaderHandler<UTF8<>, D>(),
+      state_(init_state) {
+    }
+
+    inline State GetState() const {
+      return state_;
+    }
+
+    inline void SetState(const State state) {
+      state_ = state;
+    }
+
+    inline bool TransitionTo(const State state) {
+      if(state_ == state)
+        return true;
+      SetState(state);
+      return state != State::kError;
+    }
+  public:
+    virtual ~ReaderHandlerTemplate() = default;
+    virtual bool StartArray() = 0;
+    virtual bool EndArray(const rapidjson::SizeType size) = 0;
+    virtual bool StartObject() = 0;
+    virtual bool EndObject(const rapidjson::SizeType size) = 0;
+    virtual bool String(const char* value, const rapidjson::SizeType length, const bool) = 0;
+    virtual bool Default() = 0;
   };
 }
 

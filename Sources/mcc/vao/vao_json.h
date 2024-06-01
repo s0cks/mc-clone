@@ -3,60 +3,55 @@
 
 #include <cstdint>
 #include <ostream>
-#include <rapidjson/reader.h>
-#include <rapidjson/error/en.h>
+#include "mcc/json.h"
 
 namespace mcc::vao {
 #define FOR_EACH_VAO_READER_STATE(V)        \
   V(Error)                                  \
   V(Open)                                   \
+  V(SpecType)                               \
+  V(SpecMeta)                               \
+  V(SpecMetaName)                           \
+  V(SpecMetaTags)                           \
+  V(SpecData)                               \
   V(Closed)
 
-  class VaoReaderHandler : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, VaoReaderHandler> {
-  public:
-    enum State : uint16_t {
+  enum VaoReaderState : uint16_t {
 #define DEFINE_STATE(Name) k##Name,
-      FOR_EACH_VAO_READER_STATE(DEFINE_STATE)
+    FOR_EACH_VAO_READER_STATE(DEFINE_STATE)
 #undef DEFINE_STATE
-    };
+  };
 
-    inline friend std::ostream&
-    operator<<(std::ostream& stream, const State& rhs) {
-      switch(rhs) {
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const VaoReaderState& rhs) {
+    switch(rhs) {
 #define DEFINE_TO_STRING(Name) \
-        case k##Name: return stream << #Name;
-        FOR_EACH_VAO_READER_STATE(DEFINE_TO_STRING)
+      case k##Name: return stream << #Name;
+      FOR_EACH_VAO_READER_STATE(DEFINE_TO_STRING)
 #undef DEFINE_TO_STRING
-        default: return stream << "Unknown VaoReaderHandler::State: " << static_cast<uint16_t>(rhs);
-      }
+      default: return stream << "Unknown VaoReaderHandler::State: " << static_cast<uint16_t>(rhs);
     }
+  }
+
+  class VaoReaderHandler : public json::ReaderHandlerTemplate<VaoReaderState, VaoReaderHandler> {
   protected:
-    State state_;
-
-    inline void SetState(const State& rhs) {
-      state_ = rhs;
-    }
-
-    inline State GetState() const {
-      return state_;
-    }
-
 #define DEFINE_STATE_CHECK(Name)                                            \
-    inline bool Is##Name() const { return GetState() == State::k##Name; }
+    inline bool Is##Name() const { return GetState() == VaoReaderState::k##Name; }
     FOR_EACH_VAO_READER_STATE(DEFINE_STATE_CHECK)
 #undef DEFINE_STATE_CHECK
 
-    bool TransitionTo(const State state);
     bool OnParseField(const std::string& name);
+    bool OnParseMetaName(const std::string& name);
+    bool OnParseMetaTag(const std::string& value);
   public:
-    VaoReaderHandler():
-      state_(kClosed) {
-    }
+    VaoReaderHandler() = default;
     virtual ~VaoReaderHandler() = default;
-    bool StartObject();
-    bool EndObject(const rapidjson::SizeType size);
-    bool String(const char* value, const rapidjson::SizeType length, const bool);
-    bool Default();
+    bool StartArray() override;
+    bool EndArray(const rapidjson::SizeType size) override;
+    bool StartObject() override;
+    bool EndObject(const rapidjson::SizeType size) override;
+    bool String(const char* value, const rapidjson::SizeType length, const bool) override;
+    bool Default() override;
   };
 }
 
