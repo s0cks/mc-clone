@@ -207,6 +207,8 @@ namespace mcc::json {
         return TransitionTo(State::kType);
       } else if(EqualsIgnoreCase(name, "meta")) {
         return TransitionTo(State::kMeta);
+      } else if(EqualsIgnoreCase(name, "data")) {
+        return TransitionTo(State::kData);
       }
       return TransitionTo(State::kError);
     }
@@ -219,6 +221,8 @@ namespace mcc::json {
       }
       return TransitionTo(State::kError);
     }
+
+    virtual bool OnParseDataField(const std::string& name) = 0;
     
     virtual bool OnParseField(const std::string& name) {
       switch(GetState()) {
@@ -226,6 +230,8 @@ namespace mcc::json {
           return OnParseSpecField(name);
         case State::kMeta:
           return OnParseMetaField(name);
+        case State::kData:
+          return OnParseDataField(name);
         default: return TransitionTo(State::kError);
       }
     }
@@ -237,6 +243,7 @@ namespace mcc::json {
     virtual ~ReaderHandlerTemplate() = default;
     
     virtual bool StartArray() {
+      DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
       switch(GetState()) {
         case State::kMetaTags:
           return TransitionTo(GetState());
@@ -246,6 +253,7 @@ namespace mcc::json {
     }
 
     virtual bool EndArray(const rapidjson::SizeType size) {
+      DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
       switch(GetState()) {
         case State::kMetaTags:
           return TransitionTo(State::kMeta);
@@ -255,20 +263,24 @@ namespace mcc::json {
     }
 
     virtual bool StartObject() {
+      DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
       switch(GetState()) {
         case State::kClosed:
           return TransitionTo(State::kOpen);
         case State::kMeta:
-          return TransitionTo(State::kMeta);
+        case State::kData:
+          return TransitionTo(GetState());
         default: return TransitionTo(State::kError);
       }
     }
 
     virtual bool EndObject(const rapidjson::SizeType size) {
+      DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
       switch(GetState()) {
         case State::kOpen:
           return TransitionTo(State::kClosed);
         case State::kMeta:
+        case State::kData:
           return TransitionTo(State::kOpen);
         default: return TransitionTo(State::kError);
       }
@@ -278,6 +290,7 @@ namespace mcc::json {
       switch(GetState()) {
         case State::kOpen:
         case State::kMeta:
+        case State::kData:
           return OnParseField(std::string(value, length));
         case State::kType:
           return OnParseType(std::string(value, length));
@@ -291,6 +304,7 @@ namespace mcc::json {
     }
 
     virtual bool Default() {
+      DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
       return TransitionTo(State::kError);
     }
   };

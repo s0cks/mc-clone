@@ -40,6 +40,7 @@ namespace mcc::vao {
     FOR_EACH_VAO_READER_STATE(DEFINE_STATE_CHECK)
 #undef DEFINE_STATE_CHECK
 
+    bool OnParseDataField(const std::string& name) override;
     bool OnParseType(const std::string& type) override;
     bool OnParseMetaName(const std::string& name) override;
     bool OnParseMetaTag(const std::string& value) override;

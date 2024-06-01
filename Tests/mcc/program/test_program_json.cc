@@ -21,15 +21,23 @@ namespace mcc::program {
       return AssertionSuccess();
     const auto code = reader.GetParseErrorCode();
     const auto offset = reader.GetErrorOffset();
-    return AssertionFailure() << "expected \"" << json << "\" to be valid json, received: \"" << rapidjson::GetParseError_En(code) << "\" at " << offset << " near: " << std::string(json, 10) << "....";
+    return AssertionFailure() << "expected \"" << json << "\" to be valid json, received: \"" << rapidjson::GetParseError_En(code) << "\" at " << offset << " near: " << std::string(&json[offset], 10) << "....";
   }
 
   TEST_F(ProgramJsonTest, Test_SAX) {
     static constexpr const auto kTestJson = 
       "{"
-      "\"vertex\": \"test.vert\","
-      "\"include\": [ \"test.glsl\" ],"
-      "\"fragment\": \"test.frag\""
+        "\"type\": \"Program\","
+        "\"meta\": {"
+          "\"name\": \"test-program\","
+          "\"tags\": ["
+            "\"test\""
+          "]"
+        "},"
+        "\"data\": {"
+          "\"vertex\": \"test.vert\","
+          "\"fragment\": \"test.frag\""
+        "}"
       "}";
     
     ProgramReaderHandler handler;

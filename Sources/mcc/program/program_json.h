@@ -4,10 +4,8 @@
 #include <vector>
 #include <ostream>
 #include <glog/logging.h>
-#include <rapidjson/reader.h>
-#include <rapidjson/error/en.h>
 
-#include "mcc/common.h"
+#include "mcc/json.h"
 #include "mcc/shader/shader_type.h"
 
 namespace mcc::program {
@@ -15,6 +13,11 @@ namespace mcc::program {
   V(Error)                                      \
   V(Closed)                                     \
   V(Open)                                       \
+  V(Meta)                                       \
+  V(MetaTags)                                   \
+  V(MetaName)                                   \
+  V(Data)                                       \
+  V(Type)                                       \
   V(FragmentShader)                             \
   V(VertexShader)                               \
   V(GeometryShader)                             \
@@ -57,59 +60,46 @@ namespace mcc::program {
   };
   typedef std::vector<ProgramShader> ProgramShaderList;
 
-  class ShaderCode;
-  class ProgramReaderHandler : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, ProgramReaderHandler> {
-  public:
-    enum State {
+  enum ProgramReaderState {
 #define DEFINE_STATE(Name) k##Name,
-      FOR_EACH_PROGRAM_READER_STATE(DEFINE_STATE)
+    FOR_EACH_PROGRAM_READER_STATE(DEFINE_STATE)
 #undef DEFINE_STATE
-    };
+  };
     
-    inline friend std::ostream&
-    operator<<(std::ostream& stream, const State& rhs) {
-      switch(rhs) {
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const ProgramReaderState& rhs) {
+    switch(rhs) {
 #define DEFINE_TO_STRING(Name) \
-        case k##Name: return stream << #Name;
-        FOR_EACH_PROGRAM_READER_STATE(DEFINE_TO_STRING)
+      case k##Name: return stream << #Name;
+      FOR_EACH_PROGRAM_READER_STATE(DEFINE_TO_STRING)
 #undef DEFINE_TO_STRING
-        default: return stream << "Unknown ProgramReaderHandler::State";
-      }
+      default: return stream << "Unknown ProgramReaderState";
     }
+  }
+
+  class ShaderCode;
+  class ProgramReaderHandler : public json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler> {
   protected:
-    State state_;
     ProgramShaderList shaders_;
 
-    inline void SetState(const State& rhs) {
-      state_ = rhs;
-    }
-
-    inline State GetState() const {
-      return state_;
-    }
-
-#define DEFINE_STATE_CHECK(Name)                                            \
-    inline bool Is##Name() const { return GetState() == State::k##Name; }
+#define DEFINE_STATE_CHECK(Name)                                                          \
+    inline bool Is##Name() const { return GetState() == ProgramReaderState::k##Name; }
     FOR_EACH_PROGRAM_READER_STATE(DEFINE_STATE_CHECK)
 #undef DEFINE_STATE_CHECK
 
-    bool OnParseField(const std::string& name);
+    bool OnParseDataField(const std::string& name) override;
+    bool OnParseType(const std::string& type) override;
+    bool OnParseMetaName(const std::string& name) override;
+    bool OnParseMetaTag(const std::string& value) override;
     bool OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri);
-    bool TransitionTo(const State state);
   public:
     ProgramReaderHandler():
-      state_(kClosed),
+      json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler>(),
       shaders_() {
       shaders_.reserve(5);
     }
     ~ProgramReaderHandler() = default;
-
-    bool StartObject();
-    bool EndObject(const rapidjson::SizeType size);
-    bool StartArray();
-    bool EndArray(const rapidjson::SizeType size);
-    bool String(const char* value, const rapidjson::SizeType length, const bool);
-    bool Default();
+    bool String(const char* value, const rapidjson::SizeType length, const bool) override;
 
     const ProgramShaderList& shaders() const {
       return shaders_;

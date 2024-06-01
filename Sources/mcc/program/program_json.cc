@@ -2,64 +2,9 @@
 #include <glog/logging.h>
 
 namespace mcc::program {
-  bool ProgramReaderHandler::TransitionTo(const State state) {
-    SetState(state);
-    return state != kError;
-  }
-
-  bool ProgramReaderHandler::Default() {
-    return TransitionTo(kError);
-  }
-
-  bool ProgramReaderHandler::StartObject() {
-    if(!IsClosed()) {
-      DLOG(ERROR) << "program object is not closed.";
-      return TransitionTo(kError);
-    }
-    return TransitionTo(kOpen);
-  }
-
-  bool ProgramReaderHandler::EndObject(const rapidjson::SizeType size) {
-    if(!IsOpen()) {
-      DLOG(ERROR) << "program object is not open.";
-      return TransitionTo(kError);
-    }
-    return TransitionTo(kClosed);
-  }
-
-  bool ProgramReaderHandler::StartArray() {
+  bool ProgramReaderHandler::String(const char* value, const rapidjson::SizeType length, const bool b) {
+    DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
     switch(GetState()) {
-      case kIncludedShaders:
-        return true;
-      default:
-        DLOG(ERROR) << "cannot start array at state: " << GetState();
-        return TransitionTo(kError);
-    }
-  }
-
-  bool ProgramReaderHandler::EndArray(const rapidjson::SizeType size) {
-    switch(GetState()) {
-      case kIncludedShaders:
-        return TransitionTo(kOpen);
-      default:
-        DLOG(ERROR) << "cannot close array at state: " << GetState();
-        return TransitionTo(kError);
-    }
-  }
-
-  bool ProgramReaderHandler::String(const char* value, const rapidjson::SizeType length, const bool) {
-    switch(GetState()) {
-      case kOpen:
-        return OnParseField(std::string(value, length));
-      case kIncludedShaders: {
-        uri::Uri uri;
-        if(!uri::TryParseUri(uri, value, "shader")) {
-          DLOG(ERROR) << "failed to parse fragment shader uri: " << value;
-          return TransitionTo(kError);
-        }
-        DLOG(INFO) << "parsed included shader ref: " << uri;
-        return true;
-      }
       case kVertexShader: {
         uri::Uri uri;
         if(!uri::TryParseUri(uri, value, "shader")) {
@@ -101,11 +46,11 @@ namespace mcc::program {
         return OnParseProgramShaderRef(shader::kTessControlShader, uri);
       }
       default:
-        return TransitionTo(kError);
+        return json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler>::String(value, length, b);
     }
   }
 
-  bool ProgramReaderHandler::OnParseField(const std::string& name) {
+  bool ProgramReaderHandler::OnParseDataField(const std::string& name) {
     if(EqualsIgnoreCase(name, "fragment")) {
       return TransitionTo(kFragmentShader);
     } else if(EqualsIgnoreCase(name, "vertex")) {
@@ -119,12 +64,28 @@ namespace mcc::program {
     } else if(EqualsIgnoreCase(name, "include")) {
       return TransitionTo(kIncludedShaders);
     }
+    
     DLOG(ERROR) << "unexpected field: " << name;
     return TransitionTo(kError);
   }
 
   bool ProgramReaderHandler::OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri) {
     shaders_.emplace_back(type, uri);
+    return TransitionTo(kData);
+  }
+
+  bool ProgramReaderHandler::OnParseType(const std::string& type) {
+    DLOG(INFO) << "parsed Program type: " << type;
     return TransitionTo(kOpen);
+  }
+
+  bool ProgramReaderHandler::OnParseMetaName(const std::string& name) {
+    DLOG(INFO) << "parsed Program name: " << name;
+    return TransitionTo(kMeta);
+  }
+
+  bool ProgramReaderHandler::OnParseMetaTag(const std::string& value) {
+    DLOG(INFO) << "parsed Program tag: " << value;
+    return TransitionTo(kMetaTags);
   }
 }

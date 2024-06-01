@@ -7,6 +7,11 @@ namespace mcc::vao {
     return TransitionTo(kOpen);
   }
 
+  bool VaoReaderHandler::OnParseDataField(const std::string& name) {
+    DLOG(ERROR) << "unexpected field: " << name;
+    return TransitionTo(kError);
+  }
+
   bool VaoReaderHandler::OnParseMetaName(const std::string& name) {
     DLOG(INFO) << "parsed Vao name: " << name;
     return TransitionTo(kMeta);
