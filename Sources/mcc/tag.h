@@ -2,6 +2,7 @@
 #define MCC_TAG_H
 
 #include <string>
+#include <unordered_set>
 #include "mcc/common.h"
 
 namespace mcc {
@@ -34,16 +35,32 @@ namespace mcc {
       return raw() == rhs.raw();
     }
 
+    bool operator==(const RawTag& rhs) const {
+      return raw() == rhs;
+    }
+
     bool operator!=(const Tag& rhs) const {
       return raw() != rhs.raw();
+    }
+
+    bool operator!=(const RawTag& rhs) const {
+      return raw() != rhs;
     }
 
     bool operator<(const Tag& rhs) const {
       return raw() < rhs.raw();
     }
 
+    bool operator<(const RawTag& rhs) const {
+      return raw() < rhs;
+    }
+
     bool operator>(const Tag& rhs) const {
       return raw() > rhs.raw();
+    }
+
+    bool operator>(const RawTag& rhs) const {
+      return raw() > rhs;
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Tag& rhs) {
@@ -53,6 +70,30 @@ namespace mcc {
       return stream;
     }
   };
+}
+
+namespace std {
+  using mcc::Tag;
+
+  template<>
+  struct hash<Tag> {
+    size_t operator()(const Tag& value) const {
+      size_t h = 0;
+      combine<std::string>(h, value.raw());
+      return h;
+    }
+private:
+    template<typename T>
+    static inline void
+    combine(size_t& hash, const T& value) {
+      std::hash<T> hasher;
+      hash ^= hasher(value) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    }
+  };
+}
+
+namespace mcc {
+  typedef std::unordered_set<Tag> TagSet;
 }
 
 #endif //MCC_TAG_H
