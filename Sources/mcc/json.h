@@ -201,14 +201,98 @@ namespace mcc::json {
       SetState(state);
       return state != State::kError;
     }
+
+    bool OnParseSpecField(const std::string& name) {
+      if(EqualsIgnoreCase(name, "type")) {
+        return TransitionTo(State::kType);
+      } else if(EqualsIgnoreCase(name, "meta")) {
+        return TransitionTo(State::kMeta);
+      }
+      return TransitionTo(State::kError);
+    }
+
+    bool OnParseMetaField(const std::string& name) {
+      if(EqualsIgnoreCase(name, "name")) {
+        return TransitionTo(State::kMetaName);
+      } else if(EqualsIgnoreCase(name, "tags")) {
+        return TransitionTo(State::kMetaTags);
+      }
+      return TransitionTo(State::kError);
+    }
+    
+    virtual bool OnParseField(const std::string& name) {
+      switch(GetState()) {
+        case State::kOpen:
+          return OnParseSpecField(name);
+        case State::kMeta:
+          return OnParseMetaField(name);
+        default: return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool OnParseType(const std::string& type) = 0;
+    virtual bool OnParseMetaName(const std::string& name) = 0;
+    virtual bool OnParseMetaTag(const std::string& value) = 0;
   public:
     virtual ~ReaderHandlerTemplate() = default;
-    virtual bool StartArray() = 0;
-    virtual bool EndArray(const rapidjson::SizeType size) = 0;
-    virtual bool StartObject() = 0;
-    virtual bool EndObject(const rapidjson::SizeType size) = 0;
-    virtual bool String(const char* value, const rapidjson::SizeType length, const bool) = 0;
-    virtual bool Default() = 0;
+    
+    virtual bool StartArray() {
+      switch(GetState()) {
+        case State::kMetaTags:
+          return TransitionTo(GetState());
+        default:
+          return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool EndArray(const rapidjson::SizeType size) {
+      switch(GetState()) {
+        case State::kMetaTags:
+          return TransitionTo(State::kMeta);
+        default:
+          return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool StartObject() {
+      switch(GetState()) {
+        case State::kClosed:
+          return TransitionTo(State::kOpen);
+        case State::kMeta:
+          return TransitionTo(State::kMeta);
+        default: return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool EndObject(const rapidjson::SizeType size) {
+      switch(GetState()) {
+        case State::kOpen:
+          return TransitionTo(State::kClosed);
+        case State::kMeta:
+          return TransitionTo(State::kOpen);
+        default: return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool String(const char* value, const rapidjson::SizeType length, const bool) {
+      switch(GetState()) {
+        case State::kOpen:
+        case State::kMeta:
+          return OnParseField(std::string(value, length));
+        case State::kType:
+          return OnParseType(std::string(value, length));
+        case State::kMetaName:
+          return OnParseMetaName(std::string(value, length));
+        case State::kMetaTags:
+          return OnParseMetaTag(std::string(value, length));
+        default:
+          return TransitionTo(State::kError);
+      }
+    }
+
+    virtual bool Default() {
+      return TransitionTo(State::kError);
+    }
   };
 }
 

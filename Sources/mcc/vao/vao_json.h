@@ -9,11 +9,11 @@ namespace mcc::vao {
 #define FOR_EACH_VAO_READER_STATE(V)        \
   V(Error)                                  \
   V(Open)                                   \
-  V(SpecType)                               \
-  V(SpecMeta)                               \
-  V(SpecMetaName)                           \
-  V(SpecMetaTags)                           \
-  V(SpecData)                               \
+  V(Type)                                   \
+  V(Meta)                                   \
+  V(MetaName)                               \
+  V(MetaTags)                               \
+  V(Data)                                   \
   V(Closed)
 
   enum VaoReaderState : uint16_t {
@@ -40,18 +40,12 @@ namespace mcc::vao {
     FOR_EACH_VAO_READER_STATE(DEFINE_STATE_CHECK)
 #undef DEFINE_STATE_CHECK
 
-    bool OnParseField(const std::string& name);
-    bool OnParseMetaName(const std::string& name);
-    bool OnParseMetaTag(const std::string& value);
+    bool OnParseType(const std::string& type) override;
+    bool OnParseMetaName(const std::string& name) override;
+    bool OnParseMetaTag(const std::string& value) override;
   public:
     VaoReaderHandler() = default;
     virtual ~VaoReaderHandler() = default;
-    bool StartArray() override;
-    bool EndArray(const rapidjson::SizeType size) override;
-    bool StartObject() override;
-    bool EndObject(const rapidjson::SizeType size) override;
-    bool String(const char* value, const rapidjson::SizeType length, const bool) override;
-    bool Default() override;
   };
 }
 
