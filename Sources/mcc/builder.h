@@ -1,6 +1,7 @@
 #ifndef MCC_BUILDER_H
 #define MCC_BUILDER_H
 
+#include "mcc/rx.h"
 #include "mcc/metadata.h"
 
 namespace mcc {
@@ -33,6 +34,16 @@ namespace mcc {
     void Append(const TagList& rhs) {
       return meta_.Append(rhs);
     }
+  };
+
+  template<class T>
+  class BuilderTemplate : public BuilderBase {
+  protected:
+    BuilderTemplate() = default;
+  public:
+    ~BuilderTemplate() override = default;
+    virtual T* Build() const = 0;
+    virtual rx::observable<T*> BuildAsync() const = 0;
   };
 }
 

@@ -3,6 +3,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/reference.h"
+#include "mcc/gfx_object.h"
 #include "mcc/resource/resource.h"
 
 #include "mcc/shader/shader_id.h"
@@ -56,7 +57,7 @@ namespace mcc {
     FOR_EACH_PROGRAM_EVENT(DEFINE_ON_PROGRAM_EVENT)
 #undef DEFINE_ON_PROGRAM_EVENT
 
-    class Program : public res::ResourceTemplate<res::kProgramType> {
+    class Program : public gfx::ObjectTemplate<ProgramId> {
       friend class ProgramLinker;
       friend class ProgramBuilder;
       friend class ApplyProgramScope;
@@ -123,8 +124,7 @@ namespace mcc {
     protected:
       ProgramId id_;
 
-      explicit Program(const ProgramId id);
-      void Destroy() override;
+      explicit Program(const Metadata& meta, const ProgramId id);
 
       int GetProgramiv(const Property property) const;
 
@@ -180,7 +180,7 @@ namespace mcc {
         CHECK_GL(FATAL);
       }
 
-      std::string ToString() const;
+      std::string ToString() const override;
 
       inline rx::observable<ProgramEvent*>
       OnEvent() const {
@@ -196,11 +196,18 @@ namespace mcc {
 #undef DEFINE_ON_PROGRAM_EVENT
     private:
       static inline Program*
-      New(const ProgramId id) {
+      New(const Metadata& meta, const ProgramId id) {
         MCC_ASSERT(IsValidProgramId(id));
-        return new Program(id);
+        return new Program(meta, id);
       }
     public:
+      static inline Program*
+      New(const ProgramId id) {
+        MCC_ASSERT(IsValidProgramId(id));
+        Metadata meta;
+        return New(meta, id);
+      }
+
       static Program* FromJson(const uri::Uri& uri);
       static Program* FromJson(const json::Value& value);
 

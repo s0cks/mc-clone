@@ -48,7 +48,7 @@ namespace mcc::program {
     for(const auto& shader : GetShaders()) {
       Program::Detach(id, shader.id());
     }
-    return new Program(id);
+    return new Program(meta_, id);
   }
 
   rx::observable<Program*> ProgramBuilder::BuildAsync() const {

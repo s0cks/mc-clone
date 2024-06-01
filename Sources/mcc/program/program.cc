@@ -40,16 +40,10 @@ namespace mcc::program {
     CHECK_GL(FATAL);
   }
 
-  Program::Program(const ProgramId id):
-    res::ResourceTemplate<res::kProgramType>(),
-    id_(id) {
+  Program::Program(const Metadata& meta, const ProgramId id):
+    gfx::ObjectTemplate<ProgramId>(id) {
+    SetMeta(meta);
     Publish<ProgramCreatedEvent>();
-  }
-
-  void Program::Destroy() {
-    glDeleteProgram(id_);
-    CHECK_GL(FATAL);
-    Publish<ProgramDestroyedEvent>();
   }
 
   int Program::GetProgramiv(const Property property) const {
@@ -101,6 +95,7 @@ namespace mcc::program {
   std::string Program::ToString() const {
     std::stringstream ss;
     ss << "Program(";
+    ss << "meta=" << GetMeta() << ", ";
     ss << "id=" << GetProgramId();
     ss << ")";
     return ss.str();
