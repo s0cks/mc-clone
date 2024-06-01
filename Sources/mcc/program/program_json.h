@@ -79,6 +79,7 @@ namespace mcc::program {
 
   class ShaderCode;
   class ProgramReaderHandler : public json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler> {
+    static constexpr const auto kExpectedType = "Program";
   protected:
     ProgramShaderList shaders_;
 
@@ -88,11 +89,10 @@ namespace mcc::program {
 #undef DEFINE_STATE_CHECK
 
     bool OnParseDataField(const std::string& name) override;
-    bool OnParseType(const std::string& type) override;
     bool OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri);
   public:
     ProgramReaderHandler():
-      json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler>(),
+      json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler>(kExpectedType),
       shaders_() {
       shaders_.reserve(5);
     }

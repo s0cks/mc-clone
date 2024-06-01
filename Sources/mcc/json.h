@@ -181,11 +181,14 @@ namespace mcc::json {
   template<typename State, class D>
   class ReaderHandlerTemplate : public BaseReaderHandler<UTF8<>, D> {
   protected:
+    std::string type_;
     State state_;
     Metadata meta_;
 
-    explicit ReaderHandlerTemplate(const State init_state = State::kClosed):
+    explicit ReaderHandlerTemplate(const std::string& type,
+                                   const State init_state = State::kClosed):
       BaseReaderHandler<UTF8<>, D>(),
+      type_(type),
       state_(init_state) {
     }
 
@@ -238,7 +241,11 @@ namespace mcc::json {
       }
     }
 
-    virtual bool OnParseType(const std::string& type) = 0;
+    virtual bool OnParseType(const std::string& type) {
+      if(!EqualsIgnoreCase(type, type_))
+        return TransitionTo(State::kError);
+      return TransitionTo(State::kOpen);
+    }
     
     virtual bool OnParseMetaName(const std::string& name) {
       meta_.SetName(name);

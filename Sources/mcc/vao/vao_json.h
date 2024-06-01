@@ -35,6 +35,7 @@ namespace mcc::vao {
   }
 
   class VaoReaderHandler : public json::ReaderHandlerTemplate<VaoReaderState, VaoReaderHandler> {
+    static constexpr const auto kExpectedType = "Vao";
   protected:
     Metadata meta_;
 
@@ -44,9 +45,10 @@ namespace mcc::vao {
 #undef DEFINE_STATE_CHECK
 
     bool OnParseDataField(const std::string& name) override;
-    bool OnParseType(const std::string& type) override;
   public:
-    VaoReaderHandler() = default;
+    VaoReaderHandler():
+      json::ReaderHandlerTemplate<VaoReaderState, VaoReaderHandler>(kExpectedType) {
+    }
     virtual ~VaoReaderHandler() = default;
 
     const Metadata& GetMeta() const {

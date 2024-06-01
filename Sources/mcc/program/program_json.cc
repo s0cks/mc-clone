@@ -73,10 +73,4 @@ namespace mcc::program {
     shaders_.emplace_back(type, uri);
     return TransitionTo(kData);
   }
-
-  bool ProgramReaderHandler::OnParseType(const std::string& name) {
-    if(!EqualsIgnoreCase(name, "Program"))
-      return TransitionTo(kError);
-    return TransitionTo(kOpen);
-  }
 }
