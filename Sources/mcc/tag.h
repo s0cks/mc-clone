@@ -94,6 +94,19 @@ private:
 
 namespace mcc {
   typedef std::unordered_set<Tag> TagSet;
+
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const TagSet& rhs) {
+    stream << "[";
+    auto idx = 0;
+    for(const auto& tag : rhs) {
+      stream << tag;
+      if(idx < (rhs.size() - 1))
+        stream << ", ";
+    }
+    stream << "]";
+    return stream;
+  }
 }
 
 #endif //MCC_TAG_H

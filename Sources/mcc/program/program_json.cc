@@ -79,14 +79,4 @@ namespace mcc::program {
       return TransitionTo(kError);
     return TransitionTo(kOpen);
   }
-
-  bool ProgramReaderHandler::OnParseMetaName(const std::string& name) {
-    name_ = name;
-    return TransitionTo(kMeta);
-  }
-
-  bool ProgramReaderHandler::OnParseMetaTag(const std::string& value) {
-    tags_.push_back(value);
-    return TransitionTo(kMetaTags);
-  }
 }

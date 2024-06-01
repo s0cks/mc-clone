@@ -11,14 +11,4 @@ namespace mcc::vao {
     DLOG(ERROR) << "unexpected field: " << name;
     return TransitionTo(kError);
   }
-
-  bool VaoReaderHandler::OnParseMetaName(const std::string& name) {
-    DLOG(INFO) << "parsed Vao name: " << name;
-    return TransitionTo(kMeta);
-  }
-
-  bool VaoReaderHandler::OnParseMetaTag(const std::string& value) {
-    DLOG(INFO) << "parsed Vao tag: " << value;
-    return TransitionTo(kMetaTags);
-  }
 }

@@ -48,6 +48,7 @@ namespace mcc::vao {
   std::string Vao::ToString() const {
     std::stringstream ss;
     ss << "Vao(";
+    ss << "meta=" << GetMeta() << ", ";
     ss << "id=" << GetId();
     ss << ")";
     return ss.str();

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <ostream>
 #include "mcc/json.h"
+#include "mcc/metadata.h"
 
 namespace mcc::vao {
 #define FOR_EACH_VAO_READER_STATE(V)        \
@@ -35,6 +36,8 @@ namespace mcc::vao {
 
   class VaoReaderHandler : public json::ReaderHandlerTemplate<VaoReaderState, VaoReaderHandler> {
   protected:
+    Metadata meta_;
+
 #define DEFINE_STATE_CHECK(Name)                                            \
     inline bool Is##Name() const { return GetState() == VaoReaderState::k##Name; }
     FOR_EACH_VAO_READER_STATE(DEFINE_STATE_CHECK)
@@ -42,11 +45,13 @@ namespace mcc::vao {
 
     bool OnParseDataField(const std::string& name) override;
     bool OnParseType(const std::string& type) override;
-    bool OnParseMetaName(const std::string& name) override;
-    bool OnParseMetaTag(const std::string& value) override;
   public:
     VaoReaderHandler() = default;
     virtual ~VaoReaderHandler() = default;
+
+    const Metadata& GetMeta() const {
+      return meta_;
+    }
   };
 }
 

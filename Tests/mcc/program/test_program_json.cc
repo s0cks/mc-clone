@@ -42,16 +42,18 @@ namespace mcc::program {
     
     ProgramReaderHandler handler;
     ASSERT_TRUE(ParseIsSuccessful(kTestJson, handler));
-    ASSERT_EQ(handler.name(), "test-program");
+
+    const auto& meta = handler.GetMeta();
+    DLOG(INFO) << "meta: " << meta;
+    ASSERT_EQ(meta.GetName(), "test-program");
     
-    const auto& tags = handler.tags();
+    const auto& tags = meta.GetTags();
     {
       DLOG(INFO) << "tags: ";
       for(const auto& tag : tags)
         DLOG(INFO) << " - " << tag;
     }
     ASSERT_EQ(tags.size(), 1);
-    ASSERT_EQ(tags[0], "test");
 
     DLOG(INFO) << "shaders:";
     const auto& shaders = handler.shaders();

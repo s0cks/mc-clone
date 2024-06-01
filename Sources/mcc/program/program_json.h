@@ -80,8 +80,6 @@ namespace mcc::program {
   class ShaderCode;
   class ProgramReaderHandler : public json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler> {
   protected:
-    std::string name_;
-    std::vector<std::string> tags_;
     ProgramShaderList shaders_;
 
 #define DEFINE_STATE_CHECK(Name)                                                          \
@@ -91,27 +89,15 @@ namespace mcc::program {
 
     bool OnParseDataField(const std::string& name) override;
     bool OnParseType(const std::string& type) override;
-    bool OnParseMetaName(const std::string& name) override;
-    bool OnParseMetaTag(const std::string& value) override;
     bool OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri);
   public:
     ProgramReaderHandler():
       json::ReaderHandlerTemplate<ProgramReaderState, ProgramReaderHandler>(),
-      name_(),
-      tags_(),
       shaders_() {
       shaders_.reserve(5);
     }
     ~ProgramReaderHandler() = default;
     bool String(const char* value, const rapidjson::SizeType length, const bool) override;
-
-    const std::string& name() const {
-      return name_;
-    }
-
-    const std::vector<std::string>& tags() const {
-      return tags_;
-    }
 
     const ProgramShaderList& shaders() const {
       return shaders_;

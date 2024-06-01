@@ -17,6 +17,7 @@
 #include "mcc/rx.h"
 #include "mcc/uri.h"
 #include "mcc/common.h"
+#include "mcc/metadata.h"
 #include "mcc/json_flags.h"
 
 namespace mcc::json {
@@ -181,6 +182,7 @@ namespace mcc::json {
   class ReaderHandlerTemplate : public BaseReaderHandler<UTF8<>, D> {
   protected:
     State state_;
+    Metadata meta_;
 
     explicit ReaderHandlerTemplate(const State init_state = State::kClosed):
       BaseReaderHandler<UTF8<>, D>(),
@@ -237,10 +239,22 @@ namespace mcc::json {
     }
 
     virtual bool OnParseType(const std::string& type) = 0;
-    virtual bool OnParseMetaName(const std::string& name) = 0;
-    virtual bool OnParseMetaTag(const std::string& value) = 0;
+    
+    virtual bool OnParseMetaName(const std::string& name) {
+      meta_.SetName(name);
+      return TransitionTo(State::kMeta);
+    }
+
+    virtual bool OnParseMetaTag(const std::string& value) {
+      meta_.Append(Tag(value));
+      return TransitionTo(State::kMetaTags);
+    }
   public:
     virtual ~ReaderHandlerTemplate() = default;
+
+    const Metadata& GetMeta() const {
+      return meta_;
+    }
     
     virtual bool StartArray() {
       DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
