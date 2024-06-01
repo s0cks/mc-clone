@@ -82,7 +82,7 @@ namespace mcc::uri {
       class ParseQueriesField : public FlagsField<kParseQueriesOffset>{};
       class ParseFragmentsField : public FlagsField<kParseFragmentsOffset>{};
     public:
-      const char* default_scheme;
+      Scheme default_scheme;
       Flags flags;
       bool (*OnParseScheme)(const Parser* parser, const char* scheme, const uint64_t length);
       bool (*OnParsePath)(const Parser* parser, const char* path, const uint64_t length);
@@ -101,6 +101,10 @@ namespace mcc::uri {
 
       bool ShouldParseFragments() const {
         return ParseFragmentsField::Decode(flags);
+      }
+
+      bool HasDefaultScheme() const {
+        return !default_scheme.empty();
       }
     };
   public:
@@ -188,6 +192,8 @@ namespace mcc::uri {
     OnParseError() const {
       return CallIfExists(config_.OnParseError);
     }
+
+    bool TryParseScheme();
   public:
     explicit Parser(const Config& config, const basic_uri& uri, void* data = nullptr):
       ParserTemplate(data, uri),

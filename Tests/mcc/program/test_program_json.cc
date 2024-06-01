@@ -28,6 +28,7 @@ namespace mcc::program {
     static constexpr const auto kTestJson = 
       "{"
       "\"vertex\": \"test.vert\","
+      "\"include\": [ \"test.glsl\" ],"
       "\"fragment\": \"test.frag\""
       "}";
     

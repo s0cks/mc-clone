@@ -2,6 +2,8 @@
 
 namespace mcc::uri {
   bool Parser::ParseScheme() {
+    const auto start_pos = pos_;
+
     token_len_ = 0;
     do {
       auto next = NextChar();
@@ -25,7 +27,12 @@ namespace mcc::uri {
           return token_len_ > 0;
         }
         case EOF:
-          DLOG(ERROR) << "unexpected EOF";
+        case '?':
+        case '#':
+        case '/':
+          rpos_ -= token_len_;
+          token_len_ = 0;
+          pos_ = start_pos;
           return false;
         default: {
           token_[token_len_++] = next;
@@ -152,6 +159,15 @@ namespace mcc::uri {
     return false;
   }
 
+  bool Parser::TryParseScheme() {
+    if(!ParseScheme()) {
+      if(!config_.HasDefaultScheme() && config_.IsStrict())
+        return false;
+      return OnParseScheme(config_.default_scheme.data(), config_.default_scheme.length());
+    }
+    return OnParseScheme((const char*) token_, token_len_);
+  }
+
   /*
    * http:(//)?google.com?test&size=sm#json
    
@@ -168,15 +184,8 @@ namespace mcc::uri {
    * ident (json)
   */
   ParseResult Parser::Parse() {
-    if(!ParseScheme()) {
-      if(!config_.default_scheme)
-        return ParseResult::Failure("Failed to parse uri scheme, no default scheme.");
-      if(!OnParseScheme(config_.default_scheme, strlen(config_.default_scheme)))
-        return ParseResult::Failure(fmt::format("Failed to parse uri scheme: {0:s}", config_.default_scheme));
-    } else {
-      if(!OnParseScheme((const char*) token_, token_len_))
-        return ParseResult::Failure(fmt::format("Failed to parse uri scheme: {0:s}", token()));
-    }
+    if(!TryParseScheme())
+      return ParseResult::Failure("Failed to parse uri scheme.");
 
     if(!ParsePath())
       return ParseResult::Failure("Failed to parse uri path.");

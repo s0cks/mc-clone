@@ -78,7 +78,7 @@ namespace mcc::uri {
 
   bool TryParseUri(uri::Uri& result,
                    const basic_uri uri,
-                   const char* default_scheme) {
+                   const uri::Scheme& default_scheme) {
     Parser::Config config = {
       .default_scheme = default_scheme,
       .flags = Parser::DefaultFlags(),

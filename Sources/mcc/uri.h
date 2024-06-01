@@ -240,7 +240,7 @@ namespace mcc {
 
     bool TryParseUri(uri::Uri& result,
                      const basic_uri uri,
-                     const char* default_scheme);
+                     const uri::Scheme& default_scheme);
 
     bool IsValidUri(const basic_uri& rhs);
     bool IsValidUri(const basic_uri& rhs, const std::string& scheme);

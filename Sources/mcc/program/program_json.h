@@ -12,10 +12,15 @@
 
 namespace mcc::program {
 #define FOR_EACH_PROGRAM_READER_STATE(V)        \
+  V(Error)                                      \
   V(Closed)                                     \
   V(Open)                                       \
-  V(ExpectFragment)                             \
-  V(ExpectVertex)
+  V(FragmentShader)                             \
+  V(VertexShader)                               \
+  V(GeometryShader)                             \
+  V(TessEvalShader)                             \
+  V(TessControlShader)                          \
+  V(IncludedShaders)
 
   class ProgramShader {
     friend class ProgramReaderHandler;
@@ -89,47 +94,22 @@ namespace mcc::program {
 #undef DEFINE_STATE_CHECK
 
     bool OnParseField(const std::string& name);
-
-    bool OnParseVertexShader(const std::string& value);
-    bool OnParseFragmentShader(const std::string& value);
+    bool OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri);
+    bool TransitionTo(const State state);
   public:
     ProgramReaderHandler():
       state_(kClosed),
       shaders_() {
+      shaders_.reserve(5);
     }
     ~ProgramReaderHandler() = default;
 
-    bool StartObject() {
-      DLOG(INFO) << __FUNCTION__;
-      DLOG(INFO) << "state: " << GetState();
-      if(!IsClosed()) {
-        DLOG(ERROR) << "program object is not closed.";
-        return false;
-      }
-
-      SetState(kOpen);
-      return true;
-    }
-
-    bool EndObject(const rapidjson::SizeType size) {
-      DLOG(INFO) << __FUNCTION__;
-      DLOG(INFO) << "state: " << GetState();
-      if(!IsOpen()) {
-        DLOG(ERROR) << "program object is not open.";
-        return false;
-      }
-
-      SetState(kClosed);
-      return true;
-    }
-
+    bool StartObject();
+    bool EndObject(const rapidjson::SizeType size);
+    bool StartArray();
+    bool EndArray(const rapidjson::SizeType size);
     bool String(const char* value, const rapidjson::SizeType length, const bool);
-
-    bool Default() {
-      DLOG(INFO) << __FUNCTION__;
-      DLOG(INFO) << "state: " << GetState();
-      return false;
-    }
+    bool Default();
 
     const ProgramShaderList& shaders() const {
       return shaders_;
