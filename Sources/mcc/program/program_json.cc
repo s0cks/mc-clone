@@ -74,18 +74,19 @@ namespace mcc::program {
     return TransitionTo(kData);
   }
 
-  bool ProgramReaderHandler::OnParseType(const std::string& type) {
-    DLOG(INFO) << "parsed Program type: " << type;
+  bool ProgramReaderHandler::OnParseType(const std::string& name) {
+    if(!EqualsIgnoreCase(name, "Program"))
+      return TransitionTo(kError);
     return TransitionTo(kOpen);
   }
 
   bool ProgramReaderHandler::OnParseMetaName(const std::string& name) {
-    DLOG(INFO) << "parsed Program name: " << name;
+    name_ = name;
     return TransitionTo(kMeta);
   }
 
   bool ProgramReaderHandler::OnParseMetaTag(const std::string& value) {
-    DLOG(INFO) << "parsed Program tag: " << value;
+    tags_.push_back(value);
     return TransitionTo(kMetaTags);
   }
 }
