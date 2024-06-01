@@ -16,6 +16,7 @@
 
 #include "mcc/rx.h"
 #include "mcc/uri.h"
+#include "mcc/buffer.h"
 #include "mcc/common.h"
 #include "mcc/metadata.h"
 #include "mcc/json_flags.h"
@@ -207,6 +208,10 @@ namespace mcc::json {
       return state != State::kError;
     }
 
+    inline bool NoTransition() {
+      return GetState() != State::kError;
+    }
+
     bool OnParseSpecField(const std::string& name) {
       if(EqualsIgnoreCase(name, "type")) {
         return TransitionTo(State::kType);
@@ -329,6 +334,66 @@ namespace mcc::json {
       return TransitionTo(State::kError);
     }
   };
+
+  class JsonParseResult {
+    DEFINE_DEFAULT_COPYABLE_TYPE(JsonParseResult);
+  protected:
+    bool success_;
+    std::string message_;
+  public:
+    JsonParseResult() = default;
+    explicit JsonParseResult(const bool success, const std::string& message = {}):
+      success_(success),
+      message_(message) {
+    }
+    ~JsonParseResult() = default;
+
+    std::string message() const {
+      return message_;
+    }
+
+    bool success() const {
+      return success_;
+    }
+
+    operator bool() const {
+      return success_;
+    }
+
+    operator std::string() const {
+      return message_;
+    }
+
+    bool operator==(const JsonParseResult& rhs) const {
+      return success_ == rhs.success_
+          && message_ == rhs.message_;
+    }
+
+    bool operator!=(const JsonParseResult& rhs) const {
+      return success_ != rhs.success_
+          || message_ != rhs.message_;
+    }
+  };
+
+  template<class H>
+  static inline JsonParseResult
+  ParseJson(const uri::Uri& uri, H& handler, const uword buffer_size = kDefaultJsonFileBufferSize) {
+    auto file = uri.OpenFileForReading();
+    if(!file)
+      return JsonParseResult(false, fmt::format("failed to open json file: {0:s}", uri));
+    auto buffer = Buffer::New(buffer_size);
+    json::FileReadStream frs(file, (char*) buffer->data(), buffer_size);
+    json::Reader reader;
+    if(!reader.Parse(frs, handler)) {
+      const auto code = reader.GetParseErrorCode();
+      const auto offset = reader.GetErrorOffset();
+      const auto error = fmt::format("failed to parse json from file {0:s}: {1:s} at {2:d}", uri, json::GetParseError_En(code), offset);
+      fclose(file);
+      return JsonParseResult(false, error);
+    }
+    fclose(file);
+    return JsonParseResult(true);
+  }
 }
 
 #endif //MCC_JSON_H

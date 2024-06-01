@@ -254,4 +254,15 @@ namespace mcc {
   }
 }
 
+namespace fmt {
+  using mcc::uri::Uri;
+
+  template<>
+  struct formatter<Uri> : formatter<std::string_view> {
+    auto format(const Uri& uri, format_context& ctx) const {
+      return formatter<std::string_view>::format((const std::string&) uri, ctx);
+    }
+  };
+}
+
 #endif //MCC_URI_H

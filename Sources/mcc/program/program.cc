@@ -133,22 +133,9 @@ namespace mcc::program {
     MCC_ASSERT(uri.HasExtension("json"));
 
     ProgramReaderHandler handler;
-    auto file = uri.OpenFileForReading();
-    if(!file) {
-      DLOG(ERROR) << "failed to open json file: " << uri;
-      return nullptr;
-    }
-
-    static constexpr const auto kBufferSize = 4096;
-    auto buffer = Buffer::New(kBufferSize);
-    json::FileReadStream frs(file, (char*) buffer->data(), kBufferSize);
-    json::Reader reader;
-    if(!reader.Parse(frs, handler)) {
-      const auto code = reader.GetParseErrorCode();
-      const auto offset = reader.GetErrorOffset();
-      DLOG(ERROR) << "failed to parse Program json from: " << uri;
-      DLOG(ERROR) << "error: \"" << json::GetParseError_En(code) << "\" at " << offset << ".";
-      fclose(file);
+    const auto result = json::ParseJson<ProgramReaderHandler>(uri, handler);
+    if(!result) {
+      LOG(ERROR) << result;
       return nullptr;
     }
 

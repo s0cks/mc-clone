@@ -17,10 +17,10 @@ namespace mcc::shader {
     ~VertexShader() override = default;
     DECLARE_SHADER_TYPE(Vertex);
   public:
-    static VertexShader* FromSource(ShaderCode* code);
     static VertexShader* FromSource(const uri::Uri& uri);
+    static VertexShader* FromSource(ShaderCode* code);
+    
     static VertexShader* FromJson(const uri::Uri& uri);
-    static VertexShader* FromJson(const json::Value& value);
     static VertexShader* FromJson(const char* source, const uword length);
 
     static inline VertexShader*
