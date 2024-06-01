@@ -2,6 +2,7 @@
 
 #include <set>
 #include <sstream>
+#include "mcc/vao/vao_json.h"
 
 namespace mcc::vao {
   static rx::subject<VaoEvent*> events_;
@@ -56,5 +57,10 @@ namespace mcc::vao {
     //TODO: check vaos_
     MCC_ASSERT(IsValidVaoId(id));
     return new Vao(id);
+  }
+
+  Vao* Vao::FromJson(const uri::Uri& uri) {
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 }

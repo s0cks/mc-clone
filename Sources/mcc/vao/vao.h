@@ -1,6 +1,7 @@
 #ifndef MCC_VAO_H
 #define MCC_VAO_H
 
+#include "mcc/uri.h"
 #include "mcc/gfx_object.h"
 #include "mcc/vao/vao_id.h"
 #include "mcc/vao/vao_events.h"
@@ -88,6 +89,7 @@ namespace mcc {
       }
     public:
       static Vao* New(const VaoId id);
+      static Vao* FromJson(const uri::Uri& uri);
 
       static inline Vao*
       New() {
