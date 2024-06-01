@@ -20,6 +20,7 @@ namespace mcc::shader {
     static FragmentShader* FromSource(ShaderCode* code);
     static FragmentShader* FromSource(const uri::Uri& uri);
     static FragmentShader* FromJson(const json::Value& value);
+    static FragmentShader* FromJson(const uri::Uri& uri);
 
     static inline FragmentShader*
     FromSource(const uint8_t* bytes, const uword num_bytes) {

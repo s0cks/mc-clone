@@ -209,7 +209,6 @@ namespace mcc {
       }
 
       static Program* FromJson(const uri::Uri& uri);
-      static Program* FromJson(const json::Value& value);
 
       static inline Program*
       FromJson(const uri::basic_uri& uri) {

@@ -1,8 +1,12 @@
 #include "mcc/program/program.h"
 
+#include "mcc/buffer.h"
 #include "mcc/json_schema.h"
+
 #include "mcc/shader/shader_code.h"
 #include "mcc/shader/shader_compiler.h"
+
+#include "mcc/program/program_json.h"
 #include "mcc/program/program_builder.h"
 
 namespace mcc::program {
@@ -128,62 +132,46 @@ namespace mcc::program {
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension("json"));
 
-    json::Document doc;
-    if(!json::ParseJson(uri, doc)) {
-      LOG(ERROR) << "failed to parse Program json from: " << uri;
+    ProgramReaderHandler handler;
+    auto file = uri.OpenFileForReading();
+    if(!file) {
+      DLOG(ERROR) << "failed to open json file: " << uri;
       return nullptr;
     }
 
-    const auto schema = json::GetSchema();
-    MCC_ASSERT(schema);
-    const auto valid = schema->Validate(doc);
-    if(!valid) {
-      LOG(ERROR) << "VertexShader json is invalid: " << valid;
-      return nullptr;
-    }
-
-    const auto& name_prop = doc["name"];
-    MCC_ASSERT(name_prop.IsString());
-    const auto name = std::string(name_prop.GetString(), name_prop.GetStringLength());
-    MCC_ASSERT(!name.empty());
-    
-    const auto& type_prop = doc["type"];
-    MCC_ASSERT(type_prop.IsString());
-    const auto type = std::string(type_prop.GetString(), type_prop.GetStringLength());
-    if(!EqualsIgnoreCase(type, "program")) {
-      LOG(ERROR) << "invalid type " << type << " for VertexShader json.";
-      return nullptr;
-    }
-    const auto& data_prop = doc["data"];
-    return FromJson(data_prop);
-  }
-
-  Program* Program::FromJson(const json::Value& value) {
-    if(!value.IsObject()) {
-      LOG(ERROR) << "invalid program json.";
+    static constexpr const auto kBufferSize = 4096;
+    auto buffer = Buffer::New(kBufferSize);
+    json::FileReadStream frs(file, (char*) buffer->data(), kBufferSize);
+    json::Reader reader;
+    if(!reader.Parse(frs, handler)) {
+      const auto code = reader.GetParseErrorCode();
+      const auto offset = reader.GetErrorOffset();
+      DLOG(ERROR) << "failed to parse Program json from: " << uri;
+      DLOG(ERROR) << "error: \"" << json::GetParseError_En(code) << "\" at " << offset << ".";
+      fclose(file);
       return nullptr;
     }
 
     ProgramBuilder builder;
+    builder.SetMeta(handler.GetMeta());
 
-    MCC_ASSERT(value.HasMember("vertex"));
-    const auto& vertex = value["vertex"];
-    const auto vertex_shader = VertexShader::FromJson(vertex);
-    if(!vertex_shader) {
-      LOG(ERROR) << "failed to load vertex shader from program json.";
-      return nullptr;
+    const auto& shaders = handler.shaders();
+    DLOG(INFO) << "shaders:";
+    for(const auto& shader : shaders) {
+      DLOG(INFO) << " - " << shader;
+      switch(shader.GetType()) {
+        case shader::kVertexShader: {
+          const auto sh = VertexShader::FromJson(shader.GetUri());
+          builder.Attach(sh);
+          break;
+        }
+        case shader::kFragmentShader: {
+          const auto sh = FragmentShader::FromJson(shader.GetUri());
+          builder.Attach(sh);
+          break;
+        }
+      }
     }
-    builder.Attach(vertex_shader);
-
-
-    MCC_ASSERT(value.HasMember("fragment"));
-    const auto& fragment = value["fragment"];
-    const auto fragment_shader = FragmentShader::FromJson(fragment);
-    if(!fragment_shader) {
-      LOG(ERROR) << "failed to load fragment shader from program json.";
-      return nullptr;
-    }
-    builder.Attach(fragment_shader);
 
     return builder.Build();
   }
