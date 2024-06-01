@@ -44,35 +44,12 @@ namespace mcc::shader {
     return nullptr;
   }
 
-  FragmentShader* FragmentShader::FromJson(const json::Value& value) {
-    if(value.IsString()) {
-      const auto val = std::string(value.GetString(), value.GetStringLength());
-      return FromSource(val);
-    } else if(value.IsObject()) {
-      const auto unit = ShaderUnit::NewVertexShaderUnit("");
+  FragmentShader* FragmentShader::FromJson(const uri::Uri& uri) {
+    
+  }
 
-      const auto val = value.GetObject();
-      if(val.HasMember("source") && val["source"].IsString()) {
-        const auto& source = val["source"];
-        unit->Append(std::string(source.GetString(), source.GetStringLength()));
-      }
-
-      if(val.HasMember("sources") && val["source"].IsArray()) {
-        const auto& sources = val["sources"].GetArray();
-        for(const auto& source : sources) {
-          MCC_ASSERT(source.IsString());
-          unit->Append(std::string(source.GetString(), source.GetStringLength()));
-        }
-      }
-
-      const auto id = ShaderCompiler::Compile(unit);
-      if(IsInvalidShaderId(id)) {
-        LOG(ERROR) << "failed to compile: " << unit->ToString();
-        return nullptr;
-      }
-      return New(id);
-    }
-    NOT_IMPLEMENTED(FATAL);//TODO: implement
+  FragmentShader* FragmentShader::FromJson(const std::string& value) {
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
     return nullptr;
   }
 }

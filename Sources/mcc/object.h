@@ -10,6 +10,9 @@ namespace mcc {
     Metadata meta_;
 
     Object() = default;
+    explicit Object(const Metadata& meta):
+      meta_(meta) {  
+    }
 
     void SetMeta(const Metadata& rhs) {
       meta_ = rhs;

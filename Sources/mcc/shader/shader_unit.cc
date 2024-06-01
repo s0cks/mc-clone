@@ -32,7 +32,7 @@ namespace mcc::shader {
   std::string ShaderUnit::ToString() const {
     std::stringstream ss;
     ss << "ShaderUnit(";
-    ss << "name=" << GetName() << ", ";
+    ss << "meta=" << GetMeta() << ", ";
     ss << "type=" << GetType() << ", ";
     if(!IsEmpty())
       ss << "code=" << GetHash();

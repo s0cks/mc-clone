@@ -12,23 +12,18 @@ namespace mcc::shader {
   class ShaderUnit : public Object {
     typedef std::vector<const ShaderCode*> ShaderCodeList;
   protected:
-    std::string name_;
     ShaderType type_;
     ShaderCodeList code_;
-  public:
-    explicit ShaderUnit(const std::string& name,
+
+    explicit ShaderUnit(const Metadata& meta,
                         const ShaderType type):
-      Object(),
-      name_(name),
+      Object(meta),
       type_(type),
       code_() {
     }
+  public:
     ~ShaderUnit() override = default;
     std::string ToString() const override;
-
-    const std::string& GetName() const {
-      return name_;
-    }
 
     ShaderType GetType() const {
       return type_;
@@ -70,15 +65,22 @@ namespace mcc::shader {
     }
   public:
     static inline ShaderUnit*
-    New(const ShaderType type, const std::string& name) {
-      return new ShaderUnit(name, type);
+    New(const Metadata& meta, const ShaderType type) {
+      return new ShaderUnit(meta, type);
+    }
+
+    static inline ShaderUnit*
+    New(const ShaderType type) {
+      Metadata meta;
+      return New(meta, type);
     }
 
 #define DEFINE_NEW_SHADER_UNIT_BY_TYPE(Name, Ext, GlValue)          \
     static inline ShaderUnit*                                       \
-    New##Name##ShaderUnit(const std::string& name) {                \
-      return New(k##Name##Shader, name);                            \
+    New##Name##ShaderUnit(const Metadata& meta = {}) {              \
+      return New(meta, k##Name##Shader);                            \
     }
+
     FOR_EACH_SHADER_TYPE(DEFINE_NEW_SHADER_UNIT_BY_TYPE)
 #undef DEFINE_NEW_SHADER_UNIT_BY_TYPE
   };

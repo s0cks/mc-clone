@@ -76,7 +76,7 @@ namespace mcc::shader {
     const auto severity = status ? google::INFO : google::ERROR;
     LOG_AT_LEVEL(severity) << "Shader: " << id;
     LOG_AT_LEVEL(severity) << "Status: " << status;
-    LOG_AT_LEVEL(severity) << "Unit: " << unit->GetName() << " " << unit->GetHash();
+    LOG_AT_LEVEL(severity) << "Unit: " << unit->ToString();
     LOG_AT_LEVEL(severity) << "Stats:";
     LOG_AT_LEVEL(severity) << " - Total Compiled: " << GetCompiled();
     const auto& duration = GetDurationSeries();
