@@ -16,8 +16,9 @@ namespace mcc::vao {
     return rx::observable<>::iterate(vaos_);
   }
 
-  Vao::Vao(const VaoId id):
+  Vao::Vao(const Metadata& meta, const VaoId id):
     ObjectTemplate(id) {
+    SetMeta(meta); //TODO: remove
     vaos_.insert(this);
     Publish<VaoCreatedEvent>(this);
   }
@@ -54,10 +55,10 @@ namespace mcc::vao {
     return ss.str();
   }
 
-  Vao* Vao::New(const VaoId id) {
+  Vao* Vao::New(const Metadata& meta, const VaoId id) {
     //TODO: check vaos_
     MCC_ASSERT(IsValidVaoId(id));
-    return new Vao(id);
+    return new Vao(meta, id);
   }
 
   Vao* Vao::FromJson(const uri::Uri& uri) {

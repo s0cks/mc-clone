@@ -53,7 +53,7 @@ namespace mcc {
         return BindVao(kInvalidVaoId);
       }
     protected:
-      explicit Vao(const VaoId id);
+      explicit Vao(const Metadata& meta, const VaoId id);
     public:
       ~Vao() override;
       std::string ToString() const override;
@@ -88,8 +88,15 @@ namespace mcc {
         return stream << rhs.ToString();
       }
     public:
-      static Vao* New(const VaoId id);
+      static Vao* New(const Metadata& meta, const VaoId id);
       static Vao* FromJson(const uri::Uri& uri);
+
+      static inline Vao*
+      New(const VaoId id) {
+        MCC_ASSERT(IsValidVaoId(id));
+        Metadata meta;
+        return New(meta, id);
+      }
 
       static inline Vao*
       New() {

@@ -11,7 +11,7 @@ namespace mcc {
 
   class Metadata {
     DEFINE_DEFAULT_COPYABLE_TYPE(Metadata);
-
+    friend class BuilderBase;
     template<typename State, class D>
     friend class json::ReaderHandlerTemplate;
   protected:
@@ -28,6 +28,10 @@ namespace mcc {
     }
 
     void Append(const TagSet& rhs) {
+      tags_.insert(rhs.begin(), rhs.end());
+    }
+
+    void Append(const TagList& rhs) {
       tags_.insert(rhs.begin(), rhs.end());
     }
   public:

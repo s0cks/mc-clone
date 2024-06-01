@@ -2,6 +2,7 @@
 #define MCC_TAG_H
 
 #include <string>
+#include <vector>
 #include <unordered_set>
 #include "mcc/common.h"
 
@@ -94,6 +95,7 @@ private:
 
 namespace mcc {
   typedef std::unordered_set<Tag> TagSet;
+  typedef std::vector<Tag> TagList;
 
   static inline std::ostream&
   operator<<(std::ostream& stream, const TagSet& rhs) {
@@ -101,7 +103,20 @@ namespace mcc {
     auto idx = 0;
     for(const auto& tag : rhs) {
       stream << tag;
-      if(idx < (rhs.size() - 1))
+      if(idx++ < (rhs.size() - 1))
+        stream << ", ";
+    }
+    stream << "]";
+    return stream;
+  }
+
+  static inline std::ostream&
+  operator<<(std::ostream& stream, const TagList& rhs) {
+    stream << "[";
+    auto idx = 0;
+    for(const auto& tag : rhs) {
+      stream << tag;
+      if(idx++ < (rhs.size() - 1))
         stream << ", ";
     }
     stream << "]";

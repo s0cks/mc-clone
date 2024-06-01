@@ -10,7 +10,7 @@ namespace mcc::vao {
   class MockVao : public Vao {
   public:
     explicit MockVao(const VaoId id):
-      Vao(id) {
+      Vao(Metadata(), id) { //TODO: use mock metadata
     }
     ~MockVao() override = default;
   };
