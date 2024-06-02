@@ -1,7 +1,9 @@
 #ifndef MCC_SHADER_CODE_H
 #define MCC_SHADER_CODE_H
 
+#include <vector>
 #include <ostream>
+
 #include "mcc/buffer.h"
 #include "mcc/object.h"
 #include "mcc/uint256.h"
@@ -217,6 +219,16 @@ namespace mcc::shader {
     }
     FOR_EACH_SHADER_TYPE(DEFINE_FROM_FILE_TYPE)
 #undef DEFINE_FROM_FILE_TYPE
+  };
+
+  typedef std::vector<ShaderCode*> ShaderCodeList;
+
+  class ShaderCodeVisitor {
+  protected:
+    ShaderCodeVisitor() = default;
+  public:
+    virtual ~ShaderCodeVisitor() = default;
+    virtual bool Visit(ShaderCode* code) = 0;
   };
 }
 

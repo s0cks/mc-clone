@@ -17,9 +17,8 @@ namespace mcc::shader {
     ~VertexShader() override = default;
     DECLARE_SHADER_TYPE(Vertex);
   public:
+    static VertexShader* New(ShaderUnit* unit);
     static VertexShader* FromSource(const uri::Uri& uri);
-    static VertexShader* FromSource(ShaderCode* code);
-    
     static VertexShader* FromJson(const uri::Uri& uri);
     static VertexShader* FromJson(const char* source, const uword length);
 
@@ -31,30 +30,6 @@ namespace mcc::shader {
     static inline VertexShader*
     FromJson(const std::string& source) {
       return FromJson(source.data(), source.length());
-    }
-
-    static inline VertexShader*
-    FromSource(const uint8_t* bytes, const uword num_bytes) {
-      return FromSource(ShaderCode::NewVertexShaderCode(bytes, num_bytes));
-    }
-
-    static inline VertexShader*
-    FromSource(const char* source, const uword length) {
-      if(StartsWith(source, length, "file:")
-      || StartsWith(source, length, "shader:")) {
-        return FromSource(uri::Uri(std::string(source, length)));
-      }
-      return FromSource(ShaderCode::NewVertexShaderCode(source, length));
-    }
-
-    static inline VertexShader*
-    FromSource(const char* source) {
-      return FromSource(source, strlen(source));
-    }
-
-    static inline VertexShader*
-    FromSource(const std::string& source) {
-      return FromSource(source.data(), source.length());
     }
   };
 }

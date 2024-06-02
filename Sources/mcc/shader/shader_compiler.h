@@ -37,7 +37,6 @@ namespace mcc::shader {
     ShaderCompiler() = default;
     virtual ~ShaderCompiler() = default;
     virtual ShaderId CompileShaderUnit(ShaderUnit* unit);
-    virtual ShaderId CompileShaderCode(ShaderCode* source);
 
     const DurationSeries& GetDurationSeries() const {
       return duration_;
@@ -72,22 +71,7 @@ namespace mcc::shader {
   public:
     static ShaderCompiler* GetCompiler();
     static ShaderId Compile(ShaderUnit* unit);
-    static ShaderId Compile(ShaderCode* code); //TODO: remove
-    static ShaderId Compile(const uri::Uri& uri);
-
-    static inline ShaderId
-    Compile(const uri::basic_uri& uri) {
-      return Compile(FormatBasicUri(uri));
-    }
-
     static rx::observable<ShaderId> CompileAsync(ShaderUnit* unit);
-    static rx::observable<ShaderId> CompileAsync(ShaderCode* code); //TODO: remove
-    static rx::observable<ShaderId> CompileAsync(const uri::Uri& uri);
-
-    static inline rx::observable<ShaderId>
-    CompileAsync(const uri::basic_uri& uri) {
-      return CompileAsync(FormatBasicUri(uri));
-    }
   };
 }
 
