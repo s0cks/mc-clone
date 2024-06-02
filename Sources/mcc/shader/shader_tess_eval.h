@@ -10,8 +10,8 @@
 namespace mcc::shader {
   class TessEvalShader : public ShaderTemplate<kTessEvalShader> {
   protected:
-    explicit TessEvalShader(const ShaderId id):
-      ShaderTemplate<kTessEvalShader>(id) {  
+    explicit TessEvalShader(const Metadata& meta, const ShaderId id):
+      ShaderTemplate<kTessEvalShader>(meta, id) {  
     }
   public:
     ~TessEvalShader() override = default;

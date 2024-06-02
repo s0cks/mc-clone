@@ -7,32 +7,59 @@
 #include "mcc/shader/shader_compile_status.h"
 
 namespace mcc::shader {
-  static inline void
-  Attach(const ShaderId id, const ShaderCode* code) {
-    MCC_ASSERT(IsValidShaderId(id));
-    MCC_ASSERT(code);
-    auto data = code->GetData();
-    const auto length = code->GetLength();
-    glShaderSource(id, 1, (const GLchar**) &data, (const GLint*) &length);
-    CHECK_GL(ERROR);
-  }
-
-  static inline void
-  Attach(const ShaderId id, const ShaderUnit* unit) {
-    MCC_ASSERT(IsValidShaderId(id));
-    MCC_ASSERT(unit);
-    MCC_ASSERT(!unit->IsEmpty());
-    const auto num_sources = unit->GetSize();
-    GLint lengths[num_sources];
-    GLchar* sources[num_sources];
-    for(auto idx = 0; idx < num_sources; idx++) {
-      const auto code = unit->GetSource(idx);
-      sources[idx] = (GLchar*) code->GetData();
-      lengths[idx] = code->GetLength();
+  class ShaderSourceAttacher : public ShaderCodeVisitor {
+  protected:
+    ShaderId target_;
+    ShaderUnit* unit_;
+    std::vector<GLchar*> sources_;
+    std::vector<GLint> lengths_;
+    uword num_sources_;
+  public:
+    ShaderSourceAttacher(const ShaderId target,
+                         ShaderUnit* unit):
+      ShaderCodeVisitor(),
+      target_(target),
+      unit_(unit),
+      sources_(),
+      lengths_() {
+      MCC_ASSERT(unit);
+      const auto num_sources = unit->GetSize();
+      sources_.reserve(num_sources);
+      lengths_.reserve(num_sources);
     }
-    glShaderSource(id, num_sources, sources, lengths);
-    CHECK_GL(ERROR);
-  }
+    ~ShaderSourceAttacher() override = default;
+
+    ShaderId GetTarget() const {
+      return target_;
+    }
+
+    ShaderUnit* GetUnit() const {
+      return unit_;
+    }
+
+    void Append(ShaderCode* code) {
+      MCC_ASSERT(code);
+      sources_.push_back((GLchar*) code->GetData());
+      lengths_.push_back((GLint) code->GetLength());
+      num_sources_++;
+    }
+
+    bool Visit(ShaderCode* code) override {
+      Append(code);
+      return true;
+    }
+
+    bool AttachSources() {
+      if(!GetUnit()->Accept(this)) {
+        DLOG(ERROR) << "failed to visit sources of: " << GetUnit()->ToString();
+        return false;
+      }
+
+      glShaderSource(GetTarget(), num_sources_, &sources_[0], &lengths_[0]);
+      CHECK_GL(ERROR);
+      return true;
+    }
+  };
 
   static inline void
   Compile(const ShaderId id) {
@@ -41,18 +68,15 @@ namespace mcc::shader {
   }
 
   static inline void
-  AttachAndCompile(const ShaderId id, const ShaderCode* code) {
-    MCC_ASSERT(IsValidShaderId(id));
-    MCC_ASSERT(code);
-    Attach(id, code);
-    Compile(id);
-  }
-
-  static inline void
-  AttachAndCompile(const ShaderId id, const ShaderUnit* unit) {
+  AttachAndCompile(const ShaderId id, ShaderUnit* unit) {
     MCC_ASSERT(IsValidShaderId(id));
     MCC_ASSERT(unit);
-    Attach(id, unit);
+    ShaderSourceAttacher attacher(id, unit);
+    if(!attacher.AttachSources()) {
+      DLOG(ERROR) << "failed to attach sources.";
+      return;
+    }
+    
     Compile(id);
   }
 

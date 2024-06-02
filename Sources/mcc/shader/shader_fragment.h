@@ -10,8 +10,8 @@
 namespace mcc::shader {
   class FragmentShader : public ShaderTemplate<kFragmentShader> {
   protected:
-    explicit FragmentShader(const ShaderId id):
-      ShaderTemplate<kFragmentShader>(id) {  
+    explicit FragmentShader(const Metadata& meta, const ShaderId id):
+      ShaderTemplate<kFragmentShader>(meta, id) {  
     }
   public:
     ~FragmentShader() override = default;

@@ -60,7 +60,7 @@ namespace mcc {
 
     class ShaderCode;
     class ShaderCompiler;
-    class Shader {
+    class Shader : public Object {
       friend class ShaderCompiler;
       friend class VertexShader;
       friend class FragmentShader;
@@ -87,7 +87,8 @@ namespace mcc {
     protected:
       ShaderId id_;
 
-      explicit Shader(const ShaderId id):
+      explicit Shader(const Metadata& meta, const ShaderId id):
+        Object(meta),
         id_(id) {
       }
     public:
@@ -125,8 +126,8 @@ namespace mcc {
     template<const ShaderType Type>
     class ShaderTemplate : public Shader {
     protected:
-      explicit ShaderTemplate(const ShaderId id):
-        Shader(id) {
+      explicit ShaderTemplate(const Metadata& meta, const ShaderId id):
+        Shader(meta, id) {
       }
     public:
       ~ShaderTemplate() override = default;
@@ -142,10 +143,11 @@ namespace mcc {
       Name##Shader* As##Name##Shader() override { return this; }    \
     private:                                                        \
       static inline Name##Shader*                                   \
-      New(const ShaderId id) {                                      \
-        return new Name##Shader(id);                                \
+      New(const Metadata& meta, const ShaderId id) {                \
+        return new Name##Shader(meta, id);                          \
       }                                                             \
     public:                                                         \
+      static Name##Shader* New(ShaderUnit* unit);                   \
       static const std::set<std::string> kValidExtensions;
   }
 }

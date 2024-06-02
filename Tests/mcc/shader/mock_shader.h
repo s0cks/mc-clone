@@ -12,8 +12,8 @@ namespace mcc::shader {
   protected:
     ShaderType type_;
   public:
-    explicit MockShader(const ShaderId id, const ShaderType type):
-      Shader(id),
+    explicit MockShader(const Metadata& meta, const ShaderId id, const ShaderType type):
+      Shader(meta, id),
       type_(type) {
       ON_CALL(*this, AsVertexShader())
         .WillByDefault([type,this]() {

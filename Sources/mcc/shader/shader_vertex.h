@@ -10,14 +10,13 @@
 namespace mcc::shader {
   class VertexShader : public ShaderTemplate<kVertexShader> {
   protected:
-    explicit VertexShader(const ShaderId id):
-      ShaderTemplate<kVertexShader>(id) {  
+    explicit VertexShader(const Metadata& meta, const ShaderId id):
+      ShaderTemplate<kVertexShader>(meta, id) {  
     }
   public:
     ~VertexShader() override = default;
     DECLARE_SHADER_TYPE(Vertex);
   public:
-    static VertexShader* New(ShaderUnit* unit);
     static VertexShader* FromSource(const uri::Uri& uri);
     static VertexShader* FromJson(const uri::Uri& uri);
     static VertexShader* FromJson(const char* source, const uword length);

@@ -10,8 +10,8 @@
 namespace mcc::shader {
   class GeometryShader : public ShaderTemplate<kGeometryShader> {
   protected:
-    explicit GeometryShader(const ShaderId id):
-      ShaderTemplate<kGeometryShader>(id) {
+    explicit GeometryShader(const Metadata& meta, const ShaderId id):
+      ShaderTemplate<kGeometryShader>(meta, id) {
     }
   public:
     ~GeometryShader() override = default;

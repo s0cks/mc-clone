@@ -12,6 +12,9 @@ namespace mcc::shader {
 
   VertexShader* VertexShader::New(ShaderUnit* unit) {
     MCC_ASSERT(unit);
+    const auto& meta = unit->GetMeta();
+    const auto id = ShaderCompiler::Compile(unit);
+    return VertexShader::New(meta, id);
   }
 
   VertexShader* VertexShader::FromSource(const uri::Uri& uri) {
@@ -26,9 +29,10 @@ namespace mcc::shader {
       LOG(ERROR) << "failed to parse VertexShader json: " << result;
       return nullptr;
     }
-
     const auto& meta = handler.GetMeta();
     const auto& sources = handler.GetSources();
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 
   std::string VertexShader::ToString() const {

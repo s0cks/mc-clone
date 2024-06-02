@@ -17,6 +17,13 @@ namespace mcc::shader {
     return ss.str();
   }
 
+  FragmentShader* FragmentShader::New(ShaderUnit* unit) {
+    MCC_ASSERT(unit);
+    const auto& meta = unit->GetMeta();
+    const auto id = ShaderCompiler::Compile(unit);
+    return New(meta, id);
+  }
+
   FragmentShader* FragmentShader::FromSource(const uri::Uri& uri) {
     NOT_IMPLEMENTED(FATAL); //TODO: implement
     return nullptr;

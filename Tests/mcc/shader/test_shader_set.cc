@@ -22,7 +22,7 @@ namespace mcc {
 
   TEST_F(ShaderSetTest, Test_Insert1_WillPass) {
     static constexpr const ShaderId kShaderId1 = 100;
-    MockShader a(kShaderId1, shader::kVertexShader);
+    MockShader a(Metadata(), kShaderId1, shader::kVertexShader);
     ShaderSet shaders;
     ASSERT_TRUE(shaders.Insert(&a));
   }
@@ -30,8 +30,8 @@ namespace mcc {
   TEST_F(ShaderSetTest, Test_Insert2_WillPass) {
     static constexpr const ShaderId kShaderId1 = 100;
     static constexpr const ShaderId kShaderId2 = 110;
-    MockShader a(kShaderId1, shader::kVertexShader);
-    MockShader b(kShaderId2, shader::kFragmentShader);
+    MockShader a(Metadata(), kShaderId1, shader::kVertexShader);
+    MockShader b(Metadata(), kShaderId2, shader::kFragmentShader);
     ShaderSet shaders;
     ASSERT_TRUE(shaders.Insert(&a));
     ASSERT_TRUE(shaders.Insert(&b));
@@ -39,7 +39,7 @@ namespace mcc {
 
   TEST_F(ShaderSetTest, Test_Contains_WillFail_DoesntExist) {
     static constexpr const ShaderId kShaderId1 = 100;
-    MockShader a(kShaderId1, shader::kVertexShader);
+    MockShader a(Metadata(), kShaderId1, shader::kVertexShader);
     ShaderSet shaders;
     ASSERT_FALSE(shaders.Contains(&a));
   }
@@ -47,8 +47,8 @@ namespace mcc {
   TEST_F(ShaderSetTest, Test_Contains1_WillFail_DoesntExist) {
     static constexpr const ShaderId kShaderId1 = 100;
     static constexpr const ShaderId kShaderId2 = 110;
-    MockShader a(kShaderId1, shader::kVertexShader);
-    MockShader b(kShaderId2, shader::kFragmentShader);
+    MockShader a(Metadata(), kShaderId1, shader::kVertexShader);
+    MockShader b(Metadata(), kShaderId2, shader::kFragmentShader);
     ShaderSet shaders;
     ASSERT_TRUE(shaders.Insert(&a));
     ASSERT_TRUE(shaders.Contains(&a));
