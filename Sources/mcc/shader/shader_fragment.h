@@ -17,6 +17,7 @@ namespace mcc::shader {
     ~FragmentShader() override = default;
     DECLARE_SHADER_TYPE(Fragment);
   public:
+    static FragmentShader* New(const uri::Uri& uri);
     static FragmentShader* FromSource(const uri::Uri& uri);
     static FragmentShader* FromJson(const uri::Uri& uri);
     static FragmentShader* FromJson(const std::string& value);

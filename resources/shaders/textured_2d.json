@@ -1,8 +1,11 @@
 {
-  "name": "textured_2d",
   "type": "Program",
+  "meta": {
+    "name": "textured_2d",
+    "tags": [ ]
+  },
   "data": {
-    "vertex": "shader:textured_2d",
-    "fragment": "shader:textured_2d"
+    "vertex": "shader:textured_2d.vert",
+    "fragment": "shader:textured_2d.frag"
   }
 }

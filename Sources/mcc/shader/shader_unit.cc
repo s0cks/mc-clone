@@ -4,7 +4,7 @@
 
 namespace mcc::shader {
   uint256 ShaderUnit::GetHash() const {
-    NOT_IMPLEMENTED(FATAL); //TODO: implement, H() => MerkleTree(|code_|)
+    NOT_IMPLEMENTED(ERROR); //TODO: implement, H() => MerkleTree(|code_|)
     return {};
   }
 

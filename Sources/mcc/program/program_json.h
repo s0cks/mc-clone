@@ -8,6 +8,13 @@
 #include "mcc/json.h"
 #include "mcc/shader/shader_type.h"
 
+namespace mcc {
+  namespace shader {
+    class Shader;
+  }
+  using shader::Shader;
+}
+
 namespace mcc::program {
 #define FOR_EACH_PROGRAM_READER_STATE(V)        \
   V(Error)                                      \
@@ -49,6 +56,8 @@ namespace mcc::program {
     const uri::Uri& GetUri() const {
       return uri_;
     }
+
+    Shader* GetShader() const;
 
     friend std::ostream& operator<<(std::ostream& stream, const ProgramShader& rhs) {
       stream << "ProgramShader(";

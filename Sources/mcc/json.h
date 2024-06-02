@@ -360,7 +360,7 @@ namespace mcc::json {
       return success_;
     }
 
-    operator std::string() const {
+    explicit operator std::string() const {
       return message_;
     }
 
@@ -372,6 +372,13 @@ namespace mcc::json {
     bool operator!=(const JsonParseResult& rhs) const {
       return success_ != rhs.success_
           || message_ != rhs.message_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const JsonParseResult& rhs) {
+      if(rhs.success())
+        return stream << "Success.";
+      stream << "Parse Failed: " << rhs.message();
+      return stream;
     }
   };
 

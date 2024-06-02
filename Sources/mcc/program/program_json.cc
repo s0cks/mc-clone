@@ -1,7 +1,20 @@
 #include "mcc/program/program_json.h"
 #include <glog/logging.h>
+#include "mcc/shader/shader.h"
 
 namespace mcc::program {
+  Shader* ProgramShader::GetShader() const {
+    switch(GetType()) {
+      case shader::kVertexShader:
+        return VertexShader::New(GetUri());
+      case shader::kFragmentShader:
+        return FragmentShader::New(GetUri());
+      default:
+        LOG(FATAL) << "invalid shader type: " << GetType();
+        return nullptr;
+    }
+  }
+
   bool ProgramReaderHandler::String(const char* value, const rapidjson::SizeType length, const bool b) {
     DLOG(INFO) << __FUNCTION__ << "(); State=" << GetState();
     switch(GetState()) {

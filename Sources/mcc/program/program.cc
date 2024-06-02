@@ -115,7 +115,7 @@ namespace mcc::program {
 
   Program* Program::FromJson(const uri::Uri& uri) {
     if(uri.HasScheme("program")) {
-      const auto programs_dir = fmt::format("{0:s}/shaders/", FLAGS_resources);
+      const auto programs_dir = fmt::format("{0:s}/shaders", FLAGS_resources);
 
       auto path = uri.path;
       if(!StartsWith(path, programs_dir))
@@ -131,6 +131,7 @@ namespace mcc::program {
     }
     MCC_ASSERT(uri.HasScheme("file"));
     MCC_ASSERT(uri.HasExtension("json"));
+    DLOG(INFO) << "getting program from: " << uri;
 
     ProgramReaderHandler handler;
     const auto result = json::ParseJson<ProgramReaderHandler>(uri, handler);
@@ -146,18 +147,7 @@ namespace mcc::program {
     DLOG(INFO) << "shaders:";
     for(const auto& shader : shaders) {
       DLOG(INFO) << " - " << shader;
-      switch(shader.GetType()) {
-        case shader::kVertexShader: {
-          const auto sh = VertexShader::FromJson(shader.GetUri());
-          builder.Attach(sh);
-          break;
-        }
-        case shader::kFragmentShader: {
-          const auto sh = FragmentShader::FromJson(shader.GetUri());
-          builder.Attach(sh);
-          break;
-        }
-      }
+      builder.Attach(shader.GetShader());
     }
 
     return builder.Build();

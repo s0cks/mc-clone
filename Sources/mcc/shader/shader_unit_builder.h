@@ -1,6 +1,7 @@
 #ifndef MCC_SHADER_UNIT_BUILDER_H
 #define MCC_SHADER_UNIT_BUILDER_H
 
+#include "mcc/uri.h"
 #include "mcc/builder.h"
 #include "mcc/shader/shader_type.h"
 #include "mcc/shader/shader_code.h"
@@ -30,6 +31,10 @@ namespace mcc::shader {
     void Append(ShaderCode* code) {
       MCC_ASSERT(code);
       code_.push_back(code);
+    }
+
+    void Append(const uri::Uri& uri) {
+      return Append(ShaderCode::FromFile(uri));
     }
 
     void Append(const ShaderCodeList& code) {

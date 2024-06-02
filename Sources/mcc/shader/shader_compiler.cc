@@ -21,7 +21,8 @@ namespace mcc::shader {
       target_(target),
       unit_(unit),
       sources_(),
-      lengths_() {
+      lengths_(),
+      num_sources_(0) {
       MCC_ASSERT(unit);
       const auto num_sources = unit->GetSize();
       sources_.reserve(num_sources);
@@ -45,6 +46,7 @@ namespace mcc::shader {
     }
 
     bool Visit(ShaderCode* code) override {
+      DLOG(INFO) << "attaching: " << code->ToString();
       Append(code);
       return true;
     }
@@ -54,6 +56,10 @@ namespace mcc::shader {
         DLOG(ERROR) << "failed to visit sources of: " << GetUnit()->ToString();
         return false;
       }
+
+      DLOG(INFO) << "sources:";
+      for(auto idx = 0; idx < num_sources_; idx++)
+        DLOG(INFO) << " -\n\t" << std::string(sources_[idx], lengths_[idx]);
 
       glShaderSource(GetTarget(), num_sources_, &sources_[0], &lengths_[0]);
       CHECK_GL(ERROR);
