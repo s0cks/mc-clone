@@ -10,7 +10,7 @@ namespace mcc::sha256 {
   static const uint64_t kDigestSize = SHA256_DIGEST_LENGTH;
   static const uint64_t kSize = kDigestSize;
 
-  static const uint64_t kDefaultNonceSize = 1024;
+  static const uint64_t kDefaultNonceSize = 4096;
 
   uint256 Of(const uint8_t* data, const uint64_t length);
   uint256 Nonce(const uint64_t size = kDefaultNonceSize);
