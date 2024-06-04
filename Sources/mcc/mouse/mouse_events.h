@@ -133,12 +133,11 @@ namespace mcc::mouse {
   public:
     explicit MouseMoveEvent(Mouse* mouse,
                             const glm::vec2 pos,
-                            const glm::vec2 last_pos,
-                            const glm::vec2 delta):
+                            const glm::vec2 last_pos):
       MouseEvent(mouse),
       pos_(pos),
       last_pos_(last_pos),
-      delta_(delta) {
+      delta_(pos - last_pos) {
     }
     ~MouseMoveEvent() override = default;
 

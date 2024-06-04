@@ -11,7 +11,6 @@ namespace mcc::gui {
   private:
     rx::subscription sub_mouse_move_;
     rx::subscription sub_mouse_enter_;
-    bool entered_;
     Component* component_;
 
     void OnMouseMove(mouse::MouseMoveEvent* event);

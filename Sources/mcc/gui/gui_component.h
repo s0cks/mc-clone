@@ -3,6 +3,7 @@
 
 #include "mcc/gui/gui_events.h"
 #include "mcc/gui/gui_constants.h"
+#include "mcc/gui/gui_component_flags.h"
 
 namespace mcc {
   namespace mouse {
@@ -36,7 +37,11 @@ namespace mcc::gui {
     friend class OnMouseEnterEvent;
     friend class OnMouseClickEvent;
   protected:
-    Component() = default;
+    ComponentFlags flags_;
+
+    explicit Component(const ComponentFlags flags = ComponentFlags::None()):
+      flags_(flags) {
+    }
     virtual void Publish(GuiEvent* event) = 0;
 
     template<class E, typename... Args>
@@ -55,6 +60,14 @@ namespace mcc::gui {
     virtual void AddChild(Component* child) = 0;
     virtual rx::observable<GuiEvent*> OnEvent() const = 0;
     virtual const char* GetComponentName() const = 0;
+
+    const ComponentFlags& GetFlags() const {
+      return flags_;
+    }
+
+    ComponentFlags& GetFlags() {
+      return flags_;
+    }
 
     inline rx::observable<MouseEnterEvent*> OnMouseEnter() const {
       return OnEvent()
@@ -95,6 +108,7 @@ namespace mcc::gui {
 
     void Publish(GuiEvent* event) override {
       MCC_ASSERT(event);
+      DLOG(INFO) << "publishing: " << event->ToString();
       const auto& subscriber = events_.get_subscriber();
       subscriber.on_next(event);
     }
@@ -105,19 +119,31 @@ namespace mcc::gui {
       return pos_;
     }
 
+    float GetX() const {
+      return pos_.x;
+    }
+
+    float GetY() const {
+      return pos_.y;
+    }
+
     const Size& GetSize() const override {
       return size_;
     }
 
+    float GetWidth() const {
+      return size_[0];
+    }
+
+    float GetHeight() const {
+      return size_[1];
+    }
+
     bool Contains(const Point& pos) const override {
-      const auto& minX = pos_[0];
-      const auto& maxX = pos_[0] + size_[0];
-      const auto& minY = pos_[1];
-      const auto& maxY = pos_[1] + size_[1];
-      return pos[0] >= minX
-          && pos[0] <= maxX
-          && pos[1] >= minY
-          && pos[1] <= maxY;
+      return pos.x >= GetX()
+          && pos.x <= GetX() + GetWidth()
+          && pos.y >= GetY()
+          && pos.y <= GetY() + GetHeight();
     }
 
     int32_t GetNumberOfChildren() const override {

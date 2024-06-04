@@ -12,7 +12,7 @@ namespace mcc {
     RelaxedAtomic():
       value_() {
     }
-    explicit RelaxedAtomic(const T& value):
+    constexpr RelaxedAtomic(const T& value):
       value_(value) {
     }
     RelaxedAtomic(const RelaxedAtomic<T>& rhs):

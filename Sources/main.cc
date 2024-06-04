@@ -82,7 +82,7 @@ public:
     OnMouseEnterEvent(this),
     OnMouseExitEvent(this),
     OnMouseClickEvent(this),
-    grab_cursor_(mcc::mouse::GlfwCursor::New("bibata-modern-ice/hand1.png")) {
+    grab_cursor_(mcc::mouse::GlfwCursor::New("cursor://bibata-modern-ice/hand1.png")) {
     SetPos({ 0, 0 });
     SetSize({ 128, 128 });
     SetBackground(mcc::kBlack);

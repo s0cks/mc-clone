@@ -18,6 +18,7 @@ namespace mcc::mouse {
 
   void Mouse::PublishEvent(MouseEvent* event) {
     MCC_ASSERT(event);
+    DLOG(INFO) << "publishing: " << event->ToString();
     const auto& subscriber = events_.get_subscriber();
     subscriber.on_next(event);
   }

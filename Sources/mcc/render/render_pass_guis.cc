@@ -31,17 +31,30 @@ namespace mcc::render {
   protected:
     gui::VertexList& vertices_;
     UIntIbo::IndexList& indices_;
+    glm::vec2 fb_size_;
   public:
     ComponentRenderer(gui::VertexList& vertices,
-                      UIntIbo::IndexList& indices):
+                      UIntIbo::IndexList& indices, 
+                      const glm::vec2& fb_size):
       ComponentVisitor(),
       vertices_(vertices),
-      indices_(indices) {
+      indices_(indices),
+      fb_size_(fb_size) {
     }
     ~ComponentRenderer() override = default;
 
     bool VisitWindow(gui::Window* window) override {
-      shape::NewTexturedCenteredRect(vertices_, indices_, glm::vec2(0, 0), glm::vec2(1, 1), window->GetBackground());
+      const auto win = Window::Get();
+      MCC_ASSERT(win);
+      const auto fb_size = win->GetSize();
+      DLOG(INFO) << "fb_size: " << glm::to_string(fb_size);
+      const auto size = window->GetSize();
+      DLOG(INFO) << "size: " << glm::to_string(size);
+      const float xScale = size[0] / static_cast<float>(fb_size[0]);
+      const float yScale = size[1] / static_cast<float>(fb_size[1]);
+      const auto scale = glm::vec2(xScale, yScale);
+      DLOG(INFO) << "scale: " << glm::to_string(scale);
+      shape::NewRect(vertices_, indices_, window->GetPos(), glm::vec2(scale), window->GetBackground());
       return true;
     }
   };
@@ -156,15 +169,18 @@ namespace mcc::render {
 
   RenderPassGuis::RenderPassGuis():
     RenderPass(),
-    prog_(Program::FromJson("program:textured_2d")),
-    texture_(Texture2d::New("concrete.png")) {
+    prog_(Program::FromJson("program:colored_2d")) {
   }
 
   void RenderPassGuis::Render() {
+    const auto window = Window::Get();
+    MCC_ASSERT(window);
+    const auto fb_size = window->GetSize();
+
     // compute vertices && indices for roots
     gui::VertexList vertices;
     UIntIbo::IndexList indices;
-    ComponentRenderer renderer(vertices, indices);
+    ComponentRenderer renderer(vertices, indices, fb_size);
     const auto num_roots = gui::Tree::GetNumberOfRoots();
     DLOG(INFO) << "rendering " << num_roots << " root components.....";
     LOG_IF(ERROR, !gui::Tree::VisitAllRoots(&renderer)) << "failed to render tree.";
@@ -188,17 +204,16 @@ namespace mcc::render {
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     CHECK_GL(FATAL);
 
-    texture_->Bind0();
-
     const auto camera = camera::GetOrthoCamera();
     MCC_ASSERT(camera);
     auto model = glm::mat4(1.0f);
     vbo::VboDrawScope draw_scope(vbo);
     program::ApplyProgramScope prog(prog_);
-    prog.Set("tex", 0);
     prog.Set("projection", camera->GetProjection());
     prog.Set("view", camera->GetView());
     prog.Set("model", model);
     draw_scope.DrawTriangles();
-  } 
+
+    DLOG(INFO) << "camera pos: " << glm::to_string(camera->GetPos());
+  }
 }

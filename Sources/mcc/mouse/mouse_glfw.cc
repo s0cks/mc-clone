@@ -74,11 +74,8 @@ namespace mcc::mouse {
     const auto window_size = window->GetSize();
     const auto handle = Window::Get()->handle();
     pos_ = GetCursorPosition();
-    // if(ShouldCaptureMouse() && Clamp(pos_, glm::vec2(window_size[0], window_size[1])))
-    //   SetCursorPos(pos_);
-    delta_ = (pos_ - last_pos_);
-    if(HasMotion(delta_))
-      PublishEvent<MouseMoveEvent>(this, pos_, last_pos_, delta_);
+    if(HasMotion(last_pos_ - pos_))
+      PublishEvent<MouseMoveEvent>(this, pos_, last_pos_);
     last_pos_ = pos_;
 
     for(const auto& btn : buttons_) {

@@ -7,8 +7,8 @@ namespace mcc::gui {
   OnMouseEnterEvent::OnMouseEnterEvent(Component* component):
     sub_mouse_move_(),
     sub_mouse_enter_(),
-    entered_(false),
     component_(component) {
+    MCC_ASSERT(component);
     sub_mouse_move_ = mouse::OnMouseMoveEvent()
       .subscribe([this](mouse::MouseMoveEvent* event) {
         return OnMouseMove(event);
@@ -21,11 +21,10 @@ namespace mcc::gui {
 
   void OnMouseEnterEvent::OnMouseMove(mouse::MouseMoveEvent* event) {
     const auto& pos = event->pos();
-    if(!entered_ && component_->Contains(pos)) {
-      entered_ = true;
+    auto& flags = component_->GetFlags();
+    if(!flags.IsEntered() && component_->Contains(pos)) {
+      flags.SetEntered();
       component_->Publish<MouseEnterEvent>(pos);
-    } else if(entered_ && !component_->Contains(pos)) {
-      entered_ = false;
     }
   }
 }

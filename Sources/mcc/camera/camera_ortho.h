@@ -52,7 +52,7 @@ namespace mcc::camera {
     friend class GlfwMouse;
   public:
     static constexpr const auto kDefaultUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    static constexpr const auto kDefaultPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    static constexpr const auto kDefaultPos = glm::vec3(1.0f, 0.0f, 0.0f);
     static constexpr const auto kFront = glm::vec3(0.0f, 0.0f, -1.0f);
   protected:
     OrthoCameraData data_;

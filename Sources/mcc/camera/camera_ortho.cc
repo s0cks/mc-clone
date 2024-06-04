@@ -47,7 +47,7 @@ namespace mcc::camera {
   GetViewportSize() {
     const auto window = Window::Get();
     MCC_ASSERT(window);
-    return window->GetSize();
+    return glm::vec2(1.0f);
   }
 
   OrthoCamera::OrthoCamera(const glm::vec3& eye,
@@ -69,10 +69,9 @@ namespace mcc::camera {
   }
 
   glm::mat4 OrthoCameraData::CalculateProjection() const {
-    const auto window = Window::Get();
-    MCC_ASSERT(window);
-    const auto v = viewport[2] / viewport[3];
-    return glm::ortho(-v, v, -1.0f, 1.0f, 0.1f, 100.0f);
+    const auto width = static_cast<float>(viewport[2]);
+    const auto height = static_cast<float>(viewport[3]);
+    return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f);
   }
 
   glm::vec2 OrthoCamera::CalculateMouseNDC(const glm::vec3& pos, const glm::mat4& model) const {
