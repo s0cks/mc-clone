@@ -42,7 +42,6 @@ namespace mcc::program {
       return name_;
     }
 
-
     bool operator==(const ProgramAttribute& rhs) const {
       return index_ == rhs.index_
           && type_ == rhs.type_

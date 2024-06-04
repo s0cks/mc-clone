@@ -113,7 +113,7 @@ namespace mcc::program {
         DLOG(INFO) << " - " << uniform;
       });
 #endif //MCC_DEBUG
-    return program;    
+    return program;
   }
 
   rx::observable<Program*> ProgramBuilder::BuildAsync() const {
