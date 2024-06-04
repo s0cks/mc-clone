@@ -34,7 +34,7 @@ namespace mcc::program {
       return type_;
     }
 
-    const uword GetSize() const {
+    uword GetSize() const {
       return size_;
     }
 

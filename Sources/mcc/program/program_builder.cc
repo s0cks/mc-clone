@@ -103,7 +103,7 @@ namespace mcc::program {
     DLOG(INFO) << "attributes: ";
     program->GetActiveAttributes()
       .as_blocking()
-      .subscribe([](const Program::ActiveAttribute& attr) {
+      .subscribe([](const ProgramAttribute& attr) {
         DLOG(INFO) << " - " << attr;
       });
     DLOG(INFO) << "uniforms: ";

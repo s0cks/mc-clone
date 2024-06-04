@@ -56,8 +56,8 @@ namespace mcc::program {
     return static_cast<int>(value);
   }
 
-  rx::observable<Program::ActiveAttribute> Program::GetActiveAttributes() const {
-    return rx::observable<>::create<ActiveAttribute>([this](rx::subscriber<ActiveAttribute> s) {
+  rx::observable<ProgramAttribute> Program::GetActiveAttributes() const {
+    return rx::observable<>::create<ProgramAttribute>([this](rx::subscriber<ProgramAttribute> s) {
       DLOG(INFO) << "getting active attributes for " << ToString() << "...";
 
       GLint length;
@@ -67,12 +67,10 @@ namespace mcc::program {
       char name[max_length];
       const auto num_attrs = GetNumberOfActiveAttributes();
       for(auto idx = 0; idx < num_attrs; idx++) {
+        memset(name, 0, sizeof(name));
         glGetActiveAttrib(GetId(), idx, max_length, &length, &size, &type, (GLchar*) name);
         CHECK_GL(FATAL);
-
-        const auto attr = ActiveAttribute(type, size, name, length);
-        memset(name, 0, sizeof(name));
-        s.on_next(attr);
+        s.on_next(ProgramAttribute(idx, type, size, name, length));
       }
       s.on_completed();
     });

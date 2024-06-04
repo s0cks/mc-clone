@@ -10,6 +10,7 @@
 #include "mcc/program/program_id.h"
 #include "mcc/program/program_events.h"
 #include "mcc/program/program_uniform.h"
+#include "mcc/program/program_attribute.h"
 
 namespace mcc {
   namespace program {
@@ -63,37 +64,6 @@ namespace mcc {
       friend class ProgramBuilder;
       friend class ApplyProgramScope;
       friend class ProgramLinkScope;
-    public:
-      struct ActiveAttribute {
-        GLenum type;
-        GLint size;
-        std::string name;
-
-        ActiveAttribute() = default;
-        ActiveAttribute(const ActiveAttribute& rhs) = default;
-        ~ActiveAttribute() = default;
-        ActiveAttribute& operator=(const ActiveAttribute& rhs) = default;
-
-        friend class Program;
-      private:
-        ActiveAttribute(const GLenum t,
-                        const GLint s,
-                        const char* name,
-                        const int name_length):
-          type(t),
-          size(s),
-          name(name, name_length) {
-        }
-
-        friend std::ostream& operator<<(std::ostream& stream, const ActiveAttribute& rhs) {
-          stream << "ActiveAttribute(";
-          stream << "type=" << rhs.type << ", ";
-          stream << "size=" << rhs.size << ", ";
-          stream << "name=" << rhs.name;
-          stream << ")";
-          return stream;
-        }
-      };
     protected:
       enum Property : GLenum {
   #define DEFINE_PROGRAM_PROPERTY(Name, GlValue) k##Name = (GlValue),
@@ -142,7 +112,7 @@ namespace mcc {
         return GetProgramiv(kActiveAttributes);
       }
 
-      virtual rx::observable<ActiveAttribute> GetActiveAttributes() const;
+      virtual rx::observable<ProgramAttribute> GetActiveAttributes() const;
 
       virtual int GetNumberOfActiveUniforms() const {
         return GetProgramiv(kActiveUniforms);
