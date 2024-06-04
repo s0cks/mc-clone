@@ -9,6 +9,7 @@
 #include "mcc/shader/shader_id.h"
 #include "mcc/program/program_id.h"
 #include "mcc/program/program_events.h"
+#include "mcc/program/program_uniform.h"
 
 namespace mcc {
   namespace program {
@@ -93,37 +94,6 @@ namespace mcc {
           return stream;
         }
       };
-
-      struct ActiveUniform {
-        GLenum type;
-        GLint size;
-        std::string name;
-
-        ActiveUniform() = default;
-        ActiveUniform(const ActiveUniform& rhs) = default;
-        ~ActiveUniform() = default;
-        ActiveUniform& operator=(const ActiveUniform& rhs) = default;
-
-        friend class Program;
-      private:
-        ActiveUniform(const GLenum t,
-                        const GLint s,
-                        const char* name,
-                        const int name_length):
-          type(t),
-          size(s),
-          name(name, name_length) {
-        }
-
-        friend std::ostream& operator<<(std::ostream& stream, const ActiveUniform& rhs) {
-          stream << "ActiveUniform(";
-          stream << "type=" << rhs.type << ", ";
-          stream << "size=" << rhs.size << ", ";
-          stream << "name=" << rhs.name;
-          stream << ")";
-          return stream;
-        }
-      };
     protected:
       enum Property : GLenum {
   #define DEFINE_PROGRAM_PROPERTY(Name, GlValue) k##Name = (GlValue),
@@ -178,7 +148,7 @@ namespace mcc {
         return GetProgramiv(kActiveUniforms);
       }
 
-      virtual rx::observable<ActiveUniform> GetActiveUniforms() const;
+      virtual rx::observable<ProgramUniform> GetActiveUniforms() const;
 
       virtual GLint GetUniformLocation(const std::string& name) const {
         return glGetUniformLocation(GetId(), name.c_str());

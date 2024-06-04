@@ -109,7 +109,7 @@ namespace mcc::program {
     DLOG(INFO) << "uniforms: ";
     program->GetActiveUniforms()
       .as_blocking()
-      .subscribe([](const Program::ActiveUniform& uniform) {
+      .subscribe([](const ProgramUniform& uniform) {
         DLOG(INFO) << " - " << uniform;
       });
 #endif //MCC_DEBUG

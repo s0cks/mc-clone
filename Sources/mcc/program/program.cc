@@ -78,8 +78,8 @@ namespace mcc::program {
     });
   }
 
-  rx::observable<Program::ActiveUniform> Program::GetActiveUniforms() const {
-    return rx::observable<>::create<ActiveUniform>([this](rx::subscriber<ActiveUniform> s) {
+  rx::observable<ProgramUniform> Program::GetActiveUniforms() const {
+    return rx::observable<>::create<ProgramUniform>([this](rx::subscriber<ProgramUniform> s) {
       GLint length;
       GLint size;
       GLenum type;
@@ -87,12 +87,10 @@ namespace mcc::program {
       char name[max_length];
       const auto num_attrs = GetNumberOfActiveUniforms();
       for(auto idx = 0; idx < num_attrs; idx++) {
+        memset(name, 0, sizeof(name));
         glGetActiveUniform(GetId(), idx, max_length, &length, &size, &type, (GLchar*) name);
         CHECK_GL(FATAL);
-
-        const auto attr = ActiveUniform(type, size, name, length);
-        memset(name, 0, sizeof(name));
-        s.on_next(attr);
+        s.on_next(ProgramUniform(idx, type, size, name, length));
       }
       s.on_completed();
     });
