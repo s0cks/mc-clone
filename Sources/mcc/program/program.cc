@@ -52,12 +52,14 @@ namespace mcc::program {
 
   int Program::GetProgramiv(const Property property) const {
     GLint value;
-    glGetProgramiv(GetProgramId(), property, &value);
+    glGetProgramiv(GetId(), property, &value);
     return static_cast<int>(value);
   }
 
   rx::observable<Program::ActiveAttribute> Program::GetActiveAttributes() const {
     return rx::observable<>::create<ActiveAttribute>([this](rx::subscriber<ActiveAttribute> s) {
+      DLOG(INFO) << "getting active attributes for " << ToString() << "...";
+
       GLint length;
       GLint size;
       GLenum type;
@@ -65,7 +67,7 @@ namespace mcc::program {
       char name[max_length];
       const auto num_attrs = GetNumberOfActiveAttributes();
       for(auto idx = 0; idx < num_attrs; idx++) {
-        glGetActiveAttrib(GetProgramId(), idx, max_length, &length, &size, &type, (GLchar*) name);
+        glGetActiveAttrib(GetId(), idx, max_length, &length, &size, &type, (GLchar*) name);
         CHECK_GL(FATAL);
 
         const auto attr = ActiveAttribute(type, size, name, length);
@@ -85,7 +87,7 @@ namespace mcc::program {
       char name[max_length];
       const auto num_attrs = GetNumberOfActiveUniforms();
       for(auto idx = 0; idx < num_attrs; idx++) {
-        glGetActiveUniform(GetProgramId(), idx, max_length, &length, &size, &type, (GLchar*) name);
+        glGetActiveUniform(GetId(), idx, max_length, &length, &size, &type, (GLchar*) name);
         CHECK_GL(FATAL);
 
         const auto attr = ActiveUniform(type, size, name, length);
@@ -100,7 +102,7 @@ namespace mcc::program {
     std::stringstream ss;
     ss << "Program(";
     ss << "meta=" << GetMeta() << ", ";
-    ss << "id=" << GetProgramId();
+    ss << "id=" << GetId();
     ss << ")";
     return ss.str();
   }

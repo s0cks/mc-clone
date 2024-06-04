@@ -3,7 +3,7 @@
 
 namespace mcc::program {
   ProgramId ProgramScope::GetProgramId() const {
-    return GetProgram()->GetProgramId();
+    return GetProgram()->GetId();
   }
 
   void ProgramUboBindScope::Bind(const std::string& name, Ubo* ubo) {

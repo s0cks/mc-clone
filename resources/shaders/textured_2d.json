@@ -2,7 +2,7 @@
   "type": "Program",
   "meta": {
     "name": "textured_2d",
-    "tags": [ ]
+    "tags": [ "2d" ]
   },
   "data": {
     "vertex": "shader:textured_2d.vert",

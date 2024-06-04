@@ -23,21 +23,22 @@ namespace mcc::shader {
       return true;
     }
 
-    bool Print(ShaderUnit* unit) {
+    bool PrintShaderUnit(ShaderUnit* unit) {
       MCC_ASSERT(unit);
       LOG_AT_LEVEL(GetSeverity()) << "Shader Unit:";
       const auto& meta = unit->GetMeta();
       LOG_AT_LEVEL(GetSeverity()) << "Name: " << meta.GetName();
       LOG_AT_LEVEL(GetSeverity()) << "Tags: " << meta.GetTags();
+      LOG_AT_LEVEL(GetSeverity()) << "Hash: " << unit->GetHash();
       return unit->Accept(this);
     }
   public:
     template<const google::LogSeverity Severity = google::INFO>
-    static inline void
+    static inline bool
     Print(ShaderUnit* unit) {
       MCC_ASSERT(unit);
       ShaderUnitPrinter printer(Severity);
-      return printer.Print(unit);
+      return printer.PrintShaderUnit(unit);
     }
   };
 }

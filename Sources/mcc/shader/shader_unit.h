@@ -13,13 +13,22 @@ namespace mcc::shader {
   protected:
     ShaderType type_;
     ShaderCodeList code_;
+    uint256 hash_;
 
     explicit ShaderUnit(const Metadata& meta,
                         const ShaderType type,
                         const ShaderCodeList& code):
       Object(meta),
       type_(type),
-      code_(code) {
+      code_(code),
+      hash_() {
+      std::vector<uint256> hashes;
+      hashes.reserve(code.size());
+      std::for_each(std::begin(code), std::end(code), [&hashes](ShaderCode* code) {
+        hashes.push_back(code->GetSHA256());
+      });
+      merkle::Tree tree(hashes);
+      hash_ = tree.GetRootHash();
     }
   public:
     ~ShaderUnit() override = default;
@@ -54,7 +63,9 @@ namespace mcc::shader {
       return code_;
     }
 
-    uint256 GetHash() const;
+    const uint256& GetHash() const {
+      return hash_;
+    }
 
     bool Accept(ShaderCodeVisitor* vis) {
       MCC_ASSERT(vis);

@@ -6,6 +6,7 @@
 
 #include "mcc/buffer.h"
 #include "mcc/object.h"
+#include "mcc/merkle.h"
 #include "mcc/uint256.h"
 #include "mcc/shader/shader_type.h"
 

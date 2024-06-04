@@ -19,36 +19,101 @@ namespace mcc::program {
     return true;
   }
 
+  class ProgramLinkScope {
+    typedef std::vector<ShaderId> ShaderList;
+  protected:
+    ProgramId id_;
+    ShaderList linked_;
+
+    inline void Attach(const ShaderId id) {
+      Program::Attach(id_, id);
+      return linked_.push_back(id);
+    }
+
+    inline void Detach(const ShaderId id) {
+      return Program::Detach(id_, id);
+    }
+  public:
+    explicit ProgramLinkScope(const ProgramId id, const ShaderSet& shaders):
+      id_(id),
+      linked_() {
+      linked_.reserve(2);
+      shaders.ToObservable()
+        .as_blocking()
+        .subscribe([this](const ShaderId& id) {
+          return Attach(id);
+        });
+    }
+    ~ProgramLinkScope() {
+      std::for_each(begin(), end(), [this](const ShaderId& id) {
+        return Detach(id);
+      });
+    }
+
+    ProgramId GetProgramId() const {
+      return id_;
+    }
+
+    ProgramLinkStatus Link() const {
+      glLinkProgram(id_);
+      CHECK_GL(FATAL);
+      return ProgramLinkStatus(id_);
+    }
+
+    ShaderList::const_iterator begin() const {
+      return std::begin(linked_);
+    }
+
+    ShaderList::const_iterator end() const {
+      return std::end(linked_);
+    }
+
+    ProgramLinkScope& operator<<(const ShaderId id) {
+      Program::Attach(id_, id);
+      linked_.push_back(id);
+      return *this;
+    }
+
+    ProgramLinkScope& operator<<(const ShaderList& shaders) {
+      if(!shaders.empty())
+        linked_.insert(std::end(linked_), std::begin(shaders), std::end(shaders));
+      return *this;
+    }
+  };
+
   Program* ProgramBuilder::Build() const { //TODO: code cleanup
     // create program
     const auto id = glCreateProgram();
+    DLOG(INFO) << "created program: " << id;
     CHECK_GL(FATAL);
     if(!IsValidProgramId(id)) {
       DLOG(ERROR) << "failed to create program.";
       return nullptr;
     }
 
-    // attach all...
-    const auto& shaders = GetShaders();
-    for(const auto& shader : shaders) {
-      Program::Attach(id, shader.id());
-    }
-
-    // link program
-    glLinkProgram(id);
-    CHECK_GL(FATAL);
-
-    const auto status = ProgramLinkStatus(id);
+    ProgramLinkScope link_scope(id, GetShaders());
+    const auto status = link_scope.Link();
     if(!status) {
       DLOG(ERROR) << "failed to link Program #" << id << ": " << status;
       return nullptr; //TODO: cleanup
     }
 
-    //TODO: more cleanup
-    for(const auto& shader : GetShaders()) {
-      Program::Detach(id, shader.id());
-    }
-    return new Program(meta_, id);
+    const auto program = new Program(meta_, id);
+#ifdef MCC_DEBUG
+    DLOG(INFO) << "attributes: ";
+    program->GetActiveAttributes()
+      .as_blocking()
+      .subscribe([](const Program::ActiveAttribute& attr) {
+        DLOG(INFO) << " - " << attr;
+      });
+    DLOG(INFO) << "uniforms: ";
+    program->GetActiveUniforms()
+      .as_blocking()
+      .subscribe([](const Program::ActiveUniform& uniform) {
+        DLOG(INFO) << " - " << uniform;
+      });
+#endif //MCC_DEBUG
+    return program;    
   }
 
   rx::observable<Program*> ProgramBuilder::BuildAsync() const {

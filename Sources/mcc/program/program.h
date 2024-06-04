@@ -61,6 +61,7 @@ namespace mcc {
       friend class ProgramLinker;
       friend class ProgramBuilder;
       friend class ApplyProgramScope;
+      friend class ProgramLinkScope;
     public:
       struct ActiveAttribute {
         GLenum type;
@@ -81,6 +82,15 @@ namespace mcc {
           type(t),
           size(s),
           name(name, name_length) {
+        }
+
+        friend std::ostream& operator<<(std::ostream& stream, const ActiveAttribute& rhs) {
+          stream << "ActiveAttribute(";
+          stream << "type=" << rhs.type << ", ";
+          stream << "size=" << rhs.size << ", ";
+          stream << "name=" << rhs.name;
+          stream << ")";
+          return stream;
         }
       };
 
@@ -104,6 +114,15 @@ namespace mcc {
           size(s),
           name(name, name_length) {
         }
+
+        friend std::ostream& operator<<(std::ostream& stream, const ActiveUniform& rhs) {
+          stream << "ActiveUniform(";
+          stream << "type=" << rhs.type << ", ";
+          stream << "size=" << rhs.size << ", ";
+          stream << "name=" << rhs.name;
+          stream << ")";
+          return stream;
+        }
       };
     protected:
       enum Property : GLenum {
@@ -122,8 +141,6 @@ namespace mcc {
         return UseProgram(kInvalidProgramId);
       }
     protected:
-      ProgramId id_;
-
       explicit Program(const Metadata& meta, const ProgramId id);
 
       int GetProgramiv(const Property property) const;
@@ -141,15 +158,11 @@ namespace mcc {
       template<typename E, typename... Args>
       inline void
       Publish(Args... args) const {
-        E event(GetProgramId(), args...);
+        E event(GetId(), args...);
         return Publish(&event);
       }
     public:
       virtual ~Program() override = default;
-
-      ProgramId GetProgramId() const {
-        return id_;
-      }
 
       virtual int GetNumberOfAttachedShaders() const {
         return GetProgramiv(kAttachedShaders);
@@ -168,11 +181,11 @@ namespace mcc {
       virtual rx::observable<ActiveUniform> GetActiveUniforms() const;
 
       virtual GLint GetUniformLocation(const std::string& name) const {
-        return glGetUniformLocation(GetProgramId(), name.c_str());
+        return glGetUniformLocation(GetId(), name.c_str());
       }
 
       virtual GLint GetUniformBlockIndex(const std::string& name) const {
-        return glGetUniformBlockIndex(GetProgramId(), name.c_str());
+        return glGetUniformBlockIndex(GetId(), name.c_str());
       }
 
       virtual void SetUniformBlock(const std::string& name, const GLuint binding) const {
@@ -184,13 +197,13 @@ namespace mcc {
 
       inline rx::observable<ProgramEvent*>
       OnEvent() const {
-        return OnProgramEvent(GetProgramId());
+        return OnProgramEvent(GetId());
       }
 
 #define DEFINE_ON_PROGRAM_EVENT(Name)                      \
       inline rx::observable<Name##Event*>                  \
       On##Name##Event() const {                            \
-        return program::On##Name##Event(GetProgramId());   \
+        return program::On##Name##Event(GetId());          \
       }
       FOR_EACH_PROGRAM_EVENT(DEFINE_ON_PROGRAM_EVENT);
 #undef DEFINE_ON_PROGRAM_EVENT

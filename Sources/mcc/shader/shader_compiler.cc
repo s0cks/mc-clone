@@ -4,6 +4,7 @@
 #include "mcc/uv/utils.h"
 #include "mcc/thread_local.h"
 
+#include "mcc/shader/shader_unit_printer.h"
 #include "mcc/shader/shader_compile_status.h"
 
 namespace mcc::shader {
@@ -59,7 +60,7 @@ namespace mcc::shader {
 
       DLOG(INFO) << "sources:";
       for(auto idx = 0; idx < num_sources_; idx++)
-        DLOG(INFO) << " -\n\t" << std::string(sources_[idx], lengths_[idx]);
+        DLOG(INFO) << " -\n" << std::string(sources_[idx], lengths_[idx]);
 
       glShaderSource(GetTarget(), num_sources_, &sources_[0], &lengths_[0]);
       CHECK_GL(ERROR);
@@ -90,7 +91,12 @@ namespace mcc::shader {
     if(!unit)
       return kInvalidShaderId;
     using namespace units::time;
-    DLOG(INFO) << "compiling " << unit->ToString() << "....";
+#ifdef MCC_DEBUG
+    DLOG(INFO) << "compiling:";
+    ShaderUnitPrinter::Print(unit);
+#else
+    LOG(INFO) << "compiling " << unit->ToString() << "....";
+#endif //MCC_DEBUG
     const auto start_ns = uv_hrtime();
     const auto id = glCreateShader(unit->GetType());
     if(IsValidShaderId(id))

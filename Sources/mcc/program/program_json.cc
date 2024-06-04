@@ -83,7 +83,9 @@ namespace mcc::program {
   }
 
   bool ProgramReaderHandler::OnParseProgramShaderRef(const shader::ShaderType type, const uri::Uri& uri) {
-    shaders_.emplace_back(type, uri);
+    const auto shader = ProgramShader(type, uri);
+    DLOG(INFO) << "parsed: " << shader;
+    shaders_.push_back(shader);
     return TransitionTo(kData);
   }
 }

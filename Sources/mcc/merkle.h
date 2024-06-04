@@ -7,6 +7,7 @@
 
 #include "mcc/sha256.h"
 
+//TODO: cleanup memory usage
 namespace mcc::merkle {
   class Node;
   class NodeVisitor {
@@ -138,7 +139,6 @@ namespace mcc::merkle {
   typedef std::vector<Node*> NodeList;
 
   class Tree {
-    DEFINE_DEFAULT_COPYABLE_TYPE(Tree);
   protected:
     Node* root_;
     std::vector<Node*> leaves_;
@@ -153,6 +153,10 @@ namespace mcc::merkle {
     Tree() = default;
     explicit Tree(const NodeList& leaves);
     explicit Tree(const std::vector<uint256>& leaves);
+    Tree(const Tree& rhs):
+      root_(rhs.root_),
+      leaves_(rhs.leaves_) {
+    }
     ~Tree() {
       if(root_)
         delete root_;
@@ -199,6 +203,15 @@ namespace mcc::merkle {
     bool Accept(NodeVisitor* vis) const {
       MCC_ASSERT(vis);
       return VisitRoot(vis) && VisitLeaves(vis);
+    }
+
+    Tree& operator=(const Tree& rhs) {
+      root_ = rhs.root_;
+      leaves_.clear();
+      std::for_each(std::begin(rhs.leaves_), std::begin(rhs.leaves_), [this](Node* node) {
+        leaves_.push_back(node);
+      });
+      return *this;
     }
   };
 }
