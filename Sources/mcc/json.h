@@ -218,6 +218,10 @@ namespace mcc::json {
       return state != State::kError;
     }
 
+    inline bool TransitionToError() {
+      return TransitionTo(State::kError);
+    }
+
     inline bool NoTransition() {
       return GetState() != State::kError;
     }
@@ -337,6 +341,10 @@ namespace mcc::json {
         default:
           return TransitionTo(State::kError);
       }
+    }
+
+    virtual bool Bool(const bool value) {
+      return Default();
     }
 
     virtual bool Default() {
