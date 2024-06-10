@@ -2,6 +2,8 @@
 #define MCC_CAMERA_ORTHO_H
 
 #include <utility>
+
+#include "mcc/uri.h"
 #include "mcc/keyboard/key.h"
 #include "mcc/camera/camera.h"
 
@@ -87,7 +89,6 @@ namespace mcc::camera {
       OrthoCamera(pos, pos, up) {
     }
     ~OrthoCamera() override = default;
-
     std::string ToString() const override;
 
     const glm::vec4& GetViewport() const {
@@ -116,6 +117,16 @@ namespace mcc::camera {
 
     std::pair<glm::vec3, glm::vec3> CastRay(const glm::vec2& mpos, const float distance = 15) const;
     glm::vec3 CastRayAt(const glm::vec2& mpos) const;
+  public:
+    static OrthoCamera* New(const Metadata& meta, const OrthoCameraData& data);
+    
+    static inline OrthoCamera*
+    New(const OrthoCameraData& data) {
+      return New(Metadata(), data);
+    }
+
+    static OrthoCamera* FromJson(const uri::Uri& uri);
+    static OrthoCamera* FromJson(const std::string& value);
   };
 
   OrthoCamera* GetOrthoCamera();
