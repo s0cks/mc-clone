@@ -1,3 +1,4 @@
+#ifdef MCC_GLFW
 #include "mcc/window/window.h"
 
 #include "mcc/gfx.h"
@@ -184,3 +185,5 @@ namespace mcc {
     return window;
   }
 }
+
+#endif //MCC_GLFW

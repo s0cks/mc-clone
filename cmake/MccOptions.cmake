@@ -14,3 +14,5 @@ if(VMEMORY_PROFILING)
     message(STATUS "Compiling w/ video memory profiling.")
     add_compile_definitions(MCC_VMEMPROF)
 endif()
+
+add_compile_definitions(MCC_GLFW)

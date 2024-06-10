@@ -1,3 +1,5 @@
+#ifdef MCC_GLFW
+
 #ifndef MCC_WINDOW_H
 #error "Please #include <mcc/window/window.h> directly."
 #endif //MCC_WINDOW_H
@@ -37,3 +39,5 @@ namespace mcc {
 }
 
 #endif //MCC_WINDOW_GLFW_H
+
+#endif //MCC_GLFW

@@ -57,8 +57,8 @@ namespace mcc::camera {
     return glm::lookAt(pos, pos + front, up);
   }
 
-  PerspectiveCamera::PerspectiveCamera(const PerspectiveCameraData& data):
-    Camera(),
+  PerspectiveCamera::PerspectiveCamera(const Metadata& meta, const PerspectiveCameraData& data):
+    Camera(meta),
     data_(data),
     ubo_(nullptr) {
     ubo::UboBuilder<gpu::CameraData> builder;
@@ -153,7 +153,7 @@ namespace mcc::camera {
     MCC_ASSERT(window);
     const auto viewport_size = window->GetSize();
     const auto data = PerspectiveCameraData(viewport_size, PerspectiveCamera::kDefaultFront, PerspectiveCamera::kDefaultPos, PerspectiveCamera::kDefaultUp);
-    return new PerspectiveCamera(data);
+    return PerspectiveCamera::New(data);
   }
 
   PerspectiveCamera* GetPerspectiveCamera() {
@@ -162,5 +162,21 @@ namespace mcc::camera {
     const auto camera = CreatePerspectiveCamera();
     camera_.Set(camera);
     return camera;
+  }
+
+  PerspectiveCamera* PerspectiveCamera::FromJson(const uri::Uri& uri) {
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
+  }
+
+  PerspectiveCamera* PerspectiveCamera::FromJson(const std::string& value) {
+    if(IsCameraUri(value)) {
+      auto path = value;
+      if(!EndsWith(path, ".json"))
+        path = fmt::format("{0:s}.json", path);
+      return FromJson(uri::Uri(path));
+    }
+    NOT_IMPLEMENTED(FATAL); //TODO: implement
+    return nullptr;
   }
 }

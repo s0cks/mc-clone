@@ -11,18 +11,26 @@ namespace gpu {
   };
 }
 
-namespace mcc::camera {
-  class Camera : public Object {
-  protected:
-    Camera() = default;
-    explicit Camera(const Metadata& meta):
-      Object(meta) {
+namespace mcc {
+  namespace camera {
+    class Camera : public Object {
+    protected:
+      Camera() = default;
+      explicit Camera(const Metadata& meta):
+        Object(meta) {
+      }
+    public:
+      virtual ~Camera() = default;
+      virtual const glm::mat4& GetProjection() const = 0;
+      virtual const glm::mat4& GetView() const = 0;
+    };
+
+    static inline bool
+    IsCameraUri(const std::string& value) {
+      return StartsWith(value, "camera://")
+          || StartsWith(value, "file://");
     }
-  public:
-    virtual ~Camera() = default;
-    virtual const glm::mat4& GetProjection() const = 0;
-    virtual const glm::mat4& GetView() const = 0;
-  };
+  }
 }
 
 #endif //MCC_CAMERA_H

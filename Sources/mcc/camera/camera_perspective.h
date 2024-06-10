@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "mcc/rx.h"
+#include "mcc/uri.h"
 #include "mcc/ubo/ubo.h"
 #include "mcc/uv/utils.h"
 #include "mcc/mouse/mouse.h"
@@ -66,7 +67,7 @@ namespace mcc::camera {
 
     void UpdateUbo();
   public:
-    explicit PerspectiveCamera(const PerspectiveCameraData& data = {});
+    explicit PerspectiveCamera(const Metadata& meta, const PerspectiveCameraData& data);
     ~PerspectiveCamera() override;
     std::string ToString() const override;
 
@@ -105,6 +106,17 @@ namespace mcc::camera {
     const glm::mat4& GetView() const override {
       return data_.view;
     }
+  public:
+    static inline PerspectiveCamera* New(const Metadata& meta, const PerspectiveCameraData& data) {
+      return new PerspectiveCamera(meta, data);
+    }
+
+    static inline PerspectiveCamera* New(const PerspectiveCameraData& data) {
+      return New(Metadata(), data);
+    }
+
+    static PerspectiveCamera* FromJson(const uri::Uri& uri);
+    static PerspectiveCamera* FromJson(const std::string& value);
   };
   
   PerspectiveCamera* GetPerspectiveCamera();
