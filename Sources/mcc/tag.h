@@ -19,6 +19,22 @@ namespace mcc {
     }
     ~Tag() = default;
 
+    int Compare(const Tag* rhs) const {
+      if(raw() < rhs->raw())
+        return -1;
+      else if(raw() > rhs->raw())
+        return +1;
+      return 0;
+    }
+
+    inline bool Equals(const Tag* rhs) const {
+      return Compare(rhs) == 0;
+    }
+
+    std::string ToString() const {
+      return raw_;
+    }
+
     const RawTag& raw() const {
       return raw_;
     }
@@ -65,10 +81,114 @@ namespace mcc {
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Tag& rhs) {
-      stream << "Tag(";
-      stream << "raw=" << rhs.raw();
-      stream << ")";
-      return stream;
+      return stream << rhs.ToString();
+    }
+  public:
+    static inline Tag*
+    New(const std::string& value) {
+      return new Tag(value);
+    }
+
+    static Tag* Of(const std::string& value);
+  };
+
+  class TagTrie {
+    static constexpr const auto kAlphabetSize = 27;
+    class Node {
+      DEFINE_DEFAULT_COPYABLE_TYPE(Node);
+    private:
+      Node* parent_;
+      Node* children_[kAlphabetSize];
+      uint16_t num_children_;
+      Tag* value_;
+    public:
+      Node() = default;
+      ~Node() = default;
+
+      Node* GetParent() const {
+        return parent_;
+      }
+
+      void SetParent(Node* node) {
+        MCC_ASSERT(node);
+        parent_ = node;
+      }
+
+      bool HasParent() const {
+        return GetParent() != nullptr;
+      }
+
+      uint16_t GetNumberOfChildren() const {
+        return num_children_;
+      }
+
+      bool IsLeaf() const {
+        return GetNumberOfChildren() == 0;
+      }
+
+      bool HasChildren() const {
+        return GetNumberOfChildren() >= 1;
+      }
+
+      Node* GetChildAt(const uint16_t idx) const {
+        MCC_ASSERT(idx >= 0);
+        MCC_ASSERT(idx <= GetNumberOfChildren());
+        return children_[idx];
+      }
+
+      void SetChildAt(const uint16_t idx, Node* value) {
+        MCC_ASSERT(idx >= 0);
+        MCC_ASSERT(idx <= GetNumberOfChildren());
+        MCC_ASSERT(value);
+        children_[idx] = value;
+        value->SetParent(this);
+      }
+
+      bool HasChildAt(const uint16_t idx) const {
+        MCC_ASSERT(idx >= 0);
+        MCC_ASSERT(idx <= GetNumberOfChildren());
+        return children_[idx] != nullptr;
+      }
+
+      void SetValue(Tag* value) {
+        MCC_ASSERT(value);
+        value_ = value;
+      }
+
+      Tag* GetValue() const {
+        return value_;
+      }
+
+      bool HasValue() const {
+        return GetValue() != nullptr;
+      }
+
+      friend std::ostream& operator<<(std::ostream& stream, const Node& rhs) {
+        stream << "TagTrie::Node(";
+        stream << "value=" << (*rhs.GetValue());
+        stream << ")";
+        return stream;
+      }
+    };
+  protected:
+    Node* root_;
+
+    inline void SetRoot(Node* node) {
+      MCC_ASSERT(node);
+      root_ = node;
+    }
+
+    inline Node* GetRoot() const {
+      return root_;
+    }
+
+    static Tag* Search(Node* root, const std::string& value);
+  public:
+    TagTrie() = default;
+    ~TagTrie() = default;
+
+    Tag* Search(const std::string& value) const {
+      return Search(GetRoot(), value);
     }
   };
 }
