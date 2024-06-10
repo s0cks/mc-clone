@@ -179,6 +179,16 @@ namespace mcc::json {
     virtual ~JsonSpec() = default;
   };
 
+#define FOR_EACH_JSON_READER_TEMPLATE_STATE(V)  \
+  V(Error)                                      \
+  V(Closed)                                     \
+  V(Open)                                       \
+  V(Type)                                       \
+  V(Meta)                                       \
+  V(MetaTags)                                   \
+  V(MetaName)                                   \
+  V(Data)
+
   template<typename State, class D>
   class ReaderHandlerTemplate : public BaseReaderHandler<UTF8<>, D> {
   protected:

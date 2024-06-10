@@ -6,14 +6,7 @@
 
 namespace mcc::shader {
 #define FOR_EACH_SHADER_READER_STATE(V)         \
-  V(Error)                                      \
-  V(Closed)                                     \
-  V(Open)                                       \
-  V(Meta)                                       \
-  V(MetaTags)                                   \
-  V(MetaName)                                   \
-  V(Data)                                       \
-  V(Type)                                       \
+  FOR_EACH_JSON_READER_TEMPLATE_STATE(V)        \
   V(Sources)
 
   enum ShaderReaderState {
